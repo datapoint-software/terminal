@@ -68,29 +68,87 @@ public static class Strings
 
     public static string CommandExitCode => Get(nameof(CommandExitCode));
 
-    public static string CommandRunning => Get(nameof(CommandRunning));
-
-    public static string CommandStillRunning => Get(nameof(CommandStillRunning));
-
-    public static string CommandFinished => Get(nameof(CommandFinished));
-
-    public static string NoticeNoKey => Get(nameof(NoticeNoKey));
-
-    public static string NoticeSentTo => Get(nameof(NoticeSentTo));
-
-    public static string NoticeLocal => Get(nameof(NoticeLocal));
-
     public static string NoticeProviderFailed => Get(nameof(NoticeProviderFailed));
-
-    public static string AgentLabel => Get(nameof(AgentLabel));
-
-    public static string YouLabel => Get(nameof(YouLabel));
 
     public static string ModeAskHelp => Get(nameof(ModeAskHelp));
 
     public static string ModeAskForRiskyHelp => Get(nameof(ModeAskForRiskyHelp));
 
     public static string ModeAutoHelp => Get(nameof(ModeAutoHelp));
+
+    public static string SettingsTitle => Get(nameof(SettingsTitle));
+
+    public static string SettingsProviders => Get(nameof(SettingsProviders));
+
+    public static string SettingsAdd => Get(nameof(SettingsAdd));
+
+    public static string SettingsRemove => Get(nameof(SettingsRemove));
+
+    public static string SettingsEmpty => Get(nameof(SettingsEmpty));
+
+    public static string ProviderKind => Get(nameof(ProviderKind));
+
+    public static string ProviderKindAnthropic => Get(nameof(ProviderKindAnthropic));
+
+    public static string ProviderKindOpenAI => Get(nameof(ProviderKindOpenAI));
+
+    public static string ProviderKindCompatible => Get(nameof(ProviderKindCompatible));
+
+    public static string ProviderName => Get(nameof(ProviderName));
+
+    public static string ProviderModel => Get(nameof(ProviderModel));
+
+    public static string ProviderEndpoint => Get(nameof(ProviderEndpoint));
+
+    public static string ProviderEndpointHint => Get(nameof(ProviderEndpointHint));
+
+    public static string ProviderIsLocal => Get(nameof(ProviderIsLocal));
+
+    public static string ProviderApiKey => Get(nameof(ProviderApiKey));
+
+    public static string ProviderApiKeyOptional => Get(nameof(ProviderApiKeyOptional));
+
+    public static string ProviderKeyPlaceholder => Get(nameof(ProviderKeyPlaceholder));
+
+    public static string ProviderKeySave => Get(nameof(ProviderKeySave));
+
+    public static string ProviderKeyReplace => Get(nameof(ProviderKeyReplace));
+
+    public static string ProviderKeyRemove => Get(nameof(ProviderKeyRemove));
+
+    public static string ProviderKeySaved => Get(nameof(ProviderKeySaved));
+
+    public static string ProviderKeyFromEnvironment => Get(nameof(ProviderKeyFromEnvironment));
+
+    public static string ProviderKeyNoStore => Get(nameof(ProviderKeyNoStore));
+
+    public static string ProviderKeyGetOne => Get(nameof(ProviderKeyGetOne));
+
+    public static string ProviderUse => Get(nameof(ProviderUse));
+
+    public static string ProviderInUse => Get(nameof(ProviderInUse));
+
+    public static string ProviderTest => Get(nameof(ProviderTest));
+
+    public static string ProviderTesting => Get(nameof(ProviderTesting));
+
+    public static string ProviderTestPassed => Get(nameof(ProviderTestPassed));
+
+    public static string ProviderTestFailed => Get(nameof(ProviderTestFailed));
+
+    public static string ProviderSendsTo => Get(nameof(ProviderSendsTo));
+
+    public static string ProviderStaysLocal => Get(nameof(ProviderStaysLocal));
+
+    public static string ChatSettings => Get(nameof(ChatSettings));
+
+    public static string ChatModel => Get(nameof(ChatModel));
+
+    public static string ChatConnect => Get(nameof(ChatConnect));
+
+    public static string ChatConnectText => Get(nameof(ChatConnectText));
+
+    public static string NoticeSwitched => Get(nameof(NoticeSwitched));
 
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 

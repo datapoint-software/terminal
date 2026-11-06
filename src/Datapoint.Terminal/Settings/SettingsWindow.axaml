@@ -1,0 +1,196 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:settings="clr-namespace:Datapoint.Terminal.Settings"
+        xmlns:res="clr-namespace:Datapoint.Terminal.Resources"
+        x:Class="Datapoint.Terminal.Settings.SettingsWindow"
+        x:DataType="settings:SettingsViewModel"
+        Title="{x:Static res:Strings.SettingsTitle}"
+        Width="780" Height="560" MinWidth="620" MinHeight="420"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource GroupedBackgroundBrush}">
+  <Window.Resources>
+    <StreamGeometry x:Key="PlusGlyph">M7.25,2.5 L8.75,2.5 L8.75,7.25 L13.5,7.25 L13.5,8.75 L8.75,8.75 L8.75,13.5 L7.25,13.5 L7.25,8.75 L2.5,8.75 L2.5,7.25 L7.25,7.25 Z</StreamGeometry>
+    <StreamGeometry x:Key="MinusGlyph">M2.5,7.25 L13.5,7.25 L13.5,8.75 L2.5,8.75 Z</StreamGeometry>
+    <StreamGeometry x:Key="CheckGlyph">M2.5,8.5 L3.6,7.4 L6.3,10.1 L12.4,4 L13.5,5.1 L6.3,12.3 Z</StreamGeometry>
+  </Window.Resources>
+
+  <Window.Styles>
+    <Style Selector="TextBlock.heading">
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Margin" Value="4,0,0,6" />
+    </Style>
+    <Style Selector="TextBlock.secondary">
+      <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
+      <Setter Property="FontSize" Value="{StaticResource CaptionSize}" />
+      <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+    <Style Selector="TextBlock.danger">
+      <Setter Property="Foreground" Value="{DynamicResource DangerBrush}" />
+    </Style>
+    <!-- Grouped rows, as in macOS settings: a white box, a label on the left, the control on the right, hairlines between. -->
+    <Style Selector="Border.group">
+      <Setter Property="Background" Value="{DynamicResource CardBrush}" />
+      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="Margin" Value="0,0,0,18" />
+      <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
+      <Setter Property="BorderThickness" Value="0.5" />
+    </Style>
+    <Style Selector="Grid.row">
+      <Setter Property="MinHeight" Value="44" />
+      <Setter Property="Margin" Value="14,6" />
+    </Style>
+    <Style Selector="Grid.row > :is(Control)">
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Rectangle.hairline">
+      <Setter Property="Height" Value="1" />
+      <Setter Property="Fill" Value="{DynamicResource SeparatorBrush}" />
+      <Setter Property="Margin" Value="14,0,0,0" />
+    </Style>
+    <Style Selector="ListBox.sidebar">
+      <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="ListBox.sidebar ListBoxItem">
+      <Setter Property="Padding" Value="10,6" />
+      <Setter Property="Margin" Value="8,1" />
+      <Setter Property="CornerRadius" Value="6" />
+    </Style>
+    <Style Selector="ListBox.sidebar ListBoxItem /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="CornerRadius" Value="6" />
+    </Style>
+    <Style Selector="ListBox.sidebar ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource FillBrush}" />
+    </Style>
+    <Style Selector="ListBox.sidebar ListBoxItem:selected:focus /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource FillHoverBrush}" />
+    </Style>
+    <Style Selector="ListBox.sidebar ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource FillBrush}" />
+    </Style>
+  </Window.Styles>
+
+  <Grid ColumnDefinitions="230,1,*">
+    <!-- Sidebar: the providers, with add and remove at the bottom. -->
+    <DockPanel Background="{DynamicResource PaneBrush}">
+      <TextBlock DockPanel.Dock="Top" Classes="secondary" FontWeight="SemiBold" Margin="18,16,0,8" Text="{x:Static res:Strings.SettingsProviders}" />
+      <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="2" Margin="10,8">
+        <Button Classes="icon" Command="{Binding AddCommand}" ToolTip.Tip="{x:Static res:Strings.SettingsAdd}"
+                AutomationProperties.Name="{x:Static res:Strings.SettingsAdd}">
+          <PathIcon Data="{StaticResource PlusGlyph}" />
+        </Button>
+        <Button Classes="icon" Command="{Binding RemoveCommand}" ToolTip.Tip="{x:Static res:Strings.SettingsRemove}"
+                AutomationProperties.Name="{x:Static res:Strings.SettingsRemove}">
+          <PathIcon Data="{StaticResource MinusGlyph}" />
+        </Button>
+      </StackPanel>
+      <ListBox Classes="sidebar" ItemsSource="{Binding Providers}" SelectedItem="{Binding Selected}"
+               AutomationProperties.Name="{x:Static res:Strings.SettingsProviders}">
+        <ListBox.ItemTemplate>
+          <DataTemplate x:DataType="settings:ProviderViewModel">
+            <Grid ColumnDefinitions="*,Auto">
+              <StackPanel>
+                <TextBlock Text="{Binding Name}" FontWeight="Medium" TextTrimming="CharacterEllipsis" />
+                <TextBlock Classes="secondary" Text="{Binding Model}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
+              </StackPanel>
+              <PathIcon Grid.Column="1" Data="{StaticResource CheckGlyph}" Width="13" Height="13" Margin="6,0,0,0"
+                        Foreground="{DynamicResource AccentBrush}" IsVisible="{Binding IsActive}"
+                        AutomationProperties.Name="{x:Static res:Strings.ProviderInUse}" />
+            </Grid>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+    </DockPanel>
+    <Rectangle Grid.Column="1" Fill="{DynamicResource SeparatorBrush}" />
+
+    <!-- Nothing yet: say what a provider is for. -->
+    <StackPanel Grid.Column="2" IsVisible="{Binding IsEmpty}" VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="340" Spacing="14">
+      <TextBlock Text="{x:Static res:Strings.SettingsEmpty}" TextWrapping="Wrap" TextAlignment="Center" />
+      <Button Classes="primary" HorizontalAlignment="Center" Content="{x:Static res:Strings.SettingsAdd}" Command="{Binding AddCommand}" />
+    </StackPanel>
+
+    <ScrollViewer Grid.Column="2" IsVisible="{Binding HasSelection}">
+      <StackPanel Margin="28,24" MaxWidth="560" DataContext="{Binding Selected}" x:DataType="settings:ProviderViewModel">
+        <!-- Which provider, and which model. -->
+        <Border Classes="group">
+          <StackPanel>
+            <Grid Classes="row" ColumnDefinitions="150,*">
+              <TextBlock Text="{x:Static res:Strings.ProviderKind}" />
+              <ListBox Grid.Column="1" Classes="segmented" ItemsSource="{Binding $parent[Window].((settings:SettingsViewModel)DataContext).Kinds}"
+                       SelectedItem="{Binding Kind}" AutomationProperties.Name="{x:Static res:Strings.ProviderKind}">
+                <ListBox.ItemTemplate>
+                  <DataTemplate x:DataType="settings:KindOption">
+                    <TextBlock Text="{Binding Label}" />
+                  </DataTemplate>
+                </ListBox.ItemTemplate>
+              </ListBox>
+            </Grid>
+            <Rectangle Classes="hairline" />
+            <Grid Classes="row" ColumnDefinitions="150,*">
+              <TextBlock Text="{x:Static res:Strings.ProviderName}" />
+              <TextBox Grid.Column="1" Text="{Binding Name}" AutomationProperties.Name="{x:Static res:Strings.ProviderName}" />
+            </Grid>
+            <Rectangle Classes="hairline" />
+            <Grid Classes="row" ColumnDefinitions="150,*">
+              <TextBlock Text="{x:Static res:Strings.ProviderModel}" />
+              <AutoCompleteBox Grid.Column="1" Text="{Binding Model}" ItemsSource="{Binding ModelSuggestions}"
+                               MinimumPrefixLength="0" FilterMode="StartsWith"
+                               AutomationProperties.Name="{x:Static res:Strings.ProviderModel}" />
+            </Grid>
+            <StackPanel IsVisible="{Binding IsCompatible}">
+              <Rectangle Classes="hairline" />
+              <Grid Classes="row" ColumnDefinitions="150,*">
+                <TextBlock Text="{x:Static res:Strings.ProviderEndpoint}" />
+                <TextBox Grid.Column="1" Text="{Binding Endpoint}" Watermark="{x:Static res:Strings.ProviderEndpointHint}"
+                         AutomationProperties.Name="{x:Static res:Strings.ProviderEndpoint}" />
+              </Grid>
+              <Rectangle Classes="hairline" />
+              <Grid Classes="row" ColumnDefinitions="150,*">
+                <CheckBox Grid.Column="1" IsChecked="{Binding IsLocal}" Content="{x:Static res:Strings.ProviderIsLocal}" />
+              </Grid>
+            </StackPanel>
+          </StackPanel>
+        </Border>
+
+        <!-- The key: entered once, then only replaced or removed. -->
+        <Border Classes="group">
+          <StackPanel>
+            <Grid Classes="row" ColumnDefinitions="150,*">
+              <TextBlock Text="{x:Static res:Strings.ProviderApiKey}" />
+              <Grid Grid.Column="1" ColumnDefinitions="*,Auto" IsVisible="{Binding ShowKeyEntry}">
+                <TextBox Text="{Binding KeyDraft}" PasswordChar="•" Watermark="{x:Static res:Strings.ProviderKeyPlaceholder}"
+                         AutomationProperties.Name="{x:Static res:Strings.ProviderApiKey}">
+                  <TextBox.KeyBindings>
+                    <KeyBinding Gesture="Enter" Command="{Binding SaveKeyCommand}" />
+                  </TextBox.KeyBindings>
+                </TextBox>
+                <Button Grid.Column="1" Margin="8,0,0,0" Content="{x:Static res:Strings.ProviderKeySave}" Command="{Binding SaveKeyCommand}" />
+              </Grid>
+              <Grid Grid.Column="1" ColumnDefinitions="*,Auto,Auto" IsVisible="{Binding !ShowKeyEntry}">
+                <TextBlock Text="••••••••••••••••" VerticalAlignment="Center" IsVisible="{Binding HasSavedKey}"
+                           Foreground="{DynamicResource SecondaryLabelBrush}" />
+                <Button Grid.Column="1" Margin="8,0,0,0" Content="{x:Static res:Strings.ProviderKeyReplace}" Command="{Binding ReplaceKeyCommand}"
+                        IsVisible="{Binding HasSavedKey}" />
+                <Button Grid.Column="2" Margin="8,0,0,0" Content="{x:Static res:Strings.ProviderKeyRemove}" Command="{Binding RemoveKeyCommand}"
+                        IsVisible="{Binding HasSavedKey}" />
+              </Grid>
+            </Grid>
+          </StackPanel>
+        </Border>
+        <TextBlock Classes="secondary" Text="{Binding KeyStatus}" Margin="4,-10,0,18" IsVisible="{Binding KeyStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+        <!-- Where the conversation goes, and whether it works. -->
+        <TextBlock Classes="secondary" Text="{Binding Privacy}" Margin="4,0,0,12" />
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <Button Content="{x:Static res:Strings.ProviderTest}" Command="{Binding TestCommand}" />
+          <Button Classes="primary" Content="{x:Static res:Strings.ProviderUse}" Command="{Binding UseCommand}" IsVisible="{Binding !IsActive}" />
+          <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" IsVisible="{Binding IsActive}">
+            <PathIcon Data="{StaticResource CheckGlyph}" Width="13" Height="13" Foreground="{DynamicResource AccentBrush}" />
+            <TextBlock Text="{x:Static res:Strings.ProviderInUse}" VerticalAlignment="Center" />
+          </StackPanel>
+        </StackPanel>
+        <TextBlock Classes="secondary" Classes.danger="{Binding TestFailed}" Text="{Binding TestResult}" Margin="4,10,0,0"
+                   AutomationProperties.LiveSetting="Polite" />
+      </StackPanel>
+    </ScrollViewer>
+  </Grid>
+</Window>

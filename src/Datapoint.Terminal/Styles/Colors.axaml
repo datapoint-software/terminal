@@ -9,6 +9,8 @@
       <SolidColorBrush x:Key="OnAccentBrush" Color="#FFFFFF" />
       <SolidColorBrush x:Key="WindowBrush" Color="#FFFFFF" />
       <SolidColorBrush x:Key="PaneBrush" Color="#F5F5F7" />
+      <SolidColorBrush x:Key="GroupedBackgroundBrush" Color="#ECECEE" />
+      <SolidColorBrush x:Key="DangerBrush" Color="#D70015" />
       <SolidColorBrush x:Key="CardBrush" Color="#FFFFFF" />
       <SolidColorBrush x:Key="SegmentBrush" Color="#FFFFFF" />
       <SolidColorBrush x:Key="FieldBrush" Color="#FFFFFF" />
@@ -31,6 +33,8 @@
       <SolidColorBrush x:Key="OnAccentBrush" Color="#FFFFFF" />
       <SolidColorBrush x:Key="WindowBrush" Color="#1E1E1E" />
       <SolidColorBrush x:Key="PaneBrush" Color="#232325" />
+      <SolidColorBrush x:Key="GroupedBackgroundBrush" Color="#1C1C1E" />
+      <SolidColorBrush x:Key="DangerBrush" Color="#FF6961" />
       <SolidColorBrush x:Key="CardBrush" Color="#2C2C2E" />
       <SolidColorBrush x:Key="SegmentBrush" Color="#636366" />
       <SolidColorBrush x:Key="FieldBrush" Color="#2C2C2E" />

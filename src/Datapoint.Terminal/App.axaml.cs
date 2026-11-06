@@ -18,4 +18,14 @@ public sealed partial class App : Application
 
         base.OnFrameworkInitializationCompleted();
     }
+
+    private void OnSettingsClicked(object? sender, EventArgs e)
+    {
+        if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime { MainWindow: MainWindow window })
+        {
+            return;
+        }
+
+        window.OpenSettings();
+    }
 }

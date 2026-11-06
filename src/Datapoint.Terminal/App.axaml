@@ -1,6 +1,7 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="Datapoint.Terminal.App"
+             Name="Datapoint Terminal"
              RequestedThemeVariant="Default">
   <Application.Resources>
     <ResourceDictionary>
@@ -13,4 +14,10 @@
     <FluentTheme />
     <StyleInclude Source="avares://Datapoint.Terminal/Styles/Controls.axaml" />
   </Application.Styles>
+  <!-- macOS application menu: Settings… with Cmd+, as every Mac app has. -->
+  <NativeMenu.Menu>
+    <NativeMenu>
+      <NativeMenuItem Header="Settings…" Gesture="Meta+OemComma" Click="OnSettingsClicked" />
+    </NativeMenu>
+  </NativeMenu.Menu>
 </Application>

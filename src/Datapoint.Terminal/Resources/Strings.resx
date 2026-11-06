@@ -102,32 +102,8 @@
   <data name="CommandExitCode" xml:space="preserve">
     <value>Exit code {0}</value>
   </data>
-  <data name="CommandRunning" xml:space="preserve">
-    <value>Running…</value>
-  </data>
-  <data name="CommandStillRunning" xml:space="preserve">
-    <value>Still running</value>
-  </data>
-  <data name="CommandFinished" xml:space="preserve">
-    <value>Finished</value>
-  </data>
-  <data name="NoticeNoKey" xml:space="preserve">
-    <value>No AI provider is set up. For now, set ANTHROPIC_API_KEY (or DATAPOINT_PROVIDER=openai with OPENAI_API_KEY and DATAPOINT_MODEL) before starting the application.</value>
-  </data>
-  <data name="NoticeSentTo" xml:space="preserve">
-    <value>Your messages, and the commands the agent runs with their output, are sent to {0} ({1}). Text that looks like a key, token or password is removed first.</value>
-  </data>
-  <data name="NoticeLocal" xml:space="preserve">
-    <value>Your messages, and the commands the agent runs with their output, are sent to the model at {0}, which you marked as running on your own machine or network.</value>
-  </data>
   <data name="NoticeProviderFailed" xml:space="preserve">
     <value>The AI provider couldn't be set up: {0}</value>
-  </data>
-  <data name="AgentLabel" xml:space="preserve">
-    <value>Agent</value>
-  </data>
-  <data name="YouLabel" xml:space="preserve">
-    <value>You</value>
   </data>
   <data name="ModeAskHelp" xml:space="preserve">
     <value>Every command waits for your approval.</value>
@@ -137,5 +113,116 @@
   </data>
   <data name="ModeAutoHelp" xml:space="preserve">
     <value>Commands run without asking, except those that change SSH trust. Lasts until the task ends.</value>
+  </data>
+  <data name="SettingsTitle" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="SettingsProviders" xml:space="preserve">
+    <value>AI providers</value>
+  </data>
+  <data name="SettingsAdd" xml:space="preserve">
+    <value>Add a provider</value>
+  </data>
+  <data name="SettingsRemove" xml:space="preserve">
+    <value>Remove this provider</value>
+  </data>
+  <data name="SettingsEmpty" xml:space="preserve">
+    <value>Add a provider to let the agent work. You can use Anthropic or OpenAI with your API key, or a model you run yourself.</value>
+  </data>
+  <data name="ProviderKind" xml:space="preserve">
+    <value>Provider</value>
+  </data>
+  <data name="ProviderKindAnthropic" xml:space="preserve">
+    <value>Anthropic</value>
+  </data>
+  <data name="ProviderKindOpenAI" xml:space="preserve">
+    <value>OpenAI</value>
+  </data>
+  <data name="ProviderKindCompatible" xml:space="preserve">
+    <value>Other</value>
+  </data>
+  <data name="ProviderName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="ProviderModel" xml:space="preserve">
+    <value>Model</value>
+  </data>
+  <data name="ProviderEndpoint" xml:space="preserve">
+    <value>Server address</value>
+  </data>
+  <data name="ProviderEndpointHint" xml:space="preserve">
+    <value>e.g. http://localhost:11434/v1 for Ollama</value>
+  </data>
+  <data name="ProviderIsLocal" xml:space="preserve">
+    <value>Runs on my own machine or network</value>
+  </data>
+  <data name="ProviderApiKey" xml:space="preserve">
+    <value>API key</value>
+  </data>
+  <data name="ProviderApiKeyOptional" xml:space="preserve">
+    <value>Only needed if the server asks for one.</value>
+  </data>
+  <data name="ProviderKeyPlaceholder" xml:space="preserve">
+    <value>Paste your API key</value>
+  </data>
+  <data name="ProviderKeySave" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="ProviderKeyReplace" xml:space="preserve">
+    <value>Replace</value>
+  </data>
+  <data name="ProviderKeyRemove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="ProviderKeySaved" xml:space="preserve">
+    <value>Saved in {0}. It isn't shown again.</value>
+  </data>
+  <data name="ProviderKeyFromEnvironment" xml:space="preserve">
+    <value>Using {0} from the environment. Save a key here to keep it in {1} instead.</value>
+  </data>
+  <data name="ProviderKeyNoStore" xml:space="preserve">
+    <value>This system has no keyring, so keys can't be saved. Set {0} before starting the application.</value>
+  </data>
+  <data name="ProviderKeyGetOne" xml:space="preserve">
+    <value>Create a key in your provider's console. API use is billed by the provider, separately from any chat subscription.</value>
+  </data>
+  <data name="ProviderUse" xml:space="preserve">
+    <value>Use for the agent</value>
+  </data>
+  <data name="ProviderInUse" xml:space="preserve">
+    <value>The agent uses this provider</value>
+  </data>
+  <data name="ProviderTest" xml:space="preserve">
+    <value>Test connection</value>
+  </data>
+  <data name="ProviderTesting" xml:space="preserve">
+    <value>Testing…</value>
+  </data>
+  <data name="ProviderTestPassed" xml:space="preserve">
+    <value>Connected. The model answered.</value>
+  </data>
+  <data name="ProviderTestFailed" xml:space="preserve">
+    <value>Couldn't connect: {0}</value>
+  </data>
+  <data name="ProviderSendsTo" xml:space="preserve">
+    <value>The agent sends your messages, and the commands it runs with their output, to {0}.</value>
+  </data>
+  <data name="ProviderStaysLocal" xml:space="preserve">
+    <value>The agent sends your messages and terminal output to {0}, which you marked as your own.</value>
+  </data>
+  <data name="ChatSettings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="ChatModel" xml:space="preserve">
+    <value>Model</value>
+  </data>
+  <data name="ChatConnect" xml:space="preserve">
+    <value>Connect an AI provider</value>
+  </data>
+  <data name="ChatConnectText" xml:space="preserve">
+    <value>The agent needs an AI provider. Add your Anthropic or OpenAI API key, or a model you run yourself.</value>
+  </data>
+  <data name="NoticeSwitched" xml:space="preserve">
+    <value>From now on, the conversation goes to {0}.</value>
   </data>
 </root>

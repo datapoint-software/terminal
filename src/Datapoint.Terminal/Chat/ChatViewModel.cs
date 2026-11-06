@@ -17,6 +17,7 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
     private TerminalAgent? _agent;
     private ChatItemViewModel? _streaming;
     private ChatItemViewModel? _command;
+    private bool _isSettingModels;
 
     public ChatViewModel(IUiThread ui)
     {
@@ -56,7 +57,28 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
     [ObservableProperty]
     public partial QuestionViewModel? Question { get; set; }
 
-    public bool HasAgent => _agent is not null;
+    public bool HasAgent => _agent is not null && IsConnected;
+
+    /// <summary>The agent has a provider it can use; without one, the chat offers to connect one.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasAgent), nameof(NeedsProvider))]
+    [NotifyCanExecuteChangedFor(nameof(SendCommand), nameof(ContinueCommand))]
+    public partial bool IsConnected { get; set; }
+
+    public bool NeedsProvider => !IsConnected;
+
+    public ObservableCollection<ModelChoice> ModelChoices { get; } = [];
+
+    [ObservableProperty]
+    public partial ModelChoice? SelectedModel { get; set; }
+
+    public bool HasModelChoices => ModelChoices.Count > 0;
+
+    /// <summary>Called when the user picks another model in the chat.</summary>
+    public Action<ModelChoice>? ModelChosen { get; set; }
+
+    /// <summary>Called when the user asks for settings, e.g. to connect a provider.</summary>
+    public Action? SettingsRequested { get; set; }
 
     /// <summary>The agent is working on its own: thinking or running a command.</summary>
     public bool IsWorking => Status is AgentStatus.Thinking or AgentStatus.RunningCommand;
@@ -79,9 +101,26 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
         _agent.EventRaised += OnAgentEvent;
         Status = AgentStatus.Idle;
         StatusText = Strings.StatusIdle;
+        IsConnected = true;
         Items.Add(new ChatItemViewModel(ChatItemKind.Notice, privacyNotice));
         OnPropertyChanged(nameof(HasAgent));
         NotifyCommands();
+    }
+
+    /// <summary>Shows the models the user can switch between, without treating it as the user's choice.</summary>
+    public void SetModels(IEnumerable<ModelChoice> choices, ModelChoice? selected)
+    {
+        ArgumentNullException.ThrowIfNull(choices);
+        _isSettingModels = true;
+        ModelChoices.Clear();
+        foreach (var choice in choices)
+        {
+            ModelChoices.Add(choice);
+        }
+
+        SelectedModel = selected;
+        _isSettingModels = false;
+        OnPropertyChanged(nameof(HasModelChoices));
     }
 
     /// <summary>Shows a notice from the application, e.g. that no provider is set up.</summary>
@@ -124,6 +163,19 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
         OnPropertyChanged(nameof(CanStop));
     }
 
+    partial void OnSelectedModelChanged(ModelChoice? value)
+    {
+        if (_isSettingModels || value is null)
+        {
+            return;
+        }
+
+        ModelChosen?.Invoke(value);
+    }
+
+    [RelayCommand]
+    private void OpenSettings() => SettingsRequested?.Invoke();
+
     partial void OnSelectedModeChanged(ModeOption value)
     {
         if (_agent is null)
@@ -161,11 +213,11 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
         Items.Clear();
     }
 
-    private bool CanSend() => _agent is not null && !IsBusy && !string.IsNullOrWhiteSpace(Draft);
+    private bool CanSend() => HasAgent && !IsBusy && !string.IsNullOrWhiteSpace(Draft);
 
     private bool IsBusyCheck() => _agent is not null && IsBusy;
 
-    private bool CanContinue() => _agent is not null && Status == AgentStatus.Interrupted;
+    private bool CanContinue() => HasAgent && Status == AgentStatus.Interrupted;
 
     private bool CanClear() => _agent is not null && !IsBusy;
 
