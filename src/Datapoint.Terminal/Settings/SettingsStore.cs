@@ -1,0 +1,70 @@
+using System.Text.Json;
+
+namespace Datapoint.Terminal.Settings;
+
+/// <summary>
+/// Reads and writes the settings file. Writes go to a temporary file first and replace the old one in one step, so a crash
+/// never leaves half a file; on macOS and Linux the file is readable only by the user.
+/// </summary>
+public sealed class SettingsStore(string path)
+{
+    public static string DefaultPath => System.IO.Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData, Environment.SpecialFolderOption.Create),
+        "Datapoint Terminal",
+        "settings.json");
+
+    public string Path { get; } = path;
+
+    /// <summary>Set when the file was written by a newer version; saving is then refused so its settings aren't lost.</summary>
+    public bool IsReadOnly { get; private set; }
+
+    /// <summary>Why the file couldn't be read, when it couldn't; it's then kept aside and defaults are used.</summary>
+    public string? Problem { get; private set; }
+
+    public AppSettings Load()
+    {
+        if (!File.Exists(Path))
+        {
+            return new AppSettings();
+        }
+
+        try
+        {
+            var settings = JsonSerializer.Deserialize(File.ReadAllBytes(Path), SettingsJsonContext.Default.AppSettings) ?? new AppSettings();
+            IsReadOnly = settings.Version > AppSettings.CurrentVersion;
+            return settings;
+        }
+        catch (JsonException exception)
+        {
+            var aside = $"{Path}.unreadable-{DateTime.UtcNow:yyyyMMddHHmmss}";
+            File.Move(Path, aside);
+            Problem = $"The settings file couldn't be read ({exception.Message}). It was kept as {aside}, and defaults are used.";
+            return new AppSettings();
+        }
+    }
+
+    public void Save(AppSettings settings)
+    {
+        ArgumentNullException.ThrowIfNull(settings);
+        if (IsReadOnly)
+        {
+            throw new InvalidOperationException("A newer version of Datapoint Terminal wrote these settings; this version won't overwrite them.");
+        }
+
+        var folder = System.IO.Path.GetDirectoryName(Path)!;
+        Directory.CreateDirectory(folder);
+        var temporary = System.IO.Path.Combine(folder, $".settings-{Guid.NewGuid():N}.tmp");
+        var options = new FileStreamOptions { Mode = FileMode.CreateNew, Access = FileAccess.Write };
+        if (!OperatingSystem.IsWindows())
+        {
+            options.UnixCreateMode = UnixFileMode.UserRead | UnixFileMode.UserWrite;
+        }
+
+        using (var stream = new FileStream(temporary, options))
+        {
+            JsonSerializer.Serialize(stream, settings, SettingsJsonContext.Default.AppSettings);
+        }
+
+        File.Move(temporary, Path, overwrite: true);
+    }
+}
