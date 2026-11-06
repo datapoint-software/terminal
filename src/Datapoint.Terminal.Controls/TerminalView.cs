@@ -26,6 +26,10 @@ public sealed class TerminalView : Control
     public static readonly StyledProperty<double> FontSizeProperty =
         AvaloniaProperty.Register<TerminalView, double>(nameof(FontSize), 14);
 
+    /// <summary>Space between the edge and the grid, filled with the terminal's background colour.</summary>
+    public static readonly StyledProperty<Thickness> PaddingProperty =
+        AvaloniaProperty.Register<TerminalView, Thickness>(nameof(Padding));
+
     private const int WheelLines = 3;
 
     private readonly RowRenderer _renderer = new();
@@ -36,7 +40,7 @@ public sealed class TerminalView : Control
     static TerminalView()
     {
         FocusableProperty.OverrideDefaultValue<TerminalView>(true);
-        AffectsRender<TerminalView>(FontFamilyProperty, FontSizeProperty);
+        AffectsRender<TerminalView>(FontFamilyProperty, FontSizeProperty, PaddingProperty);
     }
 
     public TerminalView()
@@ -62,6 +66,12 @@ public sealed class TerminalView : Control
     {
         get => GetValue(FontSizeProperty);
         set => SetValue(FontSizeProperty, value);
+    }
+
+    public Thickness Padding
+    {
+        get => GetValue(PaddingProperty);
+        set => SetValue(PaddingProperty, value);
     }
 
     /// <summary>Whether Alt (Option) with a letter sends Escape and the letter, as shells' Meta key. Off on macOS, where Option types characters.</summary>
@@ -103,6 +113,7 @@ public sealed class TerminalView : Control
             return;
         }
 
+        using var padding = context.PushTransform(Matrix.CreateTranslation(Padding.Left, Padding.Top));
         lock (terminal.SyncRoot)
         {
             var metrics = _renderer.Metrics;
@@ -119,6 +130,12 @@ public sealed class TerminalView : Control
     {
         ArgumentNullException.ThrowIfNull(change);
         base.OnPropertyChanged(change);
+        if (change.Property == PaddingProperty)
+        {
+            UpdateGridSize(Bounds.Size);
+            return;
+        }
+
         if (change.Property != FontFamilyProperty && change.Property != FontSizeProperty)
         {
             return;
@@ -138,8 +155,8 @@ public sealed class TerminalView : Control
         var metrics = _renderer.Metrics;
         var columns = _terminal?.Columns ?? 80;
         var rows = _terminal?.Rows ?? 24;
-        var width = double.IsInfinity(availableSize.Width) ? columns * metrics.Width : availableSize.Width;
-        var height = double.IsInfinity(availableSize.Height) ? rows * metrics.Height : availableSize.Height;
+        var width = double.IsInfinity(availableSize.Width) ? (columns * metrics.Width) + Padding.Left + Padding.Right : availableSize.Width;
+        var height = double.IsInfinity(availableSize.Height) ? (rows * metrics.Height) + Padding.Top + Padding.Bottom : availableSize.Height;
         return new Size(width, height);
     }
 
@@ -266,6 +283,7 @@ public sealed class TerminalView : Control
             return;
         }
 
+        size = size.Deflate(Padding);
         var columns = Math.Max(2, (int)(size.Width / metrics.Width));
         var rows = Math.Max(1, (int)(size.Height / metrics.Height));
         lock (terminal.SyncRoot)
