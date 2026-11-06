@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ChatTitle" xml:space="preserve">
+    <value>Agent</value>
+  </data>
+  <data name="ChatInputPlaceholder" xml:space="preserve">
+    <value>Ask the agent to do something in this terminal</value>
+  </data>
+  <data name="ChatSend" xml:space="preserve">
+    <value>Send</value>
+  </data>
+  <data name="ChatStop" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="ChatContinue" xml:space="preserve">
+    <value>Continue</value>
+  </data>
+  <data name="ChatClear" xml:space="preserve">
+    <value>New conversation</value>
+  </data>
+  <data name="ChatMode" xml:space="preserve">
+    <value>Approval</value>
+  </data>
+  <data name="ModeAsk" xml:space="preserve">
+    <value>Ask</value>
+  </data>
+  <data name="ModeAskForRisky" xml:space="preserve">
+    <value>Ask for risky commands</value>
+  </data>
+  <data name="ModeAuto" xml:space="preserve">
+    <value>Auto (this task)</value>
+  </data>
+  <data name="StatusIdle" xml:space="preserve">
+    <value>Idle</value>
+  </data>
+  <data name="StatusThinking" xml:space="preserve">
+    <value>Thinking…</value>
+  </data>
+  <data name="StatusRunningCommand" xml:space="preserve">
+    <value>Running a command</value>
+  </data>
+  <data name="StatusWaitingForApproval" xml:space="preserve">
+    <value>Waiting for your approval</value>
+  </data>
+  <data name="StatusWaitingForUser" xml:space="preserve">
+    <value>Waiting for your input</value>
+  </data>
+  <data name="StatusInterrupted" xml:space="preserve">
+    <value>Interrupted</value>
+  </data>
+  <data name="StatusNoProvider" xml:space="preserve">
+    <value>Not connected to an AI provider</value>
+  </data>
+  <data name="ApprovalHeading" xml:space="preserve">
+    <value>The agent wants to run this command</value>
+  </data>
+  <data name="ApprovalHeadingTrust" xml:space="preserve">
+    <value>This command changes which machines you trust or how you log in</value>
+  </data>
+  <data name="ApprovalRiskReadOnly" xml:space="preserve">
+    <value>Reads only, as far as the application can tell.</value>
+  </data>
+  <data name="ApprovalRiskChanges" xml:space="preserve">
+    <value>May change the system.</value>
+  </data>
+  <data name="ApprovalRiskAlwaysAsk" xml:space="preserve">
+    <value>Always needs your approval, in every mode.</value>
+  </data>
+  <data name="ApprovalCommandLabel" xml:space="preserve">
+    <value>Command (you can edit it before running it)</value>
+  </data>
+  <data name="ApprovalRun" xml:space="preserve">
+    <value>Run</value>
+  </data>
+  <data name="ApprovalDecline" xml:space="preserve">
+    <value>Decline</value>
+  </data>
+  <data name="ApprovalFeedbackPlaceholder" xml:space="preserve">
+    <value>Optional: tell the agent why, or what to do instead</value>
+  </data>
+  <data name="QuestionAnswer" xml:space="preserve">
+    <value>Answer</value>
+  </data>
+  <data name="QuestionSkip" xml:space="preserve">
+    <value>Skip</value>
+  </data>
+  <data name="QuestionPlaceholder" xml:space="preserve">
+    <value>Your answer</value>
+  </data>
+  <data name="CommandExitCode" xml:space="preserve">
+    <value>Exit code {0}</value>
+  </data>
+  <data name="CommandRunning" xml:space="preserve">
+    <value>Running…</value>
+  </data>
+  <data name="CommandStillRunning" xml:space="preserve">
+    <value>Still running</value>
+  </data>
+  <data name="CommandFinished" xml:space="preserve">
+    <value>Finished</value>
+  </data>
+  <data name="NoticeNoKey" xml:space="preserve">
+    <value>No AI provider is set up. For now, set ANTHROPIC_API_KEY (or DATAPOINT_PROVIDER=openai with OPENAI_API_KEY and DATAPOINT_MODEL) before starting the application.</value>
+  </data>
+  <data name="NoticeSentTo" xml:space="preserve">
+    <value>Your messages, and the commands the agent runs with their output, are sent to {0} ({1}). Text that looks like a key, token or password is removed first.</value>
+  </data>
+  <data name="NoticeLocal" xml:space="preserve">
+    <value>Your messages, and the commands the agent runs with their output, are sent to the model at {0}, which you marked as running on your own machine or network.</value>
+  </data>
+  <data name="NoticeProviderFailed" xml:space="preserve">
+    <value>The AI provider couldn't be set up: {0}</value>
+  </data>
+  <data name="AgentLabel" xml:space="preserve">
+    <value>Agent</value>
+  </data>
+  <data name="YouLabel" xml:space="preserve">
+    <value>You</value>
+  </data>
+</root>

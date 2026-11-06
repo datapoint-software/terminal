@@ -15,5 +15,6 @@
     <Project Path="tests/Datapoint.Terminal.Security.Tests/Datapoint.Terminal.Security.Tests.csproj" />
     <Project Path="tests/Datapoint.Terminal.Sessions.Tests/Datapoint.Terminal.Sessions.Tests.csproj" />
     <Project Path="tests/Datapoint.Terminal.Testing/Datapoint.Terminal.Testing.csproj" />
+    <Project Path="tests/Datapoint.Terminal.Tests/Datapoint.Terminal.Tests.csproj" />
   </Folder>
 </Solution>

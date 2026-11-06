@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Headless.XUnit" />
+    <PackageReference Include="Avalonia.Skia" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Datapoint.Terminal\Datapoint.Terminal.csproj" />
+    <ProjectReference Include="..\Datapoint.Terminal.Testing\Datapoint.Terminal.Testing.csproj" />
+  </ItemGroup>
+</Project>

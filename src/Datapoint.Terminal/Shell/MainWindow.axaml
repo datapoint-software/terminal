@@ -1,11 +1,14 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:Datapoint.Terminal.Controls;assembly=Datapoint.Terminal.Controls"
+        xmlns:chat="clr-namespace:Datapoint.Terminal.Chat"
         x:Class="Datapoint.Terminal.Shell.MainWindow"
         Title="Datapoint Terminal"
-        Width="1100" Height="700">
-  <Grid RowDefinitions="*,Auto">
+        Width="1300" Height="760">
+  <Grid ColumnDefinitions="*,4,380" RowDefinitions="*,Auto">
     <controls:TerminalView x:Name="Terminal" AutomationProperties.AutomationId="Terminal" Margin="4" />
-    <TextBlock x:Name="Status" Grid.Row="1" Margin="8,4" IsVisible="False" TextWrapping="Wrap" />
+    <GridSplitter Grid.Column="1" ResizeDirection="Columns" />
+    <chat:ChatView x:Name="Chat" Grid.Column="2" AutomationProperties.AutomationId="Chat" />
+    <TextBlock x:Name="Status" Grid.Row="1" Grid.ColumnSpan="3" Margin="8,4" IsVisible="False" TextWrapping="Wrap" />
   </Grid>
 </Window>
