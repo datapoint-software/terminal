@@ -9,6 +9,7 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Datapoint.Terminal.Architecture.Tests/Datapoint.Terminal.Architecture.Tests.csproj" />
+    <Project Path="tests/Datapoint.Terminal.Controls.Tests/Datapoint.Terminal.Controls.Tests.csproj" />
     <Project Path="tests/Datapoint.Terminal.Emulator.Tests/Datapoint.Terminal.Emulator.Tests.csproj" />
     <Project Path="tests/Datapoint.Terminal.Security.Tests/Datapoint.Terminal.Security.Tests.csproj" />
     <Project Path="tests/Datapoint.Terminal.Sessions.Tests/Datapoint.Terminal.Sessions.Tests.csproj" />
