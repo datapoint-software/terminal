@@ -1,0 +1,54 @@
+<!-- The application's colours, after Apple's system colours: quiet greys, hairline separators, one accent. -->
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <ResourceDictionary.ThemeDictionaries>
+    <ResourceDictionary x:Key="Light">
+      <Color x:Key="SystemAccentColor">#007AFF</Color>
+      <SolidColorBrush x:Key="AccentBrush" Color="#007AFF" />
+      <SolidColorBrush x:Key="AccentPressedBrush" Color="#0062CC" />
+      <SolidColorBrush x:Key="OnAccentBrush" Color="#FFFFFF" />
+      <SolidColorBrush x:Key="WindowBrush" Color="#FFFFFF" />
+      <SolidColorBrush x:Key="PaneBrush" Color="#F5F5F7" />
+      <SolidColorBrush x:Key="CardBrush" Color="#FFFFFF" />
+      <SolidColorBrush x:Key="SegmentBrush" Color="#FFFFFF" />
+      <SolidColorBrush x:Key="FieldBrush" Color="#FFFFFF" />
+      <SolidColorBrush x:Key="FillBrush" Color="#E8E8ED" />
+      <SolidColorBrush x:Key="FillHoverBrush" Color="#DCDCE1" />
+      <SolidColorBrush x:Key="CodeBrush" Color="#EDEDF0" />
+      <SolidColorBrush x:Key="SeparatorBrush" Color="#D9D9DE" />
+      <SolidColorBrush x:Key="LabelBrush" Color="#1D1D1F" />
+      <SolidColorBrush x:Key="SecondaryLabelBrush" Color="#6E6E73" />
+      <SolidColorBrush x:Key="DisabledLabelBrush" Color="#AEAEB2" />
+      <SolidColorBrush x:Key="IdleBrush" Color="#AEAEB2" />
+      <SolidColorBrush x:Key="WaitingBrush" Color="#FF9500" />
+      <SolidColorBrush x:Key="StoppedBrush" Color="#FF3B30" />
+      <BoxShadows x:Key="CardShadow">0 1 3 0 #14000000, 0 4 12 0 #0F000000</BoxShadows>
+    </ResourceDictionary>
+    <ResourceDictionary x:Key="Dark">
+      <Color x:Key="SystemAccentColor">#0A84FF</Color>
+      <SolidColorBrush x:Key="AccentBrush" Color="#0A84FF" />
+      <SolidColorBrush x:Key="AccentPressedBrush" Color="#409CFF" />
+      <SolidColorBrush x:Key="OnAccentBrush" Color="#FFFFFF" />
+      <SolidColorBrush x:Key="WindowBrush" Color="#1E1E1E" />
+      <SolidColorBrush x:Key="PaneBrush" Color="#232325" />
+      <SolidColorBrush x:Key="CardBrush" Color="#2C2C2E" />
+      <SolidColorBrush x:Key="SegmentBrush" Color="#636366" />
+      <SolidColorBrush x:Key="FieldBrush" Color="#2C2C2E" />
+      <SolidColorBrush x:Key="FillBrush" Color="#3A3A3C" />
+      <SolidColorBrush x:Key="FillHoverBrush" Color="#48484A" />
+      <SolidColorBrush x:Key="CodeBrush" Color="#1C1C1E" />
+      <SolidColorBrush x:Key="SeparatorBrush" Color="#3A3A3C" />
+      <SolidColorBrush x:Key="LabelBrush" Color="#F5F5F7" />
+      <SolidColorBrush x:Key="SecondaryLabelBrush" Color="#98989D" />
+      <SolidColorBrush x:Key="DisabledLabelBrush" Color="#636366" />
+      <SolidColorBrush x:Key="IdleBrush" Color="#636366" />
+      <SolidColorBrush x:Key="WaitingBrush" Color="#FF9F0A" />
+      <SolidColorBrush x:Key="StoppedBrush" Color="#FF453A" />
+      <BoxShadows x:Key="CardShadow">0 1 3 0 #40000000, 0 4 12 0 #33000000</BoxShadows>
+    </ResourceDictionary>
+  </ResourceDictionary.ThemeDictionaries>
+
+  <FontFamily x:Key="MonoFont">SF Mono, Menlo, Cascadia Mono, Consolas, DejaVu Sans Mono, monospace</FontFamily>
+  <x:Double x:Key="BodySize">13</x:Double>
+  <x:Double x:Key="CaptionSize">11</x:Double>
+</ResourceDictionary>

@@ -86,6 +86,12 @@ public static class Strings
 
     public static string YouLabel => Get(nameof(YouLabel));
 
+    public static string ModeAskHelp => Get(nameof(ModeAskHelp));
+
+    public static string ModeAskForRiskyHelp => Get(nameof(ModeAskForRiskyHelp));
+
+    public static string ModeAutoHelp => Get(nameof(ModeAutoHelp));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

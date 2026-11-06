@@ -3,81 +3,130 @@
              xmlns:chat="clr-namespace:Datapoint.Terminal.Chat"
              xmlns:res="clr-namespace:Datapoint.Terminal.Resources"
              x:Class="Datapoint.Terminal.Chat.ChatView"
-             x:DataType="chat:ChatViewModel">
+             x:DataType="chat:ChatViewModel"
+             Background="{DynamicResource PaneBrush}">
+  <UserControl.Resources>
+    <!-- Our own simple glyphs, 16 by 16. -->
+    <StreamGeometry x:Key="SendGlyph">M8,1.5 L13.5,7 L12.1,8.4 L9,5.3 L9,14.5 L7,14.5 L7,5.3 L3.9,8.4 L2.5,7 Z</StreamGeometry>
+    <StreamGeometry x:Key="StopGlyph">M3.5,3.5 L12.5,3.5 L12.5,12.5 L3.5,12.5 Z</StreamGeometry>
+    <StreamGeometry x:Key="ContinueGlyph">M4.5,2.5 L13,8 L4.5,13.5 Z</StreamGeometry>
+    <StreamGeometry x:Key="ComposeGlyph">M2,3.5 L8.5,3.5 L8.5,5 L3.5,5 L3.5,12.5 L11,12.5 L11,7.5 L12.5,7.5 L12.5,14 L2,14 Z M12.6,1.2 L14.8,3.4 L8.6,9.6 L5.8,10.2 L6.4,7.4 Z</StreamGeometry>
+  </UserControl.Resources>
+
   <UserControl.Styles>
-    <Style Selector="Border.item">
-      <Setter Property="Padding" Value="10,6" />
-      <Setter Property="Margin" Value="0,3" />
-      <Setter Property="CornerRadius" Value="6" />
+    <Style Selector="TextBlock.title">
+      <Setter Property="FontWeight" Value="SemiBold" />
     </Style>
-    <Style Selector="Border.item.user">
-      <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundBaseLowBrush}" />
-      <Setter Property="Margin" Value="32,3,0,3" />
+    <Style Selector="TextBlock.secondary, SelectableTextBlock.secondary">
+      <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
+      <Setter Property="FontSize" Value="{StaticResource CaptionSize}" />
     </Style>
-    <Style Selector="Border.item.command">
-      <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
-      <Setter Property="BorderThickness" Value="1" />
+
+    <!-- Status dot: grey when idle, accent while working, orange when it needs you, red when stopped. -->
+    <Style Selector="Ellipse.status">
+      <Setter Property="Width" Value="7" />
+      <Setter Property="Height" Value="7" />
+      <Setter Property="Fill" Value="{DynamicResource IdleBrush}" />
     </Style>
-    <Style Selector="Border.item.notice SelectableTextBlock">
-      <Setter Property="FontStyle" Value="Italic" />
-      <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+    <Style Selector="Ellipse.status.working">
+      <Setter Property="Fill" Value="{DynamicResource AccentBrush}" />
     </Style>
-    <Style Selector="TextBlock.mono">
-      <Setter Property="FontFamily" Value="Menlo, Consolas, DejaVu Sans Mono, monospace" />
+    <Style Selector="Ellipse.status.waiting">
+      <Setter Property="Fill" Value="{DynamicResource WaitingBrush}" />
     </Style>
-    <Style Selector="TextBox.mono">
-      <Setter Property="FontFamily" Value="Menlo, Consolas, DejaVu Sans Mono, monospace" />
+    <Style Selector="Ellipse.status.stopped">
+      <Setter Property="Fill" Value="{DynamicResource StoppedBrush}" />
     </Style>
-    <Style Selector="Border.panel">
-      <Setter Property="Padding" Value="10" />
-      <Setter Property="Margin" Value="0,6,0,0" />
-      <Setter Property="CornerRadius" Value="6" />
-      <Setter Property="BorderThickness" Value="2" />
-      <Setter Property="BorderBrush" Value="{DynamicResource SystemControlHighlightAccentBrush}" />
+
+    <!-- Conversation: your messages in accent bubbles, the agent's as plain text, commands as code cards. -->
+    <Style Selector="Border.bubble">
+      <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="CornerRadius" Value="14" />
+      <Setter Property="Padding" Value="11,7" />
+      <Setter Property="HorizontalAlignment" Value="Right" />
+      <Setter Property="MaxWidth" Value="290" />
+      <Setter Property="Margin" Value="40,6,0,6" />
+    </Style>
+    <Style Selector="Border.bubble SelectableTextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
+    </Style>
+    <Style Selector="Border.code">
+      <Setter Property="Background" Value="{DynamicResource CodeBrush}" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Padding" Value="10,8" />
+      <Setter Property="Margin" Value="0,4" />
+    </Style>
+    <Style Selector="SelectableTextBlock.mono">
+      <Setter Property="FontFamily" Value="{StaticResource MonoFont}" />
+      <Setter Property="FontSize" Value="12" />
+    </Style>
+
+    <Style Selector="Border.card">
+      <Setter Property="Background" Value="{DynamicResource CardBrush}" />
+      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="Padding" Value="14,12" />
+      <Setter Property="BoxShadow" Value="{DynamicResource CardShadow}" />
+      <Setter Property="Margin" Value="0,0,0,10" />
     </Style>
   </UserControl.Styles>
 
-  <DockPanel Margin="8">
+  <DockPanel>
     <!-- Header: what the agent is doing, announced to screen readers as it changes. -->
-    <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" Margin="0,0,0,6">
-      <StackPanel>
-        <TextBlock Text="{x:Static res:Strings.ChatTitle}" FontWeight="SemiBold" FontSize="15" />
-        <TextBlock x:Name="StatusLine" Text="{Binding StatusText}" TextWrapping="Wrap"
-                   AutomationProperties.LiveSetting="Polite"
-                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-      </StackPanel>
-      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Top">
-        <Button Content="{x:Static res:Strings.ChatStop}" Command="{Binding StopCommand}" />
-        <Button Content="{x:Static res:Strings.ChatContinue}" Command="{Binding ContinueCommand}" />
-      </StackPanel>
-    </Grid>
+    <Border DockPanel.Dock="Top" Padding="16,12,10,10" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
+      <Grid ColumnDefinitions="*,Auto">
+        <StackPanel Spacing="2">
+          <TextBlock Classes="title" Text="{x:Static res:Strings.ChatTitle}" />
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <Ellipse Classes="status" Classes.working="{Binding IsWorking}" Classes.waiting="{Binding NeedsUser}"
+                     Classes.stopped="{Binding IsInterrupted}" VerticalAlignment="Center" />
+            <TextBlock Classes="secondary" Text="{Binding StatusText}" TextWrapping="Wrap"
+                       AutomationProperties.LiveSetting="Polite" />
+          </StackPanel>
+        </StackPanel>
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="2" VerticalAlignment="Center">
+          <Button Classes="icon" Command="{Binding StopCommand}" IsVisible="{Binding CanStop}"
+                  ToolTip.Tip="{x:Static res:Strings.ChatStop}" AutomationProperties.Name="{x:Static res:Strings.ChatStop}">
+            <PathIcon Data="{StaticResource StopGlyph}" />
+          </Button>
+          <Button Classes="icon" Command="{Binding ContinueCommand}" IsVisible="{Binding IsInterrupted}"
+                  ToolTip.Tip="{x:Static res:Strings.ChatContinue}" AutomationProperties.Name="{x:Static res:Strings.ChatContinue}">
+            <PathIcon Data="{StaticResource ContinueGlyph}" />
+          </Button>
+          <Button Classes="icon" Command="{Binding ClearCommand}"
+                  ToolTip.Tip="{x:Static res:Strings.ChatClear}" AutomationProperties.Name="{x:Static res:Strings.ChatClear}">
+            <PathIcon Data="{StaticResource ComposeGlyph}" />
+          </Button>
+        </StackPanel>
+      </Grid>
+    </Border>
 
-    <!-- Input, at the bottom. -->
-    <StackPanel DockPanel.Dock="Bottom" Spacing="6" Margin="0,6,0,0">
-      <!-- A command waiting for approval. It never takes focus from the terminal; Run needs a click or Tab and Space. -->
-      <Border Classes="panel" IsVisible="{Binding Approval, Converter={x:Static ObjectConverters.IsNotNull}}"
+    <!-- Bottom: approvals and questions, then the composer and the approval mode. -->
+    <StackPanel DockPanel.Dock="Bottom" Margin="12,8,12,12">
+      <!-- A command waiting for approval. It never takes focus from the terminal; Run needs a click, or Tab and Space. -->
+      <Border Classes="card" IsVisible="{Binding Approval, Converter={x:Static ObjectConverters.IsNotNull}}"
               AutomationProperties.LiveSetting="Assertive"
               AutomationProperties.Name="{x:Static res:Strings.StatusWaitingForApproval}">
-        <StackPanel Spacing="6" DataContext="{Binding Approval}" x:DataType="chat:ApprovalViewModel">
-          <TextBlock Text="{Binding Heading}" FontWeight="SemiBold" TextWrapping="Wrap" />
-          <TextBlock Text="{Binding Purpose}" TextWrapping="Wrap" />
-          <TextBlock Text="{Binding RiskText}" TextWrapping="Wrap" FontStyle="Italic" />
-          <TextBlock Text="{x:Static res:Strings.ApprovalCommandLabel}" FontSize="12" />
-          <TextBox Classes="mono" Text="{Binding Command}" TextWrapping="Wrap"
+        <StackPanel Spacing="8" DataContext="{Binding Approval}" x:DataType="chat:ApprovalViewModel">
+          <StackPanel Spacing="2">
+            <TextBlock Classes="title" Text="{Binding Heading}" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding Purpose}" TextWrapping="Wrap" />
+          </StackPanel>
+          <TextBox Classes="code" Text="{Binding Command}" TextWrapping="Wrap" Background="{DynamicResource CodeBrush}"
                    AutomationProperties.Name="{x:Static res:Strings.ApprovalCommandLabel}" />
+          <TextBlock Classes="secondary" Text="{Binding RiskText}" TextWrapping="Wrap" />
           <TextBox Text="{Binding Feedback}" Watermark="{x:Static res:Strings.ApprovalFeedbackPlaceholder}" TextWrapping="Wrap"
                    AutomationProperties.Name="{x:Static res:Strings.ApprovalFeedbackPlaceholder}" />
-          <StackPanel Orientation="Horizontal" Spacing="8">
-            <Button Classes="accent" Content="{x:Static res:Strings.ApprovalRun}" Command="{Binding RunCommand}" />
+          <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
             <Button Content="{x:Static res:Strings.ApprovalDecline}" Command="{Binding DeclineCommand}" />
+            <Button Classes="primary" Content="{x:Static res:Strings.ApprovalRun}" Command="{Binding RunCommand}" />
           </StackPanel>
         </StackPanel>
       </Border>
 
       <!-- A question from the agent. -->
-      <Border Classes="panel" IsVisible="{Binding Question, Converter={x:Static ObjectConverters.IsNotNull}}"
+      <Border Classes="card" IsVisible="{Binding Question, Converter={x:Static ObjectConverters.IsNotNull}}"
               AutomationProperties.LiveSetting="Assertive">
-        <StackPanel Spacing="6" DataContext="{Binding Question}" x:DataType="chat:QuestionViewModel">
+        <StackPanel Spacing="8" DataContext="{Binding Question}" x:DataType="chat:QuestionViewModel">
           <SelectableTextBlock Text="{Binding Text}" FontWeight="SemiBold" TextWrapping="Wrap" />
           <ItemsControl ItemsSource="{Binding Options}" IsVisible="{Binding HasOptions}">
             <ItemsControl.ItemsPanel>
@@ -93,51 +142,68 @@
               </DataTemplate>
             </ItemsControl.ItemTemplate>
           </ItemsControl>
-          <Grid ColumnDefinitions="*,Auto,Auto">
-            <TextBox Text="{Binding Draft}" Watermark="{x:Static res:Strings.QuestionPlaceholder}"
-                     AutomationProperties.Name="{x:Static res:Strings.QuestionPlaceholder}">
-              <TextBox.KeyBindings>
-                <KeyBinding Gesture="Enter" Command="{Binding SubmitCommand}" />
-              </TextBox.KeyBindings>
-            </TextBox>
-            <Button Grid.Column="1" Margin="6,0,0,0" Content="{x:Static res:Strings.QuestionAnswer}" Command="{Binding SubmitCommand}" />
-            <Button Grid.Column="2" Margin="6,0,0,0" Content="{x:Static res:Strings.QuestionSkip}" Command="{Binding SkipCommand}" />
-          </Grid>
+          <TextBox Text="{Binding Draft}" Watermark="{x:Static res:Strings.QuestionPlaceholder}"
+                   AutomationProperties.Name="{x:Static res:Strings.QuestionPlaceholder}">
+            <TextBox.KeyBindings>
+              <KeyBinding Gesture="Enter" Command="{Binding SubmitCommand}" />
+            </TextBox.KeyBindings>
+          </TextBox>
+          <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+            <Button Content="{x:Static res:Strings.QuestionSkip}" Command="{Binding SkipCommand}" />
+            <Button Classes="primary" Content="{x:Static res:Strings.QuestionAnswer}" Command="{Binding SubmitCommand}" />
+          </StackPanel>
         </StackPanel>
       </Border>
 
-      <Grid ColumnDefinitions="*,Auto">
+      <!-- Composer: a rounded field with the send button inside it. -->
+      <Panel>
         <TextBox x:Name="DraftBox" Text="{Binding Draft}" Watermark="{x:Static res:Strings.ChatInputPlaceholder}"
-                 TextWrapping="Wrap" MaxHeight="160" IsEnabled="{Binding HasAgent}"
+                 TextWrapping="Wrap" MaxHeight="160" MinHeight="36" CornerRadius="18" Padding="14,8,42,8"
+                 VerticalContentAlignment="Center" IsEnabled="{Binding HasAgent}"
                  AutomationProperties.Name="{x:Static res:Strings.ChatInputPlaceholder}">
           <TextBox.KeyBindings>
             <KeyBinding Gesture="Enter" Command="{Binding SendCommand}" />
           </TextBox.KeyBindings>
         </TextBox>
-        <Button Grid.Column="1" Margin="6,0,0,0" VerticalAlignment="Bottom" Classes="accent"
-                Content="{x:Static res:Strings.ChatSend}" Command="{Binding SendCommand}" />
-      </Grid>
-      <Grid ColumnDefinitions="Auto,*,Auto">
-        <TextBlock VerticalAlignment="Center" Margin="0,0,6,0" Text="{x:Static res:Strings.ChatMode}" />
-        <ComboBox Grid.Column="1" ItemsSource="{Binding Modes}" SelectedItem="{Binding SelectedMode}" HorizontalAlignment="Stretch"
-                  AutomationProperties.Name="{x:Static res:Strings.ChatMode}" />
-        <Button Grid.Column="2" Margin="6,0,0,0" Content="{x:Static res:Strings.ChatClear}" Command="{Binding ClearCommand}" />
+        <Button Classes="primary" Command="{Binding SendCommand}" Width="26" Height="26" MinHeight="0" Padding="5"
+                CornerRadius="13" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,5,5"
+                ToolTip.Tip="{x:Static res:Strings.ChatSend}" AutomationProperties.Name="{x:Static res:Strings.ChatSend}">
+          <PathIcon Data="{StaticResource SendGlyph}" Width="13" Height="13" />
+        </Button>
+      </Panel>
+
+      <Grid ColumnDefinitions="Auto,*" Margin="2,10,0,0">
+        <TextBlock Classes="secondary" VerticalAlignment="Center" Margin="0,0,10,0" Text="{x:Static res:Strings.ChatMode}" />
+        <ListBox Grid.Column="1" Classes="segmented" ItemsSource="{Binding Modes}" SelectedItem="{Binding SelectedMode}"
+                 AutomationProperties.Name="{x:Static res:Strings.ChatMode}">
+          <ListBox.ItemTemplate>
+            <DataTemplate x:DataType="chat:ModeOption">
+              <TextBlock Text="{Binding Label}" ToolTip.Tip="{Binding Help}" AutomationProperties.HelpText="{Binding Help}" />
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
       </Grid>
     </StackPanel>
 
     <!-- The conversation. -->
-    <ScrollViewer x:Name="Scroller">
+    <ScrollViewer x:Name="Scroller" Padding="16,8">
       <ItemsControl ItemsSource="{Binding Items}">
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="chat:ChatItemViewModel">
-            <Border Classes="item" Classes.user="{Binding IsUser}" Classes.command="{Binding IsCommand}" Classes.notice="{Binding IsNotice}">
-              <StackPanel Spacing="2">
-                <SelectableTextBlock Text="{Binding Text}" TextWrapping="Wrap" IsVisible="{Binding !IsCommand}" />
-                <SelectableTextBlock Classes="mono" Text="{Binding Text, StringFormat='$ {0}'}" TextWrapping="Wrap" IsVisible="{Binding IsCommand}" />
-                <TextBlock Text="{Binding Detail}" TextWrapping="Wrap" FontSize="12" IsVisible="{Binding IsCommand}"
-                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
-              </StackPanel>
-            </Border>
+            <Panel>
+              <Border Classes="bubble" IsVisible="{Binding IsUser}">
+                <SelectableTextBlock Text="{Binding Text}" TextWrapping="Wrap" />
+              </Border>
+              <SelectableTextBlock Text="{Binding Text}" TextWrapping="Wrap" Margin="0,6" LineHeight="19" IsVisible="{Binding IsAgent}" />
+              <Border Classes="code" IsVisible="{Binding IsCommand}">
+                <StackPanel Spacing="4">
+                  <SelectableTextBlock Classes="mono" Text="{Binding Text}" TextWrapping="Wrap" />
+                  <TextBlock Classes="secondary" Text="{Binding Detail}" TextWrapping="Wrap" />
+                </StackPanel>
+              </Border>
+              <SelectableTextBlock Classes="secondary" Text="{Binding Text}" TextWrapping="Wrap" TextAlignment="Center"
+                                   Margin="12,6" IsVisible="{Binding IsNotice}" />
+            </Panel>
           </DataTemplate>
         </ItemsControl.ItemTemplate>
       </ItemsControl>

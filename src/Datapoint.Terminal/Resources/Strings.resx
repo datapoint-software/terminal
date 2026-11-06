@@ -16,7 +16,7 @@
     <value>Agent</value>
   </data>
   <data name="ChatInputPlaceholder" xml:space="preserve">
-    <value>Ask the agent to do something in this terminal</value>
+    <value>Ask the agent…</value>
   </data>
   <data name="ChatSend" xml:space="preserve">
     <value>Send</value>
@@ -37,10 +37,10 @@
     <value>Ask</value>
   </data>
   <data name="ModeAskForRisky" xml:space="preserve">
-    <value>Ask for risky commands</value>
+    <value>Ask if risky</value>
   </data>
   <data name="ModeAuto" xml:space="preserve">
-    <value>Auto (this task)</value>
+    <value>Auto</value>
   </data>
   <data name="StatusIdle" xml:space="preserve">
     <value>Idle</value>
@@ -79,7 +79,7 @@
     <value>Always needs your approval, in every mode.</value>
   </data>
   <data name="ApprovalCommandLabel" xml:space="preserve">
-    <value>Command (you can edit it before running it)</value>
+    <value>Command</value>
   </data>
   <data name="ApprovalRun" xml:space="preserve">
     <value>Run</value>
@@ -88,7 +88,7 @@
     <value>Decline</value>
   </data>
   <data name="ApprovalFeedbackPlaceholder" xml:space="preserve">
-    <value>Optional: tell the agent why, or what to do instead</value>
+    <value>Reason, or what to do instead (optional)</value>
   </data>
   <data name="QuestionAnswer" xml:space="preserve">
     <value>Answer</value>
@@ -128,5 +128,14 @@
   </data>
   <data name="YouLabel" xml:space="preserve">
     <value>You</value>
+  </data>
+  <data name="ModeAskHelp" xml:space="preserve">
+    <value>Every command waits for your approval.</value>
+  </data>
+  <data name="ModeAskForRiskyHelp" xml:space="preserve">
+    <value>Commands that only read run on their own; anything that may change the system waits for your approval.</value>
+  </data>
+  <data name="ModeAutoHelp" xml:space="preserve">
+    <value>Commands run without asking, except those that change SSH trust. Lasts until the task ends.</value>
   </data>
 </root>

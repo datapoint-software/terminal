@@ -22,7 +22,12 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
     {
         ArgumentNullException.ThrowIfNull(ui);
         _ui = ui;
-        Modes = [new(ApprovalMode.Ask, Strings.ModeAsk), new(ApprovalMode.AskForRisky, Strings.ModeAskForRisky), new(ApprovalMode.Auto, Strings.ModeAuto)];
+        Modes =
+        [
+            new(ApprovalMode.Ask, Strings.ModeAsk, Strings.ModeAskHelp),
+            new(ApprovalMode.AskForRisky, Strings.ModeAskForRisky, Strings.ModeAskForRiskyHelp),
+            new(ApprovalMode.Auto, Strings.ModeAuto, Strings.ModeAutoHelp),
+        ];
         SelectedMode = Modes[0];
         StatusText = Strings.StatusNoProvider;
     }
@@ -52,6 +57,16 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
     public partial QuestionViewModel? Question { get; set; }
 
     public bool HasAgent => _agent is not null;
+
+    /// <summary>The agent is working on its own: thinking or running a command.</summary>
+    public bool IsWorking => Status is AgentStatus.Thinking or AgentStatus.RunningCommand;
+
+    /// <summary>The agent waits for the user: an approval, an answer, or input in the terminal.</summary>
+    public bool NeedsUser => Status is AgentStatus.WaitingForApproval or AgentStatus.WaitingForUser;
+
+    public bool IsInterrupted => Status == AgentStatus.Interrupted;
+
+    public bool CanStop => _agent is not null && IsBusy;
 
     private bool IsBusy => Status is not (AgentStatus.Idle or AgentStatus.Interrupted);
 
@@ -99,6 +114,14 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
         }
 
         _agent.EventRaised -= OnAgentEvent;
+    }
+
+    partial void OnStatusChanged(AgentStatus value)
+    {
+        OnPropertyChanged(nameof(IsWorking));
+        OnPropertyChanged(nameof(NeedsUser));
+        OnPropertyChanged(nameof(IsInterrupted));
+        OnPropertyChanged(nameof(CanStop));
     }
 
     partial void OnSelectedModeChanged(ModeOption value)

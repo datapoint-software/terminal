@@ -1,19 +1,17 @@
 using Avalonia;
 using Avalonia.Headless;
-using Avalonia.Themes.Fluent;
 using Datapoint.Terminal.Tests;
 
 [assembly: AvaloniaTestApplication(typeof(TestApplication))]
 
 namespace Datapoint.Terminal.Tests;
 
-public sealed class TestApplication : Application
+/// <summary>The application itself, with its styles, on the headless platform.</summary>
+public static class TestApplication
 {
-    public static AppBuilder BuildAvaloniaApp() => AppBuilder.Configure<TestApplication>()
+    public static AppBuilder BuildAvaloniaApp() => AppBuilder.Configure<App>()
         .UseSkia()
         .UseHarfBuzz()
         .WithInterFont()
         .UseHeadless(new AvaloniaHeadlessPlatformOptions { UseHeadlessDrawing = false });
-
-    public override void Initialize() => Styles.Add(new FluentTheme());
 }
