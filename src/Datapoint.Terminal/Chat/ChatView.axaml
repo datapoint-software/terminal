@@ -51,16 +51,6 @@
     <Style Selector="Border.bubble SelectableTextBlock">
       <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
     </Style>
-    <Style Selector="Border.code">
-      <Setter Property="Background" Value="{DynamicResource CodeBrush}" />
-      <Setter Property="CornerRadius" Value="8" />
-      <Setter Property="Padding" Value="10,8" />
-      <Setter Property="Margin" Value="0,4" />
-    </Style>
-    <Style Selector="SelectableTextBlock.mono">
-      <Setter Property="FontFamily" Value="{StaticResource MonoFont}" />
-      <Setter Property="FontSize" Value="12" />
-    </Style>
 
     <Style Selector="Border.card">
       <Setter Property="Background" Value="{DynamicResource CardBrush}" />
@@ -212,7 +202,7 @@
               <Border Classes="bubble" IsVisible="{Binding IsUser}">
                 <SelectableTextBlock Text="{Binding Text}" TextWrapping="Wrap" />
               </Border>
-              <SelectableTextBlock Text="{Binding Text}" TextWrapping="Wrap" Margin="0,6" LineHeight="19" IsVisible="{Binding IsAgent}" />
+              <chat:MarkdownView Text="{Binding Text}" Margin="0,6" IsVisible="{Binding IsAgent}" />
               <Border Classes="code" IsVisible="{Binding IsCommand}">
                 <StackPanel Spacing="4">
                   <SelectableTextBlock Classes="mono" Text="{Binding Text}" TextWrapping="Wrap" />

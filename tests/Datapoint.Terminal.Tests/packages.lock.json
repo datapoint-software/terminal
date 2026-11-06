@@ -428,6 +428,7 @@
           "Datapoint.Terminal.Emulator": "[1.0.0, )",
           "Datapoint.Terminal.Security": "[1.0.0, )",
           "Datapoint.Terminal.Sessions": "[1.0.0, )",
+          "Markdig": "[1.6.0, )",
           "Microsoft.Extensions.DependencyInjection": "[10.0.14, )"
         }
       },
@@ -544,6 +545,12 @@
         "requested": "[8.4.2, )",
         "resolved": "8.4.2",
         "contentHash": "WadCzGEc2U+3e20avRLng4qNtt4zoOGWrdUISqJWrHe3/FSnrYjuM5Sb4yQb09LhkBXrrI4Zt3dLKgRMbItsrg=="
+      },
+      "Markdig": {
+        "type": "CentralTransitive",
+        "requested": "[1.6.0, )",
+        "resolved": "1.6.0",
+        "contentHash": "rJEpDfPM8wrfXUgkNejjg2bJN9bciy44uVyRwKUI+92CnSmbaLeJTLPYcCdvgM4RFsKrhs8d2H2hO78yZpMl3g=="
       },
       "Microsoft.Extensions.AI.Abstractions": {
         "type": "CentralTransitive",

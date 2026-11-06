@@ -126,6 +126,18 @@
     <Setter Property="FontSize" Value="12" />
   </Style>
 
+  <!-- Code: commands in the chat, and code blocks in the agent's replies. -->
+  <Style Selector="Border.code">
+    <Setter Property="Background" Value="{DynamicResource CodeBrush}" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Padding" Value="10,8" />
+    <Setter Property="Margin" Value="0,4" />
+  </Style>
+  <Style Selector="SelectableTextBlock.mono">
+    <Setter Property="FontFamily" Value="{StaticResource MonoFont}" />
+    <Setter Property="FontSize" Value="12" />
+  </Style>
+
   <!-- Segmented control: a ListBox with the .segmented class. -->
   <Style Selector="ListBox.segmented">
     <Setter Property="Background" Value="{DynamicResource FillBrush}" />
