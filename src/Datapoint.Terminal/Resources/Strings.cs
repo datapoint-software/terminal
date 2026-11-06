@@ -198,6 +198,36 @@ public static class Strings
 
     public static string WindowTitleWithShell => Get(nameof(WindowTitleWithShell));
 
+    public static string CommandInTerminal => Get(nameof(CommandInTerminal));
+
+    public static string ApprovalInTerminal => Get(nameof(ApprovalInTerminal));
+
+    public static string ApprovalInTerminalEnvironment => Get(nameof(ApprovalInTerminalEnvironment));
+
+    public static string MenuTerminal => Get(nameof(MenuTerminal));
+
+    public static string MenuNewTab => Get(nameof(MenuNewTab));
+
+    public static string MenuCloseTab => Get(nameof(MenuCloseTab));
+
+    public static string MenuNextTab => Get(nameof(MenuNextTab));
+
+    public static string MenuPreviousTab => Get(nameof(MenuPreviousTab));
+
+    public static string TabNew => Get(nameof(TabNew));
+
+    public static string TabClose => Get(nameof(TabClose));
+
+    public static string TabLocal => Get(nameof(TabLocal));
+
+    public static string TabAgentActing => Get(nameof(TabAgentActing));
+
+    public static string TabAgentNeedsUser => Get(nameof(TabAgentNeedsUser));
+
+    public static string TabsName => Get(nameof(TabsName));
+
+    public static string NoticeShellFailed => Get(nameof(NoticeShellFailed));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

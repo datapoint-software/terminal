@@ -27,7 +27,8 @@ public sealed class ChatViewModelTests
     public async Task Shows_the_conversation_and_the_command_with_its_exit_code()
     {
         using var chat = new ChatViewModel(new ImmediateUiThread());
-        using var agent = new TerminalAgent(new ListChatClient(Call("df -h"), new ChatResponse(new ChatMessage(ChatRole.Assistant, "Plenty of space."))), new InstantTerminal(), chat, new SecretRedactor());
+        using var agent = new TerminalAgent(new ListChatClient(Call("df -h"), new ChatResponse(new ChatMessage(ChatRole.Assistant, "Plenty of space."))), chat, new SecretRedactor());
+        agent.AddTerminal(new AgentTerminal("Local", new InstantTerminal(), ApprovalMode.Ask));
         chat.Attach(agent, "privacy notice");
         chat.Draft = "How much disk is left?";
 
@@ -40,7 +41,7 @@ public sealed class ChatViewModelTests
             [ChatItemKind.Notice, ChatItemKind.User, ChatItemKind.Command, ChatItemKind.Agent],
             chat.Items.Select(item => item.Kind));
         Assert.Equal("df -h", chat.Items[2].Text);
-        Assert.Equal("Check the disk · Exit code 0", chat.Items[2].Detail);
+        Assert.Equal("Local · Check the disk · Exit code 0", chat.Items[2].Detail);
         Assert.Equal("Plenty of space.", chat.Items[3].Text);
         Assert.Null(chat.Approval);
         Assert.Equal(string.Empty, chat.Draft);
@@ -50,7 +51,7 @@ public sealed class ChatViewModelTests
     public async Task Passes_an_edited_command_and_a_decline_reason_to_the_agent()
     {
         using var chat = new ChatViewModel(new ImmediateUiThread());
-        var proposal = new CommandProposal("rm -rf build", "Clean", CommandRisk.Changes);
+        var proposal = new CommandProposal("rm -rf build", "Clean", CommandRisk.Changes, "Local");
 
         var declined = chat.RequestApprovalAsync(proposal, Token);
         chat.Approval!.Command = "rm -rf build/tmp";
@@ -69,7 +70,7 @@ public sealed class ChatViewModelTests
     {
         using var chat = new ChatViewModel(new ImmediateUiThread());
         using var cancellation = new CancellationTokenSource();
-        var pending = chat.RequestApprovalAsync(new CommandProposal("ls", "List", CommandRisk.ReadOnly), cancellation.Token);
+        var pending = chat.RequestApprovalAsync(new CommandProposal("ls", "List", CommandRisk.ReadOnly, "Local"), cancellation.Token);
 
         await cancellation.CancelAsync();
 
@@ -82,7 +83,7 @@ public sealed class ChatViewModelTests
     public void Cannot_run_an_emptied_command()
     {
         using var chat = new ChatViewModel(new ImmediateUiThread());
-        _ = chat.RequestApprovalAsync(new CommandProposal("ls", "List", CommandRisk.ReadOnly), Token);
+        _ = chat.RequestApprovalAsync(new CommandProposal("ls", "List", CommandRisk.ReadOnly, "Local"), Token);
 
         chat.Approval!.Command = "  ";
 
@@ -106,15 +107,31 @@ public sealed class ChatViewModelTests
     }
 
     [Fact]
-    public void Changes_the_agents_mode_from_the_next_command()
+    public void Changes_the_mode_of_the_terminal_on_show()
     {
         using var chat = new ChatViewModel(new ImmediateUiThread());
-        using var agent = new TerminalAgent(new ListChatClient(new ChatResponse()), new InstantTerminal(), chat, new SecretRedactor());
-        chat.Attach(agent, "notice");
+        var first = new AgentTerminal("Local", new InstantTerminal(), ApprovalMode.Ask);
+        var second = new AgentTerminal("Local 2", new InstantTerminal(), ApprovalMode.Ask);
+        chat.ShowTerminal(first);
 
         chat.SelectedMode = chat.Modes.Single(option => option.Mode == ApprovalMode.AskForRisky);
+        chat.ShowTerminal(second);
 
-        Assert.Equal(ApprovalMode.AskForRisky, agent.Mode);
+        Assert.Equal(ApprovalMode.AskForRisky, first.Mode);
+        Assert.Equal(ApprovalMode.Ask, second.Mode);
+        Assert.Equal(ApprovalMode.Ask, chat.SelectedMode.Mode);
+    }
+
+    [Fact]
+    public void Shows_a_terminals_mode_when_it_falls_back_after_a_task()
+    {
+        using var chat = new ChatViewModel(new ImmediateUiThread());
+        var terminal = new AgentTerminal("Local", new InstantTerminal(), ApprovalMode.Ask) { Mode = ApprovalMode.Auto };
+        chat.ShowTerminal(terminal);
+
+        terminal.Mode = ApprovalMode.Ask;
+
+        Assert.Equal(ApprovalMode.Ask, chat.SelectedMode.Mode);
     }
 
     [Fact]

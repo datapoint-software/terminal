@@ -1,16 +1,102 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:controls="clr-namespace:Datapoint.Terminal.Controls;assembly=Datapoint.Terminal.Controls"
         xmlns:chat="clr-namespace:Datapoint.Terminal.Chat"
+        xmlns:shell="clr-namespace:Datapoint.Terminal.Shell"
+        xmlns:res="clr-namespace:Datapoint.Terminal.Resources"
         x:Class="Datapoint.Terminal.Shell.MainWindow"
-                Width="1300" Height="760" MinWidth="640" MinHeight="400">
-  <Grid ColumnDefinitions="*,1,380" RowDefinitions="Auto,*,Auto">
+        x:DataType="shell:MainWindow"
+        Width="1300" Height="760" MinWidth="640" MinHeight="400">
+  <Window.Resources>
+    <StreamGeometry x:Key="PlusGlyph">M7.25,2 L8.75,2 L8.75,7.25 L14,7.25 L14,8.75 L8.75,8.75 L8.75,14 L7.25,14 L7.25,8.75 L2,8.75 L2,7.25 L7.25,7.25 Z</StreamGeometry>
+    <StreamGeometry x:Key="CloseGlyph">M4.1,3 L8,6.9 L11.9,3 L13,4.1 L9.1,8 L13,11.9 L11.9,13 L8,9.1 L4.1,13 L3,11.9 L6.9,8 L3,4.1 Z</StreamGeometry>
+  </Window.Resources>
+  <Window.Styles>
+    <!-- Tabs: a ListBox, so arrow keys move between tabs and screen readers announce them as a list. -->
+    <Style Selector="ListBox.tabs">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="6,4" />
+      <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
+      <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
+      <Setter Property="ItemsPanel">
+        <ItemsPanelTemplate>
+          <StackPanel Orientation="Horizontal" Spacing="2" />
+        </ItemsPanelTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="ListBox.tabs ListBoxItem" x:DataType="shell:TerminalTab">
+      <Setter Property="Padding" Value="10,0,4,0" />
+      <Setter Property="MinHeight" Value="0" />
+      <Setter Property="Height" Value="28" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="AutomationProperties.Name" Value="{Binding AccessibleName}" />
+      <Setter Property="ToolTip.Tip" Value="{Binding ToolTip}" />
+    </Style>
+    <Style Selector="ListBox.tabs ListBoxItem /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
+    </Style>
+    <Style Selector="ListBox.tabs ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource FillHoverBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource LabelBrush}" />
+    </Style>
+    <Style Selector="ListBox.tabs ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource FillBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource LabelBrush}" />
+    </Style>
+    <Style Selector="ListBox.tabs ListBoxItem:selected:focus /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource FillBrush}" />
+    </Style>
+    <Style Selector="Button.tabclose">
+      <Setter Property="Width" Value="20" />
+      <Setter Property="Height" Value="20" />
+      <Setter Property="Padding" Value="4" />
+      <Setter Property="Opacity" Value="0" />
+    </Style>
+    <Style Selector="ListBoxItem:pointerover Button.tabclose, ListBoxItem:selected Button.tabclose, Button.tabclose:focus">
+      <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector="Button.tabclose PathIcon">
+      <Setter Property="Width" Value="10" />
+      <Setter Property="Height" Value="10" />
+    </Style>
+  </Window.Styles>
+  <Grid ColumnDefinitions="*,1,380" RowDefinitions="Auto,*">
     <NativeMenuBar Grid.ColumnSpan="3" />
-    <controls:TerminalView x:Name="Terminal" Grid.Row="1" AutomationProperties.AutomationId="Terminal" Padding="12,10" />
+    <DockPanel Grid.Row="1">
+      <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
+        <DockPanel>
+          <Button DockPanel.Dock="Right" Classes="icon" Margin="0,0,6,0" VerticalAlignment="Center" Click="OnNewTabClicked"
+                  ToolTip.Tip="{x:Static res:Strings.TabNew}" AutomationProperties.Name="{x:Static res:Strings.TabNew}">
+            <PathIcon Data="{StaticResource PlusGlyph}" />
+          </Button>
+          <ListBox x:Name="Tabs" Classes="tabs" ItemsSource="{Binding TabList}" SelectionMode="Single,AlwaysSelected"
+                   AutomationProperties.Name="{x:Static res:Strings.TabsName}">
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="shell:TerminalTab">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                  <Panel Width="7" Height="7" VerticalAlignment="Center">
+                    <Ellipse Fill="{DynamicResource AccentBrush}" IsVisible="{Binding IsAgentActing}" />
+                    <Ellipse Fill="{DynamicResource WaitingBrush}" IsVisible="{Binding AgentNeedsUser}" />
+                  </Panel>
+                  <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                  <Button Classes="icon tabclose" Command="{Binding CloseCommand}" VerticalAlignment="Center"
+                          AutomationProperties.Name="{Binding CloseName}" ToolTip.Tip="{Binding CloseName}">
+                    <PathIcon Data="{StaticResource CloseGlyph}" />
+                  </Button>
+                </StackPanel>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </DockPanel>
+      </Border>
+      <Panel x:Name="TerminalHost" />
+    </DockPanel>
     <!-- A hairline separator, with a wider invisible handle for dragging. -->
     <Rectangle Grid.Row="1" Grid.Column="1" Fill="{DynamicResource SeparatorBrush}" />
     <GridSplitter Grid.Row="1" Grid.Column="1" ResizeDirection="Columns" Margin="-3,0" ZIndex="1" />
     <chat:ChatView x:Name="Chat" Grid.Row="1" Grid.Column="2" AutomationProperties.AutomationId="Chat" />
-    <TextBlock x:Name="Status" Grid.Row="2" Grid.ColumnSpan="3" Margin="12,6" IsVisible="False" TextWrapping="Wrap" />
   </Grid>
 </Window>

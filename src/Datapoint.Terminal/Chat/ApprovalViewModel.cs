@@ -17,7 +17,12 @@ public sealed partial class ApprovalViewModel : ObservableObject
         Purpose = proposal.Purpose;
         Risk = proposal.Risk;
         Command = proposal.Command;
+        TerminalText = proposal.Environment is null
+            ? Strings.Format(Strings.ApprovalInTerminal, proposal.Terminal)
+            : Strings.Format(Strings.ApprovalInTerminalEnvironment, proposal.Terminal, proposal.Environment);
     }
+
+    public string TerminalText { get; }
 
     public string Purpose { get; }
 

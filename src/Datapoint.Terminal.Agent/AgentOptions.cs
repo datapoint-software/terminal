@@ -2,8 +2,6 @@ namespace Datapoint.Terminal.Agent;
 
 public sealed record AgentOptions
 {
-    public ApprovalMode DefaultMode { get; init; } = ApprovalMode.Ask;
-
     public TimeSpan CommandTimeout { get; init; } = TimeSpan.FromSeconds(60);
 
     public int MaxOutputCharacters { get; init; } = 16_000;

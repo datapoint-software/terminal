@@ -11,4 +11,6 @@ public sealed class AgentEventArgs(AgentEventKind kind, string text) : EventArgs
     public int? ExitCode { get; init; }
 
     public AgentStatus Status { get; init; }
+
+    public string? Terminal { get; init; }
 }

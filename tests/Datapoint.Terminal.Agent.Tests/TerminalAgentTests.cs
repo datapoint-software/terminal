@@ -10,6 +10,7 @@ public sealed class TerminalAgentTests
     private static readonly string[] s_environments = ["staging", "production"];
 
     private readonly FakeTerminal _terminal = new();
+    private AgentTerminal _local = null!;
     private readonly FakeUser _user = new();
     private readonly List<AgentEventArgs> _events = [];
 
@@ -23,8 +24,10 @@ public sealed class TerminalAgentTests
 
     private TerminalAgent Create(ScriptedChatClient client, ApprovalMode mode = ApprovalMode.Ask, TimeSpan? commandTimeout = null)
     {
-        var options = new AgentOptions { DefaultMode = mode, CommandTimeout = commandTimeout ?? TimeSpan.FromSeconds(60) };
-        var agent = new TerminalAgent(client, _terminal, _user, new SecretRedactor(), options);
+        var options = new AgentOptions { CommandTimeout = commandTimeout ?? TimeSpan.FromSeconds(60) };
+        var agent = new TerminalAgent(client, _user, new SecretRedactor(), options);
+        _local = new AgentTerminal("Local", _terminal, mode);
+        agent.AddTerminal(_local);
         agent.EventRaised += (_, e) =>
         {
             lock (_events)
@@ -97,12 +100,12 @@ public sealed class TerminalAgentTests
     {
         var client = new ScriptedChatClient(RunCommand("rm -rf build"), RunCommand("ssh-keygen -R example.com"), _ => Text("Done."), RunCommand("rm x"), _ => Text("Done."));
         using var agent = Create(client);
-        agent.Mode = ApprovalMode.Auto;
+        _local.Mode = ApprovalMode.Auto;
 
         await agent.SendAsync("Clean up", Token);
 
         Assert.Equal("ssh-keygen -R example.com", Assert.Single(_user.Proposals).Command);
-        Assert.Equal(ApprovalMode.Ask, agent.Mode);
+        Assert.Equal(ApprovalMode.Ask, _local.Mode);
 
         await agent.SendAsync("And x", Token);
 
@@ -204,7 +207,7 @@ public sealed class TerminalAgentTests
         using var agent = Create(new ScriptedChatClient(RunCommand("ls"), _ => Text("Again.")));
         _user.Decide = proposal =>
         {
-            agent.NotifyUserTyped();
+            agent.NotifyUserTyped(_local);
             throw new OperationCanceledException();
         };
 
@@ -258,15 +261,15 @@ public sealed class TerminalAgentTests
                 return;
             }
 
-            wasAwaiting = agent.IsAwaitingTerminalInput;
-            agent.NotifyUserTyped();
+            wasAwaiting = _local.IsAwaitingInput;
+            agent.NotifyUserTyped(_local);
             _terminal.FinishLast("Reading package lists... Done", 0);
         };
 
         await agent.SendAsync("Update packages", Token);
 
         Assert.True(wasAwaiting);
-        Assert.False(agent.IsAwaitingTerminalInput);
+        Assert.False(_local.IsAwaitingInput);
         Assert.Equal(AgentStatus.Idle, agent.Status);
         Assert.Contains(_events, e => e.Kind == AgentEventKind.Reply && e.Text.StartsWith("Exit code: 0\n<terminal_output>\nReading package lists", StringComparison.Ordinal));
     }
@@ -287,12 +290,104 @@ public sealed class TerminalAgentTests
     public async Task Stops_after_the_step_limit()
     {
         var steps = Enumerable.Repeat(RunCommand("ls"), 10).ToArray();
-        var agent = new TerminalAgent(new ScriptedChatClient(steps), _terminal, _user, new SecretRedactor(), new AgentOptions { MaxStepsPerTask = 3 });
+        var agent = new TerminalAgent(new ScriptedChatClient(steps), _user, new SecretRedactor(), new AgentOptions { MaxStepsPerTask = 3 });
+        agent.AddTerminal(new AgentTerminal("Local", _terminal, ApprovalMode.Ask));
         using (agent)
         {
             await agent.SendAsync("Loop", Token);
         }
 
         Assert.Equal(3, _terminal.Typed.Count);
+    }
+
+    [Fact]
+    public async Task Runs_a_command_in_the_terminal_it_names()
+    {
+        var other = new FakeTerminal();
+        var client = new ScriptedChatClient(_ => Call("run_command", Arguments(("terminal", "web"), ("command", "uptime"), ("purpose", "to check"))), _ => Text("Done."));
+        using var agent = Create(client);
+        agent.AddTerminal(new AgentTerminal("web", other, ApprovalMode.Ask, "production"));
+
+        await agent.SendAsync("Check the web server", Token);
+
+        Assert.Empty(_terminal.Typed);
+        Assert.Equal(["uptime"], other.Typed);
+        var proposal = Assert.Single(_user.Proposals);
+        Assert.Equal("web", proposal.Terminal);
+        Assert.Equal("production", proposal.Environment);
+        Assert.Contains(_events, e => e.Kind == AgentEventKind.CommandStarted && string.Equals(e.Terminal, "web", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public async Task Asks_the_model_to_name_a_terminal_when_several_are_open()
+    {
+        string? seen = null;
+        var client = new ScriptedChatClient(RunCommand("uptime"), messages => { seen = LastToolResult(messages); return Text("Which one?"); });
+        using var agent = Create(client);
+        agent.AddTerminal(new AgentTerminal("web", new FakeTerminal(), ApprovalMode.Ask));
+
+        await agent.SendAsync("Check uptime", Token);
+
+        Assert.Empty(_terminal.Typed);
+        Assert.Contains("say which terminal", seen, StringComparison.Ordinal);
+        Assert.Contains("\"web\"", seen, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task Tells_the_model_which_terminals_are_open()
+    {
+        IReadOnlyList<ChatMessage>? seen = null;
+        var client = new ScriptedChatClient(messages => { seen = messages; return Text("Hi."); });
+        using var agent = Create(client);
+        agent.AddTerminal(new AgentTerminal("web", new FakeTerminal(), ApprovalMode.Ask, "production"));
+
+        await agent.SendAsync("Hello", Token);
+
+        Assert.StartsWith("[Open terminals: \"Local\", \"web\" (production)]\nHello", seen![^1].Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task Follows_each_terminals_own_approval_mode()
+    {
+        var other = new FakeTerminal();
+        var client = new ScriptedChatClient(
+            _ => Call("run_command", Arguments(("terminal", "dev"), ("command", "touch a"), ("purpose", "to check"))),
+            _ => Call("run_command", Arguments(("terminal", "Local"), ("command", "touch b"), ("purpose", "to check")), "call-2"),
+            _ => Text("Done."));
+        using var agent = Create(client);
+        var dev = new AgentTerminal("dev", other, ApprovalMode.Ask) { Mode = ApprovalMode.Auto };
+        agent.AddTerminal(dev);
+
+        await agent.SendAsync("Touch files", Token);
+
+        Assert.Equal("touch b", Assert.Single(_user.Proposals).Command);
+        Assert.Equal(ApprovalMode.Ask, dev.Mode);
+    }
+
+    [Fact]
+    public async Task Typing_in_another_terminal_interrupts_while_awaiting_input()
+    {
+        var client = new ScriptedChatClient(
+            _ => Call("run_command", Arguments(("terminal", "Local"), ("command", "sudo apt update"), ("purpose", "to update"))),
+            _ => Call("wait_for_command", Arguments(("terminal", "Local"), ("expects_user_input", true)), "call-2"),
+            _ => Text("Done."));
+        _terminal.FinishesCommands = false;
+        _terminal.Run = _ => ("[sudo] password for user:", null);
+        using var agent = Create(client, commandTimeout: TimeSpan.FromMilliseconds(300));
+        var other = new AgentTerminal("web", new FakeTerminal(), ApprovalMode.Ask);
+        agent.AddTerminal(other);
+        agent.EventRaised += (_, e) =>
+        {
+            if (e.Kind != AgentEventKind.StatusChanged || e.Status != AgentStatus.WaitingForUser)
+            {
+                return;
+            }
+
+            agent.NotifyUserTyped(other);
+        };
+
+        await agent.SendAsync("Update packages in Local", Token);
+
+        Assert.Equal(AgentStatus.Interrupted, agent.Status);
     }
 }

@@ -8,7 +8,7 @@ public sealed partial class TerminalAgent : IDisposable
     private const string InterruptedResult = "Not completed: the user interrupted you. Wait for their instructions.";
 
     private volatile IChatClient _client;
-    private readonly IAgentTerminal _terminal;
+    private readonly List<AgentTerminal> _terminals = [];
     private readonly IAgentUser _user;
     private readonly SecretRedactor _redactor;
     private readonly AgentOptions _options;
@@ -17,20 +17,16 @@ public sealed partial class TerminalAgent : IDisposable
     private readonly Lock _sync = new();
     private CancellationTokenSource? _task;
     private AgentStatus _status;
-    private volatile bool _isAwaitingTerminalInput;
 
-    public TerminalAgent(IChatClient client, IAgentTerminal terminal, IAgentUser user, SecretRedactor redactor, AgentOptions? options = null)
+    public TerminalAgent(IChatClient client, IAgentUser user, SecretRedactor redactor, AgentOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(client);
-        ArgumentNullException.ThrowIfNull(terminal);
         ArgumentNullException.ThrowIfNull(user);
         ArgumentNullException.ThrowIfNull(redactor);
         _client = client;
-        _terminal = terminal;
         _user = user;
         _redactor = redactor;
         _options = options ?? new AgentOptions();
-        Mode = _options.DefaultMode;
         _chatOptions = new ChatOptions { Tools = CreateTools(), MaxOutputTokens = _options.MaxOutputTokens };
     }
 
@@ -43,8 +39,16 @@ public sealed partial class TerminalAgent : IDisposable
     // Raised on a background thread.
     public event EventHandler<AgentEventArgs>? EventRaised;
 
-    // Auto lasts for one task, then falls back to the default.
-    public ApprovalMode Mode { get; set; }
+    public IReadOnlyList<AgentTerminal> Terminals
+    {
+        get
+        {
+            lock (_sync)
+            {
+                return [.. _terminals];
+            }
+        }
+    }
 
     public AgentStatus Status => _status;
 
@@ -59,7 +63,27 @@ public sealed partial class TerminalAgent : IDisposable
         }
     }
 
-    public bool IsAwaitingTerminalInput => _isAwaitingTerminalInput;
+    public void AddTerminal(AgentTerminal terminal)
+    {
+        ArgumentNullException.ThrowIfNull(terminal);
+        lock (_sync)
+        {
+            if (_terminals.Any(item => string.Equals(item.Name, terminal.Name, StringComparison.OrdinalIgnoreCase)))
+            {
+                throw new ArgumentException($"There is already a terminal called {terminal.Name}.", nameof(terminal));
+            }
+
+            _terminals.Add(terminal);
+        }
+    }
+
+    public void RemoveTerminal(AgentTerminal terminal)
+    {
+        lock (_sync)
+        {
+            _terminals.Remove(terminal);
+        }
+    }
 
     public Task SendAsync(string message, CancellationToken cancellationToken = default)
     {
@@ -81,9 +105,11 @@ public sealed partial class TerminalAgent : IDisposable
         }
     }
 
-    public void NotifyUserTyped()
+    // Typing is the awaited answer only in the terminal the agent asked the user to type into; anywhere else it interrupts.
+    public void NotifyUserTyped(AgentTerminal terminal)
     {
-        if (_isAwaitingTerminalInput)
+        ArgumentNullException.ThrowIfNull(terminal);
+        if (terminal.IsAwaitingInput)
         {
             return;
         }
@@ -127,7 +153,7 @@ public sealed partial class TerminalAgent : IDisposable
 
         try
         {
-            _history.Add(new ChatMessage(ChatRole.User, message));
+            _history.Add(new ChatMessage(ChatRole.User, DescribeTerminals() + message));
             await RunStepsAsync(task.Token).ConfigureAwait(false);
             SetStatus(AgentStatus.Idle);
         }
@@ -145,8 +171,7 @@ public sealed partial class TerminalAgent : IDisposable
         }
         finally
         {
-            _isAwaitingTerminalInput = false;
-            Mode = Mode == ApprovalMode.Auto ? _options.DefaultMode : Mode;
+            EndTask();
             lock (_sync)
             {
                 _task = null;
@@ -259,10 +284,28 @@ public sealed partial class TerminalAgent : IDisposable
         _history.Add(results);
     }
 
-    private void SetStatus(AgentStatus status)
+    // Auto lasts for one task, then each terminal falls back to its default.
+    private void EndTask()
+    {
+        foreach (var terminal in Terminals)
+        {
+            terminal.IsAwaitingInput = false;
+            terminal.Mode = terminal.Mode == ApprovalMode.Auto ? terminal.DefaultMode : terminal.Mode;
+        }
+    }
+
+    private string DescribeTerminals()
+    {
+        var terminals = Terminals;
+        return terminals.Count == 0
+            ? "[No terminals are open.]\n"
+            : "[Open terminals: " + string.Join(", ", terminals.Select(item => $"\"{item.Name}\"" + (item.Environment is null ? string.Empty : $" ({item.Environment})"))) + "]\n";
+    }
+
+    private void SetStatus(AgentStatus status, AgentTerminal? terminal = null)
     {
         _status = status;
-        Raise(new AgentEventArgs(AgentEventKind.StatusChanged, status.ToString()) { Status = status });
+        Raise(new AgentEventArgs(AgentEventKind.StatusChanged, status.ToString()) { Status = status, Terminal = terminal?.Name });
     }
 
     private void Raise(AgentEventArgs agentEvent) => EventRaised?.Invoke(this, agentEvent);

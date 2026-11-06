@@ -297,4 +297,49 @@
   <data name="WindowTitleWithShell" xml:space="preserve">
     <value>{0} — {1}</value>
   </data>
+  <data name="CommandInTerminal" xml:space="preserve">
+    <value>{0} · {1}</value>
+  </data>
+  <data name="ApprovalInTerminal" xml:space="preserve">
+    <value>In {0}</value>
+  </data>
+  <data name="ApprovalInTerminalEnvironment" xml:space="preserve">
+    <value>In {0} · {1}</value>
+  </data>
+  <data name="MenuTerminal" xml:space="preserve">
+    <value>_Terminal</value>
+  </data>
+  <data name="MenuNewTab" xml:space="preserve">
+    <value>New _Tab</value>
+  </data>
+  <data name="MenuCloseTab" xml:space="preserve">
+    <value>Close Ta_b</value>
+  </data>
+  <data name="MenuNextTab" xml:space="preserve">
+    <value>_Next Tab</value>
+  </data>
+  <data name="MenuPreviousTab" xml:space="preserve">
+    <value>_Previous Tab</value>
+  </data>
+  <data name="TabNew" xml:space="preserve">
+    <value>New tab</value>
+  </data>
+  <data name="TabClose" xml:space="preserve">
+    <value>Close {0}</value>
+  </data>
+  <data name="TabLocal" xml:space="preserve">
+    <value>Local</value>
+  </data>
+  <data name="TabAgentActing" xml:space="preserve">
+    <value>{0}, the agent is working here</value>
+  </data>
+  <data name="TabAgentNeedsUser" xml:space="preserve">
+    <value>{0}, the agent is waiting for you here</value>
+  </data>
+  <data name="TabsName" xml:space="preserve">
+    <value>Terminals</value>
+  </data>
+  <data name="NoticeShellFailed" xml:space="preserve">
+    <value>The shell couldn't start: {0}</value>
+  </data>
 </root>

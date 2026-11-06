@@ -161,6 +161,7 @@
               AutomationProperties.Name="{x:Static res:Strings.StatusWaitingForApproval}">
         <StackPanel Spacing="8" DataContext="{Binding Approval}" x:DataType="chat:ApprovalViewModel">
           <StackPanel Spacing="2">
+            <TextBlock Classes="secondary" FontWeight="SemiBold" Text="{Binding TerminalText}" TextWrapping="Wrap" />
             <TextBlock Classes="title" Text="{Binding Heading}" TextWrapping="Wrap" />
             <TextBlock Text="{Binding Purpose}" TextWrapping="Wrap" />
           </StackPanel>

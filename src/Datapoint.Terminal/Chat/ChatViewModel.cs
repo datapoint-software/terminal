@@ -88,7 +88,6 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
     {
         ArgumentNullException.ThrowIfNull(agent);
         _agent = agent;
-        _agent.Mode = SelectedMode.Mode;
         _agent.EventRaised += OnAgentEvent;
         Status = AgentStatus.Idle;
         StatusText = Strings.StatusIdle;
@@ -115,7 +114,26 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
 
     public void AddNotice(string text) => Items.Add(new ChatItemViewModel(ChatItemKind.Notice, text));
 
-    public void OnUserTyped() => _agent?.NotifyUserTyped();
+    public AgentTerminal? CurrentTerminal { get; private set; }
+
+    public void ShowTerminal(AgentTerminal? terminal)
+    {
+        if (CurrentTerminal is not null)
+        {
+            CurrentTerminal.ModeChanged -= OnTerminalModeChanged;
+        }
+
+        CurrentTerminal = terminal;
+        if (terminal is not null)
+        {
+            terminal.ModeChanged += OnTerminalModeChanged;
+        }
+
+        ShowCurrentMode();
+        OnPropertyChanged(nameof(CurrentTerminal));
+    }
+
+    public void OnUserTyped(AgentTerminal terminal) => _agent?.NotifyUserTyped(terminal);
 
     public Task<CommandApproval> RequestApprovalAsync(CommandProposal proposal, CancellationToken cancellationToken)
     {
@@ -166,12 +184,19 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
 
     partial void OnSelectedModeChanged(ModeOption value)
     {
-        if (_agent is null)
+        CurrentTerminal?.Mode = value.Mode;
+    }
+
+    private void OnTerminalModeChanged(object? sender, EventArgs e) => _ui.Post(ShowCurrentMode);
+
+    private void ShowCurrentMode()
+    {
+        if (CurrentTerminal is not { } terminal || SelectedMode.Mode == terminal.Mode)
         {
             return;
         }
 
-        _agent.Mode = value.Mode;
+        SelectedMode = Modes.First(option => option.Mode == terminal.Mode);
     }
 
     [RelayCommand(CanExecute = nameof(CanSend))]
@@ -254,7 +279,10 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
                 FinishReply(e.Text);
                 break;
             case AgentEventKind.CommandStarted:
-                _command = new ChatItemViewModel(ChatItemKind.Command, e.Command ?? string.Empty) { Detail = e.Text };
+                _command = new ChatItemViewModel(ChatItemKind.Command, e.Command ?? string.Empty)
+                {
+                    Detail = e.Terminal is null ? e.Text : Strings.Format(Strings.CommandInTerminal, e.Terminal, e.Text),
+                };
                 Items.Add(_command);
                 break;
             case AgentEventKind.CommandFinished:
@@ -325,13 +353,5 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
             AgentStatus.Interrupted => Strings.StatusInterrupted,
             _ => Strings.StatusIdle,
         };
-
-        // Auto lasts for one task; show the mode the agent fell back to.
-        if (status is not AgentStatus.Idle || _agent is null || SelectedMode.Mode == _agent.Mode)
-        {
-            return;
-        }
-
-        SelectedMode = Modes.First(option => option.Mode == _agent.Mode);
     }
 }

@@ -19,7 +19,7 @@ public sealed class ChatViewTests
         chat.Items.Add(new ChatItemViewModel(ChatItemKind.Command, "systemctl status nginx") { Detail = "Check the service · Exit code 0" });
         chat.Items.Add(new ChatItemViewModel(ChatItemKind.Agent, "It's running, but the config has a warning. I'd like to reload it."));
         chat.SetModels([new ModelChoice("a", "claude-opus-5-5", "Opus 5.5", string.Empty), new ModelChoice("a", "claude-sonnet-5-5", "Sonnet 5.5", string.Empty)], new ModelChoice("a", "claude-opus-5-5", "Opus 5.5", string.Empty));
-        _ = chat.RequestApprovalAsync(new CommandProposal("sudo systemctl reload nginx", "Reload nginx to apply the fixed config", CommandRisk.Changes), CancellationToken.None);
+        _ = chat.RequestApprovalAsync(new CommandProposal("sudo systemctl reload nginx", "Reload nginx to apply the fixed config", CommandRisk.Changes, "web-1", "production"), CancellationToken.None);
         var focusTarget = new TextBox();
         var window = new Window
         {

@@ -1,7 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Threading;
-using CommunityToolkit.Mvvm.Input;
 using Datapoint.Terminal.Agent;
 using Datapoint.Terminal.Agent.Projects;
 using Datapoint.Terminal.Agent.Providers;
@@ -9,8 +8,6 @@ using Datapoint.Terminal.Agent.Safety;
 using Datapoint.Terminal.Chat;
 using Datapoint.Terminal.Resources;
 using Datapoint.Terminal.Security.Credentials;
-using Datapoint.Terminal.Sessions;
-using Datapoint.Terminal.Sessions.Local;
 using Datapoint.Terminal.Settings;
 using Microsoft.Extensions.AI;
 
@@ -24,11 +21,9 @@ public sealed partial class MainWindow : Window
     private readonly ProjectWindows _windows;
     private readonly SettingsViewModel _settings;
     private readonly NativeMenu _recentMenu = [];
-    private TerminalConnection? _connection;
     private TerminalAgent? _agent;
     private string? _clientSignature;
     private ProviderAccount? _provider;
-    private string _shellTitle = string.Empty;
 
     public MainWindow(Project project, ProjectWindows windows)
     {
@@ -43,6 +38,9 @@ public sealed partial class MainWindow : Window
         _chat.SettingsRequested = windows.OpenSettings;
         _chat.ModelChosen = choice => _settings.Choose(choice.ProviderId, choice.Model);
         Chat.DataContext = _chat;
+        DataContext = this;
+        Tabs.SelectionChanged += (_, _) => ShowSelectedTab();
+        Tabs.AddHandler(PointerReleasedEvent, (_, _) => SelectedTab?.View.Focus(), Avalonia.Interactivity.RoutingStrategies.Bubble, handledEventsToo: true);
         if (_settings.Problem is { } problem)
         {
             _chat.AddNotice(problem);
@@ -55,7 +53,12 @@ public sealed partial class MainWindow : Window
 
         UpdateTitle();
         NativeMenu.SetMenu(this, BuildMenu());
-        Opened += (_, _) => _ = StartLocalShellAsync();
+        AddHandler(KeyDownEvent, OnShortcutKeyDown, Avalonia.Interactivity.RoutingStrategies.Tunnel);
+        Opened += (_, _) =>
+        {
+            ApplySettings();
+            _ = OpenLocalTabAsync();
+        };
         Closed += (_, _) => _ = StopAsync();
     }
 
@@ -87,108 +90,15 @@ public sealed partial class MainWindow : Window
 
     private void OnProjectsChanged(object? sender, EventArgs e) => FillRecentMenu();
 
-    private NativeMenu BuildMenu()
-    {
-        var shortcut = OperatingSystem.IsMacOS() ? KeyModifiers.Meta : KeyModifiers.Control;
-        var file = new NativeMenu();
-        file.Add(Item(Strings.MenuNewProject, new KeyGesture(Key.N, shortcut | KeyModifiers.Shift), () => _ = _windows.PickAsync(this, isNew: true)));
-        file.Add(Item(Strings.MenuOpenProject, new KeyGesture(Key.O, shortcut), () => _ = _windows.PickAsync(this, isNew: false)));
-        FillRecentMenu();
-        file.Add(new NativeMenuItem(Strings.MenuOpenRecent) { Menu = _recentMenu });
-        file.Add(new NativeMenuItemSeparator());
-        if (!OperatingSystem.IsMacOS())
-        {
-            file.Add(Item(Strings.MenuSettings, new KeyGesture(Key.OemComma, shortcut), _windows.OpenSettings));
-            file.Add(new NativeMenuItemSeparator());
-        }
-
-        file.Add(Item(Strings.MenuCloseWindow, new KeyGesture(Key.W, shortcut | KeyModifiers.Shift), Close));
-        return [new NativeMenuItem(Strings.MenuFile) { Menu = file }];
-    }
-
-    private void FillRecentMenu()
-    {
-        var menu = _recentMenu;
-        menu.Items.Clear();
-        foreach (var folder in _windows.Recent)
-        {
-            menu.Add(Item(ShortPath(folder), gesture: null, () => _windows.Open(folder)));
-        }
-
-        if (_windows.Recent.Count > 0)
-        {
-            menu.Add(new NativeMenuItemSeparator());
-        }
-
-        var clear = Item(Strings.MenuClearRecent, gesture: null, _windows.ClearRecent);
-        clear.IsEnabled = _windows.Recent.Count > 0;
-        menu.Add(clear);
-    }
-
-    private NativeMenuItem Item(string header, KeyGesture? gesture, Action action)
-    {
-        var item = new NativeMenuItem(header) { Gesture = gesture };
-        item.Click += (_, _) => action();
-        if (gesture is not null && !OperatingSystem.IsMacOS() && !KeyBindings.Any(binding => gesture.Equals(binding.Gesture)))
-        {
-            KeyBindings.Add(new KeyBinding { Gesture = gesture, Command = new RelayCommand(action) });
-        }
-
-        return item;
-    }
-
-    private static string ShortPath(string folder)
-    {
-        var home = ProjectFolders.Home;
-        return folder.StartsWith(home + Path.DirectorySeparatorChar, StringComparison.Ordinal) ? "~" + folder[home.Length..] : folder;
-    }
-
-    private void UpdateTitle() => Title = string.IsNullOrWhiteSpace(_shellTitle)
+    private void UpdateTitle() => Title = SelectedTab is not { ShellTitle: { Length: > 0 } shellTitle }
         ? Strings.Format(Strings.WindowTitle, Project.Name)
-        : Strings.Format(Strings.WindowTitle, Strings.Format(Strings.WindowTitleWithShell, Project.Name, _shellTitle));
-
-    private async Task StartLocalShellAsync()
-    {
-        try
-        {
-            var options = Project.IsDefault ? new LocalSessionOptions() : new LocalSessionOptions { WorkingDirectory = Project.Folder };
-            var session = await LocalSession.StartAsync(options, CancellationToken.None).ConfigureAwait(true);
-            var connection = new TerminalConnection(session, 80, 24);
-            _connection = connection;
-            connection.OutputArrived += (_, _) => Terminal.NotifyOutput();
-            connection.TitleChanged += (_, _) => Dispatcher.UIThread.Post(() =>
-            {
-                _shellTitle = connection.Terminal.Title;
-                UpdateTitle();
-            });
-            connection.Ended += (_, _) => Dispatcher.UIThread.Post(Close);
-            Terminal.Input += (_, e) =>
-            {
-                _chat.OnUserTyped();
-                connection.Send(e.Data);
-            };
-            Terminal.Resized += (_, e) => _ = connection.ResizeAsync(e.Columns, e.Rows, CancellationToken.None);
-            Terminal.Terminal = connection.Terminal;
-            Terminal.Focus();
-            ApplySettings();
-        }
-        catch (Exception exception) when (exception is IOException or InvalidOperationException or PlatformNotSupportedException or System.ComponentModel.Win32Exception)
-        {
-            Status.Text = $"The shell couldn't start: {exception.Message}";
-            Status.IsVisible = true;
-        }
-    }
+        : Strings.Format(Strings.WindowTitle, Strings.Format(Strings.WindowTitleWithShell, Project.Name, shellTitle));
 
     private void ApplySettings()
     {
         var current = _settings.Current;
         var provider = current.SelectedProvider;
         _chat.SetModels(ModelChoices(current), provider is null ? null : Choice(provider, provider.Model, current));
-        if (_connection is null)
-        {
-            return;
-        }
-
         var key = ReadKey(provider);
         if (provider is null || !IsUsable(provider, key))
         {
@@ -203,10 +113,10 @@ public sealed partial class MainWindow : Window
             return;
         }
 
-        Connect(provider, key, current.DefaultApprovalMode, signature);
+        Connect(provider, key, signature);
     }
 
-    private void Connect(ProviderAccount provider, string? key, ApprovalMode defaultMode, string signature)
+    private void Connect(ProviderAccount provider, string? key, string signature)
     {
         try
         {
@@ -215,7 +125,13 @@ public sealed partial class MainWindow : Window
             _clientSignature = signature;
             if (_agent is null)
             {
-                _agent = new TerminalAgent(client, new ConnectionTerminal(_connection!), _chat, _redactor, new AgentOptions { DefaultMode = defaultMode });
+                _agent = new TerminalAgent(client, _chat, _redactor);
+                _agent.EventRaised += OnAgentEvent;
+                foreach (var tab in _tabs.Where(tab => tab.AgentTerminal is not null))
+                {
+                    _agent.AddTerminal(tab.AgentTerminal!);
+                }
+
                 _chat.Attach(_agent, ProviderPrivacy.Describe(provider));
             }
             else
@@ -276,13 +192,12 @@ public sealed partial class MainWindow : Window
         _settings.Changed -= OnSettingsChanged;
         _settings.ProjectsChanged -= OnProjectsChanged;
         _agent?.Dispose();
-        Project.Dispose();
         _chat.Dispose();
-        if (_connection is null)
+        foreach (var tab in _tabs.ToList())
         {
-            return;
+            await DisposeTabAsync(tab).ConfigureAwait(true);
         }
 
-        await _connection.DisposeAsync().ConfigureAwait(false);
+        Project.Dispose();
     }
 }
