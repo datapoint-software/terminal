@@ -8,6 +8,7 @@
     <Project Path="src/Datapoint.Terminal.Sessions/Datapoint.Terminal.Sessions.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/Datapoint.Terminal.Agent.Tests/Datapoint.Terminal.Agent.Tests.csproj" />
     <Project Path="tests/Datapoint.Terminal.Architecture.Tests/Datapoint.Terminal.Architecture.Tests.csproj" />
     <Project Path="tests/Datapoint.Terminal.Controls.Tests/Datapoint.Terminal.Controls.Tests.csproj" />
     <Project Path="tests/Datapoint.Terminal.Emulator.Tests/Datapoint.Terminal.Emulator.Tests.csproj" />
