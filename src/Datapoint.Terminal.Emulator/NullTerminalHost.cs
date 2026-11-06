@@ -16,7 +16,7 @@ public sealed class NullTerminalHost : ITerminalHost
     {
     }
 
-    public void WorkingDirectoryChanged(string uri)
+    public void WorkingDirectoryChanged(string path)
     {
     }
 

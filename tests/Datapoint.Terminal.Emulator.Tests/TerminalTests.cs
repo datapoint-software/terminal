@@ -472,4 +472,28 @@ public sealed class TerminalTests
         Assert.Equal(string.Empty, terminal.GetVisibleText());
         Assert.Equal(CellStyle.Default, terminal.Cursor.Style);
     }
+
+    [Theory]
+    [InlineData("file://mac.local/Users/ana/with%20space", "mac.local", "/Users/ana/with space")]
+    [InlineData("file:///tmp", "", "/tmp")]
+    [InlineData("file://pc/C:/Users/ana", "pc", "C:/Users/ana")]
+    public void Decodes_the_working_folder_from_osc_7(string uri, string host, string path)
+    {
+        var terminal = TerminalBuilder.With($"\e]7;{uri}\a");
+
+        Assert.Equal(path, terminal.WorkingDirectory);
+        Assert.Equal(host, terminal.WorkingDirectoryHost);
+    }
+
+    [Theory]
+    [InlineData("/tmp")]
+    [InlineData("http://example.com/tmp")]
+    [InlineData("file://host")]
+    [InlineData("file:///tmp%0Aevil")]
+    public void Ignores_a_malformed_working_folder(string uri)
+    {
+        var terminal = TerminalBuilder.With($"\e]7;{uri}\a");
+
+        Assert.Null(terminal.WorkingDirectory);
+    }
 }

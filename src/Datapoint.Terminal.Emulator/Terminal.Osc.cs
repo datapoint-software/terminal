@@ -48,15 +48,51 @@ public sealed partial class Terminal
         _host.TitleChanged(Title);
     }
 
+    /// <summary>
+    /// OSC 7 reports the folder as a file URI, <c>file://host/path</c>, percent-encoded. We keep the decoded path and its host;
+    /// a malformed report is ignored. The host is the shell's own claim, a hint and never a basis for a security decision.
+    /// </summary>
     private void SetWorkingDirectory(string uri)
     {
-        if (uri.Length > MaxHyperlinkLength)
+        if (uri.Length > MaxHyperlinkLength || !TryParseFileUri(uri, out var host, out var path))
         {
             return;
         }
 
-        WorkingDirectory = uri;
-        _host.WorkingDirectoryChanged(uri);
+        WorkingDirectory = path;
+        WorkingDirectoryHost = host;
+        _host.WorkingDirectoryChanged(path);
+    }
+
+    internal static bool TryParseFileUri(string uri, out string host, out string path)
+    {
+        const string scheme = "file://";
+        host = string.Empty;
+        path = string.Empty;
+        if (!uri.StartsWith(scheme, StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        var slash = uri.IndexOf('/', scheme.Length);
+        if (slash < 0)
+        {
+            return false;
+        }
+
+        host = uri[scheme.Length..slash];
+        try
+        {
+            path = Uri.UnescapeDataString(uri[slash..]);
+        }
+        catch (UriFormatException)
+        {
+            return false;
+        }
+
+        var isWindowsDrive = path.Length >= 3 && path[0] == '/' && char.IsAsciiLetter(path[1]) && path[2] == ':';
+        path = isWindowsDrive ? path[1..] : path;
+        return !path.Any(char.IsControl);
     }
 
     private void SetHyperlink(ReadOnlySpan<byte> argument)

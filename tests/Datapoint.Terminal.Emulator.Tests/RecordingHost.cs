@@ -21,7 +21,7 @@ public sealed class RecordingHost : ITerminalHost
     {
     }
 
-    public void WorkingDirectoryChanged(string uri)
+    public void WorkingDirectoryChanged(string path)
     {
     }
 

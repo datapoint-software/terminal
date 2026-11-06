@@ -8,7 +8,7 @@ public interface ITerminalHost
 
     void TitleChanged(string title);
 
-    void WorkingDirectoryChanged(string uri);
+    void WorkingDirectoryChanged(string path);
 
     void ClipboardWriteRequested(string text);
 }

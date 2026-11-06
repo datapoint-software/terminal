@@ -48,7 +48,11 @@ public sealed partial class Terminal : IParserHandler
 
     public string Title { get; private set; } = string.Empty;
 
+    /// <summary>The shell's working folder, as its last OSC 7 report gave it.</summary>
     public string? WorkingDirectory { get; private set; }
+
+    /// <summary>The host name in the last OSC 7 report; empty when the shell left it out.</summary>
+    public string? WorkingDirectoryHost { get; private set; }
 
     public int Columns => Screen.Columns;
 
