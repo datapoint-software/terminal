@@ -519,4 +519,13 @@ public sealed class TerminalTests
         Assert.Equal(3, terminal.Cursor.Row);
         Assert.Equal(6, terminal.Primary.Scrollback.Count);
     }
+
+    [Fact]
+    public void Reads_lines_from_scrollback_and_screen()
+    {
+        var terminal = TerminalBuilder.With(string.Join("\r\n", Enumerable.Range(1, 30).Select(index => $"line {index}")));
+
+        Assert.Equal("line 3\nline 4\nline 5", terminal.GetLineText(2, 4));
+        Assert.Equal("line 29\nline 30", terminal.GetLineText(28, 29));
+    }
 }

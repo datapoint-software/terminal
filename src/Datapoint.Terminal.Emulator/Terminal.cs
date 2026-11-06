@@ -94,6 +94,39 @@ public sealed partial class Terminal : IParserHandler
         }
     }
 
+    /// <summary>
+    /// The text of the primary screen's lines <paramref name="firstLine"/> to <paramref name="lastLine"/>, counted from the start
+    /// of the session as command records count them. Wrapped rows are joined; lines gone from scrollback are skipped.
+    /// </summary>
+    public string GetLineText(long firstLine, long lastLine)
+    {
+        lock (_sync)
+        {
+            var text = new StringBuilder();
+            var first = Math.Max(firstLine, Primary.LinesScrolledOff);
+            var last = Math.Min(lastLine, Primary.FirstVisibleLine + Rows - 1);
+            for (var line = first; line <= last; line++)
+            {
+                var row = PrimaryLine(line);
+                text.Append(row.GetText());
+                if (!row.IsWrapped && line < last)
+                {
+                    text.Append('\n');
+                }
+            }
+
+            return text.ToString().TrimEnd();
+        }
+    }
+
+    private Row PrimaryLine(long line)
+    {
+        var scrollbackIndex = line - Primary.LinesScrolledOff;
+        return scrollbackIndex < Primary.Scrollback.Count
+            ? Primary.Scrollback[(int)scrollbackIndex]
+            : Primary[(int)(line - Primary.FirstVisibleLine)];
+    }
+
     public string GetVisibleText()
     {
         lock (_sync)
