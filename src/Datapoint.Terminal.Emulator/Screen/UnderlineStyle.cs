@@ -3,8 +3,8 @@ namespace Datapoint.Terminal.Emulator.Screen;
 public enum UnderlineStyle : byte
 {
     None,
-    Single,
-    Double,
+    Line,
+    DoubleLine,
     Curly,
     Dotted,
     Dashed,

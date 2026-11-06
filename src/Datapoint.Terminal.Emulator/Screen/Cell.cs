@@ -1,9 +1,7 @@
-using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Datapoint.Terminal.Emulator.Screen;
 
-[StructLayout(LayoutKind.Auto)]
 public struct Cell
 {
     public const int WideContinuation = 0;

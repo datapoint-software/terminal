@@ -1,9 +1,7 @@
-using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Datapoint.Terminal.Emulator.Parsing;
 
-[StructLayout(LayoutKind.Auto)]
 internal struct Utf8Decoder
 {
     private int _remaining;

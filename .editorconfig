@@ -260,6 +260,8 @@ dotnet_naming_rule.constants.severity = warning
 dotnet_naming_symbols.constants.applicable_kinds = field
 dotnet_naming_symbols.constants.required_modifiers = const
 dotnet_naming_style.pascal.capitalization = pascal_case
+# MA0008 asks for StructLayout on every struct; ours aren't passed to native code, so the runtime's choice of layout is the right one.
+dotnet_diagnostic.MA0008.severity = none
 
 [tests/**.cs]
 # Test names are sentences with underscores (docs/engineering.md, Tests).
