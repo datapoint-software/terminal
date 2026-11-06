@@ -30,7 +30,7 @@ A terminal you can delegate to without losing sight of it. You describe what you
 - **Approval modes:** how freely the agent may run commands and change files, chosen per tab. Each connection profile has a default mode, and profiles labeled production default to Ask; the user can change the mode at any time, and it applies from the agent's next command:
   - **Ask** (default): the agent proposes each command and the user approves it before it runs.
   - **Ask for risky commands:** the agent runs read-only commands on its own and asks before anything that changes the system.
-  - **Auto:** the agent runs every command without asking. Auto lasts for the current task, then the tab returns to the profile's default mode; on a production profile, choosing it needs a confirmation.
+  - **Auto:** the agent runs every command without asking, except the few that always need the user (decision 84). Auto lasts for the current task, then the tab returns to the profile's default mode; on a production profile, choosing it needs a confirmation.
 
   Approving takes a deliberate action, a button or a shortcut that typing can't trigger (not Enter alone), and an approval request never takes keyboard focus away from the terminal; screen readers announce it. The user can edit a proposed command before approving it, and the agent sees the edited version.
 - **Tabs:** the application has several tabs, each with its own terminal session, its own agent and its own chat.
@@ -126,6 +126,7 @@ Decisions in the order they were taken, with the reason. Newest last. A decision
 | 81 | 2026-11-06 | The chat pane's header and the tab always show the agent's status: thinking, running a command, waiting for approval, waiting for input, interrupted or idle. | The user should know at a glance whether the agent needs them, in any tab. |
 | 82 | 2026-11-06 | If the agent needs a step its approved plan doesn't include, it stops and says so before going further. | A plan the agent can quietly leave isn't worth approving. |
 | 83 | 2026-11-06 | The user can edit a proposed command before approving it, and the agent sees the edited version. After an interruption, a Continue button resumes the task, and the agent is first told what the user typed meanwhile. Extends 14. | Small corrections shouldn't need a new request, and resuming shouldn't rely on a stale picture of the terminal. |
+| 84 | 2026-11-06 | Some actions always need the user, whatever the approval mode, Auto included: accepting or changing an SSH host key, which only the user can do; and the agent changing the local SSH configuration, `known_hosts` or keys, which always asks first. | These decide which machines the user trusts and how they log in; a prompt injection that reached them could redirect later connections to an attacker. |
 
 ## Features
 

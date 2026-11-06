@@ -337,6 +337,86 @@ Agent:
 - **A setting the application doesn't support yet fails clearly,** naming it.
 - **Order of work** after the transport, login and sessions: reading `~/.ssh/config`, jump hosts, SSH agent support (which also covers hardware security keys held by the agent), file transfer, port forwarding, certificates, agent forwarding, then Kerberos and smart cards (decision 13).
 
+### SSH security rules
+
+Researched on 2026-11-06 against OpenSSH's release notes and `PROTOCOL` files, the IETF drafts for strict key exchange and host key updates, Qualys' and PuTTY's advisories, and libssh's. Every rule below is a requirement for our implementation, and each has a test. Sources are listed at the end.
+
+**Transport**
+
+- **Strict key exchange against Terrapin** ([CVE-2023-48795](https://terrapin-attack.com/), [draft-ietf-sshm-strict-kex](https://datatracker.ietf.org/doc/html/draft-ietf-sshm-strict-kex)): we offer `kex-strict-c-v00@openssh.com` and `kex-strict-c`, and turn it on only when the server offers the matching marker, read from its first `KEXINIT` only. The first message received must be `KEXINIT`; during the first key exchange any other message, including `IGNORE`, `DEBUG` and `UNIMPLEMENTED`, disconnects; each key exchange message is accepted only as many times as expected; sequence numbers reset to zero right after `NEWKEYS` is sent and received, on every key exchange.
+- **An allow-list of message numbers for each phase** of the connection (key exchange, authentication, connected), not only during key exchange. Anything else disconnects.
+- **No CBC and no encrypt-and-MAC with CTR by default.** Ciphers are AES-GCM and `chacha20-poly1305@openssh.com`, then AES-CTR only with an encrypt-then-MAC (`-etm@openssh.com`) HMAC-SHA2. With encrypt-then-MAC, the MAC over the length and ciphertext is checked before anything is decrypted. MACs are compared in constant time, and every integrity failure takes the same path: disconnect, with no further reads.
+- **AES-GCM nonces** follow [RFC 5647](https://www.rfc-editor.org/rfc/rfc5647): the invocation counter increases with every packet, and a nonce is never used twice under one key. `chacha20-poly1305@openssh.com` is built from BouncyCastle's ChaCha20 and Poly1305, since .NET's `ChaCha20Poly1305` is the RFC 8439 construction, which OpenSSH's isn't.
+- **Rekeying** after 2³¹ packets in either direction, 2³² cipher blocks, 1 GB or one hour, whichever comes first. A sequence number never wraps: we disconnect instead. On every rekey, the server's host key must be byte-for-byte the one verified at first.
+- **No compression.** Compression shared across channels can leak one channel's contents through another's packet sizes, and it adds a decompression path to attack; links are fast enough without it.
+- **Random numbers come only from `RandomNumberGenerator`.** An SSH library that used a non-cryptographic generator for its X25519 keys let eavesdroppers decrypt sessions ([CVE-2022-29245](https://nvd.nist.gov/vuln/detail/CVE-2022-29245)).
+
+**Key exchange**
+
+- **Points are validated:** NIST curve points only in uncompressed form, of the exact length, with coordinates below the field prime, on the curve and not at infinity, checked explicitly rather than trusted to the import. X25519 keys are exactly 32 bytes, and an all-zero shared secret aborts the exchange ([RFC 8731](https://www.rfc-editor.org/rfc/rfc8731)).
+- **`mlkem768x25519-sha256` first,** as in OpenSSH 10: the hybrid protects today's sessions against later decryption by quantum computers. Sizes are checked exactly, and the shared secret is encoded as an SSH string, not an `mpint`, as the specification requires.
+- **No Diffie-Hellman group exchange and no SHA-1 key exchange.** Neither is offered, so their weak-modulus and downgrade problems don't arise.
+- **No silent fallback:** a host that offers nothing we accept, or a configuration that asks for an algorithm we don't implement, fails with a message naming them.
+- **`EXT_INFO`** ([RFC 8308](https://www.rfc-editor.org/rfc/rfc8308)) is accepted only right after the server's first `NEWKEYS`, or just before `USERAUTH_SUCCESS`. RSA keys sign with `rsa-sha2-512` or `rsa-sha2-256`; `ssh-rsa` with SHA-1 only when the host's configuration lists it, never as a fallback when the server doesn't say what it accepts, and never in FIPS mode. A signature whose algorithm differs from the one negotiated is rejected.
+
+**Signatures and certificates**
+
+- **We never derive a signing nonce.** ECDSA nonces come from the platform's random generator or BouncyCastle's RFC 6979 calculator. PuTTY's own derivation biased P-521 nonces, so about 60 signatures revealed the private key ([CVE-2024-31497](https://www.chiark.greenend.org.uk/~sgtatham/putty/wishlist/vuln-p521-bias.html)).
+- **Malformed signatures fail cleanly:** zero or out-of-range ECDSA values, oversized integers and Ed25519 signatures with S ≥ L are a failed verification, never an exception.
+- **RSA keys shorter than 2048 bits are refused,** unless the host's configuration lowers the limit (`RequiredRSASize`), and never below 1024.
+- **Certificates:** a host certificate must be of the host type, within its validity (with a small allowance for clock differences), signed by a CA trusted by an `@cert-authority` line that matches the name the user asked for (or its `HostKeyAlias`), and must name that host among its principals. An empty principals list, which the specification treats as "any host", is refused. Unknown critical options are refused. A CA key can't itself be a certificate, and CA signatures with SHA-1 are refused. `@revoked` entries and revocation lists apply to the certificate's key and to the CA's.
+
+**Host keys**
+
+- **`known_hosts` is read as OpenSSH writes it:** hashed names, `[host]:port`, patterns and negation, `@revoked` and `@cert-authority`. The application writes to it atomically and with a lock, since OpenSSH may write at the same time.
+- **The host key is verified before any credential is sent.**
+- **A new host key is accepted only by the user,** in the application's own window, showing its SHA-256 fingerprint. **The agent can never accept or change a host key.**
+- **A changed host key is a hard failure** (product decision 64). Accepting the new key is a separate, deliberate action showing the old and new fingerprints, never a button on the failed connection. A key listed as `@revoked` can't be accepted at all.
+- **Verification fails closed:** results start as "failed", a check passes only on an explicit success, and any exception means failure. [CVE-2025-26465](https://www.qualys.com/2025/02/18/openssh-mitm-dos.txt) let a man-in-the-middle through because an error code other than the expected one was read as success.
+- **No SSHFP (`VerifyHostKeyDNS`):** DNSSEC can't be validated the same way on every platform. A configuration that asks for it fails clearly, as for any unsupported setting.
+- **Host key updates** (`hostkeys-00@openssh.com`) are accepted only after login, only for a host matched by an exact `known_hosts` entry (no certificate or wildcard), and each new key only after its proof signature checks. The number of keys is capped, and a second announcement in one connection is ignored.
+
+**Login**
+
+- **Credentials are bound to a host, port and user,** and are never reused across the hops of a jump chain. Every prompt names the host it's for.
+- **Messages out of order are refused:** before login succeeds, any channel or global request disconnects, and a `USERAUTH_SUCCESS` with no request outstanding is refused.
+- **A login that needed no credential is shown as such** ("trivial authentication"), and can be refused per host. A server that lets anyone in and then shows a fake password prompt in the terminal could otherwise collect credentials ([PuTTY's description](https://www.chiark.greenend.org.uk/~sgtatham/putty/wishlist/vuln-auth-prompt-spoofing.html)).
+- **Text from the server** (banners, keyboard-interactive names, instructions and prompts, disconnect and debug messages) is shown labelled as coming from that server, with control characters, escape sequences and bidirectional overrides removed and its length capped. It never looks like the application's own text.
+- **Passwords, passphrases and keyboard-interactive answers never reach the agent or the provider.**
+- **Only the keys configured for a host are offered,** like OpenSSH's `IdentitiesOnly`, when the configuration names any, so servers don't learn every key the user has. No environment variables are sent unless the configuration asks (`SendEnv`).
+
+**Agent forwarding, X11 and port forwarding**
+
+- **Agent forwarding is off unless the host's configuration turns it on,** never goes to jump hosts, and can ask for confirmation on each use. Forwarded requests are filtered: only listing identities, signing and `session-bind@openssh.com` pass. Adding or removing keys, smart card requests and locking are refused ([CVE-2023-38408](https://www.qualys.com/2023/07/19/cve-2023-38408/rce-openssh-forwarded-ssh-agent.txt)).
+- **Before signing with an agent key,** the application binds the agent to the session (`session-bind@openssh.com`), so keys restricted to certain hosts stay restricted. The agent's socket or pipe must belong to the user, and every reply from it is validated.
+- **No X11 forwarding.** It gives the remote side access to the user's display.
+- **Forwarded ports bind to `127.0.0.1` and `::1` explicitly;** binding to all interfaces needs the configuration to ask for it and shows a warning. Incoming `forwarded-tcpip` channels are accepted only for remote forwards we asked for, and connect only to the configured destination. Channel types we didn't ask for (`x11`, `auth-agent@openssh.com`) are refused.
+
+**Files from the server**
+
+- **SFTP writes only what the user or an approved agent action asked for.** Names from the server are refused if they're empty, `.` or `..`, or contain `/`, `\`, NUL or control characters; on Windows also drive letters, `:`, reserved names (`CON`, `NUL`, …) and trailing dots or spaces. The final path is resolved and must stay inside the target folder, without following symbolic links ([CVE-2019-6111](https://nvd.nist.gov/vuln/detail/CVE-2019-6111)).
+- **No undocumented or experimental extensions** ([CVE-2016-0777](https://www.qualys.com/2016/01/14/cve-2016-0777-cve-2016-0778/openssh-cve-2016-0777-cve-2016-0778.txt) leaked private keys through one).
+
+**Configuration and host names**
+
+- **Host and user names from anywhere but the configuration** (the user's input, `ssh://` links, the agent, terminal output) must pass a strict allow-list: host names as letters, digits, hyphens and dots, IP addresses and `[IPv6]`; user names as letters, digits, `.`, `_` and `-`. Nothing that starts with `-`, and no whitespace, control characters, NUL or shell metacharacters. Several OpenSSH and libssh vulnerabilities came from such names reaching a shell through `%h`, `%r` or `%u` ([CVE-2023-51385](https://nvd.nist.gov/vuln/detail/CVE-2023-51385) and its successors in 2025 and 2026).
+- **A host name the agent found in terminal output** (product decision 72) is shown to the user to confirm, exactly as it will be used, before a tab is opened.
+- **`ProxyCommand`, `Match exec`, `LocalCommand` and `KnownHostsCommand` run programs.** They're honored only from the user's configuration files, the expanded command is shown the first time it runs for a host, and expansions are quoted for the shell that runs them (`/bin/sh` or `cmd.exe`, which quote differently). `LocalCommand` stays off unless `PermitLocalCommand` turns it on. Host keys are still checked end to end through a `ProxyCommand`.
+- **Configuration files others can write are refused,** including through `Include` (permissions and owner on macOS and Linux, access lists on Windows). On Windows, system configuration is read from `%ProgramData%\ssh`, never from Unix paths, where any user could create `C:\etc`.
+
+**Parsing and limits**
+
+- **Everything from the network is bounded before anything is allocated:** the version line and any lines before it (255 bytes each, and a limit on how many), packets (256 KB), padding (at least 4 bytes, smaller than the packet, block-aligned), and each string, name-list and `mpint`. Lengths are checked with unsigned, overflow-checked arithmetic.
+- **Pre-login queues are bounded,** and `ping@openssh.com` is ignored before login and during key exchange ([CVE-2025-26466](https://www.qualys.com/2025/02/18/openssh-mitm-dos.txt)).
+- **Channels:** a window never grows past 2³²−1, data beyond the window disconnects, a maximum packet size of zero or too small to make progress is refused, and the number of channels and pending global requests is capped.
+- **Secrets in memory** (private keys, passwords, session keys) live in byte arrays that are wiped after use, never in strings, and never reach logs or crash reports. A private key file's key derivation parameters (e.g. `bcrypt_pbkdf` rounds) are checked against limits before use.
+
+**Timing**
+
+- **The user's typing is sent at a fixed interval with decoy packets** when the server supports `ping@openssh.com`, as OpenSSH 9.5 and later do (`ObscureKeystrokeTiming`), so an observer can't learn passwords from keystroke timing. What the agent sends goes in one packet per command, which reveals only its length.
+
+**Sources:** [OpenSSH release notes](https://www.openssh.org/releasenotes.html); [OpenSSH `PROTOCOL`](https://github.com/openssh/openssh-portable/blob/master/PROTOCOL) and [`PROTOCOL.certkeys`](https://github.com/openssh/openssh-portable/blob/master/PROTOCOL.certkeys); [draft-ietf-sshm-strict-kex](https://datatracker.ietf.org/doc/html/draft-ietf-sshm-strict-kex); [draft-ietf-sshm-hostkey-update](https://datatracker.ietf.org/doc/html/draft-ietf-sshm-hostkey-update); [Terrapin](https://terrapin-attack.com/); [Qualys on CVE-2025-26465 and 26466](https://www.qualys.com/2025/02/18/openssh-mitm-dos.txt); [PuTTY's changes](https://www.chiark.greenend.org.uk/~sgtatham/putty/changes.html) and [vulnerability list](https://www.chiark.greenend.org.uk/~sgtatham/putty/wishlist/); [libssh's advisories](https://www.libssh.org/security/advisories/); RFCs 4253, 4344, 5647, 8270, 8308 and 8731. Some 2025–2026 CVE details were confirmed only through distributions' trackers; the external review (decision 10) checks this list again.
+
 ## Cryptography
 
 Checked against Microsoft's [cross-platform cryptography matrix](https://learn.microsoft.com/en-us/dotnet/standard/security/cross-platform-cryptography) (updated 2026-08-03). .NET 10 on its own can't support modern SSH: it has no X25519 or Ed25519 ([dotnet/runtime#14741](https://github.com/dotnet/runtime/issues/14741)), ML-KEM only on Linux with OpenSSL 3.5 and on Windows Insider builds, and no raw ChaCha20 or Poly1305.
@@ -461,6 +541,7 @@ Decisions in the order they were taken, with the reason. Newest last.
 | 13 | 2026-11-06 | SSH features after the transport, login and sessions, in order: `~/.ssh/config`, jump hosts, SSH agent, file transfer, port forwarding, certificates, agent forwarding, then Kerberos and smart cards. | Most common first; the agent also covers hardware security keys. |
 | 14 | 2026-11-06 | `bcrypt_pbkdf` is ported from OpenBSD's reference implementation onto BouncyCastle's Blowfish, as the one documented exception to "never implement a primitive". | Neither .NET nor BouncyCastle provides it, and users' encrypted OpenSSH key files need it; test vectors keep it honest, and FIPS mode never uses it. |
 | 15 | 2026-11-06 | Update packages are verified with a signature before they're applied: Velopack's, if it has one, or our own on the update feed. Checked in the first prototype. | Software that runs shells on users' machines can't trust HTTPS alone for its updates. |
+| 16 | 2026-11-06 | Adopt the [SSH security rules](#ssh-security-rules): strict key exchange, no CBC, compression, group exchange, SHA-1 key exchange, SSHFP or X11 forwarding; host keys accepted only by the user; strict names from untrusted sources; bounded parsing. | Each rule answers a published attack on SSH clients; leaving features out removes whole classes of them. |
 
 ## Open questions
 
