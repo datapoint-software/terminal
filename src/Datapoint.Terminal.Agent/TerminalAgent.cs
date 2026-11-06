@@ -11,7 +11,7 @@ public sealed partial class TerminalAgent : IDisposable
 {
     private const string InterruptedResult = "Not completed: the user interrupted you. Wait for their instructions.";
 
-    private readonly IChatClient _client;
+    private volatile IChatClient _client;
     private readonly IAgentTerminal _terminal;
     private readonly IAgentUser _user;
     private readonly SecretRedactor _redactor;
@@ -36,6 +36,13 @@ public sealed partial class TerminalAgent : IDisposable
         _options = options ?? new AgentOptions();
         Mode = _options.DefaultMode;
         _chatOptions = new ChatOptions { Tools = CreateTools(), MaxOutputTokens = _options.MaxOutputTokens };
+    }
+
+    /// <summary>Switches provider or model; takes effect from the agent's next step, keeping the conversation.</summary>
+    public void UseClient(IChatClient client)
+    {
+        ArgumentNullException.ThrowIfNull(client);
+        _client = client;
     }
 
     /// <summary>Raised on a background thread for everything the chat pane shows.</summary>
