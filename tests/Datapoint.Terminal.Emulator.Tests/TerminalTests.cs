@@ -496,4 +496,27 @@ public sealed class TerminalTests
 
         Assert.Null(terminal.WorkingDirectory);
     }
+
+    [Fact]
+    public void Keeps_text_above_the_cursor_when_shrinking()
+    {
+        var terminal = TerminalBuilder.With("one\r\ntwo");
+
+        terminal.Resize(80, 5);
+
+        Assert.StartsWith("one\ntwo", terminal.GetVisibleText(), StringComparison.Ordinal);
+        Assert.Equal(1, terminal.Cursor.Row);
+    }
+
+    [Fact]
+    public void Moves_rows_to_scrollback_when_the_cursor_would_fall_off()
+    {
+        var terminal = TerminalBuilder.With(string.Join("\r\n", Enumerable.Range(1, 10).Select(index => $"line {index}")));
+
+        terminal.Resize(80, 4);
+
+        Assert.StartsWith("line 7", terminal.GetVisibleText(), StringComparison.Ordinal);
+        Assert.Equal(3, terminal.Cursor.Row);
+        Assert.Equal(6, terminal.Primary.Scrollback.Count);
+    }
 }

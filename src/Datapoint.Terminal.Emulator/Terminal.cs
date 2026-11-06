@@ -80,14 +80,15 @@ public sealed partial class Terminal : IParserHandler
         ArgumentOutOfRangeException.ThrowIfLessThan(rows, 1);
         lock (_sync)
         {
-            var cursorFromBottom = Rows - 1 - Cursor.Row;
-            Primary.Resize(columns, rows);
-            Alternate.Resize(columns, rows);
+            // Shrinking drops empty rows below the cursor first; rows above it go to scrollback only when the cursor would fall off.
+            var dropFromTop = Math.Max(0, Cursor.Row + 1 - rows);
+            Primary.Resize(columns, rows, IsAlternateScreen ? 0 : dropFromTop);
+            Alternate.Resize(columns, rows, IsAlternateScreen ? dropFromTop : 0);
             ScrollTop = 0;
             ScrollBottom = rows - 1;
             Array.Resize(ref _tabStops, columns);
             _tabStops = DefaultTabStops(columns);
-            Cursor.Row = Math.Clamp(rows - 1 - cursorFromBottom, 0, rows - 1);
+            Cursor.Row = Math.Clamp(Cursor.Row - dropFromTop, 0, rows - 1);
             Cursor.Column = Math.Min(Cursor.Column, columns - 1);
             Cursor.PendingWrap = false;
         }
