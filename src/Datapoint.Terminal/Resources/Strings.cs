@@ -168,6 +168,8 @@ public static class Strings
 
     public static string MarkdownImageFailed => Get(nameof(MarkdownImageFailed));
 
+    public static string ChatModel => Get(nameof(ChatModel));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

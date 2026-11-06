@@ -127,6 +127,20 @@ public sealed class SettingsViewModelTests : IDisposable
     }
 
     [Fact]
+    public void Choosing_a_model_in_the_chat_selects_its_provider()
+    {
+        var settings = Create();
+        settings.AddCommand.Execute(null);
+        settings.AddCommand.Execute(null);
+        var second = settings.Providers[1];
+
+        settings.Choose(second.Id, "claude-haiku-5-5");
+
+        Assert.True(second.IsActive);
+        Assert.Equal("claude-haiku-5-5", Store.Load().SelectedProvider!.Model);
+    }
+
+    [Fact]
     public void Describes_where_the_conversation_goes()
     {
         var local = new ProviderAccount { Id = "x", Kind = ProviderKind.OpenAICompatible, Name = "Ollama", Model = "llama", Endpoint = "http://localhost:11434/v1", IsLocal = true };
@@ -135,4 +149,12 @@ public sealed class SettingsViewModelTests : IDisposable
         Assert.Contains("your own", ProviderPrivacy.Describe(local), StringComparison.Ordinal);
         Assert.Equal("Anthropic", ProviderPrivacy.Destination(local with { Kind = ProviderKind.Anthropic }));
     }
+
+    [Theory]
+    [InlineData("claude-opus-5-5", "Opus 5.5")]
+    [InlineData("claude-haiku-5", "Haiku 5")]
+    [InlineData("claude-sonnet-4-5-20250929", "Sonnet 4.5")]
+    [InlineData("gpt-5", "gpt-5")]
+    public void Shortens_model_names(string model, string expected) =>
+        Assert.Equal(expected, ProviderCatalog.DisplayName(model));
 }

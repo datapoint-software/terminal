@@ -40,6 +40,54 @@
       <Setter Property="Fill" Value="{DynamicResource StoppedBrush}" />
     </Style>
 
+    <!-- Composer, after Claude's and Messages': one rounded field, with quiet text menus under it. -->
+    <Style Selector="Border.composer">
+      <Setter Property="Background" Value="{DynamicResource FieldBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="12" />
+    </Style>
+    <Style Selector="Border.composer:focus-within">
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+    </Style>
+    <Style Selector="TextBox.bare">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="12,10,6,10" />
+      <Setter Property="MinHeight" Value="38" />
+    </Style>
+    <Style Selector="TextBox.bare /template/ Border#PART_BorderElement, TextBox.bare:pointerover /template/ Border#PART_BorderElement, TextBox.bare:focus /template/ Border#PART_BorderElement, TextBox.bare:disabled /template/ Border#PART_BorderElement">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="ComboBox.menu">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="Padding" Value="10,2,0,2" />
+      <Setter Property="MinHeight" Value="22" />
+      <Setter Property="MinWidth" Value="0" />
+      <Setter Property="CornerRadius" Value="6" />
+    </Style>
+    <Style Selector="ComboBox.menu /template/ Border#Background">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="ComboBox.menu:pointerover /template/ Border#Background, ComboBox.menu:pressed /template/ Border#Background, ComboBox.menu:dropdownopen /template/ Border#Background">
+      <Setter Property="Background" Value="{DynamicResource FillBrush}" />
+      <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="ComboBox.menu:pointerover /template/ ContentControl#ContentPresenter">
+      <Setter Property="Foreground" Value="{DynamicResource LabelBrush}" />
+    </Style>
+    <Style Selector="ComboBox.menu /template/ PathIcon#DropDownGlyph">
+      <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
+      <Setter Property="Width" Value="8" />
+      <Setter Property="Height" Value="8" />
+      <Setter Property="Margin" Value="0,0,12,0" />
+    </Style>
+
     <!-- Conversation: your messages in accent bubbles, the agent's as plain text, commands as code cards. -->
     <Style Selector="Border.bubble">
       <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
@@ -160,36 +208,59 @@
         </StackPanel>
       </Border>
 
-      <!-- Approval: how much the agent may run without asking, chosen before writing the message. -->
-      <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" Margin="2,0,0,10">
-        <TextBlock Classes="secondary" VerticalAlignment="Center" Text="{x:Static res:Strings.ChatMode}" />
-        <ListBox Grid.Column="1" Classes="segmented" ItemsSource="{Binding Modes}" SelectedItem="{Binding SelectedMode}"
-                 AutomationProperties.Name="{x:Static res:Strings.ChatMode}">
-          <ListBox.ItemTemplate>
-            <DataTemplate x:DataType="chat:ModeOption">
-              <TextBlock Text="{Binding Label}" ToolTip.Tip="{Binding Help}" AutomationProperties.HelpText="{Binding Help}" />
+      <!-- Composer: a rounded field with the send button inside, and quiet menus for the model and approval under it. -->
+      <Border Classes="composer">
+        <Grid ColumnDefinitions="*,Auto">
+          <TextBox x:Name="DraftBox" Classes="bare" Text="{Binding Draft}" Watermark="{x:Static res:Strings.ChatInputPlaceholder}"
+                   TextWrapping="Wrap" MaxHeight="160" VerticalContentAlignment="Center" IsEnabled="{Binding HasAgent}"
+                   AutomationProperties.Name="{x:Static res:Strings.ChatInputPlaceholder}">
+            <TextBox.KeyBindings>
+              <KeyBinding Gesture="Enter" Command="{Binding SendCommand}" />
+            </TextBox.KeyBindings>
+          </TextBox>
+          <Button Grid.Column="1" Classes="primary" Command="{Binding SendCommand}" Width="26" Height="26" MinHeight="0" Padding="6"
+                  CornerRadius="13" VerticalAlignment="Bottom" Margin="0,0,6,6"
+                  ToolTip.Tip="{x:Static res:Strings.ChatSend}" AutomationProperties.Name="{x:Static res:Strings.ChatSend}">
+            <PathIcon Data="{StaticResource SendGlyph}" Width="12" Height="12" />
+          </Button>
+        </Grid>
+      </Border>
+
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="2" Margin="0,6,-4,0">
+        <ComboBox Classes="menu" ItemsSource="{Binding ModelChoices}" SelectedItem="{Binding SelectedModel}"
+                  IsVisible="{Binding HasModelChoices}" ToolTip.Tip="{x:Static res:Strings.ChatModel}"
+                  AutomationProperties.Name="{x:Static res:Strings.ChatModel}">
+          <ComboBox.SelectionBoxItemTemplate>
+            <DataTemplate x:DataType="chat:ModelChoice">
+              <TextBlock Text="{Binding Name}" />
             </DataTemplate>
-          </ListBox.ItemTemplate>
-        </ListBox>
-      </Grid>
-
-      <!-- Composer: a rounded field with the send button inside it. -->
-      <Panel>
-        <TextBox x:Name="DraftBox" Text="{Binding Draft}" Watermark="{x:Static res:Strings.ChatInputPlaceholder}"
-                 TextWrapping="Wrap" MaxHeight="160" MinHeight="36" CornerRadius="18" Padding="14,8,42,8"
-                 VerticalContentAlignment="Center" IsEnabled="{Binding HasAgent}"
-                 AutomationProperties.Name="{x:Static res:Strings.ChatInputPlaceholder}">
-          <TextBox.KeyBindings>
-            <KeyBinding Gesture="Enter" Command="{Binding SendCommand}" />
-          </TextBox.KeyBindings>
-        </TextBox>
-        <Button Classes="primary" Command="{Binding SendCommand}" Width="26" Height="26" MinHeight="0" Padding="5"
-                CornerRadius="13" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,5,5"
-                ToolTip.Tip="{x:Static res:Strings.ChatSend}" AutomationProperties.Name="{x:Static res:Strings.ChatSend}">
-          <PathIcon Data="{StaticResource SendGlyph}" Width="13" Height="13" />
-        </Button>
-      </Panel>
-
+          </ComboBox.SelectionBoxItemTemplate>
+          <ComboBox.ItemTemplate>
+            <DataTemplate x:DataType="chat:ModelChoice">
+              <StackPanel>
+                <TextBlock Text="{Binding Name}" />
+                <TextBlock Classes="secondary" FontSize="11" Text="{Binding Provider}" IsVisible="{Binding HasProvider}" />
+              </StackPanel>
+            </DataTemplate>
+          </ComboBox.ItemTemplate>
+        </ComboBox>
+        <ComboBox Classes="menu" ItemsSource="{Binding Modes}" SelectedItem="{Binding SelectedMode}"
+                  ToolTip.Tip="{Binding SelectedMode.Help}" AutomationProperties.Name="{x:Static res:Strings.ChatMode}">
+          <ComboBox.SelectionBoxItemTemplate>
+            <DataTemplate x:DataType="chat:ModeOption">
+              <TextBlock Text="{Binding Label}" />
+            </DataTemplate>
+          </ComboBox.SelectionBoxItemTemplate>
+          <ComboBox.ItemTemplate>
+            <DataTemplate x:DataType="chat:ModeOption">
+              <StackPanel MaxWidth="240" Margin="0,2">
+                <TextBlock Text="{Binding Label}" />
+                <TextBlock Classes="secondary" FontSize="11" Text="{Binding Help}" TextWrapping="Wrap" />
+              </StackPanel>
+            </DataTemplate>
+          </ComboBox.ItemTemplate>
+        </ComboBox>
+      </StackPanel>
     </StackPanel>
 
     <!-- The conversation. -->

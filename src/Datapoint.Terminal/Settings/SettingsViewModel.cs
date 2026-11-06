@@ -73,6 +73,21 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     internal IChatClient CreateClient(ProviderAccount account, string? key) => _createClient(account, key);
 
+    /// <summary>Chooses the provider and model the agent uses, e.g. from the chat's model picker.</summary>
+    public void Choose(string providerId, string model)
+    {
+        var provider = Providers.FirstOrDefault(item => string.Equals(item.Id, providerId, StringComparison.Ordinal));
+        if (provider is null)
+        {
+            return;
+        }
+
+        _isLoading = true;
+        provider.Model = model;
+        _isLoading = false;
+        Activate(provider);
+    }
+
     internal void Activate(ProviderViewModel provider)
     {
         SelectedProviderId = provider.Id;
