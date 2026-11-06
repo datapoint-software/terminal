@@ -261,7 +261,10 @@
         "type": "Project"
       },
       "datapoint.terminal.security": {
-        "type": "Project"
+        "type": "Project",
+        "dependencies": {
+          "BouncyCastle.Cryptography": "[2.7.0, )"
+        }
       },
       "datapoint.terminal.sessions": {
         "type": "Project",
@@ -269,6 +272,12 @@
           "Datapoint.Terminal.Emulator": "[1.0.0, )",
           "Datapoint.Terminal.Security": "[1.0.0, )"
         }
+      },
+      "BouncyCastle.Cryptography": {
+        "type": "CentralTransitive",
+        "requested": "[2.7.0, )",
+        "resolved": "2.7.0",
+        "contentHash": "U+12df8UEWHgBi04YVf/Lgi2dy3SItlIYvHjjEVa/BngCQIzDCDRBk50DDByCfDvSbe5pRNFr3b7UrVK2kMcLw=="
       }
     }
   }
