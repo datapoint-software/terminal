@@ -36,6 +36,18 @@
           "Avalonia": "12.1.5"
         }
       },
+      "Avalonia.HarfBuzz": {
+        "type": "Direct",
+        "requested": "[12.1.5, )",
+        "resolved": "12.1.5",
+        "contentHash": "3kspGPaRVrCzgMi4Rv4N33VNbQNN4wcY4NoCufYxKF/kvYqPbrAnGD2Mjm6Kmc3IA3QrLbj5UJpg8WDTAd4cPw==",
+        "dependencies": {
+          "Avalonia": "12.1.5",
+          "HarfBuzzSharp": "8.3.1.3",
+          "HarfBuzzSharp.NativeAssets.Linux": "8.3.1.3",
+          "HarfBuzzSharp.NativeAssets.WebAssembly": "8.3.1.3"
+        }
+      },
       "Avalonia.Themes.Fluent": {
         "type": "Direct",
         "requested": "[12.1.5, )",
@@ -111,17 +123,6 @@
           "Avalonia": "12.1.5"
         }
       },
-      "Avalonia.HarfBuzz": {
-        "type": "Transitive",
-        "resolved": "12.1.5",
-        "contentHash": "3kspGPaRVrCzgMi4Rv4N33VNbQNN4wcY4NoCufYxKF/kvYqPbrAnGD2Mjm6Kmc3IA3QrLbj5UJpg8WDTAd4cPw==",
-        "dependencies": {
-          "Avalonia": "12.1.5",
-          "HarfBuzzSharp": "8.3.1.3",
-          "HarfBuzzSharp.NativeAssets.Linux": "8.3.1.3",
-          "HarfBuzzSharp.NativeAssets.WebAssembly": "8.3.1.3"
-        }
-      },
       "Avalonia.Native": {
         "type": "Transitive",
         "resolved": "12.1.5",
@@ -134,20 +135,6 @@
         "type": "Transitive",
         "resolved": "12.1.5",
         "contentHash": "yNSke7MNKxJrgcTOQJk70QhPU568dxwRMeQCSmq9N7IGbpPS4zpbr4o6e8rLF/8UfASBQN/yuTgqUfa2nwf6Iw=="
-      },
-      "Avalonia.Skia": {
-        "type": "Transitive",
-        "resolved": "12.1.5",
-        "contentHash": "irfPBtb4UoAT0qfRviYsALBwo0JwXnziRNOTQLzzAQt3eoNPyKFLBsgyj5hE4+6vgunQ7hltEHlvTHPkCoreIg==",
-        "dependencies": {
-          "Avalonia": "12.1.5",
-          "HarfBuzzSharp": "8.3.1.3",
-          "HarfBuzzSharp.NativeAssets.Linux": "8.3.1.3",
-          "HarfBuzzSharp.NativeAssets.WebAssembly": "8.3.1.3",
-          "SkiaSharp": "3.119.4",
-          "SkiaSharp.NativeAssets.Linux": "3.119.4",
-          "SkiaSharp.NativeAssets.WebAssembly": "3.119.4"
-        }
       },
       "Avalonia.Win32": {
         "type": "Transitive",
@@ -277,6 +264,21 @@
           "Datapoint.Terminal.Emulator": "[1.0.0, )",
           "Datapoint.Terminal.Security": "[1.0.0, )",
           "Porta.Pty": "[2.2.3, )"
+        }
+      },
+      "Avalonia.Skia": {
+        "type": "CentralTransitive",
+        "requested": "[12.1.5, )",
+        "resolved": "12.1.5",
+        "contentHash": "irfPBtb4UoAT0qfRviYsALBwo0JwXnziRNOTQLzzAQt3eoNPyKFLBsgyj5hE4+6vgunQ7hltEHlvTHPkCoreIg==",
+        "dependencies": {
+          "Avalonia": "12.1.5",
+          "HarfBuzzSharp": "8.3.1.3",
+          "HarfBuzzSharp.NativeAssets.Linux": "8.3.1.3",
+          "HarfBuzzSharp.NativeAssets.WebAssembly": "8.3.1.3",
+          "SkiaSharp": "3.119.4",
+          "SkiaSharp.NativeAssets.Linux": "3.119.4",
+          "SkiaSharp.NativeAssets.WebAssembly": "3.119.4"
         }
       },
       "BouncyCastle.Cryptography": {
