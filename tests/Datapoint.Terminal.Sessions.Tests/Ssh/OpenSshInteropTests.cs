@@ -216,4 +216,20 @@ public sealed class OpenSshInteropTests(OpenSshServer server) : IClassFixture<Op
 
         Assert.Equal("5000000", output.ToString().Trim());
     }
+
+    [Fact]
+    public async Task Runs_a_terminal_session_until_the_shell_exits()
+    {
+        server.SkipIfUnavailable();
+        await using var client = await OpenSshServer.ConnectWithPasswordAsync(server.Options());
+        await using var session = await SshTerminalSession.StartAsync(client, "xterm-256color", 80, 24, Token);
+
+        await session.WriteAsync("exit 7\n"u8.ToArray(), Token);
+        var buffer = new byte[16];
+        while (await session.ReadAsync(buffer, Token) > 0)
+        {
+        }
+
+        Assert.Equal(7, await session.Exited.WaitAsync(Token));
+    }
 }
