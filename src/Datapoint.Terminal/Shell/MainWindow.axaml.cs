@@ -46,6 +46,11 @@ public sealed partial class MainWindow : Window
             _chat.AddNotice(problem);
         }
 
+        foreach (var projectProblem in project.Problems)
+        {
+            _chat.AddNotice(projectProblem);
+        }
+
         if (project.IsReadOnly)
         {
             _chat.AddNotice(Strings.NoticeProjectReadOnly);

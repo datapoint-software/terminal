@@ -68,7 +68,7 @@
     <DockPanel Grid.Row="1">
       <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
         <DockPanel>
-          <Button DockPanel.Dock="Right" Classes="icon" Margin="0,0,6,0" VerticalAlignment="Center" Click="OnNewTabClicked"
+          <Button x:Name="NewTabButton" DockPanel.Dock="Right" Classes="icon" Margin="0,0,6,0" VerticalAlignment="Center" Click="OnNewTabClicked"
                   ToolTip.Tip="{x:Static res:Strings.TabNew}" AutomationProperties.Name="{x:Static res:Strings.TabNew}">
             <PathIcon Data="{StaticResource PlusGlyph}" />
           </Button>

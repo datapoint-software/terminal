@@ -342,4 +342,37 @@
   <data name="NoticeShellFailed" xml:space="preserve">
     <value>The shell couldn't start: {0}</value>
   </data>
+  <data name="NewTabLocal" xml:space="preserve">
+    <value>Local</value>
+  </data>
+  <data name="NewTabSshHosts" xml:space="preserve">
+    <value>Hosts in ~/.ssh/config</value>
+  </data>
+  <data name="NewTabNoSshHosts" xml:space="preserve">
+    <value>No hosts in ~/.ssh/config</value>
+  </data>
+  <data name="AddHostTitle" xml:space="preserve">
+    <value>Add {0} to this project?</value>
+  </data>
+  <data name="AddHostMessage" xml:space="preserve">
+    <value>{0} is in your ~/.ssh/config but not in this project. Adding it lists it in .terminal.json, which is shared with the project, and lets the agent keep documentation for it in hosts/. You can also open it once without adding it.</value>
+  </data>
+  <data name="AddHostAdd" xml:space="preserve">
+    <value>Add to Project</value>
+  </data>
+  <data name="AddHostOpenOnce" xml:space="preserve">
+    <value>Open Without Adding</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="NoticeProjectReadOnlyNotAdded" xml:space="preserve">
+    <value>{0} wasn't added: this project is read-only here.</value>
+  </data>
+  <data name="NoticeHostAdded" xml:space="preserve">
+    <value>{0} was added to this project's connections.</value>
+  </data>
+  <data name="NoticeSshNotYet" xml:space="preserve">
+    <value>Logging in over SSH comes in the next step, so {0} can't be opened yet.</value>
+  </data>
 </root>

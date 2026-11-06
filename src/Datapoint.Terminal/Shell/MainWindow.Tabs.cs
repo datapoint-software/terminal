@@ -17,8 +17,6 @@ public sealed partial class MainWindow
 
     private TerminalTab? SelectedTab => Tabs.SelectedItem as TerminalTab;
 
-    private void OnNewTabClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => _ = OpenLocalTabAsync();
-
     private async Task OpenLocalTabAsync()
     {
         var view = new TerminalView { Padding = new Thickness(12, 10), IsVisible = false };

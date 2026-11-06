@@ -30,6 +30,8 @@ public sealed class Project : IDisposable
 
     public ProjectSettings Settings { get; private set; }
 
+    public IReadOnlyList<string> Problems { get; private set; } = [];
+
     public string SettingsPath => Path.Combine(Folder, ProjectFolders.SettingsFile);
 
     public string PersonalPath => Path.Combine(Folder, ProjectFolders.PersonalFolder);
@@ -58,7 +60,9 @@ public sealed class Project : IDisposable
         {
             CreatePrivateFolder(personal);
             var settings = ReadSettings(Path.Combine(normalized, ProjectFolders.SettingsFile));
-            return new Project(normalized, settings, TryLock(personal), isDefault, isNew);
+            var problems = settings.Connections.Select(connection => connection.Problem()).OfType<string>().Select(problem => $"{ProjectFolders.SettingsFile}: {problem} It was left out.").ToList();
+            settings = settings with { Connections = [.. settings.Connections.Where(connection => connection.Problem() is null)] };
+            return new Project(normalized, settings, TryLock(personal), isDefault, isNew) { Problems = problems };
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {

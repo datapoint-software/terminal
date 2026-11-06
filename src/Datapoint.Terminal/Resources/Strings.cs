@@ -228,6 +228,28 @@ public static class Strings
 
     public static string NoticeShellFailed => Get(nameof(NoticeShellFailed));
 
+    public static string NewTabLocal => Get(nameof(NewTabLocal));
+
+    public static string NewTabSshHosts => Get(nameof(NewTabSshHosts));
+
+    public static string NewTabNoSshHosts => Get(nameof(NewTabNoSshHosts));
+
+    public static string AddHostTitle => Get(nameof(AddHostTitle));
+
+    public static string AddHostMessage => Get(nameof(AddHostMessage));
+
+    public static string AddHostAdd => Get(nameof(AddHostAdd));
+
+    public static string AddHostOpenOnce => Get(nameof(AddHostOpenOnce));
+
+    public static string Cancel => Get(nameof(Cancel));
+
+    public static string NoticeProjectReadOnlyNotAdded => Get(nameof(NoticeProjectReadOnlyNotAdded));
+
+    public static string NoticeHostAdded => Get(nameof(NoticeHostAdded));
+
+    public static string NoticeSshNotYet => Get(nameof(NoticeSshNotYet));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;
