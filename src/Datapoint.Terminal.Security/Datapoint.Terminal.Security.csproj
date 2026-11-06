@@ -1,4 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- [LibraryImport] for the operating systems' credential stores. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="BouncyCastle.Cryptography" />
   </ItemGroup>
