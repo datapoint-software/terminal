@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Datapoint.Terminal.Sessions\Datapoint.Terminal.Sessions.csproj" />
+    <ProjectReference Include="..\Datapoint.Terminal.Testing\Datapoint.Terminal.Testing.csproj" />
+  </ItemGroup>
+</Project>

@@ -266,3 +266,5 @@ dotnet_diagnostic.MA0008.severity = none
 [tests/**.cs]
 # Test names are sentences with underscores (docs/engineering.md, Tests).
 dotnet_diagnostic.CA1707.severity = none
+# xUnit asks tests not to use ConfigureAwait(false) (xUnit1030); helpers in test projects follow the tests.
+dotnet_diagnostic.MA0004.severity = none
