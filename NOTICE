@@ -1,0 +1,65 @@
+Datapoint Terminal
+Copyright (C) 2026 Datapoint - Sistemas de Informação, Lda.
+(NIPC 514296631, https://datapoint.software/)
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License as published by the Free
+Software Foundation, version 3, with the additional terms below. The full text
+of the license is in the LICENSE file.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+details.
+
+
+Additional terms under section 7 of the GNU Affero General Public License
+-------------------------------------------------------------------------
+
+1. Attribution (section 7, paragraph b).
+
+   Any work that contains this program, or a modified version of it, must
+   preserve the following author attribution in the Appropriate Legal Notices
+   displayed by its user interface, such as its About window:
+
+   a) the text "Based on Datapoint Terminal by Datapoint - Sistemas de
+      Informação, Lda.", with a link to https://datapoint.software/; and
+
+   b) the Datapoint logo, as provided in the file
+      "branding/datapoint-logo.svg" of this program, displayed legibly next to
+      that text.
+
+   The attribution is required only in those Appropriate Legal Notices. It is
+   not required in terminal sessions the program runs, in their output, or in
+   content the program sends to or receives from AI providers.
+
+2. Modified versions (section 7, paragraph c).
+
+   Modified versions must not be presented as the original program, and must
+   be marked in reasonable ways as different from it, for example by stating
+   in the Appropriate Legal Notices that they have been modified.
+
+3. Trademarks (section 7, paragraph e).
+
+   This license grants no rights under trademark law to the names
+   "Datapoint", "Datapoint Software", "Datapoint Terminal" and
+   "datapoint.software", or to the Datapoint logo, except as needed to
+   preserve the attribution required by term 1. See TRADEMARKS.md.
+
+
+Files not covered by this license
+---------------------------------
+
+The files in the "branding" directory, including the Datapoint logo, are not
+licensed under the GNU Affero General Public License. All rights are reserved
+by Datapoint - Sistemas de Informação, Lda. They may be copied and displayed
+only as needed for the attribution required by term 1, and as described in
+TRADEMARKS.md.
+
+
+Third-party material
+--------------------
+
+The third-party packages and other material Datapoint Terminal includes, and
+their licenses and notices, are listed in THIRD-PARTY-NOTICES.txt once it
+includes any.
