@@ -3,4 +3,10 @@
     <ProjectReference Include="..\Datapoint.Terminal.Emulator\Datapoint.Terminal.Emulator.csproj" />
     <ProjectReference Include="..\Datapoint.Terminal.Security\Datapoint.Terminal.Security.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Porta.Pty" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ShellIntegration/Scripts/**/*" LogicalName="ShellIntegration/%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
 </Project>
