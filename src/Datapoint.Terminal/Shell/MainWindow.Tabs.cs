@@ -25,7 +25,7 @@ public sealed partial class MainWindow
         {
             var options = Project.IsDefault ? new LocalSessionOptions() : new LocalSessionOptions { WorkingDirectory = Project.Folder };
             var session = await LocalSession.StartAsync(options, CancellationToken.None).ConfigureAwait(true);
-            Attach(tab, new TerminalConnection(session, 80, 24));
+            Attach(tab, new TerminalConnection(session, 80, 24), environment: null, _settings.Current.DefaultApprovalMode);
         }
         catch (Exception exception) when (exception is IOException or InvalidOperationException or PlatformNotSupportedException or System.ComponentModel.Win32Exception)
         {
@@ -33,10 +33,10 @@ public sealed partial class MainWindow
         }
     }
 
-    private void Attach(TerminalTab tab, TerminalConnection connection)
+    private void Attach(TerminalTab tab, TerminalConnection connection, string? environment, ApprovalMode defaultMode)
     {
         tab.Connection = connection;
-        tab.AgentTerminal = new AgentTerminal(tab.Name, new ConnectionTerminal(connection), _settings.Current.DefaultApprovalMode);
+        tab.AgentTerminal = new AgentTerminal(tab.Name, new ConnectionTerminal(connection), defaultMode, environment);
         connection.OutputArrived += (_, _) => tab.View.NotifyOutput();
         connection.TitleChanged += (_, _) => Dispatcher.UIThread.Post(() =>
         {

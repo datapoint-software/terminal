@@ -60,6 +60,13 @@ public sealed class OpenSshServer : IAsyncLifetime
         Assert.Skip(Unavailable);
     }
 
+    public async Task AuthorizeAsync(string publicKeyLine)
+    {
+        await RunAsync("docker", "exec", _container!, "sh", "-c", $"echo '{publicKeyLine.Trim()}' >> /home/tester/.ssh/authorized_keys");
+    }
+
+    public static Task<(bool Succeeded, string Output)> RunToolAsync(string fileName, params string[] arguments) => RunAsync(fileName, arguments);
+
     public SshConnectionOptions Options(IHostKeyVerifier? verifier = null) => new()
     {
         Host = "127.0.0.1",

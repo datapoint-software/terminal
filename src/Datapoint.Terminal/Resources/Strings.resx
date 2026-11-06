@@ -372,7 +372,76 @@
   <data name="NoticeHostAdded" xml:space="preserve">
     <value>{0} was added to this project's connections.</value>
   </data>
-  <data name="NoticeSshNotYet" xml:space="preserve">
-    <value>Logging in over SSH comes in the next step, so {0} can't be opened yet.</value>
+  <data name="PromptFromServer" xml:space="preserve">
+    <value>From the server:</value>
+  </data>
+  <data name="PromptLogIn" xml:space="preserve">
+    <value>Log In</value>
+  </data>
+  <data name="PasswordTitle" xml:space="preserve">
+    <value>Log in to {0}</value>
+  </data>
+  <data name="PasswordMessage" xml:space="preserve">
+    <value>Enter the password for {0} on {1}. It goes only to the server, never to the AI provider.</value>
+  </data>
+  <data name="PasswordField" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="KeyboardInteractiveTitle" xml:space="preserve">
+    <value>Log in to {0}</value>
+  </data>
+  <data name="KeyboardInteractiveMessage" xml:space="preserve">
+    <value>The server asks for the following. Answers go only to the server, never to the AI provider.</value>
+  </data>
+  <data name="HostKeyNewTitle" xml:space="preserve">
+    <value>First connection to {0}</value>
+  </data>
+  <data name="HostKeyNewMessage" xml:space="preserve">
+    <value>Datapoint Terminal hasn't connected to this server before, so it can't tell yet whether it's the right one. Before trusting it, check that the fingerprint below matches the one your server's administrator, or the server's own console, gives you.</value>
+  </data>
+  <data name="HostKeyNewOtherTypes" xml:space="preserve">
+    <value>Keys of another type ({0}) are already recorded for this host, which is unusual: check the fingerprint carefully.</value>
+  </data>
+  <data name="HostKeyDetails" xml:space="preserve">
+    <value>Host: {0}
+Key type: {1}
+Fingerprint: {2}</value>
+  </data>
+  <data name="HostKeyCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="HostKeyOnce" xml:space="preserve">
+    <value>Connect Once</value>
+  </data>
+  <data name="HostKeyTrust" xml:space="preserve">
+    <value>Trust and Connect</value>
+  </data>
+  <data name="HostKeyChangedTitle" xml:space="preserve">
+    <value>The identity of {0} has changed</value>
+  </data>
+  <data name="HostKeyChangedMessage" xml:space="preserve">
+    <value>The server sent a different key from the one recorded at line {1} of {0}. Someone may be intercepting the connection, or the server may have been reinstalled. The connection was stopped. If you've confirmed why it changed, remove the old key (for example with ssh-keygen -R {2}) and connect again.</value>
+  </data>
+  <data name="HostKeyRevokedTitle" xml:space="preserve">
+    <value>The key of {0} has been revoked</value>
+  </data>
+  <data name="HostKeyRevokedMessage" xml:space="preserve">
+    <value>The server's key is marked as revoked at line {1} of {0}, so the connection was stopped.</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="NoticeConnecting" xml:space="preserve">
+    <value>Connecting to {0}…</value>
+  </data>
+  <data name="NoticeServerBanner" xml:space="preserve">
+    <value>Message from {0}'s server:
+{1}</value>
+  </data>
+  <data name="NoticeConnectFailed" xml:space="preserve">
+    <value>Couldn't connect to {0}: {1}</value>
+  </data>
+  <data name="NoticeLoginNote" xml:space="preserve">
+    <value>{0}: {1}</value>
   </data>
 </root>

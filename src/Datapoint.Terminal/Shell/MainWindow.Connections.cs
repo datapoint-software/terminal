@@ -99,10 +99,4 @@ public sealed partial class MainWindow
             _chat.AddNotice(exception.Message);
         }
     }
-
-    private Task OpenConnectionAsync(ProjectConnection connection)
-    {
-        _chat.AddNotice(Strings.Format(Strings.NoticeSshNotYet, connection.Name));
-        return Task.CompletedTask;
-    }
 }

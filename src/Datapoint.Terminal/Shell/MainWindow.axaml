@@ -82,6 +82,9 @@
                     <Ellipse Fill="{DynamicResource WaitingBrush}" IsVisible="{Binding AgentNeedsUser}" />
                   </Panel>
                   <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                  <Border IsVisible="{Binding HasEnvironment}" Background="{DynamicResource FillBrush}" CornerRadius="4" Padding="5,1" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Environment}" FontSize="10" Foreground="{DynamicResource SecondaryLabelBrush}" />
+                  </Border>
                   <Button Classes="icon tabclose" Command="{Binding CloseCommand}" VerticalAlignment="Center"
                           AutomationProperties.Name="{Binding CloseName}" ToolTip.Tip="{Binding CloseName}">
                     <PathIcon Data="{StaticResource CloseGlyph}" />

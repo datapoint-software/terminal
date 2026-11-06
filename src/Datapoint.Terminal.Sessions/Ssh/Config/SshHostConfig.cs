@@ -15,7 +15,20 @@ public sealed class SshHostConfig
         User = Get("user") ?? localUser;
         Port = int.TryParse(Get("port"), NumberStyles.None, CultureInfo.InvariantCulture, out var port) && port is > 0 and < 65536 ? port : 22;
         IdentityFiles = [.. GetAll("identityfile").Select(file => Expand(file, alias, HostName, User, localUser, home))];
+        UserKnownHostsFiles = Get("userknownhostsfile") is { } files
+            ? [.. SshArguments.Split(files).Select(file => Expand(file, alias, HostName, User, localUser, home))]
+            : [Path.Combine(home, ".ssh", "known_hosts"), Path.Combine(home, ".ssh", "known_hosts2")];
+        GlobalKnownHostsFiles = Get("globalknownhostsfile") is { } global
+            ? [.. SshArguments.Split(global)]
+            : OperatingSystem.IsWindows()
+                ? [Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "ssh", "ssh_known_hosts")]
+                : ["/etc/ssh/ssh_known_hosts", "/etc/ssh/ssh_known_hosts2"];
     }
+
+    // New keys are written to the first user file; the others, and the system's, are only read.
+    public IReadOnlyList<string> UserKnownHostsFiles { get; }
+
+    public IReadOnlyList<string> GlobalKnownHostsFiles { get; }
 
     public string Alias { get; }
 

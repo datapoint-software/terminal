@@ -6,11 +6,13 @@ namespace Datapoint.Terminal.Sessions.Ssh;
 public sealed class SshTerminalSession : ITerminalSession
 {
     private readonly SshChannel _channel;
+    private readonly SshClient? _ownedClient;
     private ReadOnlyMemory<byte> _pending;
 
-    private SshTerminalSession(SshChannel channel)
+    private SshTerminalSession(SshChannel channel, SshClient? ownedClient)
     {
         _channel = channel;
+        _ownedClient = ownedClient;
         Exited = WaitForExitAsync(channel);
     }
 
@@ -20,7 +22,7 @@ public sealed class SshTerminalSession : ITerminalSession
     [SuppressMessage("Usage", "VSTHRD003", Justification = "Started in the constructor; completes from the connection's read loop.")]
     public Task<int?> Exited { get; }
 
-    public static async Task<SshTerminalSession> StartAsync(SshClient client, string terminalType, int columns, int rows, CancellationToken cancellationToken)
+    public static async Task<SshTerminalSession> StartAsync(SshClient client, string terminalType, int columns, int rows, CancellationToken cancellationToken, bool ownsClient = false)
     {
         ArgumentNullException.ThrowIfNull(client);
         var channel = await client.OpenSessionAsync(cancellationToken).ConfigureAwait(false);
@@ -28,7 +30,7 @@ public sealed class SshTerminalSession : ITerminalSession
         {
             await channel.RequestPtyAsync(terminalType, columns, rows, cancellationToken).ConfigureAwait(false);
             await channel.StartShellAsync(cancellationToken).ConfigureAwait(false);
-            return new SshTerminalSession(channel);
+            return new SshTerminalSession(channel, ownsClient ? client : null);
         }
         catch
         {
@@ -73,6 +75,10 @@ public sealed class SshTerminalSession : ITerminalSession
         }
 
         _channel.Dispose();
+        if (_ownedClient is not null)
+        {
+            await _ownedClient.DisposeAsync().ConfigureAwait(false);
+        }
     }
 
     [SuppressMessage("Usage", "VSTHRD003", Justification = "The channel completes from the connection's read loop, never on the caller's context.")]

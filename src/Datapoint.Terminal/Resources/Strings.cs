@@ -248,7 +248,51 @@ public static class Strings
 
     public static string NoticeHostAdded => Get(nameof(NoticeHostAdded));
 
-    public static string NoticeSshNotYet => Get(nameof(NoticeSshNotYet));
+    public static string PromptFromServer => Get(nameof(PromptFromServer));
+
+    public static string PromptLogIn => Get(nameof(PromptLogIn));
+
+    public static string PasswordTitle => Get(nameof(PasswordTitle));
+
+    public static string PasswordMessage => Get(nameof(PasswordMessage));
+
+    public static string PasswordField => Get(nameof(PasswordField));
+
+    public static string KeyboardInteractiveTitle => Get(nameof(KeyboardInteractiveTitle));
+
+    public static string KeyboardInteractiveMessage => Get(nameof(KeyboardInteractiveMessage));
+
+    public static string HostKeyNewTitle => Get(nameof(HostKeyNewTitle));
+
+    public static string HostKeyNewMessage => Get(nameof(HostKeyNewMessage));
+
+    public static string HostKeyNewOtherTypes => Get(nameof(HostKeyNewOtherTypes));
+
+    public static string HostKeyDetails => Get(nameof(HostKeyDetails));
+
+    public static string HostKeyCancel => Get(nameof(HostKeyCancel));
+
+    public static string HostKeyOnce => Get(nameof(HostKeyOnce));
+
+    public static string HostKeyTrust => Get(nameof(HostKeyTrust));
+
+    public static string HostKeyChangedTitle => Get(nameof(HostKeyChangedTitle));
+
+    public static string HostKeyChangedMessage => Get(nameof(HostKeyChangedMessage));
+
+    public static string HostKeyRevokedTitle => Get(nameof(HostKeyRevokedTitle));
+
+    public static string HostKeyRevokedMessage => Get(nameof(HostKeyRevokedMessage));
+
+    public static string Close => Get(nameof(Close));
+
+    public static string NoticeConnecting => Get(nameof(NoticeConnecting));
+
+    public static string NoticeServerBanner => Get(nameof(NoticeServerBanner));
+
+    public static string NoticeConnectFailed => Get(nameof(NoticeConnectFailed));
+
+    public static string NoticeLoginNote => Get(nameof(NoticeLoginNote));
 
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 

@@ -1,0 +1,23 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:res="clr-namespace:Datapoint.Terminal.Resources"
+        x:Class="Datapoint.Terminal.Shell.PromptWindow"
+        Width="420" SizeToContent="Height" CanResize="False"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False"
+        Background="{DynamicResource GroupedBackgroundBrush}">
+  <StackPanel Margin="20" Spacing="12">
+    <TextBlock x:Name="Heading" FontWeight="SemiBold" FontSize="14" TextWrapping="Wrap" />
+    <TextBlock x:Name="Message" TextWrapping="Wrap" />
+    <Border x:Name="ServerBox" Classes="code" IsVisible="False">
+      <StackPanel Spacing="4">
+        <TextBlock Classes="secondary" FontSize="11" Text="{x:Static res:Strings.PromptFromServer}" />
+        <SelectableTextBlock x:Name="ServerText" TextWrapping="Wrap" />
+      </StackPanel>
+    </Border>
+    <StackPanel x:Name="Fields" Spacing="8" />
+    <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" Margin="0,8,0,0">
+      <Button x:Name="CancelButton" Content="{x:Static res:Strings.Cancel}" />
+      <Button x:Name="OkButton" Classes="primary" IsDefault="True" Content="{x:Static res:Strings.PromptLogIn}" />
+    </StackPanel>
+  </StackPanel>
+</Window>

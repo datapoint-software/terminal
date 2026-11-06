@@ -29,6 +29,10 @@ public sealed partial class TerminalTab : ObservableObject
 
     public AgentTerminal? AgentTerminal { get; set; }
 
+    public string? Environment => AgentTerminal?.Environment;
+
+    public bool HasEnvironment => Environment is not null;
+
     [ObservableProperty]
     public partial string ShellTitle { get; set; } = string.Empty;
 
@@ -42,10 +46,12 @@ public sealed partial class TerminalTab : ObservableObject
 
     public string AccessibleName => Activity switch
     {
-        TabActivity.AgentActing => Strings.Format(Strings.TabAgentActing, Name),
-        TabActivity.AgentNeedsUser => Strings.Format(Strings.TabAgentNeedsUser, Name),
-        _ => Name,
+        TabActivity.AgentActing => Strings.Format(Strings.TabAgentActing, Label),
+        TabActivity.AgentNeedsUser => Strings.Format(Strings.TabAgentNeedsUser, Label),
+        _ => Label,
     };
+
+    public string Label => Environment is null ? Name : $"{Name}, {Environment}";
 
     public string CloseName => Strings.Format(Strings.TabClose, Name);
 
