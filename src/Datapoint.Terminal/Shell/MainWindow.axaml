@@ -3,14 +3,14 @@
         xmlns:controls="clr-namespace:Datapoint.Terminal.Controls;assembly=Datapoint.Terminal.Controls"
         xmlns:chat="clr-namespace:Datapoint.Terminal.Chat"
         x:Class="Datapoint.Terminal.Shell.MainWindow"
-        Title="Datapoint Terminal"
-        Width="1300" Height="760" MinWidth="640" MinHeight="400">
-  <Grid ColumnDefinitions="*,1,380" RowDefinitions="*,Auto">
-    <controls:TerminalView x:Name="Terminal" AutomationProperties.AutomationId="Terminal" Padding="12,10" />
+                Width="1300" Height="760" MinWidth="640" MinHeight="400">
+  <Grid ColumnDefinitions="*,1,380" RowDefinitions="Auto,*,Auto">
+    <NativeMenuBar Grid.ColumnSpan="3" />
+    <controls:TerminalView x:Name="Terminal" Grid.Row="1" AutomationProperties.AutomationId="Terminal" Padding="12,10" />
     <!-- A hairline separator, with a wider invisible handle for dragging. -->
-    <Rectangle Grid.Column="1" Fill="{DynamicResource SeparatorBrush}" />
-    <GridSplitter Grid.Column="1" ResizeDirection="Columns" Margin="-3,0" ZIndex="1" />
-    <chat:ChatView x:Name="Chat" Grid.Column="2" AutomationProperties.AutomationId="Chat" />
-    <TextBlock x:Name="Status" Grid.Row="1" Grid.ColumnSpan="3" Margin="12,6" IsVisible="False" TextWrapping="Wrap" />
+    <Rectangle Grid.Row="1" Grid.Column="1" Fill="{DynamicResource SeparatorBrush}" />
+    <GridSplitter Grid.Row="1" Grid.Column="1" ResizeDirection="Columns" Margin="-3,0" ZIndex="1" />
+    <chat:ChatView x:Name="Chat" Grid.Row="1" Grid.Column="2" AutomationProperties.AutomationId="Chat" />
+    <TextBlock x:Name="Status" Grid.Row="2" Grid.ColumnSpan="3" Margin="12,6" IsVisible="False" TextWrapping="Wrap" />
   </Grid>
 </Window>

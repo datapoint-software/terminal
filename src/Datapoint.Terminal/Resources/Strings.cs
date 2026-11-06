@@ -170,6 +170,34 @@ public static class Strings
 
     public static string ChatModel => Get(nameof(ChatModel));
 
+    public static string MenuFile => Get(nameof(MenuFile));
+
+    public static string MenuNewProject => Get(nameof(MenuNewProject));
+
+    public static string MenuOpenProject => Get(nameof(MenuOpenProject));
+
+    public static string MenuOpenRecent => Get(nameof(MenuOpenRecent));
+
+    public static string MenuClearRecent => Get(nameof(MenuClearRecent));
+
+    public static string MenuSettings => Get(nameof(MenuSettings));
+
+    public static string MenuCloseWindow => Get(nameof(MenuCloseWindow));
+
+    public static string PickerNewProject => Get(nameof(PickerNewProject));
+
+    public static string PickerOpenProject => Get(nameof(PickerOpenProject));
+
+    public static string NoticeProjectReadOnly => Get(nameof(NoticeProjectReadOnly));
+
+    public static string NoticeProjectFailed => Get(nameof(NoticeProjectFailed));
+
+    public static string NoticeProjectIsNotNew => Get(nameof(NoticeProjectIsNotNew));
+
+    public static string WindowTitle => Get(nameof(WindowTitle));
+
+    public static string WindowTitleWithShell => Get(nameof(WindowTitleWithShell));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

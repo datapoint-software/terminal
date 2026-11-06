@@ -1,7 +1,9 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Threading;
+using CommunityToolkit.Mvvm.Input;
 using Datapoint.Terminal.Agent;
+using Datapoint.Terminal.Agent.Projects;
 using Datapoint.Terminal.Agent.Providers;
 using Datapoint.Terminal.Agent.Safety;
 using Datapoint.Terminal.Chat;
@@ -19,26 +21,26 @@ public sealed partial class MainWindow : Window
 {
     private readonly ChatViewModel _chat = new(new AvaloniaUiThread());
     private readonly SecretRedactor _redactor = new();
-    private readonly ProviderKeys _keys = new(CredentialStores.ForThisSystem(), Environment.GetEnvironmentVariable);
+    private readonly ProjectWindows _windows;
     private readonly SettingsViewModel _settings;
-    private SettingsWindow? _settingsWindow;
+    private readonly NativeMenu _recentMenu = [];
     private TerminalConnection? _connection;
     private TerminalAgent? _agent;
     private string? _clientSignature;
     private ProviderAccount? _provider;
+    private string _shellTitle = string.Empty;
 
-    public MainWindow()
-        : this(new SettingsStore(SettingsStore.DefaultPath))
+    public MainWindow(Project project, ProjectWindows windows)
     {
-    }
-
-    public MainWindow(SettingsStore store)
-    {
-        ArgumentNullException.ThrowIfNull(store);
+        ArgumentNullException.ThrowIfNull(project);
+        ArgumentNullException.ThrowIfNull(windows);
         InitializeComponent();
-        _settings = new SettingsViewModel(store, FirstRun(store.Load()), _keys, CreateClient);
-        _settings.Changed += (_, _) => ApplySettings();
-        _chat.SettingsRequested = OpenSettings;
+        Project = project;
+        _windows = windows;
+        _settings = windows.Settings;
+        _settings.Changed += OnSettingsChanged;
+        _settings.ProjectsChanged += OnProjectsChanged;
+        _chat.SettingsRequested = windows.OpenSettings;
         _chat.ModelChosen = choice => _settings.Choose(choice.ProviderId, choice.Model);
         Chat.DataContext = _chat;
         if (_settings.Problem is { } problem)
@@ -46,37 +48,24 @@ public sealed partial class MainWindow : Window
             _chat.AddNotice(problem);
         }
 
-        // On macOS, Settings… is in the application menu (App.axaml) with Cmd+,; elsewhere Ctrl+, opens it.
-        if (!OperatingSystem.IsMacOS())
+        if (project.IsReadOnly)
         {
-            KeyBindings.Add(new KeyBinding { Gesture = new KeyGesture(Key.OemComma, KeyModifiers.Control), Command = _chat.OpenSettingsCommand });
+            _chat.AddNotice(Strings.NoticeProjectReadOnly);
         }
 
+        UpdateTitle();
+        NativeMenu.SetMenu(this, BuildMenu());
         Opened += (_, _) => _ = StartLocalShellAsync();
         Closed += (_, _) => _ = StopAsync();
     }
 
-    public SettingsViewModel Settings => _settings;
+    public Project Project { get; }
 
-    public void OpenSettings()
+    public void AddNotice(string text) => _chat.AddNotice(text);
+
+    public static AppSettings FirstRun(AppSettings settings)
     {
-        if (_settingsWindow is not null)
-        {
-            _settingsWindow.Activate();
-            return;
-        }
-
-        _settingsWindow = new SettingsWindow { DataContext = _settings };
-        _settingsWindow.Closed += (_, _) => _settingsWindow = null;
-        _settingsWindow.Show(this);
-    }
-
-    /// <summary>
-    /// Someone who already sets ANTHROPIC_API_KEY gets an Anthropic provider that uses it, so the agent works on first run;
-    /// settings then offer to keep the key in the credential store instead.
-    /// </summary>
-    private static AppSettings FirstRun(AppSettings settings)
-    {
+        ArgumentNullException.ThrowIfNull(settings);
         if (settings.Providers.Count > 0 || string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ANTHROPIC_API_KEY")))
         {
             return settings;
@@ -92,17 +81,86 @@ public sealed partial class MainWindow : Window
         return settings with { Providers = [provider], SelectedProviderId = provider.Id };
     }
 
-    private static IChatClient CreateClient(ProviderAccount provider, string? key) => ChatClientFactory.Create(provider.ToProviderSettings(), key);
+    public static IChatClient CreateClient(ProviderAccount provider, string? key) => ChatClientFactory.Create(provider.ToProviderSettings(), key);
+
+    private void OnSettingsChanged(object? sender, EventArgs e) => ApplySettings();
+
+    private void OnProjectsChanged(object? sender, EventArgs e) => FillRecentMenu();
+
+    private NativeMenu BuildMenu()
+    {
+        var shortcut = OperatingSystem.IsMacOS() ? KeyModifiers.Meta : KeyModifiers.Control;
+        var file = new NativeMenu();
+        file.Add(Item(Strings.MenuNewProject, new KeyGesture(Key.N, shortcut | KeyModifiers.Shift), () => _ = _windows.PickAsync(this, isNew: true)));
+        file.Add(Item(Strings.MenuOpenProject, new KeyGesture(Key.O, shortcut), () => _ = _windows.PickAsync(this, isNew: false)));
+        FillRecentMenu();
+        file.Add(new NativeMenuItem(Strings.MenuOpenRecent) { Menu = _recentMenu });
+        file.Add(new NativeMenuItemSeparator());
+        if (!OperatingSystem.IsMacOS())
+        {
+            file.Add(Item(Strings.MenuSettings, new KeyGesture(Key.OemComma, shortcut), _windows.OpenSettings));
+            file.Add(new NativeMenuItemSeparator());
+        }
+
+        file.Add(Item(Strings.MenuCloseWindow, new KeyGesture(Key.W, shortcut | KeyModifiers.Shift), Close));
+        return [new NativeMenuItem(Strings.MenuFile) { Menu = file }];
+    }
+
+    private void FillRecentMenu()
+    {
+        var menu = _recentMenu;
+        menu.Items.Clear();
+        foreach (var folder in _windows.Recent)
+        {
+            menu.Add(Item(ShortPath(folder), gesture: null, () => _windows.Open(folder)));
+        }
+
+        if (_windows.Recent.Count > 0)
+        {
+            menu.Add(new NativeMenuItemSeparator());
+        }
+
+        var clear = Item(Strings.MenuClearRecent, gesture: null, _windows.ClearRecent);
+        clear.IsEnabled = _windows.Recent.Count > 0;
+        menu.Add(clear);
+    }
+
+    private NativeMenuItem Item(string header, KeyGesture? gesture, Action action)
+    {
+        var item = new NativeMenuItem(header) { Gesture = gesture };
+        item.Click += (_, _) => action();
+        if (gesture is not null && !OperatingSystem.IsMacOS() && !KeyBindings.Any(binding => gesture.Equals(binding.Gesture)))
+        {
+            KeyBindings.Add(new KeyBinding { Gesture = gesture, Command = new RelayCommand(action) });
+        }
+
+        return item;
+    }
+
+    private static string ShortPath(string folder)
+    {
+        var home = ProjectFolders.Home;
+        return folder.StartsWith(home + Path.DirectorySeparatorChar, StringComparison.Ordinal) ? "~" + folder[home.Length..] : folder;
+    }
+
+    private void UpdateTitle() => Title = string.IsNullOrWhiteSpace(_shellTitle)
+        ? Strings.Format(Strings.WindowTitle, Project.Name)
+        : Strings.Format(Strings.WindowTitle, Strings.Format(Strings.WindowTitleWithShell, Project.Name, _shellTitle));
 
     private async Task StartLocalShellAsync()
     {
         try
         {
-            var session = await LocalSession.StartAsync(new LocalSessionOptions(), CancellationToken.None).ConfigureAwait(true);
+            var options = Project.IsDefault ? new LocalSessionOptions() : new LocalSessionOptions { WorkingDirectory = Project.Folder };
+            var session = await LocalSession.StartAsync(options, CancellationToken.None).ConfigureAwait(true);
             var connection = new TerminalConnection(session, 80, 24);
             _connection = connection;
             connection.OutputArrived += (_, _) => Terminal.NotifyOutput();
-            connection.TitleChanged += (_, _) => Dispatcher.UIThread.Post(() => Title = TitleFor(connection.Terminal.Title));
+            connection.TitleChanged += (_, _) => Dispatcher.UIThread.Post(() =>
+            {
+                _shellTitle = connection.Terminal.Title;
+                UpdateTitle();
+            });
             connection.Ended += (_, _) => Dispatcher.UIThread.Post(Close);
             Terminal.Input += (_, e) =>
             {
@@ -190,7 +248,7 @@ public sealed partial class MainWindow : Window
 
         try
         {
-            return _keys.Read(provider);
+            return _settings.Keys.Read(provider);
         }
         catch (CredentialStoreException exception)
         {
@@ -216,8 +274,10 @@ public sealed partial class MainWindow : Window
 
     private async Task StopAsync()
     {
-        _settingsWindow?.Close();
+        _settings.Changed -= OnSettingsChanged;
+        _settings.ProjectsChanged -= OnProjectsChanged;
         _agent?.Dispose();
+        Project.Dispose();
         _chat.Dispose();
         if (_connection is null)
         {
@@ -226,7 +286,4 @@ public sealed partial class MainWindow : Window
 
         await _connection.DisposeAsync().ConfigureAwait(false);
     }
-
-    private static string TitleFor(string shellTitle) =>
-        string.IsNullOrWhiteSpace(shellTitle) ? "Datapoint Terminal" : $"{shellTitle} — Datapoint Terminal";
 }

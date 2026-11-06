@@ -68,4 +68,16 @@ public sealed class SettingsStoreTests : IDisposable
         Assert.True(store.IsReadOnly);
         Assert.Throws<InvalidOperationException>(() => store.Save(new AppSettings()));
     }
+
+    [Fact]
+    public void Reads_a_file_from_before_projects_with_no_project_lists()
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(FilePath)!);
+        File.WriteAllText(FilePath, "{\"version\": 1, \"providers\": []}");
+
+        var settings = new SettingsStore(FilePath).Load();
+
+        Assert.Empty(settings.RecentProjects);
+        Assert.Empty(settings.OpenProjects);
+    }
 }

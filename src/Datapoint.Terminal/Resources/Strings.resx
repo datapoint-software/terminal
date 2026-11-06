@@ -255,4 +255,46 @@
   <data name="ChatModel" xml:space="preserve">
     <value>Model</value>
   </data>
+  <data name="MenuFile" xml:space="preserve">
+    <value>_File</value>
+  </data>
+  <data name="MenuNewProject" xml:space="preserve">
+    <value>_New Project…</value>
+  </data>
+  <data name="MenuOpenProject" xml:space="preserve">
+    <value>_Open Project…</value>
+  </data>
+  <data name="MenuOpenRecent" xml:space="preserve">
+    <value>Open _Recent</value>
+  </data>
+  <data name="MenuClearRecent" xml:space="preserve">
+    <value>Clear Recent</value>
+  </data>
+  <data name="MenuSettings" xml:space="preserve">
+    <value>_Settings…</value>
+  </data>
+  <data name="MenuCloseWindow" xml:space="preserve">
+    <value>_Close Window</value>
+  </data>
+  <data name="PickerNewProject" xml:space="preserve">
+    <value>Choose or create a folder for the new project</value>
+  </data>
+  <data name="PickerOpenProject" xml:space="preserve">
+    <value>Choose a project folder</value>
+  </data>
+  <data name="NoticeProjectReadOnly" xml:space="preserve">
+    <value>This project is open in another copy of Datapoint Terminal, so nothing is saved to it from this window.</value>
+  </data>
+  <data name="NoticeProjectFailed" xml:space="preserve">
+    <value>The project couldn't be opened. {0}</value>
+  </data>
+  <data name="NoticeProjectIsNotNew" xml:space="preserve">
+    <value>{0} is already a project, so it was opened as it is.</value>
+  </data>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>{0} — Datapoint Terminal</value>
+  </data>
+  <data name="WindowTitleWithShell" xml:space="preserve">
+    <value>{0} — {1}</value>
+  </data>
 </root>

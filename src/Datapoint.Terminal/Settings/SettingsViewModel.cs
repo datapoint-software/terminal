@@ -32,6 +32,8 @@ public sealed partial class SettingsViewModel : ObservableObject
             new(ProviderKind.OpenAICompatible, Strings.ProviderKindCompatible),
         ];
         _defaultApprovalMode = settings.DefaultApprovalMode;
+        RecentProjects = settings.RecentProjects;
+        OpenProjects = settings.OpenProjects;
         SelectedProviderId = settings.SelectedProvider?.Id;
         foreach (var account in settings.Providers)
         {
@@ -45,7 +47,13 @@ public sealed partial class SettingsViewModel : ObservableObject
     /// <summary>Raised after any change is saved, so the agent can follow it.</summary>
     public event EventHandler? Changed;
 
+    public event EventHandler? ProjectsChanged;
+
     public ProviderKeys Keys { get; }
+
+    public IReadOnlyList<string> RecentProjects { get; private set; }
+
+    public IReadOnlyList<string> OpenProjects { get; private set; }
 
     public IReadOnlyList<KindOption> Kinds { get; }
 
@@ -69,7 +77,21 @@ public sealed partial class SettingsViewModel : ObservableObject
         Providers = [.. Providers.Select(provider => provider.ToAccount())],
         SelectedProviderId = SelectedProviderId,
         DefaultApprovalMode = _defaultApprovalMode,
+        RecentProjects = RecentProjects,
+        OpenProjects = OpenProjects,
     };
+
+    public void SetProjects(IReadOnlyList<string> recent, IReadOnlyList<string> open)
+    {
+        RecentProjects = recent;
+        OpenProjects = open;
+        if (!_store.IsReadOnly)
+        {
+            _store.Save(Current);
+        }
+
+        ProjectsChanged?.Invoke(this, EventArgs.Empty);
+    }
 
     internal IChatClient CreateClient(ProviderAccount account, string? key) => _createClient(account, key);
 

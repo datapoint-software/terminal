@@ -11,12 +11,16 @@ public sealed record AppSettings
     /// <summary>Raised when a newer version of the application changes the format, so older versions don't overwrite it.</summary>
     public int Version { get; init; } = CurrentVersion;
 
-    public IReadOnlyList<ProviderAccount> Providers { get; init; } = [];
+    public IReadOnlyList<ProviderAccount> Providers { get; init => field = value ?? []; } = [];
 
     /// <summary>The provider the agent uses, by <see cref="ProviderAccount.Id"/>.</summary>
     public string? SelectedProviderId { get; init; }
 
     public ApprovalMode DefaultApprovalMode { get; init; } = ApprovalMode.Ask;
+
+    public IReadOnlyList<string> RecentProjects { get; init => field = value ?? []; } = [];
+
+    public IReadOnlyList<string> OpenProjects { get; init => field = value ?? []; } = [];
 
     /// <summary>Worked out from <see cref="SelectedProviderId"/>, so it isn't saved.</summary>
     [JsonIgnore]
