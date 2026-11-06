@@ -142,12 +142,31 @@ public static class Strings
 
     public static string ChatSettings => Get(nameof(ChatSettings));
 
-
     public static string ChatConnect => Get(nameof(ChatConnect));
 
     public static string ChatConnectText => Get(nameof(ChatConnectText));
 
     public static string NoticeSwitched => Get(nameof(NoticeSwitched));
+
+    public static string MarkdownCopy => Get(nameof(MarkdownCopy));
+
+    public static string MarkdownCopied => Get(nameof(MarkdownCopied));
+
+    public static string MarkdownCopyCode => Get(nameof(MarkdownCopyCode));
+
+    public static string MarkdownSelectAll => Get(nameof(MarkdownSelectAll));
+
+    public static string MarkdownOpenLinkQuestion => Get(nameof(MarkdownOpenLinkQuestion));
+
+    public static string MarkdownOpen => Get(nameof(MarkdownOpen));
+
+    public static string MarkdownCancel => Get(nameof(MarkdownCancel));
+
+    public static string MarkdownLoadImage => Get(nameof(MarkdownLoadImage));
+
+    public static string MarkdownLoadImageHelp => Get(nameof(MarkdownLoadImageHelp));
+
+    public static string MarkdownImageFailed => Get(nameof(MarkdownImageFailed));
 
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 

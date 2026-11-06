@@ -24,6 +24,14 @@
       <SolidColorBrush x:Key="IdleBrush" Color="#AEAEB2" />
       <SolidColorBrush x:Key="WaitingBrush" Color="#FF9500" />
       <SolidColorBrush x:Key="StoppedBrush" Color="#FF3B30" />
+      <!-- Code: after Xcode's default themes. -->
+      <SolidColorBrush x:Key="SyntaxKeywordBrush" Color="#9B2393" />
+      <SolidColorBrush x:Key="SyntaxStringBrush" Color="#C41A16" />
+      <SolidColorBrush x:Key="SyntaxCommentBrush" Color="#5D6C79" />
+      <SolidColorBrush x:Key="SyntaxNumberBrush" Color="#1C00CF" />
+      <SolidColorBrush x:Key="SyntaxVariableBrush" Color="#0F68A0" />
+      <SolidColorBrush x:Key="SyntaxAddedBrush" Color="#1A7F37" />
+      <SolidColorBrush x:Key="SyntaxRemovedBrush" Color="#CF222E" />
       <BoxShadows x:Key="CardShadow">0 1 3 0 #14000000, 0 4 12 0 #0F000000</BoxShadows>
     </ResourceDictionary>
     <ResourceDictionary x:Key="Dark">
@@ -48,6 +56,13 @@
       <SolidColorBrush x:Key="IdleBrush" Color="#636366" />
       <SolidColorBrush x:Key="WaitingBrush" Color="#FF9F0A" />
       <SolidColorBrush x:Key="StoppedBrush" Color="#FF453A" />
+      <SolidColorBrush x:Key="SyntaxKeywordBrush" Color="#FF7AB2" />
+      <SolidColorBrush x:Key="SyntaxStringBrush" Color="#FF8170" />
+      <SolidColorBrush x:Key="SyntaxCommentBrush" Color="#8E9AA6" />
+      <SolidColorBrush x:Key="SyntaxNumberBrush" Color="#D9C97C" />
+      <SolidColorBrush x:Key="SyntaxVariableBrush" Color="#6BC5E0" />
+      <SolidColorBrush x:Key="SyntaxAddedBrush" Color="#6BD18A" />
+      <SolidColorBrush x:Key="SyntaxRemovedBrush" Color="#FF7B72" />
       <BoxShadows x:Key="CardShadow">0 1 3 0 #40000000, 0 4 12 0 #33000000</BoxShadows>
     </ResourceDictionary>
   </ResourceDictionary.ThemeDictionaries>

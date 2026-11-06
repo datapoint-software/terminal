@@ -16,6 +16,9 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
   </ItemGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="Datapoint.Terminal.Tests" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Datapoint.Terminal.Emulator\Datapoint.Terminal.Emulator.csproj" />
     <ProjectReference Include="..\Datapoint.Terminal.Controls\Datapoint.Terminal.Controls.csproj" />
     <ProjectReference Include="..\Datapoint.Terminal.Sessions\Datapoint.Terminal.Sessions.csproj" />

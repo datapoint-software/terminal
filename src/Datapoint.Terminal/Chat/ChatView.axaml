@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:chat="clr-namespace:Datapoint.Terminal.Chat"
+             xmlns:md="clr-namespace:Datapoint.Terminal.Markdown"
              xmlns:res="clr-namespace:Datapoint.Terminal.Resources"
              x:Class="Datapoint.Terminal.Chat.ChatView"
              x:DataType="chat:ChatViewModel"
@@ -200,7 +201,7 @@
               <Border Classes="bubble" IsVisible="{Binding IsUser}">
                 <SelectableTextBlock Text="{Binding Text}" TextWrapping="Wrap" />
               </Border>
-              <chat:MarkdownView Text="{Binding Text}" Margin="0,6" IsVisible="{Binding IsAgent}" />
+              <md:MarkdownView Text="{Binding Text}" Margin="0,6" IsVisible="{Binding IsAgent}" />
               <Border Classes="code" IsVisible="{Binding IsCommand}">
                 <StackPanel Spacing="4">
                   <SelectableTextBlock Classes="mono" Text="{Binding Text}" TextWrapping="Wrap" />

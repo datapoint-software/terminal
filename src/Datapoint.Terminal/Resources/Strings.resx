@@ -222,4 +222,34 @@
   <data name="NoticeSwitched" xml:space="preserve">
     <value>From now on, the conversation goes to {0}.</value>
   </data>
+  <data name="MarkdownCopy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="MarkdownCopied" xml:space="preserve">
+    <value>Copied</value>
+  </data>
+  <data name="MarkdownCopyCode" xml:space="preserve">
+    <value>Copy code</value>
+  </data>
+  <data name="MarkdownSelectAll" xml:space="preserve">
+    <value>Select All</value>
+  </data>
+  <data name="MarkdownOpenLinkQuestion" xml:space="preserve">
+    <value>Open this link in your browser?</value>
+  </data>
+  <data name="MarkdownOpen" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="MarkdownCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="MarkdownLoadImage" xml:space="preserve">
+    <value>Load image from {0}</value>
+  </data>
+  <data name="MarkdownLoadImageHelp" xml:space="preserve">
+    <value>Images aren't loaded until you ask: loading one tells {0} your IP address and that you read this reply.</value>
+  </data>
+  <data name="MarkdownImageFailed" xml:space="preserve">
+    <value>The image couldn't be loaded.</value>
+  </data>
 </root>
