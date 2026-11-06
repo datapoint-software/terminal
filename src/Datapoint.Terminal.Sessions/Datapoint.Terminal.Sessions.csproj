@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\Datapoint.Terminal.Emulator\Datapoint.Terminal.Emulator.csproj" />
+    <ProjectReference Include="..\Datapoint.Terminal.Security\Datapoint.Terminal.Security.csproj" />
+  </ItemGroup>
+</Project>

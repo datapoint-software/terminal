@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Datapoint.Terminal/Datapoint.Terminal.csproj" />
+    <Project Path="src/Datapoint.Terminal.Agent/Datapoint.Terminal.Agent.csproj" />
+    <Project Path="src/Datapoint.Terminal.Controls/Datapoint.Terminal.Controls.csproj" />
+    <Project Path="src/Datapoint.Terminal.Emulator/Datapoint.Terminal.Emulator.csproj" />
+    <Project Path="src/Datapoint.Terminal.Security/Datapoint.Terminal.Security.csproj" />
+    <Project Path="src/Datapoint.Terminal.Sessions/Datapoint.Terminal.Sessions.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Datapoint.Terminal.Architecture.Tests/Datapoint.Terminal.Architecture.Tests.csproj" />
+    <Project Path="tests/Datapoint.Terminal.Testing/Datapoint.Terminal.Testing.csproj" />
+  </Folder>
+</Solution>

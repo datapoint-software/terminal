@@ -8,6 +8,7 @@ This project is in early design. Nothing is built yet.
 
 - [Product](docs/product.md): what the application does, for whom, and the decisions taken so far, with the questions still open.
 - [Engineering](docs/engineering.md): the technical stack, the terminal emulator's design and the repository conventions, with the decisions taken so far and the questions still open.
+- [Autopilot notes](docs/autopilot.md): decisions taken while the product owner was away, for review.
 
 ## License
 

@@ -1,0 +1,7 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Datapoint.Terminal.Shell.MainWindow"
+        Title="Datapoint Terminal"
+        Width="1100" Height="700">
+  <TextBlock Text="Datapoint Terminal" HorizontalAlignment="Center" VerticalAlignment="Center" />
+</Window>

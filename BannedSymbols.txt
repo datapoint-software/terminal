@@ -1,0 +1,8 @@
+T:System.Runtime.Serialization.Formatters.Binary.BinaryFormatter;Insecure and obsolete
+T:System.Random;Not for anything security-related: use RandomNumberGenerator. Non-security uses need a reviewed suppression.
+M:System.Type.GetType(System.String);Breaks trimming and hides dependencies
+M:System.Type.GetType(System.String,System.Boolean);Breaks trimming and hides dependencies
+M:System.Type.GetType(System.String,System.Boolean,System.Boolean);Breaks trimming and hides dependencies
+M:System.Activator.CreateInstance(System.Type);Breaks trimming and hides dependencies
+M:System.Activator.CreateInstance(System.Type,System.Object[]);Breaks trimming and hides dependencies
+T:Avalonia.Data.ReflectionBinding;Use compiled bindings

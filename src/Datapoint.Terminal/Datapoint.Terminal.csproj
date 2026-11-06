@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>Datapoint.Terminal</AssemblyName>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia" />
+    <PackageReference Include="Avalonia.Desktop" />
+    <PackageReference Include="Avalonia.Themes.Fluent" />
+    <PackageReference Include="Avalonia.Fonts.Inter" />
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Datapoint.Terminal.Emulator\Datapoint.Terminal.Emulator.csproj" />
+    <ProjectReference Include="..\Datapoint.Terminal.Controls\Datapoint.Terminal.Controls.csproj" />
+    <ProjectReference Include="..\Datapoint.Terminal.Sessions\Datapoint.Terminal.Sessions.csproj" />
+    <ProjectReference Include="..\Datapoint.Terminal.Agent\Datapoint.Terminal.Agent.csproj" />
+    <ProjectReference Include="..\Datapoint.Terminal.Security\Datapoint.Terminal.Security.csproj" />
+  </ItemGroup>
+</Project>

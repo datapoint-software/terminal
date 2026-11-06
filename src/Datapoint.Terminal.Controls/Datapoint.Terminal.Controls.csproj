@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="Avalonia" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Datapoint.Terminal.Emulator\Datapoint.Terminal.Emulator.csproj" />
+  </ItemGroup>
+</Project>

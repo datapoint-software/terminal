@@ -414,7 +414,8 @@ Enterprise and government customers may require FIPS 140 validated cryptography 
 ## Tests
 
 - **[xUnit v3](https://xunit.net/docs/getting-started/v3/microsoft-testing-platform) on Microsoft.Testing.Platform,** with xUnit's own assertions. No FluentAssertions, which is now commercial.
-- **`xunit.v3` is pinned to 3.2.x.** `Avalonia.Headless.XUnit` 12.1 fails with xUnit v3 4.x ([Avalonia#22072](https://github.com/AvaloniaUI/Avalonia/issues/22072)); the pin carries a comment linking the issue.
+- **xUnit v3 is pinned to 3.2.x.** `Avalonia.Headless.XUnit` 12.1 fails with xUnit v3 4.x ([Avalonia#22072](https://github.com/AvaloniaUI/Avalonia/issues/22072)); the pin carries a comment linking the issue. We reference its `xunit.v3.mtp-v2` package, which runs on Microsoft.Testing.Platform 2: the code coverage extension needs it, and the plain `xunit.v3` package still brings version 1.
+- **A test project is added with its first tests,** since Microsoft.Testing.Platform fails a run in which a test project has none.
 - **Tests read as specifications:** one behavior per test, arrange, act, assert, with no `if` or loops. Data comes from small named builders, not unexplained literals. Test method names are sentences with underscores (`Wraps_text_at_the_right_margin`); CA1707 is off for test projects only.
 - **Coverage** with Microsoft.Testing.Extensions.CodeCoverage. CI fails when a project falls below its threshold; raise a threshold when coverage grows, and never lower one without saying why in the commit.
 - **The emulator** is tested in layers:
