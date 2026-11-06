@@ -4,10 +4,7 @@ using System.Text;
 
 namespace Datapoint.Terminal.Security.Credentials;
 
-/// <summary>
-/// Generic passwords in the user's login keychain, through Security.framework's SecItem functions. The first time another
-/// build of the application reads an item, macOS asks the user to allow it.
-/// </summary>
+// The first time another build of the application reads an item, macOS asks the user to allow it.
 [SupportedOSPlatform("macos")]
 public sealed class KeychainStore : ICredentialStore
 {
@@ -112,7 +109,7 @@ public sealed class KeychainStore : ICredentialStore
         throw new CredentialStoreException($"The Keychain couldn't {action} the secret: {reason}.");
     }
 
-    /// <summary>A Core Foundation object released when disposed. Dictionaries retain what they hold.</summary>
+    // Safe to dispose once put in a dictionary: dictionaries retain what they hold.
     private sealed class CFObject(IntPtr handle) : IDisposable
     {
         public IntPtr Handle { get; } = handle != IntPtr.Zero ? handle : throw new CredentialStoreException("Core Foundation couldn't create an object.");

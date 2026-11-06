@@ -2,7 +2,6 @@ using Datapoint.Terminal.Agent;
 
 namespace Datapoint.Terminal.Tests.Chat;
 
-/// <summary>A terminal where every command succeeds at once.</summary>
 internal sealed class InstantTerminal : IAgentTerminal
 {
     private readonly Dictionary<long, CommandResult> _commands = [];

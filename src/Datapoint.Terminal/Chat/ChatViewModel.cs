@@ -7,10 +7,7 @@ using Datapoint.Terminal.Shell;
 
 namespace Datapoint.Terminal.Chat;
 
-/// <summary>
-/// The chat beside a terminal: the conversation, the agent's status, and the approvals and questions the agent waits on.
-/// The agent calls in from background threads; everything the view sees changes on the user interface thread.
-/// </summary>
+// The agent calls in from background threads; everything the view sees changes on the user interface thread.
 public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDisposable
 {
     private readonly IUiThread _ui;
@@ -59,7 +56,6 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
 
     public bool HasAgent => _agent is not null && IsConnected;
 
-    /// <summary>The agent has a provider it can use; without one, the chat offers to connect one.</summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasAgent), nameof(NeedsProvider))]
     [NotifyCanExecuteChangedFor(nameof(SendCommand), nameof(ContinueCommand))]
@@ -74,16 +70,12 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
 
     public bool HasModelChoices => ModelChoices.Count > 0;
 
-    /// <summary>Called when the user picks another model in the chat.</summary>
     public Action<ModelChoice>? ModelChosen { get; set; }
 
-    /// <summary>Called when the user asks for settings, e.g. to connect a provider.</summary>
     public Action? SettingsRequested { get; set; }
 
-    /// <summary>The agent is working on its own: thinking or running a command.</summary>
     public bool IsWorking => Status is AgentStatus.Thinking or AgentStatus.RunningCommand;
 
-    /// <summary>The agent waits for the user: an approval, an answer, or input in the terminal.</summary>
     public bool NeedsUser => Status is AgentStatus.WaitingForApproval or AgentStatus.WaitingForUser;
 
     public bool IsInterrupted => Status == AgentStatus.Interrupted;
@@ -92,7 +84,6 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
 
     private bool IsBusy => Status is not (AgentStatus.Idle or AgentStatus.Interrupted);
 
-    /// <summary>Connects the chat to its terminal's agent, and says where the conversation is sent.</summary>
     public void Attach(TerminalAgent agent, string privacyNotice)
     {
         ArgumentNullException.ThrowIfNull(agent);
@@ -107,7 +98,6 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
         NotifyCommands();
     }
 
-    /// <summary>Shows the models the user can switch between, without treating it as the user's choice.</summary>
     public void SetModels(IEnumerable<ModelChoice> choices, ModelChoice? selected)
     {
         ArgumentNullException.ThrowIfNull(choices);
@@ -123,10 +113,8 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
         OnPropertyChanged(nameof(HasModelChoices));
     }
 
-    /// <summary>Shows a notice from the application, e.g. that no provider is set up.</summary>
     public void AddNotice(string text) => Items.Add(new ChatItemViewModel(ChatItemKind.Notice, text));
 
-    /// <summary>Called for every keystroke or paste in the terminal.</summary>
     public void OnUserTyped() => _agent?.NotifyUserTyped();
 
     public Task<CommandApproval> RequestApprovalAsync(CommandProposal proposal, CancellationToken cancellationToken)

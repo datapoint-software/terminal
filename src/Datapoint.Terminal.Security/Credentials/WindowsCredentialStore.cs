@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Datapoint.Terminal.Security.Credentials;
 
-/// <summary>Generic credentials in Windows Credential Manager, protected by the user's logon (DPAPI).</summary>
+// Protected by the user's logon (DPAPI).
 [SupportedOSPlatform("windows")]
 public sealed partial class WindowsCredentialStore : ICredentialStore
 {
@@ -108,7 +108,7 @@ public sealed partial class WindowsCredentialStore : ICredentialStore
     [LibraryImport("advapi32.dll")]
     private static partial void CredFree(IntPtr buffer);
 
-    /// <summary>CREDENTIALW.</summary>
+    // Win32's CREDENTIALW.
     [StructLayout(LayoutKind.Sequential)]
     private struct Credential
     {

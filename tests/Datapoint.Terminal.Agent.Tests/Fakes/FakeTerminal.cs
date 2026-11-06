@@ -1,6 +1,5 @@
 namespace Datapoint.Terminal.Agent.Tests.Fakes;
 
-/// <summary>A terminal with shell integration where every typed command finishes at once with a scripted result.</summary>
 internal sealed class FakeTerminal : IAgentTerminal
 {
     private readonly Dictionary<long, CommandResult> _commands = [];
@@ -18,7 +17,6 @@ internal sealed class FakeTerminal : IAgentTerminal
 
     public bool IsAtPrompt { get; set; } = true;
 
-    /// <summary>When false, typed commands keep running until <see cref="FinishLast"/>.</summary>
     public bool FinishesCommands { get; set; } = true;
 
     public Func<string, (string Output, int? ExitCode)> Run { get; set; } = command => ($"ran {command}", 0);

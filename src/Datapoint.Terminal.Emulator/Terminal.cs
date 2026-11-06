@@ -48,10 +48,8 @@ public sealed partial class Terminal : IParserHandler
 
     public string Title { get; private set; } = string.Empty;
 
-    /// <summary>The shell's working folder, as its last OSC 7 report gave it.</summary>
     public string? WorkingDirectory { get; private set; }
 
-    /// <summary>The host name in the last OSC 7 report; empty when the shell left it out.</summary>
     public string? WorkingDirectoryHost { get; private set; }
 
     public int Columns => Screen.Columns;
@@ -94,10 +92,6 @@ public sealed partial class Terminal : IParserHandler
         }
     }
 
-    /// <summary>
-    /// The text of the primary screen's lines <paramref name="firstLine"/> to <paramref name="lastLine"/>, counted from the start
-    /// of the session as command records count them. Wrapped rows are joined; lines gone from scrollback are skipped.
-    /// </summary>
     public string GetLineText(long firstLine, long lastLine)
     {
         lock (_sync)

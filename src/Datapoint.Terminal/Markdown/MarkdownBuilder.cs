@@ -14,10 +14,7 @@ using Markdig.Syntax;
 
 namespace Datapoint.Terminal.Markdown;
 
-/// <summary>
-/// Turns Markdown into Avalonia controls: one selectable text block per paragraph, and panels for lists, quotes,
-/// code, tables and footnotes. Only formatting HTML tags are honoured; other HTML is shown as written, never run.
-/// </summary>
+// Only formatting HTML tags are honoured; other HTML is shown as written, never run.
 internal sealed partial class MarkdownBuilder(Control owner)
 {
     private const double LineHeight = 19;
@@ -146,7 +143,7 @@ internal sealed partial class MarkdownBuilder(Control owner)
 
     private static TextBlock MarkerText(string text) => new() { Text = text, MinWidth = 14, Margin = new Thickness(2, 0, 6, 0), LineHeight = LineHeight };
 
-    /// <summary>A task's box, read-only and scaled to the text: the reply reports the state, it isn't a form.</summary>
+    // Read-only: the reply reports the state, it isn't a form.
     private static LayoutTransformControl TaskBox(bool isChecked) => new()
     {
         LayoutTransform = new ScaleTransform(0.7, 0.7),
@@ -225,7 +222,6 @@ internal sealed partial class MarkdownBuilder(Control owner)
         return panel;
     }
 
-    /// <summary>Follows a theme resource, so the colour changes with light and dark mode.</summary>
     private T Brush<T>(T target, AvaloniaProperty property, string key)
         where T : AvaloniaObject
     {

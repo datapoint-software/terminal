@@ -3,7 +3,6 @@ using Microsoft.Extensions.AI;
 
 namespace Datapoint.Terminal.Agent.Tools;
 
-/// <summary>Reads tool arguments however the provider delivered them (JSON elements or plain values), without throwing.</summary>
 internal static class ToolArguments
 {
     public static string? GetString(AIFunctionArguments arguments, string name)

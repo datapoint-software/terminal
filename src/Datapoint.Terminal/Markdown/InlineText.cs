@@ -3,7 +3,6 @@ using Avalonia.Controls.Documents;
 
 namespace Datapoint.Terminal.Markdown;
 
-/// <summary>The text of a block's inlines, in the same order and positions the text layout uses.</summary>
 internal static class InlineText
 {
     public static IEnumerable<(Run Run, LinkSpan? Link)> Runs(InlineCollection inlines, LinkSpan? link = null)

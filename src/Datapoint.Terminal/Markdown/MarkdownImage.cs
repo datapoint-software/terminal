@@ -7,10 +7,8 @@ using Datapoint.Terminal.Resources;
 
 namespace Datapoint.Terminal.Markdown;
 
-/// <summary>
-/// An image in a reply. It's only downloaded when the user asks, because loading it tells the server the user's
-/// address and that they read the reply, and the address can come from untrusted terminal output.
-/// </summary>
+// Only downloaded when the user asks, because loading it tells the server the user's address and that they read the reply,
+// and the address can come from untrusted terminal output.
 internal sealed class MarkdownImage : Border
 {
     private const int MaxBytes = 10 * 1024 * 1024;

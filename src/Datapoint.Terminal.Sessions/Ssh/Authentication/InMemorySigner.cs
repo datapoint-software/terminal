@@ -5,7 +5,6 @@ using Datapoint.Terminal.Sessions.Ssh.Transport;
 
 namespace Datapoint.Terminal.Sessions.Ssh.Authentication;
 
-/// <summary>A signer for a private key the application holds in memory, e.g. one read from a key file.</summary>
 public sealed class InMemorySigner : ISshSigner, IDisposable
 {
     private readonly Func<ReadOnlyMemory<byte>, string, byte[]> _sign;

@@ -7,7 +7,6 @@ using static Datapoint.Terminal.Agent.Tests.Fakes.ScriptedChatClient;
 
 namespace Datapoint.Terminal.Agent.Tests;
 
-/// <summary>The agent typing into a real shell with our shell integration, through the same connection the window uses.</summary>
 public sealed class RealShellTests : IDisposable
 {
     private readonly string _home = Directory.CreateTempSubdirectory("datapoint-agent-").FullName;

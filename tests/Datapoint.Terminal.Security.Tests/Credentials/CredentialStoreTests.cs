@@ -2,7 +2,7 @@ using Datapoint.Terminal.Security.Credentials;
 
 namespace Datapoint.Terminal.Security.Tests.Credentials;
 
-/// <summary>Runs against this system's real store with a throwaway item, removed afterwards.</summary>
+// Runs against this system's real store with a throwaway item, removed afterwards.
 public sealed class CredentialStoreTests : IDisposable
 {
     private const string Service = "Datapoint Terminal Tests";

@@ -3,7 +3,6 @@ using Datapoint.Terminal.Agent.Providers;
 
 namespace Datapoint.Terminal.Settings;
 
-/// <summary>Models we suggest for each provider. The user can type any other model name.</summary>
 public static partial class ProviderCatalog
 {
     public static IReadOnlyList<string> Models(ProviderKind kind) => kind switch
@@ -23,7 +22,6 @@ public static partial class ProviderCatalog
 
     public static bool NeedsKey(ProviderKind kind) => kind != ProviderKind.OpenAICompatible;
 
-    /// <summary>A short name for a model, as Anthropic writes it (claude-opus-5-5 is "Opus 5.5"); other models keep their ID.</summary>
     public static string DisplayName(string model)
     {
         var match = ClaudeModel().Match(model);

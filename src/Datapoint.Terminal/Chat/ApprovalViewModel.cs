@@ -6,7 +6,7 @@ using Datapoint.Terminal.Resources;
 
 namespace Datapoint.Terminal.Chat;
 
-/// <summary>A command waiting for the user's decision. The user can edit it; the agent is told about any edit.</summary>
+// The user can edit the command; the agent is told about any edit.
 public sealed partial class ApprovalViewModel : ObservableObject
 {
     private readonly TaskCompletionSource<CommandApproval> _decision = new(TaskCreationOptions.RunContinuationsAsynchronously);

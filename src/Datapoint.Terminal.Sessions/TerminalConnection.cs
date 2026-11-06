@@ -5,10 +5,6 @@ using EmulatorTerminal = Datapoint.Terminal.Emulator.Terminal;
 
 namespace Datapoint.Terminal.Sessions;
 
-/// <summary>
-/// Joins a session to an emulator: output is fed to the emulator as it arrives, and input (the user's, the agent's and the
-/// emulator's own replies) goes to the session in the order it was sent.
-/// </summary>
 public sealed class TerminalConnection : ITerminalHost, IAsyncDisposable
 {
     private readonly ITerminalSession _session;
@@ -28,22 +24,18 @@ public sealed class TerminalConnection : ITerminalHost, IAsyncDisposable
 
     public EmulatorTerminal Terminal { get; }
 
-    /// <summary>Raised on a background thread after output has been fed to the emulator.</summary>
+    // These events are raised on a background thread; handlers that touch the user interface must hand over to it.
     public event EventHandler? OutputArrived;
 
-    /// <summary>Raised on a background thread when the shell's title changes; read it from <see cref="EmulatorTerminal.Title"/>.</summary>
     public event EventHandler? TitleChanged;
 
-    /// <summary>Raised on a background thread once the session has ended.</summary>
     public event EventHandler? Ended;
 
-    /// <summary>Raised on a background thread when a program rings the bell.</summary>
     public event EventHandler? BellRang;
 
     [SuppressMessage("Usage", "VSTHRD003", Justification = "The session completes on its own; nothing waits on the caller's context.")]
     public Task<int?> Exited => _session.Exited;
 
-    /// <summary>Queues input for the shell.</summary>
     public void Send(ReadOnlySpan<byte> data) => _input.Writer.TryWrite(data.ToArray());
 
     public Task ResizeAsync(int columns, int rows, CancellationToken cancellationToken) => _session.ResizeAsync(columns, rows, cancellationToken);

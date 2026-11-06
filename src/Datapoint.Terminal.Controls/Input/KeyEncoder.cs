@@ -4,15 +4,11 @@ using Datapoint.Terminal.Emulator.Screen;
 
 namespace Datapoint.Terminal.Controls.Input;
 
-/// <summary>
-/// Turns keys that aren't text into the bytes xterm sends for them. Typed text arrives separately, through text input.
-/// Modifier parameters follow xterm: 1 + Shift (1) + Alt (2) + Ctrl (4).
-/// </summary>
+// Modifier parameters follow xterm: 1 + Shift (1) + Alt (2) + Ctrl (4).
 public static class KeyEncoder
 {
     private const string Escape = "\e";
 
-    /// <summary>Returns the bytes for <paramref name="key"/>, or null when the key is text (or nothing) and text input should handle it.</summary>
     public static byte[]? Encode(Key key, KeyModifiers modifiers, TerminalModes modes, bool altSendsEscape)
     {
         ArgumentNullException.ThrowIfNull(modes);

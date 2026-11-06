@@ -3,7 +3,6 @@ using Microsoft.Extensions.AI;
 
 namespace Datapoint.Terminal.Agent.Tests.Fakes;
 
-/// <summary>A model that answers from a script: each call takes the next step, given the conversation so far.</summary>
 internal sealed class ScriptedChatClient(params Func<IReadOnlyList<ChatMessage>, ChatResponse>[] steps) : IChatClient
 {
     private int _next;

@@ -8,11 +8,8 @@ using Datapoint.Terminal.Resources;
 
 namespace Datapoint.Terminal.Markdown;
 
-/// <summary>
-/// Shows text written in Markdown, as models write their replies. A selection can run across the whole reply.
-/// Links open only after the user confirms the full address, and images load only when asked: a reply can repeat
-/// text from the terminal, which is untrusted.
-/// </summary>
+// Links open only after the user confirms the full address, and images load only when asked: a reply can repeat
+// text from the terminal, which is untrusted.
 public sealed partial class MarkdownView : StackPanel
 {
     public static readonly StyledProperty<string?> TextProperty = AvaloniaProperty.Register<MarkdownView, string?>(nameof(Text));
@@ -79,7 +76,6 @@ public sealed partial class MarkdownView : StackPanel
         return new ContextMenu { Items = { copy, all } };
     }
 
-    /// <summary>The selected text, block by block, one line apart.</summary>
     public string SelectedText =>
         string.Join('\n', TextBlocks().Where(block => block.SelectionStart != block.SelectionEnd).Select(block => block.SelectedText));
 

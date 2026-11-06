@@ -3,10 +3,6 @@ using Microsoft.Extensions.AI;
 
 namespace Datapoint.Terminal.Agent;
 
-/// <summary>
-/// The agent for one terminal: keeps the conversation, sends it to the provider, and carries out the tools the model calls.
-/// One task runs at a time; <see cref="Interrupt"/> stops it, leaving any running command alone.
-/// </summary>
 public sealed partial class TerminalAgent : IDisposable
 {
     private const string InterruptedResult = "Not completed: the user interrupted you. Wait for their instructions.";
@@ -38,17 +34,16 @@ public sealed partial class TerminalAgent : IDisposable
         _chatOptions = new ChatOptions { Tools = CreateTools(), MaxOutputTokens = _options.MaxOutputTokens };
     }
 
-    /// <summary>Switches provider or model; takes effect from the agent's next step, keeping the conversation.</summary>
     public void UseClient(IChatClient client)
     {
         ArgumentNullException.ThrowIfNull(client);
         _client = client;
     }
 
-    /// <summary>Raised on a background thread for everything the chat pane shows.</summary>
+    // Raised on a background thread.
     public event EventHandler<AgentEventArgs>? EventRaised;
 
-    /// <summary>Applies from the next command. Auto lasts for one task, then falls back to the default.</summary>
+    // Auto lasts for one task, then falls back to the default.
     public ApprovalMode Mode { get; set; }
 
     public AgentStatus Status => _status;
@@ -64,25 +59,20 @@ public sealed partial class TerminalAgent : IDisposable
         }
     }
 
-    /// <summary>
-    /// True while the agent waits for the user to answer a prompt in the terminal (e.g. a password); typing then is the answer,
-    /// not an interruption.
-    /// </summary>
     public bool IsAwaitingTerminalInput => _isAwaitingTerminalInput;
 
-    /// <summary>Gives the agent a task from the chat. Completes when the agent has finished, been interrupted, or failed.</summary>
     public Task SendAsync(string message, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(message);
         return RunTaskAsync(message, cancellationToken);
     }
 
-    /// <summary>Resumes after an interruption; the agent is told to look at the terminal first, since the user may have used it.</summary>
+    // The agent is told to look at the terminal first, since the user may have used it.
     public Task ContinueAsync(CancellationToken cancellationToken = default) => RunTaskAsync(
         "Continue the task. I may have used the terminal while you were stopped: use read_screen to check its state before going on.",
         cancellationToken);
 
-    /// <summary>Stops the current task. Anything already running in the terminal keeps running.</summary>
+    // Anything already running in the terminal keeps running: stopping it is the user's call.
     public void Interrupt()
     {
         lock (_sync)
@@ -91,7 +81,6 @@ public sealed partial class TerminalAgent : IDisposable
         }
     }
 
-    /// <summary>Called for every keystroke or paste in the terminal: interrupts the agent unless it's waiting for that input.</summary>
     public void NotifyUserTyped()
     {
         if (_isAwaitingTerminalInput)
@@ -102,7 +91,6 @@ public sealed partial class TerminalAgent : IDisposable
         Interrupt();
     }
 
-    /// <summary>Forgets the conversation, keeping the instructions.</summary>
     public void ClearConversation()
     {
         lock (_sync)
@@ -222,7 +210,7 @@ public sealed partial class TerminalAgent : IDisposable
         return updates.ToChatResponse();
     }
 
-    /// <summary>Keeps what the user already saw of an interrupted reply, so the model knows what it said.</summary>
+    // Kept so the model knows what the user already saw of an interrupted reply.
     private void KeepPartialReply(List<ChatResponseUpdate> updates)
     {
         var text = string.Concat(updates.Select(update => update.Text));
@@ -247,7 +235,7 @@ public sealed partial class TerminalAgent : IDisposable
         return result?.ToString() ?? string.Empty;
     }
 
-    /// <summary>Gives every tool call without a result an "interrupted" one, so the conversation stays valid for the provider.</summary>
+    // Every tool call needs a result, or the conversation isn't valid for the provider.
     private void CloseUnansweredCalls()
     {
         var answered = _history.SelectMany(message => message.Contents).OfType<FunctionResultContent>().Select(result => result.CallId).ToHashSet(StringComparer.Ordinal);

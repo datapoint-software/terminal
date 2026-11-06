@@ -3,10 +3,8 @@ using Datapoint.Terminal.Security.Credentials;
 
 namespace Datapoint.Terminal.Settings;
 
-/// <summary>
-/// API keys for the user's providers. They live in the operating system's credential store; when there is none (e.g. Linux
-/// without a keyring), only the provider's usual environment variable can supply a key, and the application says so.
-/// </summary>
+// Without a credential store (e.g. Linux without a keyring), only the provider's usual environment variable can supply a key,
+// and the application says so.
 public sealed class ProviderKeys(ICredentialStore? store, Func<string, string?> environment)
 {
     public const string Service = "Datapoint Terminal";
@@ -15,7 +13,6 @@ public sealed class ProviderKeys(ICredentialStore? store, Func<string, string?> 
 
     public bool CanSave => Store is not null;
 
-    /// <summary>Where keys are kept, for the user: "Keychain", "Credential Manager", ...</summary>
     public string? StoreName => Store?.Name;
 
     public string? Read(ProviderAccount provider)
@@ -24,7 +21,6 @@ public sealed class ProviderKeys(ICredentialStore? store, Func<string, string?> 
         return Store?.Read(Service, Account(provider)) ?? FromEnvironment(provider.Kind);
     }
 
-    /// <summary>Whether the key comes from an environment variable rather than the store, and which.</summary>
     public string? EnvironmentVariableFor(ProviderAccount provider)
     {
         ArgumentNullException.ThrowIfNull(provider);

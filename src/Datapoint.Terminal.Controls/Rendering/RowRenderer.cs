@@ -8,10 +8,6 @@ using Datapoint.Terminal.Emulator.Screen;
 
 namespace Datapoint.Terminal.Controls.Rendering;
 
-/// <summary>
-/// Draws rows of cells. Each row's drawing is cached until the row changes, or the font or palette does.
-/// Runs of plain ASCII in one style are drawn as one text; anything else is drawn cell by cell at its grid position.
-/// </summary>
 internal sealed class RowRenderer
 {
     private readonly ConditionalWeakTable<Row, RowDrawing> _cache = [];
@@ -36,7 +32,6 @@ internal sealed class RowRenderer
         Invalidate();
     }
 
-    /// <summary>Drops every cached row, e.g. after the palette changed.</summary>
     public void Invalidate() => _generation++;
 
     public IImmutableSolidColorBrush Brush(int rgb, double opacity = 1)
@@ -179,7 +174,6 @@ internal sealed class RowRenderer
         drawing.Texts.Add((Text(text, style, Brush(foreground, opacity)), column * Metrics.Width));
     }
 
-    /// <summary>Consecutive plain ASCII cells in one style, drawn as one text.</summary>
     private sealed class TextRun
     {
         private readonly StringBuilder _text = new();

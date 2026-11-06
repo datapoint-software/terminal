@@ -5,10 +5,8 @@ using Avalonia.VisualTree;
 
 namespace Datapoint.Terminal.Markdown;
 
-/// <summary>
-/// Selection across the reply's text blocks: the view takes the pointer before the blocks do, works out which block
-/// and character it's over, and sets each block's own selection, so a drag can run from one paragraph into the next.
-/// </summary>
+// The view takes the pointer before the text blocks do and sets each block's own selection, so a drag can run from one
+// paragraph into the next.
 public sealed partial class MarkdownView
 {
     private const double DragThreshold = 3;
@@ -105,7 +103,6 @@ public sealed partial class MarkdownView
         OfferLink(link.Uri);
     }
 
-    /// <summary>Clears a selection left in another reply, so only one is selected at a time.</summary>
     private void TakeSelection()
     {
         if (s_selecting?.TryGetTarget(out var previous) == true && previous != this)
@@ -122,7 +119,6 @@ public sealed partial class MarkdownView
         return hit.IsInside ? InlineText.LinkAt(block, hit.CharacterHit.FirstCharacterIndex) : null;
     }
 
-    /// <summary>The block and character under the pointer; above a block means its start, past the last one its end.</summary>
     private (int Block, int Index) Locate(PointerEventArgs e)
     {
         for (var index = 0; index < _blocks.Count; index++)

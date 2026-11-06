@@ -18,10 +18,7 @@ public sealed partial class SshClient
 
     public bool IsAuthenticated => _isAuthenticated;
 
-    /// <summary>
-    /// Logs in with the user's keys first, then keyboard-interactive, then password, as the server allows.
-    /// Starts with "none" to learn the methods, and refuses a login that needed no proof when the options say so.
-    /// </summary>
+    // A login that needed no proof is refused when the options say so.
     public async Task AuthenticateAsync(IReadOnlyList<ISshSigner> keys, IAuthenticationPrompts prompts, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(keys);
@@ -198,7 +195,7 @@ public sealed partial class SshClient
         return login.Remember(ReadReply(await ReceiveAuthenticationMessageAsync(login.Prompts, cancellationToken).ConfigureAwait(false)));
     }
 
-    /// <summary>Picks the signature algorithm for a key; RSA uses SHA-2 only, as the server advertises.</summary>
+    // RSA uses SHA-2 only, as the server advertises.
     private string? ChooseSignatureAlgorithm(string keyType)
     {
         if (!string.Equals(keyType, AlgorithmNames.RsaSha1, StringComparison.Ordinal))

@@ -2,10 +2,7 @@ using System.Text.RegularExpressions;
 
 namespace Datapoint.Terminal.Agent.Safety;
 
-/// <summary>
-/// Removes secrets from text before it reaches a provider: secrets the application knows (such as the user's API keys) and
-/// well-known key formats. A first set of rules; engineering.md's full design adds gitleaks' rules and Microsoft's detectors.
-/// </summary>
+// A first set of rules; engineering.md's full design adds gitleaks' rules and Microsoft's detectors.
 public sealed partial class SecretRedactor
 {
     public const string Mask = "[secret removed]";
@@ -13,7 +10,7 @@ public sealed partial class SecretRedactor
     private readonly HashSet<string> _known = new(StringComparer.Ordinal);
     private readonly Lock _lock = new();
 
-    /// <summary>Adds a secret to remove wherever it appears. Short values are ignored, since they would match ordinary text.</summary>
+    // Short values are ignored, since they would match ordinary text.
     public void AddKnownSecret(string secret)
     {
         if (string.IsNullOrEmpty(secret) || secret.Length < 8)

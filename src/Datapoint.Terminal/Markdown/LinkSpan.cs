@@ -2,7 +2,7 @@ using Avalonia.Controls.Documents;
 
 namespace Datapoint.Terminal.Markdown;
 
-/// <summary>A link the user can open, after confirming. Only http, https and mailto links become one.</summary>
+// Opens only after the user confirms; only http, https and mailto links become one.
 internal sealed class LinkSpan(Uri uri) : Span
 {
     public Uri Uri { get; } = uri;

@@ -1,6 +1,5 @@
 namespace Datapoint.Terminal.Agent;
 
-/// <summary>Wakes a waiting task whenever the terminal shows new output or ends.</summary>
 internal sealed class OutputSignal : IDisposable
 {
     private readonly IAgentTerminal _terminal;
@@ -17,7 +16,6 @@ internal sealed class OutputSignal : IDisposable
 
     public bool HasEnded { get; private set; }
 
-    /// <summary>Waits for new output, at most <paramref name="timeout"/>; returns whether any arrived.</summary>
     public Task<bool> WaitAsync(TimeSpan timeout, CancellationToken cancellationToken) =>
         _signal.WaitAsync(timeout <= TimeSpan.Zero ? TimeSpan.Zero : timeout, cancellationToken);
 

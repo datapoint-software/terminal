@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 
 namespace Datapoint.Terminal.Markdown;
 
-/// <summary>An inline HTML tag in a reply, e.g. <c>&lt;kbd&gt;</c>. Only formatting tags are honoured; attributes are ignored.</summary>
+// Only formatting tags are honoured; attributes are ignored.
 internal readonly partial record struct HtmlTag(string Name, bool IsClosing)
 {
     private static readonly HashSet<string> s_formatting = new(StringComparer.Ordinal)
@@ -12,7 +12,6 @@ internal readonly partial record struct HtmlTag(string Name, bool IsClosing)
 
     public bool IsBreak => string.Equals(Name, "br", StringComparison.Ordinal);
 
-    /// <summary>The tag, if it's one of the formatting tags we show; anything else stays visible as text.</summary>
     public static HtmlTag? ReadFormatting(string html)
     {
         var match = Pattern().Match(html);

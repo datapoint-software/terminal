@@ -3,7 +3,6 @@ using System.Runtime.Versioning;
 
 namespace Datapoint.Terminal.Security.Credentials;
 
-/// <summary>The parts of Security.framework and Core Foundation the Keychain store needs.</summary>
 [SupportedOSPlatform("macos")]
 internal static partial class Keychain
 {
@@ -33,7 +32,7 @@ internal static partial class Keychain
 
     public static IntPtr True { get; } = Constant(s_coreFoundation, "kCFBooleanTrue");
 
-    /// <summary>The callback structures themselves, passed by address.</summary>
+    // Unlike the constants above, these are the callback structures themselves, passed by address.
     public static IntPtr DictionaryKeyCallBacks { get; } = NativeLibrary.GetExport(s_coreFoundation, "kCFTypeDictionaryKeyCallBacks");
 
     public static IntPtr DictionaryValueCallBacks { get; } = NativeLibrary.GetExport(s_coreFoundation, "kCFTypeDictionaryValueCallBacks");
@@ -68,6 +67,6 @@ internal static partial class Keychain
     [LibraryImport(CoreFoundationLibrary)]
     public static partial void CFRelease(IntPtr value);
 
-    /// <summary>Reads a constant the framework exports as a global variable holding a Core Foundation reference.</summary>
+    // The framework exports each constant as a global variable holding a Core Foundation reference.
     private static IntPtr Constant(IntPtr library, string name) => Marshal.ReadIntPtr(NativeLibrary.GetExport(library, name));
 }

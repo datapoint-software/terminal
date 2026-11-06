@@ -6,10 +6,6 @@ using Datapoint.Terminal.Sessions.Ssh.Transport;
 
 namespace Datapoint.Terminal.Sessions.Ssh;
 
-/// <summary>
-/// An SSH client connection: version exchange, key exchange, rekeying, login and channels.
-/// One background loop reads every packet; senders wait while a key exchange is in progress.
-/// </summary>
 public sealed partial class SshClient : IAsyncDisposable
 {
     private readonly SshConnectionOptions _options;
@@ -118,7 +114,6 @@ public sealed partial class SshClient : IAsyncDisposable
         _stream.Close();
     }
 
-    /// <summary>Sends a message, waiting while a key exchange is in progress.</summary>
     internal async Task SendAsync(byte[] payload, CancellationToken cancellationToken)
     {
         var sent = false;
@@ -144,10 +139,7 @@ public sealed partial class SshClient : IAsyncDisposable
         await StartRekeyIfDueAsync(cancellationToken).ConfigureAwait(false);
     }
 
-    /// <summary>
-    /// Sends a message from the read loop. While a key exchange is in progress it is queued instead,
-    /// because the loop can't wait for an exchange that only it can finish.
-    /// </summary>
+    // Queued during a key exchange, because the read loop can't wait for an exchange that only it can finish.
     private async Task SendFromReadLoopAsync(byte[] payload, CancellationToken cancellationToken)
     {
         await _sendGate.WaitAsync(cancellationToken).ConfigureAwait(false);
@@ -342,7 +334,6 @@ public sealed partial class SshClient : IAsyncDisposable
         return bytes >= _options.RekeyBytes || packets >= _options.RekeyPackets || age >= _options.RekeyInterval;
     }
 
-    /// <summary>Starts a key exchange by sending our KEXINIT, unless one is already sent. Senders wait until it ends.</summary>
     private async Task BeginKeyExchangeAsync(CancellationToken cancellationToken)
     {
         await _sendGate.WaitAsync(cancellationToken).ConfigureAwait(false);

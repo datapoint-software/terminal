@@ -4,7 +4,6 @@ using Datapoint.Terminal.Agent;
 
 namespace Datapoint.Terminal.Chat;
 
-/// <summary>A question from the agent: the user picks an option or answers in their own words.</summary>
 public sealed partial class QuestionViewModel : ObservableObject
 {
     private readonly TaskCompletionSource<string?> _answer = new(TaskCreationOptions.RunContinuationsAsynchronously);

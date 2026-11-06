@@ -3,7 +3,6 @@ using Avalonia.Media;
 
 namespace Datapoint.Terminal.Controls.Rendering;
 
-/// <summary>The size of one cell, from the font's advance and line height. The grid, not the font, decides where each character goes.</summary>
 public sealed record CellMetrics(double Width, double Height, double Baseline)
 {
     public static CellMetrics Measure(Typeface typeface, double fontSize, double renderScaling)

@@ -4,7 +4,6 @@ using Porta.Pty;
 
 namespace Datapoint.Terminal.Sessions.Local;
 
-/// <summary>A shell on this computer, in a pseudo-terminal (ConPTY on Windows, a native helper on macOS and Linux).</summary>
 public sealed class LocalSession : ITerminalSession
 {
     private static readonly string[] s_localeVariables = ["LANG", "LC_ALL", "LC_CTYPE"];

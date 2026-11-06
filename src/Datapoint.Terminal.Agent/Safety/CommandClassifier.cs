@@ -2,10 +2,8 @@ using System.Collections.Frozen;
 
 namespace Datapoint.Terminal.Agent.Safety;
 
-/// <summary>
-/// Decides how risky a command is. Conservative: a command is read-only only when every part of it is a known reading command
-/// with no output redirection; anything unknown counts as a change.
-/// </summary>
+// Conservative: a command is read-only only when every part of it is a known reading command with no output redirection;
+// anything unknown counts as a change.
 public static class CommandClassifier
 {
     // Programs that only read, as long as none of the options in s_writingOptions is given. Left out on purpose: env, nice,

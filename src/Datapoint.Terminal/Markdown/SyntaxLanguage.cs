@@ -2,10 +2,7 @@ using System.Text.RegularExpressions;
 
 namespace Datapoint.Terminal.Markdown;
 
-/// <summary>
-/// A family of languages coloured the same way: one regular expression whose named groups are comments, strings,
-/// variables, numbers and keywords. It's a tokenizer, not a parser, so it can be wrong at the edges; it never changes the text.
-/// </summary>
+// A tokenizer, not a parser, so it can be wrong at the edges; it never changes the text.
 internal sealed class SyntaxLanguage
 {
     private const string Number = @"\b(?:0[xX][0-9a-fA-F]+|\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\b";
@@ -98,7 +95,6 @@ internal sealed class SyntaxLanguage
 
     public Regex Pattern { get; }
 
-    /// <summary>The language a code block's info string names, e.g. <c>bash</c> in <c>```bash</c>; null for one we don't colour.</summary>
     public static SyntaxLanguage? Find(string name) => s_byName.GetValueOrDefault(name);
 
     private static Dictionary<string, SyntaxLanguage> Names()

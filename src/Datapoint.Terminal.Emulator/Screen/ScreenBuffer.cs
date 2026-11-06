@@ -74,9 +74,6 @@ public sealed class ScreenBuffer(int columns, int rows, int maxScrollback, Chang
         _scrollback.Clear();
     }
 
-    /// <summary>
-    /// Changes the size. When there are fewer rows, <paramref name="dropFromTop"/> rows go to scrollback and the rest are cut from the bottom.
-    /// </summary>
     public void Resize(int newColumns, int newRows, int dropFromTop)
     {
         var resized = CreateRows(newRows, newColumns, CellStyle.Default);

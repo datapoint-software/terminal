@@ -3,7 +3,6 @@ using Microsoft.Extensions.AI;
 
 namespace Datapoint.Terminal.Tests.Chat;
 
-/// <summary>A model that replies from a list, repeating the last reply.</summary>
 internal sealed class ListChatClient(params ChatResponse[] responses) : IChatClient
 {
     private int _next;

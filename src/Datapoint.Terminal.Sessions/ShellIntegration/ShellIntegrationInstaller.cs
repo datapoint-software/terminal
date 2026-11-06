@@ -1,16 +1,13 @@
 namespace Datapoint.Terminal.Sessions.ShellIntegration;
 
-/// <summary>
-/// Writes our shell integration scripts to a private folder and works out how to start each shell with them,
-/// without changing any of the user's files (bash's --init-file, zsh's ZDOTDIR, fish's --init-command, PowerShell's -Command).
-/// </summary>
+// Never changes the user's files: bash's --init-file, zsh's ZDOTDIR, fish's --init-command and PowerShell's -Command load our scripts instead.
 public sealed class ShellIntegrationInstaller : IDisposable
 {
     public const string NonceVariable = "DATAPOINT_NONCE";
 
     private ShellIntegrationInstaller(string folder) => Folder = folder;
 
-    /// <summary>The folder holding the scripts; readable only by the current user.</summary>
+    // Readable only by the current user.
     public string Folder { get; }
 
     public static ShellIntegrationInstaller Create()
@@ -44,7 +41,6 @@ public sealed class ShellIntegrationInstaller : IDisposable
         };
     }
 
-    /// <summary>Works out how to start <paramref name="program"/> with our integration; shells we don't know start as they are.</summary>
     public ShellLaunch Prepare(string program, bool login, string nonce)
     {
         var environment = new Dictionary<string, string>(StringComparer.Ordinal) { [NonceVariable] = nonce };

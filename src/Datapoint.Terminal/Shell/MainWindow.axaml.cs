@@ -179,7 +179,6 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    /// <summary>Follows the settings: the provider and model the agent uses, and the models the chat offers.</summary>
     private void ApplySettings()
     {
         var current = _settings.Current;

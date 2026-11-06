@@ -3,7 +3,7 @@ using System.Resources;
 
 namespace Datapoint.Terminal.Resources;
 
-/// <summary>The application's text, from Strings.resx. Written by hand: the designer generator only runs inside Visual Studio.</summary>
+// Written by hand: the designer generator only runs inside Visual Studio.
 public static class Strings
 {
     private static readonly ResourceManager s_resources = new("Datapoint.Terminal.Resources.Strings", typeof(Strings).Assembly);

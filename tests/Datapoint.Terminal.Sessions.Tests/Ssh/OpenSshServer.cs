@@ -7,10 +7,8 @@ using Datapoint.Terminal.Sessions.Ssh.Authentication;
 
 namespace Datapoint.Terminal.Sessions.Tests.Ssh;
 
-/// <summary>
-/// Runs OpenSSH in Docker (tests/ssh-server) on a random local port. Tests that need it skip when Docker or the image is missing.
-/// Build the image with: docker build -t datapoint-terminal-sshd:test tests/ssh-server
-/// </summary>
+// Tests that need it skip when Docker or the image is missing. Build the image with:
+// docker build -t datapoint-terminal-sshd:test tests/ssh-server
 public sealed class OpenSshServer : IAsyncLifetime
 {
     public const string Image = "datapoint-terminal-sshd:test";

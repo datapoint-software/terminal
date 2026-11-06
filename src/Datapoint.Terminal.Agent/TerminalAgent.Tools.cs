@@ -158,7 +158,6 @@ public sealed partial class TerminalAgent
         return await _user.RequestApprovalAsync(new CommandProposal(command, purpose, risk), cancellationToken).ConfigureAwait(false);
     }
 
-    /// <summary>Why the agent can't type a command now, or null when the terminal is ready for one.</summary>
     private string? TerminalProblem()
     {
         var state = _terminal.GetState();
@@ -193,10 +192,7 @@ public sealed partial class TerminalAgent
         }
     }
 
-    /// <summary>
-    /// The result once the command has finished, the session has ended or time is up. Without shell integration, a command
-    /// counts as finished once its output has been quiet for a moment, which is only a guess.
-    /// </summary>
+    // Without shell integration, a command counts as finished once its output has been quiet for a moment, which is only a guess.
     private string? TryFinish(long start, OutputSignal signal, string? command, bool hasIntegration, DateTimeOffset deadline)
     {
         var result = _terminal.GetCommand(start);
@@ -230,7 +226,7 @@ public sealed partial class TerminalAgent
         return status + "\n" + Untrusted(output);
     }
 
-    /// <summary>Redacts and shortens terminal text, and marks it as data so the model doesn't take it for instructions.</summary>
+    // Terminal text is marked as data so the model doesn't take it for instructions.
     private string Untrusted(string text)
     {
         var redacted = _redactor.Redact(text);

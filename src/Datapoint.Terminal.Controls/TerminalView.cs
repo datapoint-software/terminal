@@ -14,10 +14,6 @@ using EmulatorTerminal = Datapoint.Terminal.Emulator.Terminal;
 
 namespace Datapoint.Terminal.Controls;
 
-/// <summary>
-/// Shows an emulator's screen and turns the user's keys and pastes into input. It draws itself; output is rendered
-/// at most once per display frame, however fast it arrives.
-/// </summary>
 public sealed class TerminalView : Control
 {
     public static readonly StyledProperty<FontFamily> FontFamilyProperty =
@@ -26,7 +22,6 @@ public sealed class TerminalView : Control
     public static readonly StyledProperty<double> FontSizeProperty =
         AvaloniaProperty.Register<TerminalView, double>(nameof(FontSize), 14);
 
-    /// <summary>Space between the edge and the grid, filled with the terminal's background colour.</summary>
     public static readonly StyledProperty<Thickness> PaddingProperty =
         AvaloniaProperty.Register<TerminalView, Thickness>(nameof(Padding));
 
@@ -50,10 +45,8 @@ public sealed class TerminalView : Control
         ClipToBounds = true;
     }
 
-    /// <summary>Raised with bytes to send to the shell.</summary>
     public event EventHandler<TerminalInputEventArgs>? Input;
 
-    /// <summary>Raised when the grid's size changes, so the session can tell the shell.</summary>
     public event EventHandler<TerminalResizedEventArgs>? Resized;
 
     public FontFamily FontFamily
@@ -74,7 +67,7 @@ public sealed class TerminalView : Control
         set => SetValue(PaddingProperty, value);
     }
 
-    /// <summary>Whether Alt (Option) with a letter sends Escape and the letter, as shells' Meta key. Off on macOS, where Option types characters.</summary>
+    // Off on macOS, where Option types characters.
     public bool AltSendsEscape { get; set; } = !OperatingSystem.IsMacOS();
 
     public EmulatorTerminal? Terminal
@@ -91,7 +84,6 @@ public sealed class TerminalView : Control
 
     public CellMetrics CellMetrics => _renderer.Metrics;
 
-    /// <summary>Tells the view that the emulator changed. Safe to call from any thread, as often as output arrives.</summary>
     public void NotifyOutput()
     {
         if (Interlocked.Exchange(ref _frameRequested, 1) == 1)

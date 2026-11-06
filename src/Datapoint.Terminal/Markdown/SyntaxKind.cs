@@ -1,6 +1,6 @@
 namespace Datapoint.Terminal.Markdown;
 
-/// <summary>What a piece of code is, for colouring it. Each kind but <see cref="Plain"/> has a <c>Syntax…Brush</c> resource.</summary>
+// Each kind but Plain has a Syntax…Brush resource.
 internal enum SyntaxKind
 {
     Plain,

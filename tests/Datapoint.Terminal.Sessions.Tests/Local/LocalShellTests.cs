@@ -6,7 +6,6 @@ using EmulatorTerminal = Datapoint.Terminal.Emulator.Terminal;
 
 namespace Datapoint.Terminal.Sessions.Tests.Local;
 
-/// <summary>Starts real shells with our integration and checks what the emulator records. Skips shells that aren't installed.</summary>
 public sealed class LocalShellTests : IDisposable
 {
     private readonly string _home = Directory.CreateTempSubdirectory("datapoint-home-").FullName;

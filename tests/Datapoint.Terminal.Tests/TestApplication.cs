@@ -6,7 +6,6 @@ using Datapoint.Terminal.Tests;
 
 namespace Datapoint.Terminal.Tests;
 
-/// <summary>The application itself, with its styles, on the headless platform.</summary>
 public static class TestApplication
 {
     public static AppBuilder BuildAvaloniaApp() => AppBuilder.Configure<App>()

@@ -2,10 +2,9 @@ using System.Text.RegularExpressions;
 
 namespace Datapoint.Terminal.Markdown;
 
-/// <summary>Splits code into coloured pieces whose text, joined, is exactly the code.</summary>
 internal static class SyntaxHighlighter
 {
-    /// <summary>Longer code is shown uncoloured, so a huge reply can't stall the window.</summary>
+    // Longer code is shown uncoloured, so a huge reply can't stall the window.
     public const int MaxLength = 50_000;
 
     public static IReadOnlyList<(string Text, SyntaxKind Kind)> Highlight(string code, string? info)

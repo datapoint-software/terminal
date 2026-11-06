@@ -2,13 +2,9 @@ using System.Text;
 
 namespace Datapoint.Terminal.Controls.Input;
 
-/// <summary>Prepares pasted text for the shell.</summary>
 public static class PasteEncoder
 {
-    /// <summary>
-    /// Line breaks become carriage returns, as typed. With bracketed paste the text is wrapped in its markers, and any end marker
-    /// inside it is removed, so pasted text can't end the paste early and run as typed commands.
-    /// </summary>
+    // Any end marker inside pasted text is removed, so it can't end the bracketed paste early and run as typed commands.
     public static byte[] Encode(string text, bool bracketed)
     {
         ArgumentNullException.ThrowIfNull(text);

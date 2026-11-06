@@ -3,7 +3,6 @@ using Datapoint.Terminal.Sessions.Ssh.Channels;
 
 namespace Datapoint.Terminal.Sessions.Ssh;
 
-/// <summary>A shell on a remote host: an SSH session channel with a pseudo-terminal.</summary>
 public sealed class SshTerminalSession : ITerminalSession
 {
     private readonly SshChannel _channel;
@@ -15,7 +14,7 @@ public sealed class SshTerminalSession : ITerminalSession
         Exited = WaitForExitAsync(channel);
     }
 
-    /// <summary>Shell integration over SSH comes with uploading the scripts; until then remote shells have none.</summary>
+    // Shell integration over SSH comes with uploading the scripts; until then remote shells have none.
     public string? ShellIntegrationNonce => null;
 
     [SuppressMessage("Usage", "VSTHRD003", Justification = "Started in the constructor; completes from the connection's read loop.")]

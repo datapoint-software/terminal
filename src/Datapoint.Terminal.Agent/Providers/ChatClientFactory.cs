@@ -5,10 +5,8 @@ using OpenAI;
 
 namespace Datapoint.Terminal.Agent.Providers;
 
-/// <summary>
-/// Creates the <see cref="IChatClient"/> for a provider: Anthropic's own SDK (the only one that understands its prompt caching),
-/// OpenAI's Responses API for OpenAI, and Chat Completions for OpenAI-compatible servers, whose support for Responses varies.
-/// </summary>
+// Anthropic's own SDK is the only one that understands its prompt caching; OpenAI-compatible servers get Chat Completions,
+// since their support for the Responses API varies.
 public static class ChatClientFactory
 {
     public static IChatClient Create(ProviderSettings settings, string? apiKey)

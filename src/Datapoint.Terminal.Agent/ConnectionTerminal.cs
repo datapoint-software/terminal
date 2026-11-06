@@ -5,7 +5,7 @@ using EmulatorTerminal = Datapoint.Terminal.Emulator.Terminal;
 
 namespace Datapoint.Terminal.Agent;
 
-/// <summary>The agent's view of a <see cref="TerminalConnection"/>. Everything it types goes through the same input as the keyboard.</summary>
+// Everything the agent types goes through the same input as the keyboard.
 public sealed class ConnectionTerminal : IAgentTerminal
 {
     private readonly TerminalConnection _connection;

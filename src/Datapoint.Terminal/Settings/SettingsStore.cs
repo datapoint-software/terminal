@@ -2,10 +2,8 @@ using System.Text.Json;
 
 namespace Datapoint.Terminal.Settings;
 
-/// <summary>
-/// Reads and writes the settings file. Writes go to a temporary file first and replace the old one in one step, so a crash
-/// never leaves half a file; on macOS and Linux the file is readable only by the user.
-/// </summary>
+// Writes go to a temporary file first and replace the old one in one step, so a crash never leaves half a file;
+// on macOS and Linux the file is readable only by the user.
 public sealed class SettingsStore(string path)
 {
     public static string DefaultPath => System.IO.Path.Combine(
@@ -15,10 +13,10 @@ public sealed class SettingsStore(string path)
 
     public string Path { get; } = path;
 
-    /// <summary>Set when the file was written by a newer version; saving is then refused so its settings aren't lost.</summary>
+    // Set when the file was written by a newer version; saving is then refused so its settings aren't lost.
     public bool IsReadOnly { get; private set; }
 
-    /// <summary>Why the file couldn't be read, when it couldn't; it's then kept aside and defaults are used.</summary>
+    // A file that couldn't be read is kept aside and defaults are used, so nothing in it is lost.
     public string? Problem { get; private set; }
 
     public AppSettings Load()

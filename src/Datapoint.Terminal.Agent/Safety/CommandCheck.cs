@@ -1,12 +1,9 @@
 namespace Datapoint.Terminal.Agent.Safety;
 
-/// <summary>Checks a command the model wants to type, before anyone is asked to approve it.</summary>
 public static class CommandCheck
 {
-    /// <summary>
-    /// Returns why the command can't be typed, or null when it can. Commands are one complete line with no control characters,
-    /// so a model can't send escape sequences or a second, hidden command into the terminal.
-    /// </summary>
+    // Commands are one complete line with no control characters, so a model can't send escape sequences or a second, hidden
+    // command into the terminal.
     public static string? Problem(string? command)
     {
         if (string.IsNullOrWhiteSpace(command))

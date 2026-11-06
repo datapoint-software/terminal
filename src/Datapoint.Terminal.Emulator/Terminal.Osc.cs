@@ -48,10 +48,7 @@ public sealed partial class Terminal
         _host.TitleChanged(Title);
     }
 
-    /// <summary>
-    /// OSC 7 reports the folder as a file URI, <c>file://host/path</c>, percent-encoded. We keep the decoded path and its host;
-    /// a malformed report is ignored. The host is the shell's own claim, a hint and never a basis for a security decision.
-    /// </summary>
+    // The host is the shell's own claim: a hint, never a basis for a security decision.
     private void SetWorkingDirectory(string uri)
     {
         if (uri.Length > MaxHyperlinkLength || !TryParseFileUri(uri, out var host, out var path))

@@ -3,10 +3,7 @@ using Avalonia.Automation.Provider;
 
 namespace Datapoint.Terminal.Controls;
 
-/// <summary>
-/// Exposes the terminal to screen readers as a read-only document whose value is the visible text.
-/// Avalonia has no text pattern for custom controls yet, so line-by-line reading isn't available (engineering.md, Accessibility).
-/// </summary>
+// Avalonia has no text pattern for custom controls yet, so line-by-line reading isn't available (engineering.md, Accessibility).
 public sealed class TerminalViewAutomationPeer(TerminalView owner) : ControlAutomationPeer(owner), IValueProvider
 {
     public bool IsReadOnly => true;

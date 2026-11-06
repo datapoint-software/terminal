@@ -12,7 +12,6 @@ public sealed partial class SshClient
     private readonly Dictionary<uint, SshChannel> _channels = [];
     private uint _nextChannelId;
 
-    /// <summary>Opens a session channel, for a shell, a command or a subsystem.</summary>
     public async Task<SshChannel> OpenSessionAsync(CancellationToken cancellationToken)
     {
         ThrowIfClosed();
@@ -200,9 +199,7 @@ public sealed partial class SshClient
         await SendFromReadLoopAsync(reply, cancellationToken).ConfigureAwait(false);
     }
 
-    /// <summary>
-    /// Refuses every global request, including hostkeys-00@openssh.com: host keys change only when the user accepts them.
-    /// </summary>
+    // Refuses every global request, including hostkeys-00@openssh.com: host keys change only when the user accepts them.
     private async Task AnswerGlobalRequestAsync(byte[] payload, CancellationToken cancellationToken)
     {
         var reader = new SshReader(payload);
@@ -216,7 +213,7 @@ public sealed partial class SshClient
         await SendFromReadLoopAsync([MessageNumber.RequestFailure], cancellationToken).ConfigureAwait(false);
     }
 
-    /// <summary>Refuses channels the server opens: we forward no agent, X11 or ports.</summary>
+    // We forward no agent, X11 or ports, so channels the server opens are refused.
     private async Task RefuseChannelOpenAsync(byte[] payload, CancellationToken cancellationToken)
     {
         var reader = new SshReader(payload);

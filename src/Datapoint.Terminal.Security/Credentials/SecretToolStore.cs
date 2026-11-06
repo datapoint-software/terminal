@@ -4,10 +4,7 @@ using System.Text;
 
 namespace Datapoint.Terminal.Security.Credentials;
 
-/// <summary>
-/// The Secret Service on Linux (GNOME Keyring, KWallet), through libsecret's <c>secret-tool</c>. Secrets travel over its
-/// standard input and output, never its command line, where other users could see them.
-/// </summary>
+// Secrets travel over secret-tool's standard input and output, never its command line, where other users could see them.
 [SupportedOSPlatform("linux")]
 public sealed class SecretToolStore : ICredentialStore
 {

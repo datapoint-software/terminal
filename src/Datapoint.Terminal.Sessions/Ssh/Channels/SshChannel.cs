@@ -4,10 +4,7 @@ using Datapoint.Terminal.Sessions.Ssh.Protocol;
 
 namespace Datapoint.Terminal.Sessions.Ssh.Channels;
 
-/// <summary>
-/// A session channel: a shell, a command or a subsystem on the server.
-/// Output is buffered only up to the window we grant, so a slow reader slows the server down instead of filling memory.
-/// </summary>
+// Output is buffered only up to the window we grant, so a slow reader slows the server down instead of filling memory.
 public sealed class SshChannel : IDisposable
 {
     public const uint InitialWindow = 2 * 1024 * 1024;
@@ -38,13 +35,10 @@ public sealed class SshChannel : IDisposable
 
     public uint RemoteId { get; private set; }
 
-    /// <summary>The command's exit code, once the server reports it.</summary>
     public int? ExitCode { get; private set; }
 
-    /// <summary>The signal that ended the command, without the SIG prefix, once the server reports it.</summary>
     public string? ExitSignal { get; private set; }
 
-    /// <summary>Completes when the channel is closed on both sides; faults if the connection fails.</summary>
     [SuppressMessage("Usage", "VSTHRD003", Justification = "Completes from the read loop, which never waits on the caller's context.")]
     public Task Completion => _closed.Task;
 
@@ -81,7 +75,6 @@ public sealed class SshChannel : IDisposable
         return _send(request.ToArray(), cancellationToken);
     }
 
-    /// <summary>Sends input, waiting for the server to grant window when it runs out.</summary>
     public async Task WriteAsync(ReadOnlyMemory<byte> data, CancellationToken cancellationToken)
     {
         await _writeGate.WaitAsync(cancellationToken).ConfigureAwait(false);
@@ -102,7 +95,6 @@ public sealed class SshChannel : IDisposable
         }
     }
 
-    /// <summary>Reads the next output, or returns null once the server has sent end of file.</summary>
     public async ValueTask<SshChannelData?> ReadAsync(CancellationToken cancellationToken)
     {
         while (await _output.Reader.WaitToReadAsync(cancellationToken).ConfigureAwait(false))
@@ -213,7 +205,6 @@ public sealed class SshChannel : IDisposable
         pending.TrySetResult(success);
     }
 
-    /// <summary>Handles a request from the server; returns whether to answer success, or null when no reply is wanted.</summary>
     internal bool HandleRequest(string type, ref SshReader reader)
     {
         switch (type)
@@ -229,7 +220,6 @@ public sealed class SshChannel : IDisposable
         }
     }
 
-    /// <summary>Handles the server's close; returns true when we must still send ours.</summary>
     internal bool OnClose()
     {
         _output.Writer.TryComplete();

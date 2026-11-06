@@ -2,7 +2,6 @@ namespace Datapoint.Terminal.Sessions.Local;
 
 public static class DefaultShell
 {
-    /// <summary>The user's shell: $SHELL on macOS and Linux, PowerShell 7 or Windows PowerShell on Windows.</summary>
     public static string Find()
     {
         if (!OperatingSystem.IsWindows())

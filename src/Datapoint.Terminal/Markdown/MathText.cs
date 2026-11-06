@@ -2,10 +2,7 @@ using System.Text;
 
 namespace Datapoint.Terminal.Markdown;
 
-/// <summary>
-/// Shows TeX maths as Unicode text: Greek letters, operators, arrows, fractions as a/b, roots as √x, and simple
-/// superscripts and subscripts. It isn't a typesetter: matrices, big operators with limits and alignment stay linear.
-/// </summary>
+// Not a typesetter: matrices, big operators with limits and alignment stay linear.
 internal static class MathText
 {
     private static readonly Dictionary<string, string> s_symbols = Symbols();
@@ -79,7 +76,6 @@ internal static class MathText
         return tex[start..position];
     }
 
-    /// <summary>Reads one argument: a {group}, a \command, or a single character, and converts it.</summary>
     private static string Group(string tex, ref int position)
     {
         while (position < tex.Length && tex[position] == ' ')

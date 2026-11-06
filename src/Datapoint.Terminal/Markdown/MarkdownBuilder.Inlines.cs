@@ -26,7 +26,6 @@ internal sealed partial class MarkdownBuilder
         return text;
     }
 
-    /// <summary>Converts a run of inlines; formatting HTML tags open and close spans around the inlines between them.</summary>
     private List<Inline> Inlines(ContainerInline container)
     {
         var root = new List<Inline>();
@@ -147,7 +146,7 @@ internal sealed partial class MarkdownBuilder
         return null;
     }
 
-    /// <summary>Shows the label, and the address after it when the label says something else, so a misleading label can't hide where it points.</summary>
+    // The address follows a label that says something else, so a misleading label can't hide where it points.
     private Span Link(string url, List<Inline> label)
     {
         var target = LinkSpan.Openable(url);

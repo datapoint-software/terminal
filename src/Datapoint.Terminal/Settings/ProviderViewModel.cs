@@ -7,7 +7,7 @@ using Microsoft.Extensions.AI;
 
 namespace Datapoint.Terminal.Settings;
 
-/// <summary>One provider in the settings window. Every change is saved at once, as in macOS settings.</summary>
+// Every change is saved at once, as in macOS settings.
 public sealed partial class ProviderViewModel : ObservableObject
 {
     private readonly SettingsViewModel _owner;
@@ -85,7 +85,6 @@ public sealed partial class ProviderViewModel : ObservableObject
 
     public IReadOnlyList<string> ModelSuggestions => ProviderCatalog.Models(Kind.Kind);
 
-    /// <summary>Where the conversation goes with this provider, in the user's words.</summary>
     public string Privacy => ProviderPrivacy.Describe(ToAccount());
 
     public ProviderAccount ToAccount() => new()

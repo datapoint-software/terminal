@@ -14,7 +14,6 @@ namespace Datapoint.Terminal.Markdown;
 
 internal sealed partial class MarkdownBuilder
 {
-    /// <summary>A code block: its language and a Copy button above, the coloured code below, scrolling sideways rather than wrapping.</summary>
     private Border Code(CodeBlock code)
     {
         var text = code.Lines.ToString().TrimEnd('\r', '\n');
@@ -73,7 +72,6 @@ internal sealed partial class MarkdownBuilder
         DispatcherTimer.RunOnce(() => button.Content = Strings.MarkdownCopy, TimeSpan.FromSeconds(1.5));
     }
 
-    /// <summary>Maths on a line of its own, between <c>$$</c>.</summary>
     private SelectableTextBlock DisplayMath(string tex)
     {
         var text = NewText(MathText.ToUnicode(tex));

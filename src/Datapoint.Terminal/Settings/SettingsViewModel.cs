@@ -8,7 +8,6 @@ using Microsoft.Extensions.AI;
 
 namespace Datapoint.Terminal.Settings;
 
-/// <summary>The settings window: for now, the AI providers.</summary>
 public sealed partial class SettingsViewModel : ObservableObject
 {
     private readonly SettingsStore _store;
@@ -44,7 +43,6 @@ public sealed partial class SettingsViewModel : ObservableObject
         _isLoading = false;
     }
 
-    /// <summary>Raised after any change is saved, so the agent can follow it.</summary>
     public event EventHandler? Changed;
 
     public event EventHandler? ProjectsChanged;
@@ -95,7 +93,6 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     internal IChatClient CreateClient(ProviderAccount account, string? key) => _createClient(account, key);
 
-    /// <summary>Chooses the provider and model the agent uses, e.g. from the chat's model picker.</summary>
     public void Choose(string providerId, string model)
     {
         var provider = Providers.FirstOrDefault(item => string.Equals(item.Id, providerId, StringComparison.Ordinal));
