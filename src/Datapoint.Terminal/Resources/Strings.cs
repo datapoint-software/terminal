@@ -142,7 +142,6 @@ public static class Strings
 
     public static string ChatSettings => Get(nameof(ChatSettings));
 
-    public static string ChatModel => Get(nameof(ChatModel));
 
     public static string ChatConnect => Get(nameof(ChatConnect));
 

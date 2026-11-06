@@ -159,6 +159,19 @@
         </StackPanel>
       </Border>
 
+      <!-- Approval: how much the agent may run without asking, chosen before writing the message. -->
+      <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" Margin="2,0,0,10">
+        <TextBlock Classes="secondary" VerticalAlignment="Center" Text="{x:Static res:Strings.ChatMode}" />
+        <ListBox Grid.Column="1" Classes="segmented" ItemsSource="{Binding Modes}" SelectedItem="{Binding SelectedMode}"
+                 AutomationProperties.Name="{x:Static res:Strings.ChatMode}">
+          <ListBox.ItemTemplate>
+            <DataTemplate x:DataType="chat:ModeOption">
+              <TextBlock Text="{Binding Label}" ToolTip.Tip="{Binding Help}" AutomationProperties.HelpText="{Binding Help}" />
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </Grid>
+
       <!-- Composer: a rounded field with the send button inside it. -->
       <Panel>
         <TextBox x:Name="DraftBox" Text="{Binding Draft}" Watermark="{x:Static res:Strings.ChatInputPlaceholder}"
@@ -176,21 +189,6 @@
         </Button>
       </Panel>
 
-      <Grid ColumnDefinitions="64,*" RowDefinitions="Auto,Auto" Margin="2,10,0,0">
-        <TextBlock Classes="secondary" VerticalAlignment="Center" Text="{x:Static res:Strings.ChatModel}" IsVisible="{Binding HasModelChoices}" />
-        <ComboBox Grid.Column="1" Classes="quiet" ItemsSource="{Binding ModelChoices}" SelectedItem="{Binding SelectedModel}"
-                  IsVisible="{Binding HasModelChoices}" HorizontalAlignment="Stretch" Margin="0,0,0,8"
-                  AutomationProperties.Name="{x:Static res:Strings.ChatModel}" />
-        <TextBlock Grid.Row="1" Classes="secondary" VerticalAlignment="Center" Text="{x:Static res:Strings.ChatMode}" />
-        <ListBox Grid.Row="1" Grid.Column="1" Classes="segmented" ItemsSource="{Binding Modes}" SelectedItem="{Binding SelectedMode}"
-                 AutomationProperties.Name="{x:Static res:Strings.ChatMode}">
-          <ListBox.ItemTemplate>
-            <DataTemplate x:DataType="chat:ModeOption">
-              <TextBlock Text="{Binding Label}" ToolTip.Tip="{Binding Help}" AutomationProperties.HelpText="{Binding Help}" />
-            </DataTemplate>
-          </ListBox.ItemTemplate>
-        </ListBox>
-      </Grid>
     </StackPanel>
 
     <!-- The conversation. -->

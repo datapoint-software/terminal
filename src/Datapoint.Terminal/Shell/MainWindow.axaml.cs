@@ -39,7 +39,6 @@ public sealed partial class MainWindow : Window
         _settings = new SettingsViewModel(store, FirstRun(store.Load()), _keys, CreateClient);
         _settings.Changed += (_, _) => ApplySettings();
         _chat.SettingsRequested = OpenSettings;
-        _chat.ModelChosen = choice => _settings.Choose(choice.ProviderId, choice.Model);
         Chat.DataContext = _chat;
         if (_settings.Problem is { } problem)
         {
@@ -121,12 +120,11 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    /// <summary>Follows the settings: the provider and model the agent uses, and the models the chat offers.</summary>
+    /// <summary>Follows the settings: the provider and model the agent uses.</summary>
     private void ApplySettings()
     {
         var current = _settings.Current;
         var provider = current.SelectedProvider;
-        _chat.SetModels(ModelChoices(current), provider is null ? null : Choice(provider, provider.Model, current));
         if (_connection is null)
         {
             return;
@@ -203,16 +201,6 @@ public sealed partial class MainWindow : Window
         !string.IsNullOrWhiteSpace(provider.Model)
         && (!ProviderCatalog.NeedsKey(provider.Kind) || !string.IsNullOrEmpty(key))
         && (provider.Kind != ProviderKind.OpenAICompatible || Uri.TryCreate(provider.Endpoint, UriKind.Absolute, out _));
-
-    private static IEnumerable<ModelChoice> ModelChoices(AppSettings settings) =>
-        settings.Providers.SelectMany(provider =>
-            ProviderCatalog.Models(provider.Kind).Append(provider.Model)
-                .Where(model => !string.IsNullOrWhiteSpace(model))
-                .Distinct(StringComparer.Ordinal)
-                .Select(model => Choice(provider, model, settings)));
-
-    private static ModelChoice Choice(ProviderAccount provider, string model, AppSettings settings) =>
-        new(provider.Id, model, settings.Providers.Count > 1 ? $"{model} · {provider.Name}" : model);
 
     private async Task StopAsync()
     {

@@ -213,9 +213,6 @@
   <data name="ChatSettings" xml:space="preserve">
     <value>Settings</value>
   </data>
-  <data name="ChatModel" xml:space="preserve">
-    <value>Model</value>
-  </data>
   <data name="ChatConnect" xml:space="preserve">
     <value>Connect an AI provider</value>
   </data>

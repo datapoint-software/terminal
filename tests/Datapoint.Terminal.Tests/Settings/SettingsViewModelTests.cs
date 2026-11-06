@@ -127,20 +127,6 @@ public sealed class SettingsViewModelTests : IDisposable
     }
 
     [Fact]
-    public void Choosing_a_model_in_the_chat_selects_its_provider()
-    {
-        var settings = Create();
-        settings.AddCommand.Execute(null);
-        settings.AddCommand.Execute(null);
-        var second = settings.Providers[1];
-
-        settings.Choose(second.Id, "claude-haiku-5-5");
-
-        Assert.True(second.IsActive);
-        Assert.Equal("claude-haiku-5-5", Store.Load().SelectedProvider!.Model);
-    }
-
-    [Fact]
     public void Describes_where_the_conversation_goes()
     {
         var local = new ProviderAccount { Id = "x", Kind = ProviderKind.OpenAICompatible, Name = "Ollama", Model = "llama", Endpoint = "http://localhost:11434/v1", IsLocal = true };
