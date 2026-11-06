@@ -26,6 +26,7 @@ public sealed class SettingsStoreTests : IDisposable
         Assert.Equal(provider, loaded.SelectedProvider);
         Assert.Equal(ApprovalMode.AskForRisky, loaded.DefaultApprovalMode);
         Assert.Contains("\"openAICompatible\"", File.ReadAllText(FilePath), StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("\"selectedProvider\"", File.ReadAllText(FilePath), StringComparison.Ordinal);
     }
 
     [Fact]
