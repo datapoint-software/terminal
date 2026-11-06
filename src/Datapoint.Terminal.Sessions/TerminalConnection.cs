@@ -1,0 +1,120 @@
+using System.Diagnostics.CodeAnalysis;
+using System.Threading.Channels;
+using Datapoint.Terminal.Emulator;
+using EmulatorTerminal = Datapoint.Terminal.Emulator.Terminal;
+
+namespace Datapoint.Terminal.Sessions;
+
+/// <summary>
+/// Joins a session to an emulator: output is fed to the emulator as it arrives, and input (the user's, the agent's and the
+/// emulator's own replies) goes to the session in the order it was sent.
+/// </summary>
+public sealed class TerminalConnection : ITerminalHost, IAsyncDisposable
+{
+    private readonly ITerminalSession _session;
+    private readonly Channel<byte[]> _input = Channel.CreateUnbounded<byte[]>(new UnboundedChannelOptions { SingleReader = true });
+    private readonly CancellationTokenSource _lifetime = new();
+    private readonly Task _reader;
+    private readonly Task _writer;
+
+    public TerminalConnection(ITerminalSession session, int columns, int rows)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        _session = session;
+        Terminal = new EmulatorTerminal(columns, rows, this) { ShellIntegrationNonce = session.ShellIntegrationNonce };
+        _reader = Task.Run(() => ReadLoopAsync(_lifetime.Token), CancellationToken.None);
+        _writer = Task.Run(() => WriteLoopAsync(_lifetime.Token), CancellationToken.None);
+    }
+
+    public EmulatorTerminal Terminal { get; }
+
+    /// <summary>Raised on a background thread after output has been fed to the emulator.</summary>
+    public event EventHandler? OutputArrived;
+
+    /// <summary>Raised on a background thread when the shell's title changes; read it from <see cref="EmulatorTerminal.Title"/>.</summary>
+    public event EventHandler? TitleChanged;
+
+    /// <summary>Raised on a background thread once the session has ended.</summary>
+    public event EventHandler? Ended;
+
+    /// <summary>Raised on a background thread when a program rings the bell.</summary>
+    public event EventHandler? BellRang;
+
+    [SuppressMessage("Usage", "VSTHRD003", Justification = "The session completes on its own; nothing waits on the caller's context.")]
+    public Task<int?> Exited => _session.Exited;
+
+    /// <summary>Queues input for the shell.</summary>
+    public void Send(ReadOnlySpan<byte> data) => _input.Writer.TryWrite(data.ToArray());
+
+    public Task ResizeAsync(int columns, int rows, CancellationToken cancellationToken) => _session.ResizeAsync(columns, rows, cancellationToken);
+
+    [SuppressMessage("Usage", "VSTHRD003", Justification = "Both loops are ours, started in the constructor on the thread pool.")]
+    public async ValueTask DisposeAsync()
+    {
+        _input.Writer.TryComplete();
+        await _lifetime.CancelAsync().ConfigureAwait(false);
+        await _session.DisposeAsync().ConfigureAwait(false);
+        await Task.WhenAll(_reader, _writer).ConfigureAwait(false);
+        _lifetime.Dispose();
+    }
+
+    void ITerminalHost.Reply(ReadOnlySpan<byte> data) => Send(data);
+
+    void ITerminalHost.Bell() => BellRang?.Invoke(this, EventArgs.Empty);
+
+    void ITerminalHost.TitleChanged(string title) => TitleChanged?.Invoke(this, EventArgs.Empty);
+
+    void ITerminalHost.WorkingDirectoryChanged(string path)
+    {
+        // Read from Terminal.WorkingDirectory when needed.
+    }
+
+    void ITerminalHost.ClipboardWriteRequested(string text)
+    {
+        // Writing the clipboard from a program (OSC 52) asks the user first; not wired yet.
+    }
+
+    private async Task ReadLoopAsync(CancellationToken cancellationToken)
+    {
+        var buffer = new byte[64 * 1024];
+        try
+        {
+            int count;
+            while ((count = await _session.ReadAsync(buffer, cancellationToken).ConfigureAwait(false)) > 0)
+            {
+                Terminal.Feed(buffer.AsSpan(0, count));
+                OutputArrived?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            // Closed by us.
+        }
+        catch (Exception exception) when (exception is IOException or ObjectDisposedException)
+        {
+            // The session ended under us.
+        }
+
+        _input.Writer.TryComplete();
+        Ended?.Invoke(this, EventArgs.Empty);
+    }
+
+    private async Task WriteLoopAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            await foreach (var data in _input.Reader.ReadAllAsync(cancellationToken).ConfigureAwait(false))
+            {
+                await _session.WriteAsync(data, cancellationToken).ConfigureAwait(false);
+            }
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            // Closed by us.
+        }
+        catch (Exception exception) when (exception is IOException or ObjectDisposedException)
+        {
+            // The session ended; what was still queued can't be delivered.
+        }
+    }
+}
