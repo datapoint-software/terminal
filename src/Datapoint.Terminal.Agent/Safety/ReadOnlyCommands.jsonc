@@ -16,37 +16,172 @@
 // return, and commands that reach other machines (they're checked separately, see CommandClassifier.IsNetwork).
 {
   // Options that make many otherwise reading programs write a file or change one in place.
-  "writingOptions": ["-delete", "-exec", "-execdir", "-i", "--in-place*", "-o", "--output*", "--vacuum*", "--rotate*", "--flush*", "--pre*"],
+  "writingOptions": ["-i", "--in-place", "-o", "--output"],
 
   "groups": [
     {
       "commands": [
-        "ls", "pwd", "whoami", "id", "uname", "uptime", "cat", "head", "tail", "wc", "grep", "egrep", "fgrep", "rg", "which",
-        "type", "stat", "df", "du", "free", "ps", "pgrep", "printenv", "echo", "printf", "lsblk", "lscpu", "lsof", "netstat",
-        "journalctl", "sort", "cut", "tr", "column", "diff", "md5sum", "sha256sum", "tree", "realpath", "dirname", "basename",
-        "true", "test", "groups", "last", "w", "who", "nproc", "arch", "sw_vers", "vm_stat", "jq"
+        "pwd", "whoami", "id", "uptime", "nproc", "arch", "groups", "true", "printenv", "echo", "printf", "realpath", "dirname",
+        "basename", "which", "type", "wc", "md5sum", "sha1sum", "sha224sum", "sha256sum", "sha384sum", "sha512sum", "b2sum",
+        "cksum", "cat", "head", "tail", "tac", "nl", "cut", "tr", "comm", "cmp", "readlink", "stat", "du", "free", "jq",
+        "lscpu", "lsmod", "lspci", "lsusb", "lsscsi", "lsattr", "getfacl", "getconf", "locale", "tty", "users", "logname",
+        "vmstat", "getenforce", "sestatus", "lvdisplay", "vgdisplay", "pvdisplay", "lastlog",
+        // macOS
+        "sw_vers", "vm_stat", "system_profiler", "ioreg", "mdls", "mdfind"
       ]
     },
-    { "commands": ["date"], "writes": ["-s", "--set"] },
-    { "commands": ["ss"], "writes": ["-K", "--kill"] },
-    { "commands": ["file"], "writes": ["-C"] },
+    {
+      // -o chooses columns or means "or", -i ignores case or names an interface.
+      "commands": [
+        "ls", "dir", "grep", "egrep", "fgrep", "uname", "w", "who", "last", "netstat", "test", "df", "lsof", "ps", "pgrep",
+        "pidof", "column", "lsblk", "findmnt", "lslogins", "lsns", "lsipc", "lslocks", "blkid", "iostat", "mpstat", "lvs",
+        "vgs", "pvs", "diff", "ipcs"
+      ],
+      "allows": ["-i", "-o"]
+    },
+    { "commands": ["find"], "allows": ["-i", "-o"], "writes": ["-delete", "-exec", "-execdir", "-ok", "-okdir", "-fprint", "-fprint0", "-fprintf", "-fls"] },
+    { "commands": ["rg"], "allows": ["-i", "-o"], "writes": ["--pre"] },
+    { "commands": ["sort"], "allows": ["-i"], "writes": ["--compress-program"] },
+    { "commands": ["tree"], "allows": ["-i"] },
+    { "commands": ["file"], "allows": ["-i"], "writes": ["-C"] },
+    { "commands": ["ss"], "allows": ["-i", "-o"], "writes": ["-K", "--kill"] },
+    // -Iseconds and the like are listed whole, since -s among short options would set the clock.
+    { "commands": ["date", "date -Iseconds", "date -Iminutes", "date -Ihours", "date -Idate", "date -Ins"], "writes": ["-s", "--set"] },
+    { "commands": ["dmesg"], "writes": ["-c", "-C", "--clear", "--read-clear", "-D", "-E", "--console-off", "--console-on", "-n", "--console-level"] },
+    { "commands": ["arp"], "allows": ["-i"], "writes": ["-d", "-s", "-f", "--delete", "--set", "--file"] },
+    { "commands": ["lshw"], "writes": ["-dump"] },
+    {
+      "commands": ["journalctl"],
+      "allows": ["-o", "--output"],
+      "writes": ["--vacuum*", "--rotate", "--flush", "--sync", "--relinquish-var", "--smart-relinquish-var", "--setup-keys", "--update-catalog"]
+    },
+
+    {
+      "commands": [
+        "systemctl status", "systemctl list-units", "systemctl list-unit-files", "systemctl list-timers", "systemctl list-sockets",
+        "systemctl list-dependencies", "systemctl list-jobs", "systemctl list-machines", "systemctl is-active",
+        "systemctl is-enabled", "systemctl is-failed", "systemctl is-system-running", "systemctl show", "systemctl cat",
+        "systemctl get-default", "systemctl show-environment",
+        "systemd-analyze blame", "systemd-analyze time", "systemd-analyze critical-chain", "systemd-analyze security",
+        "systemd-analyze calendar", "systemd-analyze timespan", "systemd-analyze timestamp",
+        "loginctl show-session", "loginctl show-user", "loginctl session-status", "loginctl user-status",
+        "networkctl list", "networkctl status", "resolvectl status"
+      ],
+      "allows": ["-o", "--output"]
+    },
+    {
+      // These would take another action as their next word.
+      "commands": [
+        "systemctl --failed", "hostnamectl status", "timedatectl status", "timedatectl show", "timedatectl timesync-status",
+        "localectl status", "loginctl list-sessions", "loginctl list-users", "loginctl list-seats"
+      ],
+      "exact": true
+    },
+
+    {
+      "commands": [
+        "ip addr show", "ip address show", "ip a show", "ip link show", "ip l show", "ip route show", "ip r show",
+        "ip route list", "ip route get", "ip neigh show", "ip neighbour show", "ip rule show"
+      ],
+      "allows": ["-o"]
+    },
+    {
+      // "ip addr" lists addresses, "ip addr add" adds one.
+      "commands": [
+        "ip a", "ip addr", "ip address", "ip link", "ip l", "ip route", "ip r", "ip neigh", "ip rule", "ip -br a",
+        "ip -br addr", "ip -br link", "ip -4 a", "ip -4 addr", "ip -6 a", "ip -6 addr", "ip -s link"
+      ],
+      "allows": ["-o"],
+      "exact": true
+    },
+    {
+      "commands": [
+        "iptables -L", "iptables -S", "iptables --list", "iptables --list-rules", "iptables -nL", "iptables -nvL",
+        "iptables -vnL", "iptables -vL", "ip6tables -L", "ip6tables -S", "ip6tables --list", "ip6tables --list-rules",
+        "ip6tables -nL", "ip6tables -nvL", "ip6tables -vnL", "ip6tables -vL"
+      ],
+      "writes": [
+        "-A", "-D", "-I", "-R", "-F", "-Z", "-N", "-X", "-P", "-E", "--append", "--delete", "--insert", "--replace", "--flush",
+        "--zero", "--new-chain", "--delete-chain", "--policy", "--rename-chain"
+      ]
+    },
+    { "commands": ["iptables-save", "ip6tables-save", "nft list"], "writes": ["-f", "--file"] },
+    { "commands": ["ufw status", "ufw status verbose", "ufw status numbered", "ufw app list"], "exact": true },
+    {
+      "commands": [
+        "firewall-cmd --state", "firewall-cmd --list-all", "firewall-cmd --list-all-zones", "firewall-cmd --get-active-zones",
+        "firewall-cmd --get-default-zone", "firewall-cmd --get-zones", "firewall-cmd --get-services", "firewall-cmd --list-services",
+        "firewall-cmd --list-ports", "firewall-cmd --list-rich-rules"
+      ],
+      "writes": [
+        "--add*", "--remove*", "--set*", "--change*", "--new*", "--delete*", "--load*", "--reload", "--complete-reload",
+        "--runtime-to-permanent", "--panic-on", "--panic-off", "--lockdown-on", "--lockdown-off"
+      ]
+    },
+
+    { "commands": ["crontab -l"], "writes": ["-r", "-e"] },
+    { "commands": ["nginx -t", "nginx -T", "nginx -v", "nginx -V"], "writes": ["-s"] },
+    {
+      "commands": [
+        "apachectl -t", "apachectl -S", "apachectl -M", "apachectl -v", "apachectl -V", "apachectl configtest",
+        "apache2ctl -t", "apache2ctl -S", "apache2ctl -M", "apache2ctl -v", "apache2ctl -V", "apache2ctl configtest"
+      ],
+      "writes": ["-k"]
+    },
+    {
+      "commands": ["smartctl -a", "smartctl -i", "smartctl -H", "smartctl -x", "smartctl -A", "smartctl -c", "smartctl -l"],
+      "writes": ["-t", "--test", "-s", "--smart", "-S", "--saveauto", "-X", "--abort", "--offlineauto"]
+    },
+    {
+      "commands": ["mdadm --detail", "mdadm -D", "mdadm --examine", "mdadm -E", "mdadm --query", "mdadm -Q"],
+      "writes": [
+        "-f", "--fail", "-r", "--remove", "-a", "--add", "-S", "--stop", "-R", "--run", "--readonly", "-w", "--readwrite",
+        "--zero-superblock", "-G", "--grow", "-C", "--create", "-A", "--assemble", "--manage"
+      ]
+    },
+    {
+      "commands": [
+        "zfs list", "zfs get", "zpool list", "zpool status", "zpool get", "zpool iostat", "zpool history"
+      ],
+      "allows": ["-o"]
+    },
+
     {
       "commands": [
         "git status", "git log", "git diff", "git show", "git rev-parse", "git blame", "git ls-files", "git describe",
-        "systemctl status", "systemctl list-units", "systemctl list-unit-files", "systemctl is-active", "systemctl is-enabled",
-        "systemctl show", "systemctl cat",
-        "docker ps", "docker images", "docker logs", "docker inspect", "docker version", "docker info", "docker stats",
-        "kubectl get", "kubectl describe", "kubectl logs", "kubectl version", "kubectl top",
-        "apt list", "apt show", "apt search", "apt policy",
-        "dpkg -l", "dpkg -s", "dpkg -L", "dpkg --list", "dpkg --status",
-        "rpm -q", "rpm -qa", "rpm -qi", "rpm -ql",
-        "brew list", "brew info", "brew search", "brew outdated", "brew config", "brew doctor"
+        "git shortlog", "git cat-file", "git ls-tree", "git rev-list", "git name-rev", "git merge-base", "git for-each-ref",
+        "git show-ref", "git count-objects", "git whatchanged", "git version", "git reflog show", "git stash list",
+        "git stash show", "git worktree list", "git notes list", "git notes show"
       ]
     },
+    { "commands": ["git grep"], "allows": ["-i", "-o"], "writes": ["-O", "--open-files-in-pager"] },
+    { "commands": ["git reflog", "git remote", "git remote -v"], "exact": true },
     {
-      // Docker's grouped commands. Left out: exec, run, attach and cp (they run or copy anything), compose config (it prints
-      // the environment filled in, secrets included), and anything that creates, updates, removes, scales, prunes or rolls back.
+      "commands": ["git branch", "git branch -a", "git branch -r", "git branch -v", "git branch -vv", "git branch -av", "git branch --show-current"],
+      "exact": true,
+      "writes": ["-d", "-D", "--delete", "-m", "-M", "--move", "-c", "-C", "--copy", "-f", "--force", "-u", "--set-upstream-to", "--unset-upstream", "--edit-description", "-t", "--track"]
+    },
+    {
+      "commands": ["git branch --list", "git branch --contains", "git branch --merged", "git branch --no-merged", "git branch --points-at"],
+      "writes": ["-d", "-D", "--delete", "-m", "-M", "--move", "-c", "-C", "--copy", "-f", "--force", "-u", "--set-upstream-to", "--unset-upstream", "--edit-description", "-t", "--track"]
+    },
+    { "commands": ["git tag"], "exact": true, "writes": ["-d", "--delete", "-a", "--annotate", "-s", "--sign", "-u", "--local-user", "-f", "--force", "-m", "--message", "-F", "--file", "-e", "--edit"] },
+    {
+      "commands": ["git tag -l", "git tag --list", "git tag --contains", "git tag --points-at"],
+      "writes": ["-d", "--delete", "-a", "--annotate", "-s", "--sign", "-u", "--local-user", "-f", "--force", "-m", "--message", "-F", "--file", "-e", "--edit"]
+    },
+    {
+      "commands": ["git config --list", "git config -l", "git config --get", "git config --get-all", "git config --get-regexp", "git config list", "git config get"],
+      "writes": ["--add", "--unset", "--unset-all", "--replace-all", "--rename-section", "--remove-section", "-e", "--edit"]
+    },
+
+    {
+      // Containers. Left out: exec, run, attach and cp (they run or copy anything), compose config (it prints the
+      // environment filled in, secrets included), search (it asks a registry), and anything that creates, updates, removes,
+      // scales, prunes or rolls back.
       "commands": [
+        "docker ps", "docker images", "docker logs", "docker inspect", "docker version", "docker info", "docker stats",
+        "docker top", "docker port", "docker diff", "docker history", "docker events",
         "docker node ls", "docker node ps", "docker node inspect",
         "docker service ls", "docker service ps", "docker service inspect", "docker service logs",
         "docker stack ls", "docker stack ps", "docker stack services",
@@ -56,10 +191,133 @@
         "docker network ls", "docker network inspect", "docker volume ls", "docker volume inspect",
         "docker config ls", "docker config inspect", "docker secret ls", "docker secret inspect",
         "docker context ls", "docker context inspect", "docker context show",
-        "docker system df", "docker system info",
+        "docker system df", "docker system info", "docker system events", "docker buildx ls", "docker plugin ls",
+        "docker plugin inspect",
         "docker compose ps", "docker compose ls", "docker compose logs", "docker compose images", "docker compose top",
-        "docker compose version"
+        "docker compose version",
+        "podman ps", "podman images", "podman logs", "podman inspect", "podman version", "podman info", "podman stats",
+        "podman top", "podman port", "podman diff", "podman history", "podman events",
+        "podman container ls", "podman container inspect", "podman container logs", "podman image ls", "podman image inspect",
+        "podman network ls", "podman network inspect", "podman volume ls", "podman volume inspect", "podman secret ls",
+        "podman pod ls", "podman pod ps", "podman pod inspect", "podman pod stats", "podman pod top",
+        "podman system df", "podman system info", "podman machine list", "podman machine inspect",
+        "nerdctl ps", "nerdctl images", "nerdctl logs", "nerdctl inspect", "nerdctl version", "nerdctl info", "nerdctl stats",
+        "nerdctl top", "nerdctl container ls", "nerdctl image ls", "nerdctl network ls", "nerdctl volume ls",
+        "nerdctl compose ps", "nerdctl compose ls", "nerdctl compose logs",
+        "crictl ps", "crictl pods", "crictl images", "crictl inspect", "crictl inspectp", "crictl inspecti", "crictl logs",
+        "crictl stats", "crictl statsp", "crictl info", "crictl version", "crictl imagefsinfo"
       ]
+    },
+    {
+      // -o chooses the output format. Left out: exec, attach, cp, debug, port-forward and proxy.
+      "commands": [
+        "kubectl get", "kubectl describe", "kubectl logs", "kubectl version", "kubectl top", "kubectl api-resources",
+        "kubectl api-versions", "kubectl explain", "kubectl events", "kubectl config get-contexts",
+        "kubectl config current-context", "kubectl config get-clusters", "kubectl config get-users", "kubectl auth can-i",
+        "kubectl auth whoami", "kubectl rollout status", "kubectl rollout history",
+        "oc get", "oc describe", "oc logs", "oc version", "oc adm top", "oc api-resources", "oc explain", "oc whoami",
+        "oc status", "oc projects", "oc rollout status", "oc rollout history", "oc auth can-i",
+        "helm list", "helm ls", "helm status", "helm history", "helm get", "helm version", "helm show", "helm search repo",
+        "helm env", "helm repo list", "helm plugin list", "helm dependency list"
+      ],
+      // -i is only for exec and run, which aren't listed; allowing it keeps -owide from reading as -o -w -i -d -e.
+      "allows": ["-o", "-i"]
+    },
+    // --raw prints the credentials too.
+    { "commands": ["kubectl config view", "oc config view"], "allows": ["-o"], "writes": ["--raw"] },
+    { "commands": ["kubectl cluster-info", "oc cluster-info"], "writes": ["--output-directory"] },
+    { "commands": ["oc project"], "exact": true },
+
+    {
+      "commands": [
+        "apt list", "apt show", "apt search", "apt policy",
+        "apt-cache policy", "apt-cache show", "apt-cache search", "apt-cache depends", "apt-cache rdepends", "apt-cache showpkg",
+        "apt-cache madison", "apt-cache stats", "apt-cache pkgnames", "apt-cache showsrc",
+        "apt-mark showmanual", "apt-mark showhold", "apt-mark showauto", "apt-config dump",
+        "dpkg-query -l", "dpkg-query -W", "dpkg-query -s", "dpkg-query -L", "dpkg-query -S", "dpkg-query -p",
+        "dpkg-query --show", "dpkg-query --list", "dpkg-query --status", "dpkg-query --listfiles", "dpkg-query --search",
+        "dnf list", "dnf info", "dnf repolist", "dnf search", "dnf provides", "dnf repoquery", "dnf check-update",
+        "dnf history list", "dnf history info", "dnf module list", "dnf deplist",
+        "yum list", "yum info", "yum repolist", "yum search", "yum provides", "yum check-update", "yum history list",
+        "yum history info", "yum deplist",
+        "zypper search", "zypper se", "zypper info", "zypper if", "zypper repos", "zypper lr", "zypper list-updates",
+        "zypper lu", "zypper patches", "zypper products",
+        "apk info", "apk list", "apk search", "apk policy",
+        "snap list", "snap info", "snap services", "snap version", "snap connections", "snap changes",
+        "flatpak list", "flatpak info", "flatpak remotes", "flatpak ps", "flatpak history",
+        "pip list", "pip show", "pip freeze", "pip check", "pip3 list", "pip3 show", "pip3 freeze", "pip3 check",
+        "npm ls", "npm list", "npm root", "npm prefix", "npm config list", "npm -v", "npm --version",
+        "gem list", "gem environment", "go version",
+        "brew list", "brew info", "brew search", "brew outdated", "brew config", "brew doctor", "brew deps", "brew uses",
+        "brew leaves", "brew --prefix", "brew --version", "brew --cellar", "brew services list"
+      ]
+    },
+    { "commands": ["brew tap"], "exact": true },
+    { "commands": ["go env"], "writes": ["-w", "-u"] },
+    {
+      "commands": [
+        "dpkg -l", "dpkg -s", "dpkg -L", "dpkg -S", "dpkg -p", "dpkg --list", "dpkg --status", "dpkg --listfiles",
+        "dpkg --search", "dpkg --print-avail", "dpkg --get-selections", "dpkg --print-architecture"
+      ],
+      "writes": [
+        "-r", "-P", "--remove", "--purge", "--install", "--unpack", "--configure", "--set-selections", "--clear-selections",
+        "--update-avail", "--merge-avail", "--clear-avail", "--forget-old-unavail", "--add-architecture",
+        "--remove-architecture", "--triggers-only"
+      ]
+    },
+    {
+      "commands": ["rpm -q", "rpm -qa", "rpm -qi", "rpm -ql", "rpm -qf", "rpm -qc", "rpm -qd", "rpm -qR", "rpm --query"],
+      "writes": [
+        "-e", "-U", "-F", "--erase", "--install", "--upgrade", "--freshen", "--import", "--rebuilddb", "--initdb",
+        "--setperms", "--setugids", "--restore", "--delete"
+      ]
+    },
+    {
+      "commands": [
+        "pacman -Q", "pacman -Qi", "pacman -Ql", "pacman -Qe", "pacman -Qs", "pacman -Qo", "pacman -Qm", "pacman -Qdt",
+        "pacman -Qu", "pacman -Si", "pacman -Ss", "pacman -Sl"
+      ],
+      "writes": ["-R", "-U", "-D", "-S", "-y", "-u", "--remove", "--upgrade", "--database", "--sync", "--refresh", "--sysupgrade"]
+    },
+
+    {
+      // macOS
+      "commands": [
+        "diskutil list", "diskutil info", "diskutil apfs list", "diskutil cs list", "launchctl list", "launchctl print",
+        "pmset -g", "csrutil status", "log show", "pkgutil --pkgs", "pkgutil --pkg-info", "pkgutil --files",
+        "pkgutil --file-info", "scutil --dns", "scutil --proxy", "scutil --get", "scutil --nwi",
+        "networksetup -listallnetworkservices", "networksetup -listallhardwareports", "networksetup -getinfo",
+        "networksetup -getdnsservers", "defaults read", "defaults read-type", "defaults domains", "spctl --status",
+        "fdesetup status", "dscl . -list", "dscl . -read", "otool -L"
+      ]
+    },
+    { "commands": ["codesign -d", "codesign -dv", "codesign -dvv", "codesign -dvvv", "codesign --display", "codesign --verify"], "writes": ["-s", "--sign", "-f", "--force", "--remove-signature"] },
+
+    {
+      // Windows and PowerShell. Left out: Where-Object and ForEach-Object (they run script blocks), Out-File, Tee-Object,
+      // Export-* and Set-* (they write), wmic and netsh (they also change settings), net (it also adds users and shares).
+      "commands": [
+        "systeminfo", "tasklist", "sc query", "sc queryex", "sc qc", "sc qdescription", "reg query", "where", "ver",
+        "driverquery", "getmac", "findstr",
+        "Get-ChildItem", "Get-Content", "Get-Item", "Get-ItemProperty", "Get-Location", "Get-Process", "Get-Service", "Get-Date",
+        "Get-Volume", "Get-Disk", "Get-Partition", "Get-PSDrive", "Get-NetIPAddress", "Get-NetIPConfiguration",
+        "Get-NetAdapter", "Get-NetTCPConnection", "Get-NetRoute", "Get-NetFirewallRule", "Get-DnsClientServerAddress",
+        "Get-HotFix", "Get-ComputerInfo", "Get-CimInstance", "Get-WinEvent", "Get-EventLog", "Get-FileHash", "Get-Acl",
+        "Get-LocalUser", "Get-LocalGroup", "Get-LocalGroupMember", "Get-ScheduledTask", "Get-Command", "Get-Module",
+        "Get-Host", "Get-Culture", "Get-TimeZone", "Get-Uptime", "Get-Counter", "Get-SmbShare", "Get-Printer",
+        "Get-ExecutionPolicy", "Get-Alias",
+        "Select-Object", "Sort-Object", "Group-Object", "Measure-Object", "Select-String", "Format-Table", "Format-List",
+        "Format-Wide", "Out-String", "ConvertTo-Json", "ConvertTo-Csv", "Test-Path", "Resolve-Path", "Split-Path",
+        "Join-Path", "Write-Output"
+      ],
+      "windows": true
+    },
+    {
+      // On macOS, ipconfig also has a set command.
+      "commands": ["ipconfig"],
+      "windows": true,
+      "exact": true,
+      "writes": ["/release", "/release6", "/renew", "/renew6", "/flushdns", "/registerdns", "/setclassid", "/setclassid6"]
     }
   ]
 }
