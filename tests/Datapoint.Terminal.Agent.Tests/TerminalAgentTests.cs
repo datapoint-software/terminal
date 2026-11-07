@@ -207,8 +207,31 @@ public sealed class TerminalAgentTests
 
         await agent.SendAsync("Deploy", Token);
 
-        Assert.Equal(["staging", "production"], _user.Questions.Single().Options);
+        Assert.Equal<string>(["staging", "production"], [.. _user.Questions.Single().Options.Select(option => option.Label)]);
         Assert.Equal("The user answered: staging", seen);
+    }
+
+    [Fact]
+    public async Task Asks_with_details_described_options_and_one_recommendation()
+    {
+        using var options = System.Text.Json.JsonDocument.Parse("""
+            [{"label":"Drain first","description":"Moves the containers off this node.","recommended":true},
+             {"label":"Everything now","recommended":true},
+             {"label":" "}]
+            """);
+        var client = new ScriptedChatClient(
+            _ => Call("ask_user", Arguments(("question", " How do you want to proceed? "), ("details", "Docker restarts."), ("options", options.RootElement.Clone()))),
+            _ => Text("OK."));
+        using var agent = Create(client);
+
+        await agent.SendAsync("Update", Token);
+
+        var question = _user.Questions.Single();
+        Assert.Equal("How do you want to proceed?", question.Text);
+        Assert.Equal("Docker restarts.", question.Details);
+        Assert.Equal(
+            [new AgentOption("Drain first", "Moves the containers off this node.", IsRecommended: true), new AgentOption("Everything now")],
+            question.Options);
     }
 
     [Fact]

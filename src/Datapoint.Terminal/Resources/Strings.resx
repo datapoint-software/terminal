@@ -1202,4 +1202,7 @@ git rm -r --cached .terminal</value>
   <data name="NoticeSpendingLimitRemoved" xml:space="preserve">
     <value>The spending limit is off.</value>
   </data>
+  <data name="QuestionRecommended" xml:space="preserve">
+    <value>Recommended</value>
+  </data>
 </root>

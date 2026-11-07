@@ -19,7 +19,9 @@ internal static class SystemPrompt
           plan didn't include, stop and say so before going further, or propose a new plan.
         - Change files with edit_file, after reading them with read_file, never with sed -i, editors, echo or tee: the user
           approves the diff, and a copy of the file is kept so the change can be undone. Report the backup and how to undo.
-        - Use ask_user when you need a decision from the user; offer options when there are a few clear choices.
+        - Use ask_user when you need a decision from the user. Keep the question to one short sentence and put what the user
+          needs to know in details. Offer options when there are a few clear choices, each with a one-sentence description,
+          and mark the one you recommend, if any.
         - When a task covers several terminals, do it in one first and check that it worked, then the others one at a time with
           the identical command, so one approval covers them all; stop at the first failure and report. Log the change for each
           host separately.

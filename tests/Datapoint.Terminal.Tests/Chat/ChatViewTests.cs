@@ -78,4 +78,32 @@ public sealed class ChatViewTests
         var bottom = run.TranslatePoint(new Point(0, run.Bounds.Height), window)!.Value.Y;
         Assert.InRange(bottom, 0, window.Height);
     }
+
+    [AvaloniaFact]
+    public void Shows_the_question_in_bold_and_marks_the_recommended_option()
+    {
+        using var chat = new ChatViewModel(new ImmediateUiThread());
+        var question = new AgentQuestion(
+            "How do you want to proceed?",
+            [
+                new AgentOption("Everything now", "Installs all 6 updates; Docker restarts and so does every container on this node."),
+                new AgentOption("Drain the node first", "Moves its tasks to other nodes, updates, then makes it active again.", IsRecommended: true),
+                new AgentOption("Stop", "Leaves the server as it is so you can schedule a window."),
+            ])
+        {
+            Details = "Four of the 6 updates are **Docker** packages, and this node is the swarm's only manager.",
+        };
+        _ = chat.AskAsync(question, CancellationToken.None);
+        var window = new Window { Width = 420, Height = 700, Content = new ChatView { DataContext = chat } };
+        window.Show();
+
+        Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+        using var frame = window.CaptureRenderedFrame();
+        Directory.CreateDirectory("rendered");
+        frame?.Save("rendered/chat-question.png", new PngBitmapEncoderOptions());
+
+        var options = window.GetVisualDescendants().OfType<Button>().Where(button => button.Classes.Contains("option")).ToList();
+        Assert.Equal(3, options.Count);
+        Assert.Single(options, button => button.Classes.Contains("recommended"));
+    }
 }

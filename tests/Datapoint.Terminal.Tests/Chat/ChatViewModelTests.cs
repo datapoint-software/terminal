@@ -98,8 +98,8 @@ public sealed class ChatViewModelTests
     {
         using var chat = new ChatViewModel(new ImmediateUiThread());
 
-        var first = chat.AskAsync(new AgentQuestion("Which?", ["a", "b"]), Token);
-        chat.Question!.ChooseCommand.Execute("b");
+        var first = chat.AskAsync(new AgentQuestion("Which?", [new AgentOption("a"), new AgentOption("b", "The second.")]), Token);
+        chat.Question!.ChooseCommand.Execute(chat.Question.Options[1]);
         var second = chat.AskAsync(new AgentQuestion("Why?", []), Token);
         chat.Question!.Draft = " because ";
         chat.Question.SubmitCommand.Execute(null);

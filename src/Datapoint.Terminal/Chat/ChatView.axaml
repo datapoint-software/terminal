@@ -1,5 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:agent="clr-namespace:Datapoint.Terminal.Agent;assembly=Datapoint.Terminal.Agent"
              xmlns:chat="clr-namespace:Datapoint.Terminal.Chat"
              xmlns:md="clr-namespace:Datapoint.Terminal.Markdown"
              xmlns:res="clr-namespace:Datapoint.Terminal.Resources"
@@ -105,6 +106,28 @@
       <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
     </Style>
 
+    <!-- A choice offered by the agent: label, a line on what it does, and a tag on the one it recommends. -->
+    <Style Selector="Button.option">
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+      <Setter Property="Padding" Value="12,8" />
+      <Setter Property="CornerRadius" Value="8" />
+    </Style>
+    <Style Selector="Button.option.recommended /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="BorderThickness" Value="1.5" />
+    </Style>
+    <Style Selector="Border.tag">
+      <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Padding" Value="6,1" />
+    </Style>
+    <Style Selector="Border.tag TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
+      <Setter Property="FontSize" Value="11" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
     <Style Selector="Border.card">
       <Setter Property="Background" Value="{DynamicResource CardBrush}" />
       <Setter Property="CornerRadius" Value="10" />
@@ -189,20 +212,36 @@
       <Border Classes="card" IsVisible="{Binding Question, Converter={x:Static ObjectConverters.IsNotNull}}"
               AutomationProperties.LiveSetting="Assertive">
         <StackPanel Spacing="8" DataContext="{Binding Question}" x:DataType="chat:QuestionViewModel">
+          <!-- Capped, so long background scrolls and the choices stay in view. Only the question itself is bold. -->
           <ScrollViewer MaxHeight="240" VerticalScrollBarVisibility="Auto">
-            <SelectableTextBlock Text="{Binding Text}" FontWeight="SemiBold" TextWrapping="Wrap" />
+            <StackPanel Spacing="4">
+              <md:MarkdownView Text="{Binding Details}" IsVisible="{Binding HasDetails}" />
+              <SelectableTextBlock Text="{Binding Text}" FontWeight="SemiBold" TextWrapping="Wrap" />
+            </StackPanel>
           </ScrollViewer>
           <ItemsControl ItemsSource="{Binding Options}" IsVisible="{Binding HasOptions}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
-                <WrapPanel />
+                <StackPanel Spacing="6" />
               </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
-              <DataTemplate x:DataType="x:String">
-                <Button Margin="0,0,6,6" Content="{Binding}"
+              <DataTemplate x:DataType="agent:AgentOption">
+                <Button Classes="option" Classes.recommended="{Binding IsRecommended}"
                         Command="{Binding $parent[ItemsControl].((chat:QuestionViewModel)DataContext).ChooseCommand}"
-                        CommandParameter="{Binding}" />
+                        CommandParameter="{Binding}"
+                        AutomationProperties.Name="{Binding Label}" AutomationProperties.HelpText="{Binding Description}">
+                  <StackPanel Spacing="2">
+                    <Grid ColumnDefinitions="*,Auto">
+                      <TextBlock Text="{Binding Label}" FontWeight="SemiBold" TextWrapping="Wrap" VerticalAlignment="Center" />
+                      <Border Grid.Column="1" Classes="tag" IsVisible="{Binding IsRecommended}" Margin="8,0,0,0" VerticalAlignment="Top">
+                        <TextBlock Text="{x:Static res:Strings.QuestionRecommended}" />
+                      </Border>
+                    </Grid>
+                    <TextBlock Classes="secondary" Text="{Binding Description}" TextWrapping="Wrap"
+                               IsVisible="{Binding Description, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                  </StackPanel>
+                </Button>
               </DataTemplate>
             </ItemsControl.ItemTemplate>
           </ItemsControl>

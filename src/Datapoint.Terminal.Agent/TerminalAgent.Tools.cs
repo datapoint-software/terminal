@@ -51,8 +51,13 @@ public sealed partial class TerminalAgent
             + "user can still answer in their own words.",
             """
             {"type":"object","properties":{
-              "question":{"type":"string"},
-              "options":{"type":"array","items":{"type":"string"},"description":"Up to 6 short choices; omit for an open question."}},
+              "question":{"type":"string","description":"The question alone, in one short sentence. It's shown in bold."},
+              "details":{"type":"string","description":"What the user needs to know to decide, in short Markdown, shown above the question. Omit when the question says it all."},
+              "options":{"type":"array","maxItems":6,"description":"Up to 6 choices; omit for an open question.","items":{"type":"object","properties":{
+                "label":{"type":"string","description":"A few words, shown on the button."},
+                "description":{"type":"string","description":"One short sentence on what the choice does or costs."},
+                "recommended":{"type":"boolean","description":"True on the one option you recommend, if any."}},
+               "required":["label"]}}},
              "required":["question"]}
             """,
             AskUserAsync),
@@ -175,9 +180,10 @@ public sealed partial class TerminalAgent
             return "Not asked: the question is empty.";
         }
 
-        var options = ToolArguments.GetStrings(arguments, "options").Where(option => !string.IsNullOrWhiteSpace(option)).Take(6).ToList();
+        var details = ToolArguments.GetString(arguments, "details");
+        var asked = new AgentQuestion(question.Trim(), QuestionOptions.Parse(arguments)) { Details = string.IsNullOrWhiteSpace(details) ? null : details.Trim() };
         SetStatus(AgentStatus.WaitingForUser);
-        var answer = await _user.AskAsync(new AgentQuestion(question, options), cancellationToken).ConfigureAwait(false);
+        var answer = await _user.AskAsync(asked, cancellationToken).ConfigureAwait(false);
         SetStatus(AgentStatus.Thinking);
         return answer is null ? "The user didn't answer." : "The user answered: " + answer;
     }

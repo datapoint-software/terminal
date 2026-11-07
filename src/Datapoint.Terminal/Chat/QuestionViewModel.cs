@@ -12,12 +12,17 @@ public sealed partial class QuestionViewModel : ObservableObject
     {
         ArgumentNullException.ThrowIfNull(question);
         Text = question.Text;
+        Details = question.Details;
         Options = question.Options;
     }
 
     public string Text { get; }
 
-    public IReadOnlyList<string> Options { get; }
+    public string? Details { get; }
+
+    public bool HasDetails => !string.IsNullOrWhiteSpace(Details);
+
+    public IReadOnlyList<AgentOption> Options { get; }
 
     public bool HasOptions => Options.Count > 0;
 
@@ -31,7 +36,7 @@ public sealed partial class QuestionViewModel : ObservableObject
     public void Cancel() => _answer.TrySetCanceled();
 
     [RelayCommand]
-    private void Choose(string option) => _answer.TrySetResult(option);
+    private void Choose(AgentOption option) => _answer.TrySetResult(option.Label);
 
     [RelayCommand(CanExecute = nameof(CanSubmit))]
     private void Submit() => _answer.TrySetResult(Draft.Trim());
