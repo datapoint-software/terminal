@@ -172,17 +172,27 @@ public sealed partial class MainWindow : IHistoryAccess
 
     private HistoryWindow? _historyWindow;
 
-    private void ShowHistory()
+    private void ShowHistory() => ShowHistory(conversation: null);
+
+    private void ShowHistory(long? conversation)
     {
-        if (_historyWindow is { } open)
+        if (_historyWindow is null)
         {
-            open.Activate();
+            _historyWindow = new HistoryWindow(this) { Title = $"{Strings.HistoryTitle} — {Project.Name}" };
+            _historyWindow.Closed += (_, _) => _historyWindow = null;
+            _historyWindow.Show(this);
+        }
+        else
+        {
+            _historyWindow.Activate();
+        }
+
+        if (conversation is not { } id)
+        {
             return;
         }
 
-        _historyWindow = new HistoryWindow(this) { Title = $"{Strings.HistoryTitle} — {Project.Name}" };
-        _historyWindow.Closed += (_, _) => _historyWindow = null;
-        _historyWindow.Show(this);
+        _historyWindow.ShowConversation(id);
     }
 
     private void EndConversation()

@@ -89,7 +89,7 @@ public sealed partial class MainWindow
 
         // File access and transfer go to the host, not into a container on it, so a container's files are changed through its shell.
         var onHost = connection.Container is null;
-        Attach(tab, new TerminalConnection(session, 80, 24), connection.Environment, DefaultModeFor(connection), select, onHost ? new SshHostFiles(client) : null, connection.Container?.Describe());
+        Attach(tab, Connect(tab, session), connection.Environment, DefaultModeFor(connection), select, onHost ? new SshHostFiles(client) : null, connection.Container?.Describe());
         tab.Client = onHost ? client : null;
         tab.SharedClient = shared;
         if (host is not null)

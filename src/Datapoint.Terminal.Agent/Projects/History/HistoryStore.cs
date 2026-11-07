@@ -14,8 +14,14 @@ public sealed class HistoryStore : IDisposable
     // Long outputs keep their start and end, as the agent sees them.
     public const int MaxDetailCharacters = 64 * 1024;
 
-    // 2 added the connection each entry came from.
-    private const int Version = 2;
+    // What a closed terminal leaves behind: its last lines, as many as fit here.
+    public const int MaxScrollbackCharacters = 256 * 1024;
+
+    // 2 added the connection each entry came from; 3 added terminals' scrollback.
+    private const int Version = 3;
+
+    // Older scrollback for a connection is dropped as new is saved: only the latest is shown when a tab reopens.
+    private const int ScrollbacksPerConnection = 3;
 
     private readonly SqliteConnection _connection;
     private readonly SecretRedactor _redactor;
@@ -129,11 +135,68 @@ public sealed class HistoryStore : IDisposable
         }
     }
 
+    // A terminal's text when it closed, redacted and cut to its last lines (product decision 52).
+    public void SaveScrollback(string connection, DateTimeOffset time, string text)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(connection);
+        ArgumentNullException.ThrowIfNull(text);
+        var redacted = _redactor.Redact(text);
+        if (redacted.Length > MaxScrollbackCharacters)
+        {
+            var cut = redacted.IndexOf('\n', redacted.Length - MaxScrollbackCharacters);
+            redacted = redacted[(cut < 0 ? redacted.Length - MaxScrollbackCharacters : cut + 1)..];
+        }
+
+        lock (_lock)
+        {
+            using var transaction = _connection.BeginTransaction();
+            using var insert = Command("INSERT INTO scrollback (connection, time, text) VALUES ($connection, $time, $text)", ("$connection", connection), ("$time", time.ToUnixTimeMilliseconds()), ("$text", redacted));
+            insert.Transaction = transaction;
+            insert.ExecuteNonQuery();
+            using var trim = Command(
+                "DELETE FROM scrollback WHERE connection = $connection AND id NOT IN (SELECT id FROM scrollback WHERE connection = $connection ORDER BY id DESC LIMIT $keep)",
+                ("$connection", connection),
+                ("$keep", ScrollbacksPerConnection));
+            trim.Transaction = transaction;
+            trim.ExecuteNonQuery();
+            transaction.Commit();
+        }
+    }
+
+    public SavedScrollback? LatestScrollback(string connection)
+    {
+        lock (_lock)
+        {
+            using var command = Command("SELECT time, text FROM scrollback WHERE connection = $connection ORDER BY id DESC LIMIT 1", ("$connection", connection));
+            using var reader = command.ExecuteReader();
+            return reader.Read() ? new SavedScrollback(DateTimeOffset.FromUnixTimeMilliseconds(reader.GetInt64(0)), reader.GetString(1)) : null;
+        }
+    }
+
+    // The newest conversation in which the agent ran a command on the connection, and its last reply there, to recall it by.
+    public (long Conversation, DateTimeOffset Time, string? Reply)? LastWorkOn(string connection)
+    {
+        lock (_lock)
+        {
+            using var command = Command(
+                """
+                SELECT c.conversation, c.time,
+                    (SELECT text FROM entries WHERE conversation = c.conversation AND kind = 'Agent' ORDER BY id DESC LIMIT 1)
+                FROM entries c WHERE c.connection = $connection AND c.kind = 'Command' ORDER BY c.id DESC LIMIT 1
+                """,
+                ("$connection", connection));
+            using var reader = command.ExecuteReader();
+            return reader.Read()
+                ? (reader.GetInt64(0), DateTimeOffset.FromUnixTimeMilliseconds(reader.GetInt64(1)), reader.IsDBNull(2) ? null : reader.GetString(2))
+                : null;
+        }
+    }
+
     public IReadOnlyList<string> Connections()
     {
         lock (_lock)
         {
-            using var command = Command("SELECT DISTINCT connection FROM entries WHERE connection IS NOT NULL ORDER BY connection COLLATE NOCASE");
+            using var command = Command("SELECT connection FROM entries WHERE connection IS NOT NULL UNION SELECT connection FROM scrollback ORDER BY 1 COLLATE NOCASE");
             var names = new List<string>();
             using var reader = command.ExecuteReader();
             while (reader.Read())
@@ -147,12 +210,12 @@ public sealed class HistoryStore : IDisposable
 
     // Clearing per connection (product decision 52) removes what was recorded from its terminals; the rest of each conversation stays.
     public int DeleteConnection(string connection) =>
-        Delete("DELETE FROM entries WHERE connection = $connection", ("$connection", connection));
+        Delete("DELETE FROM entries WHERE connection = $connection", "DELETE FROM scrollback WHERE connection = $connection", ("$connection", connection));
 
     // Deleted pages are overwritten (secure_delete), and the file is vacuumed to give the space back.
     public void DeleteAll()
     {
-        Delete("DELETE FROM entries");
+        Delete("DELETE FROM entries", "DELETE FROM scrollback");
         lock (_lock)
         {
             using var vacuum = Command("VACUUM");
@@ -162,10 +225,10 @@ public sealed class HistoryStore : IDisposable
 
     // For the retention setting: entries older than the cutoff go, and so do conversations left empty.
     public int DeleteOlderThan(DateTimeOffset cutoff) =>
-        Delete("DELETE FROM entries WHERE time < $cutoff", ("$cutoff", cutoff.ToUnixTimeMilliseconds()));
+        Delete("DELETE FROM entries WHERE time < $cutoff", "DELETE FROM scrollback WHERE time < $cutoff", ("$cutoff", cutoff.ToUnixTimeMilliseconds()));
 
     // Conversations left empty go too.
-    private int Delete(string sql, params (string Name, object? Value)[] parameters)
+    private int Delete(string sql, string scrollbackSql, params (string Name, object? Value)[] parameters)
     {
         lock (_lock)
         {
@@ -173,6 +236,9 @@ public sealed class HistoryStore : IDisposable
             using var entries = Command(sql, parameters);
             entries.Transaction = transaction;
             var deleted = entries.ExecuteNonQuery();
+            using var scrollback = Command(scrollbackSql, parameters);
+            scrollback.Transaction = transaction;
+            deleted += scrollback.ExecuteNonQuery();
             using var conversations = Command("DELETE FROM conversations WHERE id NOT IN (SELECT conversation FROM entries)");
             conversations.Transaction = transaction;
             conversations.ExecuteNonQuery();
@@ -256,6 +322,12 @@ public sealed class HistoryStore : IDisposable
                 detail TEXT,
                 exit_code INTEGER,
                 connection TEXT);
+            CREATE TABLE IF NOT EXISTS scrollback (
+                id INTEGER PRIMARY KEY,
+                connection TEXT NOT NULL,
+                time INTEGER NOT NULL,
+                text TEXT NOT NULL);
+            CREATE INDEX IF NOT EXISTS scrollback_by_connection ON scrollback (connection);
             {migrate}
             CREATE INDEX IF NOT EXISTS entries_by_conversation ON entries (conversation);
             CREATE INDEX IF NOT EXISTS entries_by_time ON entries (time);

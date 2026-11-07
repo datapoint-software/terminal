@@ -1493,4 +1493,25 @@ git rm -r --cached .terminal</value>
   <data name="FindInvalidPattern" xml:space="preserve">
     <value>Not a valid pattern</value>
   </data>
+  <data name="ScrollbackDivider" xml:space="preserve">
+    <value>{0} · earlier session, not live</value>
+  </data>
+  <data name="WhenToday" xml:space="preserve">
+    <value>Today at {0}</value>
+  </data>
+  <data name="WhenYesterday" xml:space="preserve">
+    <value>Yesterday at {0}</value>
+  </data>
+  <data name="WhenOnDay" xml:space="preserve">
+    <value>{0} at {1}</value>
+  </data>
+  <data name="NoticeEarlierWork" xml:space="preserve">
+    <value>Earlier in {0} · {1}: {2}</value>
+  </data>
+  <data name="NoticeEarlierWorkNoReply" xml:space="preserve">
+    <value>Earlier in {0} · {1}, the agent ran commands here.</value>
+  </data>
+  <data name="HistoryShowConversation" xml:space="preserve">
+    <value>Show</value>
+  </data>
 </root>

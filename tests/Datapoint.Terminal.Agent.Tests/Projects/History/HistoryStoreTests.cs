@@ -203,4 +203,64 @@ public sealed class HistoryStoreTests : IDisposable
 
         Assert.Equal([null, "web1"], store.Conversation(1).Select(entry => entry.Connection), StringComparer.Ordinal);
     }
+
+    [Fact]
+    public void Keeps_the_latest_scrollback_of_each_connection_redacted()
+    {
+        using var store = Open();
+        for (var index = 1; index <= 5; index++)
+        {
+            store.SaveScrollback("web1", s_start.AddMinutes(index), $"session {index}\nexport TOKEN=ghp_abcdefghijklmnopqrstuvwxyz0123456789");
+        }
+
+        var latest = store.LatestScrollback("web1");
+
+        Assert.Equal(s_start.AddMinutes(5), latest!.Time);
+        Assert.StartsWith("session 5\n", latest.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("ghp_abcdefghijklmnopqrstuvwxyz0123456789", latest.Text, StringComparison.Ordinal);
+        Assert.Null(store.LatestScrollback("db1"));
+    }
+
+    [Fact]
+    public void Keeps_the_end_of_a_long_scrollback()
+    {
+        using var store = Open();
+        var text = string.Join("\n", Enumerable.Range(1, 40_000).Select(index => $"line {index}"));
+
+        store.SaveScrollback("web1", s_start, text);
+
+        var kept = store.LatestScrollback("web1")!.Text;
+        Assert.InRange(kept.Length, 1, HistoryStore.MaxScrollbackCharacters);
+        Assert.EndsWith("line 40000", kept, StringComparison.Ordinal);
+        Assert.StartsWith("line ", kept, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Clears_scrollback_with_its_connection_and_with_age()
+    {
+        using var store = Open();
+        store.SaveScrollback("web1", s_start, "old");
+        store.SaveScrollback("db1", s_start.AddDays(10), "new");
+
+        Assert.Equal(["db1", "web1"], store.Connections());
+        store.DeleteConnection("db1");
+        Assert.Null(store.LatestScrollback("db1"));
+
+        store.DeleteOlderThan(s_start.AddDays(1));
+        Assert.Null(store.LatestScrollback("web1"));
+    }
+
+    [Fact]
+    public void Recalls_the_agents_last_reply_where_it_last_worked_on_a_connection()
+    {
+        using var store = Open();
+        var conversation = store.StartConversation(s_start);
+        store.Add(new HistoryEntry(conversation, s_start, HistoryEntryKind.Command, "systemctl reload nginx", "web1", string.Empty, 0, "web1"));
+        store.Add(new HistoryEntry(conversation, s_start.AddSeconds(5), HistoryEntryKind.Agent, "Reloaded nginx."));
+
+        var work = store.LastWorkOn("web1");
+
+        Assert.Equal((conversation, s_start, "Reloaded nginx."), work);
+        Assert.Null(store.LastWorkOn("db1"));
+    }
 }

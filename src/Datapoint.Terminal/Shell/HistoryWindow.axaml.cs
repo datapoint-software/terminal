@@ -98,6 +98,19 @@ public sealed partial class HistoryWindow : Window
         return item;
     }
 
+    public void ShowConversation(long conversation)
+    {
+        SearchBox.Text = string.Empty;
+        Fill();
+        if (List.Items.OfType<ListBoxItem>().FirstOrDefault(item => item.Tag is long id && id == conversation) is not { } item)
+        {
+            return;
+        }
+
+        List.SelectedItem = item;
+        List.ScrollIntoView(item);
+    }
+
     private void ShowSelected()
     {
         if (List.SelectedItem is not ListBoxItem { Tag: long conversation })

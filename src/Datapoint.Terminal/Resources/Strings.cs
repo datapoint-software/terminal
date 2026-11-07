@@ -992,6 +992,20 @@ public static class Strings
 
     public static string FindInvalidPattern => Get(nameof(FindInvalidPattern));
 
+    public static string ScrollbackDivider => Get(nameof(ScrollbackDivider));
+
+    public static string WhenToday => Get(nameof(WhenToday));
+
+    public static string WhenYesterday => Get(nameof(WhenYesterday));
+
+    public static string WhenOnDay => Get(nameof(WhenOnDay));
+
+    public static string NoticeEarlierWork => Get(nameof(NoticeEarlierWork));
+
+    public static string NoticeEarlierWorkNoReply => Get(nameof(NoticeEarlierWorkNoReply));
+
+    public static string HistoryShowConversation => Get(nameof(HistoryShowConversation));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

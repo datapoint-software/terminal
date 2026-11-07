@@ -29,7 +29,7 @@ public sealed partial class MainWindow
             var options = Project.IsDefault ? new LocalSessionOptions() : new LocalSessionOptions { WorkingDirectory = Project.Folder };
             var session = await LocalSession.StartAsync(options, CancellationToken.None).ConfigureAwait(true);
             var files = OperatingSystem.IsWindows() ? null : new LocalHostFiles(ProjectFolders.Home);
-            Attach(tab, new TerminalConnection(session, 80, 24), environment: null, _settings.Current.DefaultApprovalMode, select, files);
+            Attach(tab, Connect(tab, session), environment: null, _settings.Current.DefaultApprovalMode, select, files);
             return tab;
         }
         catch (Exception exception) when (exception is IOException or InvalidOperationException or PlatformNotSupportedException or System.ComponentModel.Win32Exception)
@@ -203,6 +203,7 @@ public sealed partial class MainWindow
         }
 
         TerminalHost.Children.Remove(tab.View);
+        SaveScrollback(tab);
         foreach (var forward in tab.Forwards)
         {
             await forward.DisposeAsync().ConfigureAwait(true);

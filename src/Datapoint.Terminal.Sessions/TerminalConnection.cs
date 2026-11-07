@@ -13,16 +13,23 @@ public sealed class TerminalConnection : ITerminalHost, IAsyncDisposable
     private readonly Task _reader;
     private readonly Task _writer;
 
-    public TerminalConnection(ITerminalSession session, int columns, int rows)
+    // The prelude, such as a reopened tab's earlier output, is shown before anything the session prints.
+    public TerminalConnection(ITerminalSession session, int columns, int rows, ReadOnlyMemory<byte> prelude = default)
     {
         ArgumentNullException.ThrowIfNull(session);
         _session = session;
         Terminal = new EmulatorTerminal(columns, rows, this) { ShellIntegrationNonce = session.ShellIntegrationNonce };
+        Terminal.Feed(prelude.Span);
+        LiveFromLine = Terminal.Primary.FirstVisibleLine + Terminal.Cursor.Row;
+        Terminal.LinesMoved += (_, e) => LiveFromLine = e.Map.Map(LiveFromLine);
         _reader = Task.Run(() => ReadLoopAsync(_lifetime.Token), CancellationToken.None);
         _writer = Task.Run(() => WriteLoopAsync(_lifetime.Token), CancellationToken.None);
     }
 
     public EmulatorTerminal Terminal { get; }
+
+    // The first line the session itself wrote, after any prelude; moved when the text reflows.
+    public long LiveFromLine { get; private set; }
 
     // These events are raised on a background thread; handlers that touch the user interface must hand over to it.
     public event EventHandler? OutputArrived;
