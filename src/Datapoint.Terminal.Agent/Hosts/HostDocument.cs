@@ -4,27 +4,27 @@ using Datapoint.Terminal.Agent.Files;
 
 namespace Datapoint.Terminal.Agent.Hosts;
 
-// A connection's documentation (product.md, Host documentation): Markdown with "## " sections, a standard set to start from,
-// which the user and the agent can add to. The agent replaces one section at a time and only appends to the maintenance log,
-// so what the user wrote elsewhere in the file is never touched.
+// A host's README.md (product.md, Host documentation): Markdown with "## " sections, a standard set to start from, which the
+// user and the agent can add to. The agent replaces one section at a time, so what the user wrote elsewhere in the file is never
+// touched; the maintenance log is kept beside it, one file per entry (HostLog).
 public static class HostDocument
 {
     public const string LogSection = "Maintenance log";
 
-    // Large enough for a thorough survey and years of log; past it, the agent is asked to summarize.
+    // Large enough for a thorough survey; past it, the agent is asked to summarize.
     public const int MaxBytes = 64 * 1024;
 
     private const string SectionMark = "## ";
 
-    public static IReadOnlyList<string> StandardSections { get; } = ["Overview", "System", "Software and services", "Notes", LogSection];
+    public static IReadOnlyList<string> StandardSections { get; } = ["Overview", "System", "Software and services", "Notes"];
 
     public static string Template(string connection) =>
-        $"# {connection}\n\nDocumentation for the {connection} connection, kept up to date by the agent in Datapoint Terminal and by you. "
-        + "Edit it freely: the agent changes one section at a time and adds to the maintenance log.\n\n"
+        $"# {connection}\n\nDocumentation for {connection}, kept up to date by the agent in Datapoint Terminal and by you. "
+        + "Edit it freely: the agent changes one section at a time, and keeps the maintenance log in log/, one file per entry.\n\n"
         + string.Concat(StandardSections.Select(section => SectionMark + section + "\n\n"));
 
-    // Names the file after the connection, keeping it inside the folder whatever the name holds.
-    public static string FileNameFor(string connection)
+    // Names the host's folder after it, keeping it inside hosts/ whatever the name holds.
+    public static string FolderNameFor(string connection)
     {
         ArgumentNullException.ThrowIfNull(connection);
         var name = new StringBuilder();
@@ -34,7 +34,7 @@ public static class HostDocument
         }
 
         var text = name.ToString().Trim('.', '-');
-        return (text.Length == 0 ? "host" : text) + ".md";
+        return text.Length == 0 ? "host" : text;
     }
 
     public static IReadOnlyList<string> Sections(string text) =>
@@ -73,32 +73,32 @@ public static class HostDocument
         return Checked(Join(lines));
     }
 
-    public static (string Text, WriteResult Result) AddLogEntry(string text, string connection, DateOnly date, string entry)
+    // A project's single-file document kept its log as a section of "- yyyy-MM-dd: text" lines; they become entries of their own.
+    public static (string Text, IReadOnlyList<(DateOnly Date, string Entry)> Log) SplitLegacyLog(string text)
     {
-        ArgumentNullException.ThrowIfNull(entry);
-        var lines = Lines(text.Length == 0 ? Template(connection) : text);
+        ArgumentNullException.ThrowIfNull(text);
+        var lines = Lines(text);
         var (start, end) = Find(lines, LogSection);
         if (start < 0)
         {
-            lines.AddRange([SectionMark + LogSection, string.Empty]);
-            (start, end) = (lines.Count - 2, lines.Count);
+            return (text, []);
         }
 
-        // After the section's last line with text, so entries stay in order and the blank line before the next heading stays.
-        var last = end;
-        while (last > start + 1 && lines[last - 1].Trim().Length == 0)
+        var entries = new List<(DateOnly, string)>();
+        foreach (var line in lines[(start + 1)..end].Select(line => line.Trim()).Where(line => line.StartsWith("- ", StringComparison.Ordinal)))
         {
-            last--;
+            var colon = line.IndexOf(": ", StringComparison.Ordinal);
+            if (colon > 2 && DateOnly.TryParseExact(line[2..colon], "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
+            {
+                entries.Add((date, line[(colon + 2)..]));
+                continue;
+            }
+
+            entries.Add((DateOnly.MinValue, line[2..]));
         }
 
-        var line = $"- {date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}: {entry}";
-        lines.Insert(last, line);
-        if (last == start + 1)
-        {
-            lines.Insert(last, string.Empty);
-        }
-
-        return Checked(Join(lines));
+        lines.RemoveRange(start, end - start);
+        return (Join(lines), entries);
     }
 
     private static (string, WriteResult) Checked(string text) =>

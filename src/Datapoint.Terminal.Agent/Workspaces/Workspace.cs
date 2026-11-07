@@ -131,6 +131,8 @@ public sealed class Workspace : IDisposable
             File.Move(legacySettings, settings);
         }
 
+        Hosts.HostDocsLayout.Upgrade(Path.Combine(folder, "hosts"), author: string.Empty);
+
         var legacyPersonal = Path.Combine(folder, WorkspaceFolders.LegacyPersonalFolder);
         if (!Directory.Exists(legacyPersonal))
         {

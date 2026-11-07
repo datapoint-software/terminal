@@ -5,8 +5,6 @@ namespace Datapoint.Terminal.Agent.Tests.Hosts;
 
 public sealed class HostDocumentTests
 {
-    private static readonly DateOnly s_date = new(2026, 11, 7);
-
     [Fact]
     public void Starts_from_the_standard_sections()
     {
@@ -29,13 +27,13 @@ public sealed class HostDocumentTests
     }
 
     [Fact]
-    public void Adds_a_new_section_before_the_log()
+    public void Adds_a_new_section_at_the_end()
     {
         var start = HostDocument.Template("web1");
 
         var (text, _) = HostDocument.SetSection(start, "web1", "Backups", "Nightly to S3.");
 
-        Assert.Equal(["Overview", "System", "Software and services", "Notes", "Backups", "Maintenance log"], HostDocument.Sections(text), StringComparer.Ordinal);
+        Assert.Equal(["Overview", "System", "Software and services", "Notes", "Backups"], HostDocument.Sections(text), StringComparer.Ordinal);
     }
 
     [Fact]
@@ -47,22 +45,14 @@ public sealed class HostDocumentTests
     }
 
     [Fact]
-    public void Appends_dated_entries_to_the_log_in_order()
+    public void Splits_a_legacy_log_into_entries()
     {
-        var (first, _) = HostDocument.AddLogEntry(HostDocument.Template("web1"), "web1", s_date, "Installed nginx.");
-        var (second, _) = HostDocument.AddLogEntry(first, "web1", s_date.AddDays(1), "Renewed the certificate.");
+        const string Before = "# web1\n\n## Notes\n\nMine.\n\n## Maintenance log\n\n- 2026-01-01: Set up.\n- Patched, undated.\n\n## Extra\n\nThe user's section.\n";
 
-        Assert.Equal("- 2026-11-07: Installed nginx.\n- 2026-11-08: Renewed the certificate.", HostDocument.Section(second, HostDocument.LogSection));
-    }
+        var (text, log) = HostDocument.SplitLegacyLog(Before);
 
-    [Fact]
-    public void Keeps_the_log_entry_out_of_a_following_section()
-    {
-        const string Before = "# web1\n\n## Maintenance log\n\n- 2026-01-01: Set up.\n\n## Extra\n\nThe user's section.\n";
-
-        var (text, _) = HostDocument.AddLogEntry(Before, "web1", s_date, "Patched.");
-
-        Assert.Equal("# web1\n\n## Maintenance log\n\n- 2026-01-01: Set up.\n- 2026-11-07: Patched.\n\n## Extra\n\nThe user's section.\n", text);
+        Assert.Equal("# web1\n\n## Notes\n\nMine.\n\n## Extra\n\nThe user's section.\n", text);
+        Assert.Equal([(new DateOnly(2026, 1, 1), "Set up."), (DateOnly.MinValue, "Patched, undated.")], log);
     }
 
     [Fact]
@@ -74,12 +64,12 @@ public sealed class HostDocumentTests
     }
 
     [Theory]
-    [InlineData("web-1", "web-1.md")]
-    [InlineData("db primary", "db-primary.md")]
-    [InlineData("../../etc/passwd", "etc-passwd.md")]
-    [InlineData("..", "host.md")]
-    public void Names_the_file_inside_the_folder(string connection, string expected)
+    [InlineData("web-1", "web-1")]
+    [InlineData("db primary", "db-primary")]
+    [InlineData("../../etc/passwd", "etc-passwd")]
+    [InlineData("..", "host")]
+    public void Names_the_folder_inside_hosts(string connection, string expected)
     {
-        Assert.Equal(expected, HostDocument.FileNameFor(connection));
+        Assert.Equal(expected, HostDocument.FolderNameFor(connection));
     }
 }

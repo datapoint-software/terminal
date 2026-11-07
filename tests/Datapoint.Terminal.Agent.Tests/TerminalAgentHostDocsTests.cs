@@ -15,7 +15,13 @@ public sealed class TerminalAgentHostDocsTests : IDisposable
 
     private static CancellationToken Token => TestContext.Current.CancellationToken;
 
-    private string Web1 => Path.Combine(_folder, "web1.md");
+    private string Web1 => Path.Combine(_folder, "web1", "README.md");
+
+    private Task WriteWeb1Async(string text)
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(Web1)!);
+        return File.WriteAllTextAsync(Web1, text, Token);
+    }
 
     public void Dispose() => Directory.Delete(_folder, recursive: true);
 
@@ -53,7 +59,7 @@ public sealed class TerminalAgentHostDocsTests : IDisposable
     [Fact]
     public async Task Does_not_overwrite_a_file_it_has_not_read()
     {
-        await File.WriteAllTextAsync(Web1, "# web1\n\n## System\n\nThe user's text.\n", Token);
+        await WriteWeb1Async("# web1\n\n## System\n\nThe user's text.\n");
 
         var (results, _) = await RunAsync(true, Tool("update_host_docs", ("connection", "web1"), ("section", "System"), ("text", "Mine.")));
 
@@ -64,14 +70,14 @@ public sealed class TerminalAgentHostDocsTests : IDisposable
     [Fact]
     public async Task Updates_a_file_after_reading_it()
     {
-        await File.WriteAllTextAsync(Web1, "# web1\n\n## System\n\nOld.\n", Token);
+        await WriteWeb1Async("# web1\n\n## System\n\nOld.\n");
 
         var (results, _) = await RunAsync(
             true,
             Tool("read_host_docs", ("connection", "web1")),
             Tool("update_host_docs", ("connection", "web1"), ("section", "System"), ("text", "New.")));
 
-        Assert.Equal("# web1\n\n## System\n\nOld.\n", results[0]);
+        Assert.Equal("# web1\n\n## System\n\nOld.\n\n## Maintenance log\n\nNo entries yet.\n", results[0]);
         Assert.Equal("Done.", results[1]);
     }
 
@@ -81,7 +87,8 @@ public sealed class TerminalAgentHostDocsTests : IDisposable
         var (results, _) = await RunAsync(true, Tool("log_host_change", ("connection", "web1"), ("entry", "Installed nginx 1.26.")));
 
         Assert.Equal("Done.", results[0]);
-        Assert.Equal("- 2026-11-07: Installed nginx 1.26.", HostDocument.Section(await File.ReadAllTextAsync(Web1, Token), HostDocument.LogSection));
+        var entry = Assert.Single(HostLog.Read(Path.Combine(_folder, "web1", "log")));
+        Assert.Equal(("Installed nginx 1.26.", true, 2026), (entry.Text, entry.WithAgent, entry.When.Year));
     }
 
     [Fact]
@@ -90,7 +97,7 @@ public sealed class TerminalAgentHostDocsTests : IDisposable
         var (results, _) = await RunAsync(true, Tool("log_host_change", ("connection", "web1"), ("entry", "Set DB_PASSWORD=hunter22 in the unit file.")));
 
         Assert.StartsWith("Not changed: the text looks like it holds a secret", results[0], StringComparison.Ordinal);
-        Assert.False(File.Exists(Web1));
+        Assert.False(Directory.Exists(Path.Combine(_folder, "web1")));
     }
 
     [Fact]
@@ -112,7 +119,7 @@ public sealed class TerminalAgentHostDocsTests : IDisposable
     [Fact]
     public async Task Does_not_read_documentation_listed_in_terminalignore()
     {
-        await File.WriteAllTextAsync(Web1, "# web1\n", Token);
+        await WriteWeb1Async("# web1\n");
         _ignored.Add(Web1);
 
         var (results, _) = await RunAsync(true, Tool("read_host_docs", ("connection", "web1")));
@@ -131,7 +138,7 @@ public sealed class TerminalAgentHostDocsTests : IDisposable
     [Fact]
     public async Task Lists_the_documented_hosts()
     {
-        await File.WriteAllTextAsync(Web1, "# web1\n", Token);
+        await WriteWeb1Async("# web1\n");
 
         var (_, client) = await RunAsync(true, _ => Text("OK."));
 

@@ -14,12 +14,15 @@ public sealed partial class TerminalAgent
 
     public TimeProvider Clock { get; set; } = TimeProvider.System;
 
+    // The newest entries are what the agent needs to know what changed lately; older ones stay in the files.
+    private const int MaxLogEntriesRead = 20;
+
     private List<AITool> HostDocsTools() =>
     [
         new ToolFunction(
             "read_host_docs",
-            "Returns a connection's documentation from the workspace's hosts/ folder: what the machine is, what runs on it, and a "
-            + "maintenance log. Read it before working on a host, and before changing it.",
+            "Returns a host's documentation from the workspace's hosts/ folder: what the machine is, what runs on it, and its "
+            + "latest maintenance log entries. Read it before working on a host, and before changing it.",
             """
             {"type":"object","properties":{
               "connection":{"type":"string","description":"The connection's name, as listed in the user's message."}},
@@ -28,8 +31,8 @@ public sealed partial class TerminalAgent
             ReadHostDocsAsync),
         new ToolFunction(
             "update_host_docs",
-            "Replaces one section of a connection's documentation, or adds it, creating the file with the standard sections "
-            + "(Overview, System, Software and services, Notes, Maintenance log) if there's none. Read the file first and keep "
+            "Replaces one section of a host's documentation, or adds it, creating the file with the standard sections "
+            + "(Overview, System, Software and services, Notes) if there's none. Read the file first and keep "
             + "what the user wrote in the section. Write for people: complete sentences or lists, no secrets.",
             """
             {"type":"object","properties":{
@@ -41,8 +44,8 @@ public sealed partial class TerminalAgent
             UpdateHostDocsAsync),
         new ToolFunction(
             "log_host_change",
-            "Adds a dated entry to a connection's maintenance log: what you changed on the machine and why, in one line. Do it "
-            + "after any task that changed the system.",
+            "Adds an entry to a host's maintenance log: what you changed on the machine and why, in one line. The date and "
+            + "who did it are added for you. Do it after any task that changed the system.",
             """
             {"type":"object","properties":{
               "connection":{"type":"string"},
@@ -79,9 +82,9 @@ public sealed partial class TerminalAgent
         }
 
         Remember(path, text);
-        return Task.FromResult(text.Length == 0
-            ? $"There's no documentation for \"{connection}\" yet. Create it with update_host_docs."
-            : _redactor.Redact(text));
+        var log = HostLog.Read(HostDocs!.LogFor(connection), MaxLogEntriesRead).Where(entry => !HostDocs.IsIgnored(entry.Path)).ToList();
+        var document = text.Length == 0 ? $"There's no documentation for \"{connection}\" yet. Create it with update_host_docs." : text.TrimEnd('\n');
+        return Task.FromResult(_redactor.Redact(document + "\n\n" + HostLog.Describe(log)));
     }
 
     private Task<string> UpdateHostDocsAsync(AIFunctionArguments arguments, CancellationToken cancellationToken)
@@ -109,8 +112,37 @@ public sealed partial class TerminalAgent
             return Task.FromResult("Not logged: the entry is empty.");
         }
 
-        var date = DateOnly.FromDateTime(Clock.GetLocalNow().DateTime);
-        return Task.FromResult(WriteHostDocs(arguments, entry, requireSeen: false, (text, connection) => HostDocument.AddLogEntry(text, connection, date, entry), "Logged a change in"));
+        if (entry.Length > HostLog.MaxEntryLength)
+        {
+            return Task.FromResult($"Not logged: keep the entry under {HostLog.MaxEntryLength} characters.");
+        }
+
+        if (HostDocsFile(arguments, out var connection) is not { } path)
+        {
+            return Task.FromResult(connection);
+        }
+
+        if (!HostDocs!.CanWrite)
+        {
+            return Task.FromResult("Not changed: this window can't write the workspace's files (it's open read-only).");
+        }
+
+        if (_redactor.Find(entry).Count > 0)
+        {
+            return Task.FromResult("Not changed: the text looks like it holds a secret. Describe where the secret is kept instead, never its value.");
+        }
+
+        try
+        {
+            HostLog.Write(HostDocs.LogFor(connection), Clock.GetLocalNow(), HostDocs.Author, withAgent: true, entry);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            return Task.FromResult("Not logged: the entry couldn't be written.");
+        }
+
+        Raise(new AgentEventArgs(AgentEventKind.HostDocsChanged, $"Logged a change in the documentation for {connection}.") { Path = path });
+        return Task.FromResult("Done.");
     }
 
     private string WriteHostDocs(
@@ -154,6 +186,7 @@ public sealed partial class TerminalAgent
             }
 
             var (text, result) = change(current, connection);
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
             if (result == WriteResult.Full)
             {
                 return $"Not changed: the documentation would pass {HostDocument.MaxBytes / 1024} KB. Summarize older or less useful parts first.";

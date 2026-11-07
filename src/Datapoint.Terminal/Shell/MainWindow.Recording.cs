@@ -46,7 +46,7 @@ public sealed partial class MainWindow
     private FileStream CreateRecordingFile(string tabName)
     {
         var folder = RecordingsFolder;
-        var name = $"{DateTimeOffset.Now:yyyyMMdd-HHmmss}-{Agent.Hosts.HostDocument.FileNameFor(tabName)[..^3]}.cast";
+        var name = $"{DateTimeOffset.Now:yyyyMMdd-HHmmss}-{Agent.Hosts.HostDocument.FolderNameFor(tabName)}.cast";
         var options = new FileStreamOptions { Mode = FileMode.CreateNew, Access = FileAccess.Write, Share = FileShare.Read };
         if (OperatingSystem.IsWindows())
         {
