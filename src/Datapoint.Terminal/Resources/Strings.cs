@@ -922,6 +922,48 @@ public static class Strings
 
     public static string SidebarNewFileInvalid => Get(nameof(SidebarNewFileInvalid));
 
+    public static string DocumentPlaceholder => Get(nameof(DocumentPlaceholder));
+
+    public static string DocumentConflict => Get(nameof(DocumentConflict));
+
+    public static string DocumentKeepMine => Get(nameof(DocumentKeepMine));
+
+    public static string DocumentTakeTheirs => Get(nameof(DocumentTakeTheirs));
+
+    public static string DocumentSaveFailed => Get(nameof(DocumentSaveFailed));
+
+    public static string DocumentCantOpen => Get(nameof(DocumentCantOpen));
+
+    public static string DocumentClose => Get(nameof(DocumentClose));
+
+    public static string DocumentTabName => Get(nameof(DocumentTabName));
+
+    public static string DocumentTabUnsaved => Get(nameof(DocumentTabUnsaved));
+
+    public static string DocumentTabsName => Get(nameof(DocumentTabsName));
+
+    public static string DocumentOpenTerminal => Get(nameof(DocumentOpenTerminal));
+
+    public static string MenuFormat => Get(nameof(MenuFormat));
+
+    public static string MenuBold => Get(nameof(MenuBold));
+
+    public static string MenuItalic => Get(nameof(MenuItalic));
+
+    public static string MenuInlineCode => Get(nameof(MenuInlineCode));
+
+    public static string MenuLink => Get(nameof(MenuLink));
+
+    public static string MenuShowMarkdown => Get(nameof(MenuShowMarkdown));
+
+    public static string MenuCloseDocument => Get(nameof(MenuCloseDocument));
+
+    public static string MenuCut => Get(nameof(MenuCut));
+
+    public static string MenuCopy => Get(nameof(MenuCopy));
+
+    public static string MenuPaste => Get(nameof(MenuPaste));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

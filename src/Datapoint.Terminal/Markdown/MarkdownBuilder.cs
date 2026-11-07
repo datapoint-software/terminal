@@ -17,7 +17,7 @@ namespace Datapoint.Terminal.Markdown;
 // Only formatting HTML tags are honoured; other HTML is shown as written, never run.
 internal sealed partial class MarkdownBuilder(Control owner)
 {
-    private const double LineHeight = 19;
+    private const double ReplyLineHeight = 19;
 
     private static readonly string[] s_bullets = ["•", "◦", "▪"];
 
@@ -34,6 +34,10 @@ internal sealed partial class MarkdownBuilder(Control owner)
     private TextAlignment _alignment = TextAlignment.Left;
     private int _depth;
     private List<MarkdownImage> _images = [];
+
+    private bool IsDocument => owner is MarkdownView { IsDocument: true };
+
+    private double LineHeight => IsDocument ? Editor.DocumentType.LineHeight : ReplyLineHeight;
 
     public List<Control> Build(string markdown) => Blocks(Markdig.Markdown.Parse(markdown, s_pipeline));
 
@@ -62,15 +66,24 @@ internal sealed partial class MarkdownBuilder(Control owner)
         _ => NewText(leaf.Lines.ToString()),
     };
 
-    private SelectableTextBlock NewText(string? text) => new()
+    private SelectableTextBlock NewText(string? text)
     {
-        Text = text,
-        TextWrapping = TextWrapping.Wrap,
-        LineHeight = LineHeight,
-        FontWeight = _weight,
-        TextAlignment = _alignment,
-        ContextFlyout = null,
-    };
+        var block = new SelectableTextBlock
+        {
+            Text = text,
+            TextWrapping = TextWrapping.Wrap,
+            LineHeight = LineHeight,
+            FontWeight = _weight,
+            TextAlignment = _alignment,
+            ContextFlyout = null,
+        };
+        if (IsDocument)
+        {
+            block.FontSize = Editor.DocumentType.Body;
+        }
+
+        return block;
+    }
 
     private Control Paragraph(ParagraphBlock paragraph)
     {
@@ -100,10 +113,13 @@ internal sealed partial class MarkdownBuilder(Control owner)
     {
         var text = TextFor(heading.Inline);
         text.FontWeight = FontWeight.SemiBold;
-        text.FontSize = heading.Level switch
+        text.FontSize = (heading.Level, IsDocument) switch
         {
-            1 => 18,
-            2 => 16,
+            (1, true) => Editor.DocumentType.Heading1,
+            (2, true) => Editor.DocumentType.Heading2,
+            (_, true) => Editor.DocumentType.Heading3,
+            (1, false) => 18,
+            (2, false) => 16,
             _ => 14,
         };
         text.LineHeight = double.NaN;
@@ -141,7 +157,7 @@ internal sealed partial class MarkdownBuilder(Control owner)
         _ => MarkerText(s_bullets[(_depth - 1) % s_bullets.Length]),
     };
 
-    private static TextBlock MarkerText(string text) => new() { Text = text, MinWidth = 14, Margin = new Thickness(2, 0, 6, 0), LineHeight = LineHeight };
+    private TextBlock MarkerText(string text) => new() { Text = text, MinWidth = 14, Margin = new Thickness(2, 0, 6, 0), LineHeight = LineHeight, FontSize = IsDocument ? Editor.DocumentType.Body : 13 };
 
     // Read-only: the reply reports the state, it isn't a form.
     private static LayoutTransformControl TaskBox(bool isChecked) => new()

@@ -54,14 +54,14 @@ public sealed partial class MainWindow
         file.Add(Item(Strings.MenuCloseWindow, IsMac ? Shortcut(Key.W, shift: true) : null, Close));
 
         var terminal = BuildTerminalMenu();
-        return [new NativeMenuItem(Strings.MenuFile) { Menu = file }, new NativeMenuItem(Strings.MenuView) { Menu = BuildViewMenu() }, new NativeMenuItem(Strings.MenuTerminal) { Menu = terminal }];
+        return [new NativeMenuItem(Strings.MenuFile) { Menu = file }, new NativeMenuItem(Strings.MenuView) { Menu = BuildViewMenu() }, new NativeMenuItem(Strings.MenuFormat) { Menu = BuildFormatMenu() }, new NativeMenuItem(Strings.MenuTerminal) { Menu = terminal }];
     }
 
     private NativeMenu BuildTerminalMenu()
     {
         var terminal = new NativeMenu();
         terminal.Add(Item(Strings.MenuNewTab, Shortcut(Key.T), () => _ = OpenLocalTabAsync()));
-        terminal.Add(Item(Strings.MenuCloseTab, Shortcut(Key.W), () => CloseSelectedTab()));
+        terminal.Add(Item(Strings.MenuCloseTab, Shortcut(Key.W), CloseShownTab));
         terminal.Add(new NativeMenuItemSeparator());
         terminal.Add(Item(Strings.MenuSplitRight, IsMac ? Shortcut(Key.D) : Shortcut(Key.E), () => _ = SplitAsync(beside: true)));
         terminal.Add(Item(Strings.MenuSplitDown, Shortcut(Key.D, shift: true), () => _ = SplitAsync(beside: false)));

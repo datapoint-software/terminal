@@ -1388,4 +1388,67 @@ git rm -r --cached .terminal</value>
   <data name="SidebarNewFileInvalid" xml:space="preserve">
     <value>"{0}" isn't a file name: use one name without slashes.</value>
   </data>
+  <data name="DocumentPlaceholder" xml:space="preserve">
+    <value>Start writing…</value>
+  </data>
+  <data name="DocumentConflict" xml:space="preserve">
+    <value>This file changed on disk while you were editing it.</value>
+  </data>
+  <data name="DocumentKeepMine" xml:space="preserve">
+    <value>Keep my version</value>
+  </data>
+  <data name="DocumentTakeTheirs" xml:space="preserve">
+    <value>Use the version on disk</value>
+  </data>
+  <data name="DocumentSaveFailed" xml:space="preserve">
+    <value>Couldn't save: {0}</value>
+  </data>
+  <data name="DocumentCantOpen" xml:space="preserve">
+    <value>Couldn't open {0}: {1}</value>
+  </data>
+  <data name="DocumentClose" xml:space="preserve">
+    <value>Close {0}</value>
+  </data>
+  <data name="DocumentTabName" xml:space="preserve">
+    <value>{0}, document</value>
+  </data>
+  <data name="DocumentTabUnsaved" xml:space="preserve">
+    <value>{0}, document, not saved yet</value>
+  </data>
+  <data name="DocumentTabsName" xml:space="preserve">
+    <value>Documents</value>
+  </data>
+  <data name="DocumentOpenTerminal" xml:space="preserve">
+    <value>Open terminal</value>
+  </data>
+  <data name="MenuFormat" xml:space="preserve">
+    <value>Format</value>
+  </data>
+  <data name="MenuBold" xml:space="preserve">
+    <value>Bold</value>
+  </data>
+  <data name="MenuItalic" xml:space="preserve">
+    <value>Italic</value>
+  </data>
+  <data name="MenuInlineCode" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="MenuLink" xml:space="preserve">
+    <value>Link</value>
+  </data>
+  <data name="MenuShowMarkdown" xml:space="preserve">
+    <value>Show Markdown</value>
+  </data>
+  <data name="MenuCloseDocument" xml:space="preserve">
+    <value>Close Document</value>
+  </data>
+  <data name="MenuCut" xml:space="preserve">
+    <value>Cut</value>
+  </data>
+  <data name="MenuCopy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="MenuPaste" xml:space="preserve">
+    <value>Paste</value>
+  </data>
 </root>

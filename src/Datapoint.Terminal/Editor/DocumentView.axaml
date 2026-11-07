@@ -1,0 +1,137 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ed="clr-namespace:Datapoint.Terminal.Editor"
+             xmlns:md="clr-namespace:Datapoint.Terminal.Markdown"
+             xmlns:res="clr-namespace:Datapoint.Terminal.Resources"
+             x:Class="Datapoint.Terminal.Editor.DocumentView"
+             x:DataType="ed:DocumentViewModel"
+             Background="{DynamicResource WindowBrush}" Focusable="True">
+  <UserControl.Styles>
+    <!-- The block being edited: no field around it, so it reads as the same text, now as Markdown. -->
+    <Style Selector="TextBox.block">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="MinHeight" Value="0" />
+      <Setter Property="CornerRadius" Value="0" />
+      <Setter Property="TextWrapping" Value="Wrap" />
+      <Setter Property="AcceptsReturn" Value="True" />
+      <Setter Property="LineHeight" Value="22" />
+    </Style>
+    <Style Selector="TextBox.block /template/ Border#PART_BorderElement">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="TextBox.block:focus /template/ Border#PART_BorderElement">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="TextBox.block:pointerover /template/ Border#PART_BorderElement">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="TextBox.block.code">
+      <Setter Property="Padding" Value="10,8" />
+      <Setter Property="LineHeight" Value="NaN" />
+    </Style>
+    <Style Selector="TextBox.block.code /template/ Border#PART_BorderElement">
+      <Setter Property="Background" Value="{DynamicResource CodeBrush}" />
+      <Setter Property="CornerRadius" Value="8" />
+    </Style>
+    <Style Selector="TextBox.block.code:focus /template/ Border#PART_BorderElement">
+      <Setter Property="Background" Value="{DynamicResource CodeBrush}" />
+      <Setter Property="CornerRadius" Value="8" />
+    </Style>
+    <Style Selector="TextBox.source">
+      <Setter Property="FontFamily" Value="{StaticResource MonoFont}" />
+      <Setter Property="FontSize" Value="13" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="AcceptsReturn" Value="True" />
+      <Setter Property="AcceptsTab" Value="True" />
+      <Setter Property="TextWrapping" Value="Wrap" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="TextBox.source /template/ Border#PART_BorderElement">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="TextBox.source:focus /template/ Border#PART_BorderElement">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="TextBox.source:pointerover /template/ Border#PART_BorderElement">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="Border.bar">
+      <Setter Property="Padding" Value="16,8" />
+      <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
+      <Setter Property="BorderThickness" Value="0,0,0,1" />
+    </Style>
+  </UserControl.Styles>
+  <DockPanel>
+    <!-- The agent, or another program, changed the file while the user had changes not yet saved: the user picks one. -->
+    <Border DockPanel.Dock="Top" Classes="bar" Background="{DynamicResource WarningFillBrush}" IsVisible="{Binding HasConflict}">
+      <DockPanel>
+        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="8">
+          <Button Content="{x:Static res:Strings.DocumentTakeTheirs}" Command="{Binding TakeTheirsCommand}" />
+          <Button Classes="primary" Content="{x:Static res:Strings.DocumentKeepMine}" Command="{Binding KeepMineCommand}" />
+        </StackPanel>
+        <TextBlock Text="{x:Static res:Strings.DocumentConflict}" Foreground="{DynamicResource WarningTextBrush}" VerticalAlignment="Center" TextWrapping="Wrap" />
+      </DockPanel>
+    </Border>
+    <Border DockPanel.Dock="Top" Classes="bar" Background="{DynamicResource WarningFillBrush}" IsVisible="{Binding HasProblem}">
+      <TextBlock Text="{Binding Problem}" Foreground="{DynamicResource WarningTextBrush}" TextWrapping="Wrap" />
+    </Border>
+    <Panel>
+      <ScrollViewer x:Name="Scroller" IsVisible="{Binding IsRichMode}" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel x:Name="Page" MaxWidth="680" Margin="40,32,40,0">
+          <!-- A host's documentation starts with the host: where it is and whether a terminal is open on it. -->
+          <DockPanel IsVisible="{Binding HasHost}" Margin="0,0,0,20">
+            <Button DockPanel.Dock="Right" Classes="plain" Content="{x:Static res:Strings.DocumentOpenTerminal}" Command="{Binding Host.OpenTerminalCommand, FallbackValue={x:Null}}" VerticalAlignment="Center" />
+            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+              <Border IsVisible="{Binding Host.HasEnvironment, FallbackValue=False}" Background="{DynamicResource FillBrush}" CornerRadius="4" Padding="6,1" VerticalAlignment="Center">
+                <TextBlock Text="{Binding Host.Environment, FallbackValue={x:Null}}" FontSize="11" Foreground="{DynamicResource SecondaryLabelBrush}" />
+              </Border>
+              <TextBlock Text="{Binding Host.Address, FallbackValue={x:Null}}" IsVisible="{Binding Host.HasAddress, FallbackValue=False}" FontFamily="{StaticResource MonoFont}" FontSize="12" Foreground="{DynamicResource SecondaryLabelBrush}" VerticalAlignment="Center" />
+              <TextBlock Text="{Binding Host.OpenText, FallbackValue={x:Null}}" IsVisible="{Binding Host.HasOpenText, FallbackValue=False}" FontSize="12" Foreground="{DynamicResource SecondaryLabelBrush}" VerticalAlignment="Center" />
+            </StackPanel>
+          </DockPanel>
+          <ItemsControl x:Name="BlockList" ItemsSource="{Binding Blocks}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="ed:BlockViewModel">
+                <Panel IsVisible="{Binding IsShown}" Margin="{Binding Spacing}">
+                  <md:MarkdownView IsDocument="True" Text="{Binding Body}" IsVisible="{Binding IsRendered}" Cursor="Ibeam" />
+                  <TextBox Classes="block" Classes.code="{Binding IsCode}" Text="{Binding Body}" IsVisible="{Binding IsEditing}"
+                           FontSize="{Binding FontSize}" FontWeight="{Binding FontWeight}">
+                    <TextBox.ContextFlyout>
+                      <MenuFlyout>
+                        <MenuItem Header="{x:Static res:Strings.MenuBold}" Click="OnBoldClicked" />
+                        <MenuItem Header="{x:Static res:Strings.MenuItalic}" Click="OnItalicClicked" />
+                        <MenuItem Header="{x:Static res:Strings.MenuInlineCode}" Click="OnCodeClicked" />
+                        <MenuItem Header="{x:Static res:Strings.MenuLink}" Click="OnLinkClicked" />
+                        <Separator />
+                        <MenuItem Header="{x:Static res:Strings.MenuCut}" Command="{Binding $parent[TextBox].Cut}" />
+                        <MenuItem Header="{x:Static res:Strings.MenuCopy}" Command="{Binding $parent[TextBox].Copy}" />
+                        <MenuItem Header="{x:Static res:Strings.MenuPaste}" Command="{Binding $parent[TextBox].Paste}" />
+                      </MenuFlyout>
+                    </TextBox.ContextFlyout>
+                  </TextBox>
+                </Panel>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          <!-- Below the last block: a click starts a new paragraph at the end. -->
+          <Panel x:Name="EndArea" Background="Transparent" MinHeight="160" Cursor="Ibeam">
+            <TextBlock Text="{x:Static res:Strings.DocumentPlaceholder}" IsVisible="{Binding IsEmpty}" FontSize="14"
+                       Foreground="{DynamicResource SecondaryLabelBrush}" VerticalAlignment="Top" IsHitTestVisible="False" />
+          </Panel>
+        </StackPanel>
+      </ScrollViewer>
+      <ScrollViewer IsVisible="{Binding IsSourceMode}" HorizontalScrollBarVisibility="Disabled">
+        <TextBox x:Name="Source" Classes="source" Text="{Binding SourceText}" MaxWidth="760" Margin="40,32,40,40" />
+      </ScrollViewer>
+    </Panel>
+  </DockPanel>
+</UserControl>

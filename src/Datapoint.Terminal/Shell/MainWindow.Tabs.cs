@@ -99,6 +99,7 @@ public sealed partial class MainWindow
 
     private void ShowSelectedTab()
     {
+        HideDocument();
         var selected = SelectedTab;
         LayOutPanes(selected);
 

@@ -86,7 +86,7 @@ public sealed partial class MarkdownView
 
     private void OnPointerReleasedTunnel(object? sender, PointerReleasedEventArgs e)
     {
-        if (_anchor is null)
+        if (_anchor is not { } anchor)
         {
             return;
         }
@@ -94,6 +94,11 @@ public sealed partial class MarkdownView
         _anchor = null;
         e.Pointer.Capture(null);
         e.Handled = true;
+        if (!_dragged && _pressedLink is null && e.InitialPressMouseButton == MouseButton.Left)
+        {
+            RaiseEvent(new MarkdownClickEventArgs(RenderedPrefix(anchor)));
+        }
+
         if (_dragged || _pressedLink is not { } link)
         {
             return;
@@ -112,6 +117,11 @@ public sealed partial class MarkdownView
 
         s_selecting = new WeakReference<MarkdownView>(this);
     }
+
+    // The text shown before the click, each paragraph on its own line, so an editor can find the same place in the Markdown.
+    private string RenderedPrefix((int Block, int Index) at) => at.Block >= _blocks.Count
+        ? string.Empty
+        : string.Concat(_blocks.Take(at.Block).Select(block => InlineText.Of(block) + "\n")) + InlineText.Of(_blocks[at.Block])[..Math.Min(at.Index, InlineText.Of(_blocks[at.Block]).Length)];
 
     private static LinkSpan? LinkUnder(SelectableTextBlock block, PointerEventArgs e)
     {

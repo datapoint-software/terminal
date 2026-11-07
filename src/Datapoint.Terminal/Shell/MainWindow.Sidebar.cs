@@ -44,6 +44,7 @@ public sealed partial class MainWindow
             _sidebar.RefreshFiles();
         };
         WatchProject();
+        SetUpDocuments();
         Closed += (_, _) =>
         {
             _filesTimer.Stop();
@@ -128,7 +129,7 @@ public sealed partial class MainWindow
     private void OpenHostDocument(ProjectConnection connection)
     {
         var path = CreateHostDocs().FileFor(connection.Name);
-        if (!File.Exists(path))
+        if (!File.Exists(path) && Project.IsReadOnly)
         {
             _chat.AddNotice(Strings.Format(Strings.SidebarNoDocumentation, connection.Name));
             return;
@@ -136,9 +137,6 @@ public sealed partial class MainWindow
 
         OpenProjectFile(path);
     }
-
-    // Until the project's own editor opens them, files open in the system's default application.
-    private void OpenProjectFile(string path) => _ = Launcher.LaunchFileInfoAsync(new FileInfo(path));
 
     // A new file goes in the folder selected in the tree, or at the top of the project.
     private async Task NewFileAsync()
@@ -210,7 +208,7 @@ public sealed partial class MainWindow
 
     private NativeMenuItem SidebarMenuItem()
     {
-        _toggleSidebarItem = Item(Strings.MenuHideSidebar, Shortcut(Key.B), ToggleSidebar);
+        _toggleSidebarItem = Item(Strings.MenuHideSidebar, Shortcut(Key.B, shift: true), ToggleSidebar);
         return _toggleSidebarItem;
     }
 }

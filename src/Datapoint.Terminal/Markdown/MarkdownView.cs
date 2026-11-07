@@ -15,6 +15,9 @@ public sealed partial class MarkdownView : StackPanel
 {
     public static readonly StyledProperty<string?> TextProperty = AvaloniaProperty.Register<MarkdownView, string?>(nameof(Text));
 
+    // A document, rather than a chat reply: larger type, matching the editor's.
+    public static readonly StyledProperty<bool> IsDocumentProperty = AvaloniaProperty.Register<MarkdownView, bool>(nameof(IsDocument));
+
     public MarkdownView()
     {
         Spacing = 8;
@@ -33,12 +36,27 @@ public sealed partial class MarkdownView : StackPanel
         set => SetValue(TextProperty, value);
     }
 
+    public bool IsDocument
+    {
+        get => GetValue(IsDocumentProperty);
+        set => SetValue(IsDocumentProperty, value);
+    }
+
+    // A click that neither selected text nor followed a link, e.g. to start editing there.
+    public static readonly RoutedEvent<MarkdownClickEventArgs> TextClickedEvent = RoutedEvent.Register<MarkdownView, MarkdownClickEventArgs>(nameof(TextClicked), RoutingStrategies.Bubble);
+
+    public event EventHandler<MarkdownClickEventArgs>? TextClicked
+    {
+        add => AddHandler(TextClickedEvent, value);
+        remove => RemoveHandler(TextClickedEvent, value);
+    }
+
     private static KeyModifiers CommandModifier => OperatingSystem.IsMacOS() ? KeyModifiers.Meta : KeyModifiers.Control;
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
-        if (change.Property != TextProperty)
+        if (change.Property != TextProperty && change.Property != IsDocumentProperty)
         {
             return;
         }
