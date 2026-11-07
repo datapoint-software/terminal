@@ -1,3 +1,4 @@
+using Datapoint.Terminal.Agent.Files;
 using Datapoint.Terminal.Agent.Memory;
 
 namespace Datapoint.Terminal.Agent.Tests.Memory;
@@ -13,7 +14,7 @@ public sealed class MemoryFileTests : IDisposable
     [Fact]
     public void Starts_a_new_file_with_the_header()
     {
-        Assert.Equal(MemoryResult.Changed, MemoryFile.Add(PathIn, "Use doas, not sudo"));
+        Assert.Equal(WriteResult.Changed, MemoryFile.Add(PathIn, "Use doas, not sudo"));
 
         Assert.StartsWith(MemoryFile.Header, File.ReadAllText(PathIn), StringComparison.Ordinal);
         Assert.Equal(["Use doas, not sudo"], MemoryFile.Notes(PathIn), StringComparer.Ordinal);
@@ -24,7 +25,7 @@ public sealed class MemoryFileTests : IDisposable
     {
         MemoryFile.Add(PathIn, "Use doas, not sudo");
 
-        Assert.Equal(MemoryResult.Unchanged, MemoryFile.Add(PathIn, "use DOAS, not sudo"));
+        Assert.Equal(WriteResult.Unchanged, MemoryFile.Add(PathIn, "use DOAS, not sudo"));
         Assert.Single(MemoryFile.Notes(PathIn));
     }
 
@@ -44,13 +45,13 @@ public sealed class MemoryFileTests : IDisposable
     public void Refuses_a_note_once_full()
     {
         var note = new string('x', MemoryFile.MaxNoteLength);
-        var result = MemoryResult.Changed;
-        for (var index = 0; result == MemoryResult.Changed; index++)
+        var result = WriteResult.Changed;
+        for (var index = 0; result == WriteResult.Changed; index++)
         {
             result = MemoryFile.Add(PathIn, $"{index} {note}");
         }
 
-        Assert.Equal(MemoryResult.Full, result);
+        Assert.Equal(WriteResult.Full, result);
         Assert.True(new FileInfo(PathIn).Length <= MemoryFile.MaxBytes);
     }
 
@@ -59,7 +60,7 @@ public sealed class MemoryFileTests : IDisposable
     {
         MemoryFile.Add(PathIn, "Use doas");
 
-        Assert.Equal(MemoryResult.Unchanged, MemoryFile.Remove(PathIn, "Use sudo"));
+        Assert.Equal(WriteResult.Unchanged, MemoryFile.Remove(PathIn, "Use sudo"));
     }
 
     [Fact]

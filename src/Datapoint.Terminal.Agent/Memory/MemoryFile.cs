@@ -1,4 +1,5 @@
 using System.Text;
+using Datapoint.Terminal.Agent.Files;
 
 namespace Datapoint.Terminal.Agent.Memory;
 
@@ -27,7 +28,7 @@ public static class MemoryFile
 
     public static IReadOnlyList<string> Notes(string path) => [.. NotesIn(ReadText(path))];
 
-    public static MemoryResult Add(string path, string note)
+    public static WriteResult Add(string path, string note)
     {
         ArgumentNullException.ThrowIfNull(note);
         lock (s_sync)
@@ -35,21 +36,21 @@ public static class MemoryFile
             var text = ReadText(path);
             if (NotesIn(text).Contains(note, StringComparer.OrdinalIgnoreCase))
             {
-                return MemoryResult.Unchanged;
+                return WriteResult.Unchanged;
             }
 
             var updated = (text.Length == 0 ? Header : text.TrimEnd('\n', '\r') + "\n") + Bullet + note + "\n";
             if (Encoding.UTF8.GetByteCount(updated) > MaxBytes)
             {
-                return MemoryResult.Full;
+                return WriteResult.Full;
             }
 
             Write(path, updated);
-            return MemoryResult.Changed;
+            return WriteResult.Changed;
         }
     }
 
-    public static MemoryResult Remove(string path, string note)
+    public static WriteResult Remove(string path, string note)
     {
         ArgumentNullException.ThrowIfNull(note);
         lock (s_sync)
@@ -59,12 +60,12 @@ public static class MemoryFile
                 && string.Equals(line.TrimEnd('\r')[Bullet.Length..].Trim(), note, StringComparison.OrdinalIgnoreCase));
             if (index < 0)
             {
-                return MemoryResult.Unchanged;
+                return WriteResult.Unchanged;
             }
 
             lines.RemoveAt(index);
             Write(path, string.Join('\n', lines));
-            return MemoryResult.Changed;
+            return WriteResult.Changed;
         }
     }
 
@@ -95,26 +96,7 @@ public static class MemoryFile
 
     private static bool IsNote(string line) => line.StartsWith(Bullet, StringComparison.Ordinal) && line.Length > Bullet.Length;
 
-    private static string ReadText(string path) => File.Exists(path) ? File.ReadAllText(path) : string.Empty;
+    private static string ReadText(string path) => TextFiles.Read(path);
 
-    // Written to a private temporary file, then moved into place, so a crash never leaves half a file.
-    private static void Write(string path, string text)
-    {
-        var folder = Path.GetDirectoryName(path)!;
-        Directory.CreateDirectory(folder);
-        var temporary = Path.Combine(folder, $".memory-{Guid.NewGuid():N}.tmp");
-        var options = new FileStreamOptions { Mode = FileMode.CreateNew, Access = FileAccess.Write };
-        if (!OperatingSystem.IsWindows())
-        {
-            options.UnixCreateMode = UnixFileMode.UserRead | UnixFileMode.UserWrite;
-        }
-
-        using (var stream = new FileStream(temporary, options))
-        using (var writer = new StreamWriter(stream, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false)))
-        {
-            writer.Write(text);
-        }
-
-        File.Move(temporary, path, overwrite: true);
-    }
+    private static void Write(string path, string text) => TextFiles.Write(path, text, isPrivate: true);
 }

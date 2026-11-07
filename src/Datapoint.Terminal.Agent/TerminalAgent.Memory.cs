@@ -1,3 +1,4 @@
+using Datapoint.Terminal.Agent.Files;
 using Datapoint.Terminal.Agent.Memory;
 using Datapoint.Terminal.Agent.Tools;
 using Microsoft.Extensions.AI;
@@ -47,16 +48,16 @@ public sealed partial class TerminalAgent
         }
 
         var result = Change(() => MemoryFile.Add(path, note));
-        if (result == MemoryResult.Changed)
+        if (result == WriteResult.Changed)
         {
             RaiseMemory(scope, path, "Remembered", note);
         }
 
         return Task.FromResult(result switch
         {
-            MemoryResult.Changed => "Remembered.",
-            MemoryResult.Unchanged => "Already remembered.",
-            MemoryResult.Full => "Not remembered: that memory is full. Use forget to remove notes that no longer apply, then try again.",
+            WriteResult.Changed => "Remembered.",
+            WriteResult.Unchanged => "Already remembered.",
+            WriteResult.Full => "Not remembered: that memory is full. Use forget to remove notes that no longer apply, then try again.",
             _ => "Not remembered: the memory file couldn't be written.",
         });
     }
@@ -69,13 +70,13 @@ public sealed partial class TerminalAgent
         }
 
         var result = Change(() => MemoryFile.Remove(path, note));
-        if (result == MemoryResult.Changed)
+        if (result == WriteResult.Changed)
         {
             RaiseMemory(scope, path, "Forgot", note);
             return Task.FromResult("Forgotten.");
         }
 
-        return Task.FromResult(result == MemoryResult.Unchanged
+        return Task.FromResult(result == WriteResult.Unchanged
             ? "Not found. Give the note exactly as it appears in memory."
             : "Not forgotten: the memory file couldn't be written.");
     }
@@ -109,7 +110,7 @@ public sealed partial class TerminalAgent
         return path;
     }
 
-    private static MemoryResult? Change(Func<MemoryResult> change)
+    private static WriteResult? Change(Func<WriteResult> change)
     {
         try
         {
