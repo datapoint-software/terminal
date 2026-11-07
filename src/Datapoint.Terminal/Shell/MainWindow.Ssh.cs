@@ -40,17 +40,7 @@ public sealed partial class MainWindow
         try
         {
             var session = await LogInAsync(connection, config, host, jumps).ConfigureAwait(true);
-            var view = new TerminalView { Padding = new Thickness(12, 10), IsVisible = false };
-            var tab = new TerminalTab(NextTabName(connection.Name), view, RequestClose) { IsRemote = true, ConnectionName = connection.Name };
-            // File access goes to the host, not into a container on it, so a container's files are changed through its shell.
-            var files = session.Client is { } client && connection.Container is null ? new SshHostFiles(client) : null;
-            Attach(tab, new TerminalConnection(session, 80, 24), connection.Environment, DefaultModeFor(connection), select, files, connection.Container?.Describe());
-            if (session.Client is { } forwarding)
-            {
-                StartForwards(tab, forwarding, [.. host.GetAll("LocalForward"), .. connection.Forwards ?? []]);
-            }
-
-            return tab;
+            return AttachSsh(connection, host, session, select);
         }
         catch (Exception exception) when (exception is SshAuthenticationException or SshDisconnectedException or SshProtocolException or SshChannelException
             or SocketException or IOException or TimeoutException or OperationCanceledException)
@@ -58,6 +48,20 @@ public sealed partial class MainWindow
             _chat.AddNotice(Strings.Format(Strings.NoticeConnectFailed, connection.Name, exception.Message));
             return null;
         }
+    }
+
+    private TerminalTab AttachSsh(ProjectConnection connection, SshHostConfig host, SshTerminalSession session, bool select)
+    {
+        var view = new TerminalView { Padding = new Thickness(12, 10), IsVisible = false };
+        var tab = new TerminalTab(NextTabName(connection.Name), view, RequestClose) { IsRemote = true, ConnectionName = connection.Name };
+        var client = session.Client!;
+
+        // File access and transfer go to the host, not into a container on it, so a container's files are changed through its shell.
+        var onHost = connection.Container is null;
+        Attach(tab, new TerminalConnection(session, 80, 24), connection.Environment, DefaultModeFor(connection), select, onHost ? new SshHostFiles(client) : null, connection.Container?.Describe());
+        tab.Client = onHost ? client : null;
+        StartForwards(tab, client, [.. host.GetAll("LocalForward"), .. connection.Forwards ?? []]);
+        return tab;
     }
 
     private async Task<SshTerminalSession> LogInAsync(ProjectConnection connection, SshConfig config, SshHostConfig host, IReadOnlyList<SshJump> jumps)

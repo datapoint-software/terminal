@@ -702,6 +702,48 @@ public static class Strings
 
     public static string NoticeForwardFailed => Get(nameof(NoticeForwardFailed));
 
+    public static string MenuUploadFile => Get(nameof(MenuUploadFile));
+
+    public static string MenuDownloadFile => Get(nameof(MenuDownloadFile));
+
+    public static string PickerUpload => Get(nameof(PickerUpload));
+
+    public static string PickerDownload => Get(nameof(PickerDownload));
+
+    public static string UploadTitle => Get(nameof(UploadTitle));
+
+    public static string UploadMessage => Get(nameof(UploadMessage));
+
+    public static string DownloadTitle => Get(nameof(DownloadTitle));
+
+    public static string DownloadMessage => Get(nameof(DownloadMessage));
+
+    public static string TransferPathLabel => Get(nameof(TransferPathLabel));
+
+    public static string NoticeUploading => Get(nameof(NoticeUploading));
+
+    public static string NoticeUploaded => Get(nameof(NoticeUploaded));
+
+    public static string NoticeDownloading => Get(nameof(NoticeDownloading));
+
+    public static string NoticeDownloaded => Get(nameof(NoticeDownloaded));
+
+    public static string NoticeTransferFailed => Get(nameof(NoticeTransferFailed));
+
+    public static string NoticeTransferNeedsSsh => Get(nameof(NoticeTransferNeedsSsh));
+
+    public static string ReplaceRemoteTitle => Get(nameof(ReplaceRemoteTitle));
+
+    public static string ReplaceRemoteMessage => Get(nameof(ReplaceRemoteMessage));
+
+    public static string ReplaceRemoteConfirm => Get(nameof(ReplaceRemoteConfirm));
+
+    public static string SizeBytes => Get(nameof(SizeBytes));
+
+    public static string SizeKilobytes => Get(nameof(SizeKilobytes));
+
+    public static string SizeMegabytes => Get(nameof(SizeMegabytes));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

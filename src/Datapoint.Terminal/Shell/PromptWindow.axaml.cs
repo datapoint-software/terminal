@@ -11,7 +11,7 @@ public sealed partial class PromptWindow : Window
 
     // Text from the server is shown apart, labelled as the server's, so it can't pass itself off as the application's.
     // Masked fields are never shown, logged or sent anywhere but the server.
-    public static Task<IReadOnlyList<string>?> AskAsync(Window owner, string heading, string message, string? serverText, IReadOnlyList<(string Label, bool IsSecret)> fields)
+    public static Task<IReadOnlyList<string>?> AskAsync(Window owner, string heading, string message, string? serverText, IReadOnlyList<(string Label, bool IsSecret)> fields, IReadOnlyList<string>? values = null)
     {
         ArgumentNullException.ThrowIfNull(owner);
         ArgumentNullException.ThrowIfNull(fields);
@@ -22,7 +22,7 @@ public sealed partial class PromptWindow : Window
         window.ServerBox.IsVisible = !string.IsNullOrWhiteSpace(serverText);
         foreach (var (label, isSecret) in fields)
         {
-            var box = new TextBox { PasswordChar = isSecret ? '•' : default, RevealPassword = false };
+            var box = new TextBox { PasswordChar = isSecret ? '•' : default, RevealPassword = false, Text = values?.ElementAtOrDefault(window._boxes.Count) };
             Avalonia.Automation.AutomationProperties.SetName(box, label);
             window.Fields.Children.Add(new TextBlock { Text = label, TextWrapping = Avalonia.Media.TextWrapping.Wrap });
             window.Fields.Children.Add(box);

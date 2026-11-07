@@ -307,4 +307,50 @@ public sealed class OpenSshInteropTests(OpenSshServer server) : IClassFixture<Op
 
         Assert.StartsWith("SSH-2.0-OpenSSH", Encoding.ASCII.GetString(buffer, 0, count), StringComparison.Ordinal);
     }
+
+    [Fact]
+    public async Task Uploads_and_downloads_a_file_exactly()
+    {
+        server.SkipIfUnavailable();
+        await using var client = await OpenSshServer.ConnectWithPasswordAsync(server.Options());
+        var content = new byte[300_000];
+        System.Security.Cryptography.RandomNumberGenerator.Fill(content);
+        using var source = new MemoryStream(content);
+
+        var sent = await client.UploadAsync(source, "~/it's here.bin", overwrite: false, progress: null, Token);
+        using var copy = new MemoryStream();
+        var received = await client.DownloadAsync("~/it's here.bin", copy, progress: null, Token);
+
+        Assert.Equal(content.Length, sent);
+        Assert.Equal(content.Length, received);
+        Assert.Equal(content, copy.ToArray());
+        var leftovers = await client.RunAsync("ls -a ~ | grep -c datapoint-partial || true", ReadOnlyMemory<byte>.Empty, 64, Token);
+        Assert.Equal("0", Encoding.UTF8.GetString(leftovers.Output).Trim());
+    }
+
+    [Fact]
+    public async Task Asks_before_replacing_a_file()
+    {
+        server.SkipIfUnavailable();
+        await using var client = await OpenSshServer.ConnectWithPasswordAsync(server.Options());
+        await client.UploadAsync(new MemoryStream("first"u8.ToArray()), "~/replace.txt", overwrite: true, progress: null, Token);
+
+        await Assert.ThrowsAsync<RemoteFileExistsException>(() => client.UploadAsync(new MemoryStream("second"u8.ToArray()), "~/replace.txt", overwrite: false, progress: null, Token));
+        await client.UploadAsync(new MemoryStream("third"u8.ToArray()), "~/replace.txt", overwrite: true, progress: null, Token);
+
+        using var copy = new MemoryStream();
+        await client.DownloadAsync("~/replace.txt", copy, progress: null, Token);
+        Assert.Equal("third", Encoding.UTF8.GetString(copy.ToArray()));
+    }
+
+    [Fact]
+    public async Task Reports_a_file_that_isnt_there()
+    {
+        server.SkipIfUnavailable();
+        await using var client = await OpenSshServer.ConnectWithPasswordAsync(server.Options());
+
+        var exception = await Assert.ThrowsAsync<IOException>(() => client.DownloadAsync("/nowhere/at-all", Stream.Null, progress: null, Token));
+
+        Assert.Contains("No such file", exception.Message, StringComparison.Ordinal);
+    }
 }

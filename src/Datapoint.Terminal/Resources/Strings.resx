@@ -1058,4 +1058,67 @@ git rm -r --cached .terminal</value>
   <data name="NoticeForwardFailed" xml:space="preserve">
     <value>Port {0} couldn't be forwarded: {1}</value>
   </data>
+  <data name="MenuUploadFile" xml:space="preserve">
+    <value>Upload File…</value>
+  </data>
+  <data name="MenuDownloadFile" xml:space="preserve">
+    <value>Download File…</value>
+  </data>
+  <data name="PickerUpload" xml:space="preserve">
+    <value>Choose a file to upload</value>
+  </data>
+  <data name="PickerDownload" xml:space="preserve">
+    <value>Save the downloaded file</value>
+  </data>
+  <data name="UploadTitle" xml:space="preserve">
+    <value>Upload {0}</value>
+  </data>
+  <data name="UploadMessage" xml:space="preserve">
+    <value>Where on {0} should the file go? ~/ is your home folder there. The file goes to a temporary name first and takes its place only once it has arrived in full.</value>
+  </data>
+  <data name="DownloadTitle" xml:space="preserve">
+    <value>Download a file</value>
+  </data>
+  <data name="DownloadMessage" xml:space="preserve">
+    <value>Which file on {0} do you want? ~/ is your home folder there.</value>
+  </data>
+  <data name="TransferPathLabel" xml:space="preserve">
+    <value>Path on {0}</value>
+  </data>
+  <data name="NoticeUploading" xml:space="preserve">
+    <value>Uploading {0} to {2} on {1}…</value>
+  </data>
+  <data name="NoticeUploaded" xml:space="preserve">
+    <value>Uploaded {0} to {2} on {1} ({3}).</value>
+  </data>
+  <data name="NoticeDownloading" xml:space="preserve">
+    <value>Downloading {0} from {1}…</value>
+  </data>
+  <data name="NoticeDownloaded" xml:space="preserve">
+    <value>Downloaded {0} from {1} to {2} ({3}).</value>
+  </data>
+  <data name="NoticeTransferFailed" xml:space="preserve">
+    <value>{0} wasn't transferred: {1}</value>
+  </data>
+  <data name="NoticeTransferNeedsSsh" xml:space="preserve">
+    <value>File transfer works with tabs logged in to an SSH host. Select one first.</value>
+  </data>
+  <data name="ReplaceRemoteTitle" xml:space="preserve">
+    <value>Replace the file?</value>
+  </data>
+  <data name="ReplaceRemoteMessage" xml:space="preserve">
+    <value>{0} is already there. Replace it with the file you chose?</value>
+  </data>
+  <data name="ReplaceRemoteConfirm" xml:space="preserve">
+    <value>Replace</value>
+  </data>
+  <data name="SizeBytes" xml:space="preserve">
+    <value>{0} bytes</value>
+  </data>
+  <data name="SizeKilobytes" xml:space="preserve">
+    <value>{0} KB</value>
+  </data>
+  <data name="SizeMegabytes" xml:space="preserve">
+    <value>{0} MB</value>
+  </data>
 </root>
