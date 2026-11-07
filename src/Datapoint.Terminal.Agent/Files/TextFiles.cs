@@ -7,13 +7,13 @@ public static class TextFiles
     public static string Read(string path) => File.Exists(path) ? File.ReadAllText(path) : string.Empty;
 
     // Written to a temporary file, then moved into place, so a crash never leaves half a file. A private file is readable only by
-    // the user from the moment it's created.
+    // the user from the moment it's created. The temporary file is kept out of the file's folder where it can be (TemporaryFiles).
     public static void Write(string path, string text, bool isPrivate)
     {
         ArgumentNullException.ThrowIfNull(text);
         var folder = Path.GetDirectoryName(path)!;
         Directory.CreateDirectory(folder);
-        var temporary = Path.Combine(folder, $".{Path.GetFileName(path)}-{Guid.NewGuid():N}.tmp");
+        var temporary = TemporaryFiles.For(path);
         var options = new FileStreamOptions { Mode = FileMode.CreateNew, Access = FileAccess.Write };
         if (isPrivate && !OperatingSystem.IsWindows())
         {

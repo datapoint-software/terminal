@@ -111,9 +111,16 @@ public sealed class Workspace : IDisposable
             throw new WorkspaceException($"{WorkspaceFolders.SettingsFile} is shared with the workspace and can't hold a secret, so it wasn't saved.");
         }
 
-        var temporary = Path.Combine(Folder, $".terminal-{Guid.NewGuid():N}.tmp");
-        File.WriteAllText(temporary, json);
-        File.Move(temporary, SettingsPath, overwrite: true);
+        var temporary = Files.TemporaryFiles.For(SettingsPath);
+        try
+        {
+            File.WriteAllText(temporary, json);
+            File.Move(temporary, SettingsPath, overwrite: true);
+        }
+        finally
+        {
+            File.Delete(temporary);
+        }
         Settings = settings;
     }
 

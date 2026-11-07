@@ -135,7 +135,8 @@ public sealed class MarkdownFile
         return (text[..end], text[end..]);
     }
 
-    // A temporary file then a rename, so a crash can't leave half a document; a link is written through, so it stays a link.
+    // A temporary file then a rename, so a crash can't leave half a document; a link is written through, so it stays a link. The
+    // temporary file is kept out of the workspace where it can be, so a sync service never sees it (TemporaryFiles).
     private void Write(byte[] bytes)
     {
         var info = new FileInfo(Path);
@@ -147,7 +148,7 @@ public sealed class MarkdownFile
 
         var folder = System.IO.Path.GetDirectoryName(Path)!;
         Directory.CreateDirectory(folder);
-        var temporary = System.IO.Path.Combine(folder, "." + System.IO.Path.GetFileName(Path) + "." + Guid.NewGuid().ToString("N")[..8] + ".tmp");
+        var temporary = Agent.Files.TemporaryFiles.For(Path);
         try
         {
             File.WriteAllBytes(temporary, bytes);
