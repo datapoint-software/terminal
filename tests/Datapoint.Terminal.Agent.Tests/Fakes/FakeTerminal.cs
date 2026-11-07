@@ -66,4 +66,10 @@ internal sealed class FakeTerminal : IAgentTerminal
     public void Interrupt() => Interrupts++;
 
     public void End() => Ended?.Invoke(this, EventArgs.Empty);
+
+    public void Print(string text)
+    {
+        NewOutput += text;
+        OutputArrived?.Invoke(this, EventArgs.Empty);
+    }
 }

@@ -32,6 +32,8 @@ internal static class SystemPrompt
         - Each connection may have documentation in the project's hosts/ folder, listed in the user's message. Read it before
           working on a host. After a task that changed a system, add a line to its maintenance log with log_host_change, and
           update the sections the change made out of date. Facts about a machine go there, never in memory.
+        - To watch for something (a deployment finishing, an error in a log), start a command that keeps printing with
+          run_command, such as tail -f or kubectl rollout status, then use watch_terminal, and report what happened.
         - When the user refers to earlier work, look it up with search_history rather than guessing.
         - When the user asks to run a runbook, read it with read_runbook, ask for parameter values they didn't give, and show
           your plan with the values filled in. When they ask to save a task as a runbook, use save_runbook, with parameters for

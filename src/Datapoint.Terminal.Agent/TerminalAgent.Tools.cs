@@ -59,6 +59,7 @@ public sealed partial class TerminalAgent
         .. OpenTools(),
         .. PlanTools(),
         .. FileTools(),
+        .. WatchTools(),
         .. KeysTools(),
         .. MemoryTools(),
         .. HostDocsTools(),
