@@ -20,8 +20,14 @@ public sealed class ThirdPartyNoticesTests : IDisposable
     }
 
     [Fact]
-    public void The_shipped_application_does_not_include_the_inter_font() =>
-        Assert.DoesNotContain("Avalonia.Fonts.Inter", NoticesFile.Generate(RepositoryRoot.Path), StringComparison.Ordinal);
+    public void Lists_the_inter_font_under_its_own_license_as_well_as_its_package()
+    {
+        var notices = NoticesFile.Generate(RepositoryRoot.Path);
+
+        Assert.Contains("  Avalonia.Fonts.Inter 12.1.5 (MIT)", notices, StringComparison.Ordinal);
+        Assert.Contains("  Inter 3.19 (the interface font, in Avalonia.Fonts.Inter) (OFL-1.1)", notices, StringComparison.Ordinal);
+        Assert.Contains("SIL OPEN FONT LICENSE Version 1.1", notices, StringComparison.Ordinal);
+    }
 
     [Theory]
     [InlineData("GPL-3.0-only")]

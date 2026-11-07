@@ -464,6 +464,7 @@
           "Avalonia": "[12.1.5, )",
           "Avalonia.AvaloniaEdit": "[12.0.0, )",
           "Avalonia.Desktop": "[12.1.5, )",
+          "Avalonia.Fonts.Inter": "[12.1.5, )",
           "Avalonia.HarfBuzz": "[12.1.5, )",
           "Avalonia.Themes.Fluent": "[12.1.5, )",
           "CommunityToolkit.Mvvm": "[8.4.2, )",

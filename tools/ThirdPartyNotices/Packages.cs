@@ -9,7 +9,14 @@ public static class Packages
     // engineering.md, Dependencies: only these are accepted until someone reviews another.
     public static readonly IReadOnlySet<string> Reviewed = new HashSet<string>(StringComparer.Ordinal)
     {
-        "MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "Unicode-3.0",
+        "MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "Unicode-3.0", "OFL-1.1",
+    };
+
+    // Material a package carries under a license of its own, which its stated license doesn't cover: the package's
+    // license is for its code, and the material is listed separately with its own text from Licenses/.
+    private static readonly Dictionary<string, (string Name, string License, string Project, string Text)> s_embedded = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["Avalonia.Fonts.Inter"] = ("Inter 3.19 (the interface font, in Avalonia.Fonts.Inter)", "OFL-1.1", "https://github.com/rsms/inter", "Inter-OFL-1.1.txt"),
     };
 
     // Packages licensed by a file instead of an SPDX expression; each file was read and is the license named here.
@@ -31,10 +38,15 @@ public static class Packages
         var root = assets.RootElement;
         var cache = root.GetProperty("packageFolders").EnumerateObject().First().Name;
         var target = root.GetProperty("targets").EnumerateObject().First(item => !item.Name.Contains('/', StringComparison.Ordinal)).Value;
-        return [.. target.EnumerateObject()
+        var shipped = target.EnumerateObject()
             .Where(library => library.Value.TryGetProperty("type", out var type) && string.Equals(type.GetString(), "package", StringComparison.Ordinal) && Ships(library.Value))
-            .Select(library => Describe(library.Name, cache, templates))
-            .OrderBy(component => component.Name, StringComparer.OrdinalIgnoreCase)];
+            .Select(library => library.Name)
+            .ToList();
+        var embedded = shipped
+            .Select(name => s_embedded.GetValueOrDefault(name.Split('/')[0]))
+            .Where(material => material.Name is not null)
+            .Select(material => new Component(material.Name, material.License, material.Project, Normalize(File.ReadAllText(Path.Combine(templates, material.Text))), []));
+        return [.. shipped.Select(name => Describe(name, cache, templates)).Concat(embedded).OrderBy(component => component.Name, StringComparer.OrdinalIgnoreCase)];
     }
 
     // Analyzers and build-only packages have no runtime or native files, and aren't distributed.
