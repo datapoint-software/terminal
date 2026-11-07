@@ -149,4 +149,18 @@ public sealed class LocalShellTests : IDisposable
         Assert.Equal(ShellKind.PowerShell, ShellIntegrationInstaller.KindOf(@"C:\Program Files\PowerShell\7\pwsh.exe"));
         Assert.Equal(ShellKind.Other, ShellIntegrationInstaller.KindOf("/bin/sh"));
     }
+
+    [Fact]
+    [System.Runtime.Versioning.UnsupportedOSPlatform("windows")]
+    public async Task Runs_given_arguments_without_shell_integration()
+    {
+        Assert.SkipWhen(OperatingSystem.IsWindows(), "POSIX shells only.");
+        await using var session = await LocalSession.StartAsync(
+            new LocalSessionOptions { Shell = "/bin/sh", Arguments = ["-c", "exit 4"], WorkingDirectory = _home },
+            Token);
+
+        Assert.Null(session.ShellIntegrationNonce);
+        Assert.Equal(ShellKind.Other, session.Kind);
+        Assert.Equal(4, await session.Exited.WaitAsync(Token));
+    }
 }

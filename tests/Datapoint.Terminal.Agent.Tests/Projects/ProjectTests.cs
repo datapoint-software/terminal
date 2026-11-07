@@ -65,6 +65,25 @@ public sealed class ProjectTests : IDisposable
     }
 
     [Fact]
+    public void Keeps_a_container_connection_with_its_kind_by_name()
+    {
+        Directory.CreateDirectory(Folder);
+        var pod = new ProjectContainer { Kind = ContainerKind.Kubernetes, Name = "api-0", Namespace = "shop" };
+        var settings = new ProjectSettings { Connections = [new ProjectConnection { Name = "api", Container = pod }] };
+        using (var project = Project.Open(Folder, _home, create: false))
+        {
+            project.SaveSettings(settings, new SecretRedactor());
+        }
+
+        using var reopened = Project.Open(Folder, _home, create: false);
+
+        var connection = Assert.Single(reopened.Settings.Connections);
+        Assert.Equal(pod, connection.Container);
+        Assert.Null(connection.Problem());
+        Assert.Contains("\"kind\": \"Kubernetes\"", File.ReadAllText(reopened.SettingsPath), StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void Keeps_saved_settings_without_empty_fields()
     {
         Directory.CreateDirectory(Folder);

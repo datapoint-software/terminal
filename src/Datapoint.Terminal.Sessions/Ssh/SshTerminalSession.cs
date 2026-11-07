@@ -25,14 +25,15 @@ public sealed class SshTerminalSession : ITerminalSession
     [SuppressMessage("Usage", "VSTHRD003", Justification = "Started in the constructor; completes from the connection's read loop.")]
     public Task<int?> Exited { get; }
 
-    public static async Task<SshTerminalSession> StartAsync(SshClient client, string terminalType, int columns, int rows, CancellationToken cancellationToken, bool ownsClient = false)
+    // With a command, e.g. to open a shell in a container on the host, the session runs it in place of the login shell.
+    public static async Task<SshTerminalSession> StartAsync(SshClient client, string terminalType, int columns, int rows, CancellationToken cancellationToken, bool ownsClient = false, string? command = null)
     {
         ArgumentNullException.ThrowIfNull(client);
         var channel = await client.OpenSessionAsync(cancellationToken).ConfigureAwait(false);
         try
         {
             await channel.RequestPtyAsync(terminalType, columns, rows, cancellationToken).ConfigureAwait(false);
-            await channel.StartShellAsync(cancellationToken).ConfigureAwait(false);
+            await (command is null ? channel.StartShellAsync(cancellationToken) : channel.ExecuteAsync(command, cancellationToken)).ConfigureAwait(false);
             return new SshTerminalSession(channel, ownsClient ? client : null);
         }
         catch

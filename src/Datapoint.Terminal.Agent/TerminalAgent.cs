@@ -320,15 +320,16 @@ public sealed partial class TerminalAgent : IDisposable
         var terminals = Terminals;
         var open = terminals.Count == 0
             ? "[No terminals are open.]\n"
-            : "[Open terminals: " + string.Join(", ", terminals.Select(item => Named(item.Name, item.Environment))) + "]\n";
+            : "[Open terminals: " + string.Join(", ", terminals.Select(item => Named(item.Name, item.Environment, item.Place))) + "]\n";
         var connections = TerminalOpener?.Connections ?? [];
         var openable = connections.Count == 0
             ? string.Empty
-            : "[Connections open_terminal can open: " + string.Join(", ", connections.Select(item => Named(item.Name, item.Environment))) + "]\n";
+            : "[Connections open_terminal can open: " + string.Join(", ", connections.Select(item => Named(item.Name, item.Environment, item.Place))) + "]\n";
         return open + openable + DescribeHostDocs() + DescribeRunbooks();
     }
 
-    private static string Named(string name, string? environment) => $"\"{name}\"" + (environment is null ? string.Empty : $" ({environment})");
+    private static string Named(string name, string? environment, string? place = null) =>
+        $"\"{name}\"" + (place is null ? string.Empty : $" [{place}]") + (environment is null ? string.Empty : $" ({environment})");
 
     private void SetStatus(AgentStatus status, AgentTerminal? terminal = null)
     {

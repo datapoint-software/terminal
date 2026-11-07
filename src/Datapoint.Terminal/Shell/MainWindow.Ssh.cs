@@ -19,6 +19,11 @@ public sealed partial class MainWindow
 {
     private async Task<TerminalTab?> OpenConnectionAsync(ProjectConnection connection, bool select = true)
     {
+        if (connection.IsLocal)
+        {
+            return await OpenLocalContainerAsync(connection, select).ConfigureAwait(true);
+        }
+
         var host = SshConfig.Load().Resolve(connection.SshHost ?? connection.Host!);
         foreach (var problem in host.Problems)
         {
@@ -37,8 +42,9 @@ public sealed partial class MainWindow
             var session = await LogInAsync(connection, host).ConfigureAwait(true);
             var view = new TerminalView { Padding = new Thickness(12, 10), IsVisible = false };
             var tab = new TerminalTab(NextTabName(connection.Name), view, RequestClose) { IsRemote = true, ConnectionName = connection.Name };
-            var files = session.Client is { } client ? new SshHostFiles(client) : null;
-            Attach(tab, new TerminalConnection(session, 80, 24), connection.Environment, DefaultModeFor(connection), select, files);
+            // File access goes to the host, not into a container on it, so a container's files are changed through its shell.
+            var files = session.Client is { } client && connection.Container is null ? new SshHostFiles(client) : null;
+            Attach(tab, new TerminalConnection(session, 80, 24), connection.Environment, DefaultModeFor(connection), select, files, connection.Container?.Describe());
             return tab;
         }
         catch (Exception exception) when (exception is SshAuthenticationException or SshDisconnectedException or SshProtocolException or SshChannelException
@@ -71,7 +77,8 @@ public sealed partial class MainWindow
             }
 
             await client.AuthenticateAsync(keys, prompts, CancellationToken.None).ConfigureAwait(true);
-            return await SshTerminalSession.StartAsync(client, "xterm-256color", 80, 24, CancellationToken.None, ownsClient: true).ConfigureAwait(true);
+            var command = connection.Container?.CommandLine();
+            return await SshTerminalSession.StartAsync(client, "xterm-256color", 80, 24, CancellationToken.None, ownsClient: true, command).ConfigureAwait(true);
         }
         catch
         {

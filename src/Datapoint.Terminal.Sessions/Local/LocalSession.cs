@@ -34,12 +34,12 @@ public sealed class LocalSession : ITerminalSession
     {
         ArgumentNullException.ThrowIfNull(options);
         var program = options.Shell ?? DefaultShell.Find();
-        var integration = options.ShellIntegration ? ShellIntegrationInstaller.Create() : null;
+        var integration = options.ShellIntegration && options.Arguments is null ? ShellIntegrationInstaller.Create() : null;
         try
         {
             var nonce = integration is null ? null : Convert.ToHexStringLower(RandomBytes.Create(16));
             var launch = integration?.Prepare(program, options.Login, nonce!)
-                ?? new ShellLaunch(program, options.Login && !OperatingSystem.IsWindows() ? ["-l"] : [], new Dictionary<string, string>(StringComparer.Ordinal), ShellIntegrationInstaller.KindOf(program));
+                ?? PlainLaunch(program, options);
             var pty = await PtyProvider.SpawnAsync(
                 new PtyOptions
                 {
@@ -97,6 +97,11 @@ public sealed class LocalSession : ITerminalSession
         _integration?.Dispose();
         return ValueTask.CompletedTask;
     }
+
+    private static ShellLaunch PlainLaunch(string program, LocalSessionOptions options) =>
+        options.Arguments is { } arguments
+            ? new ShellLaunch(program, arguments, new Dictionary<string, string>(StringComparer.Ordinal), ShellKind.Other)
+            : new ShellLaunch(program, options.Login && !OperatingSystem.IsWindows() ? ["-l"] : [], new Dictionary<string, string>(StringComparer.Ordinal), ShellIntegrationInstaller.KindOf(program));
 
     private static Dictionary<string, string> BuildEnvironment(ShellLaunch launch, LocalSessionOptions options)
     {

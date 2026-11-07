@@ -40,7 +40,7 @@ public sealed partial class MainWindow
     }
 
     // A tab the agent opened isn't selected: the agent never switches the tab the user is looking at.
-    private void Attach(TerminalTab tab, TerminalConnection connection, string? environment, ApprovalMode defaultMode, bool select = true, IHostFiles? files = null)
+    private void Attach(TerminalTab tab, TerminalConnection connection, string? environment, ApprovalMode defaultMode, bool select = true, IHostFiles? files = null, string? place = null)
     {
         tab.Connection = connection;
         tab.AgentTerminal = new AgentTerminal(tab.Name, new ConnectionTerminal(connection), defaultMode, environment)
@@ -48,6 +48,7 @@ public sealed partial class MainWindow
             IsRemote = tab.IsRemote,
             Connection = tab.ConnectionName,
             Files = files,
+            Place = place,
         };
         StartRecording(tab, connection);
         connection.OutputArrived += (_, _) => tab.View.NotifyOutput();

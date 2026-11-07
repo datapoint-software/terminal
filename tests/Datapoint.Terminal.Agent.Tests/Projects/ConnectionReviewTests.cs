@@ -14,6 +14,16 @@ public sealed class ConnectionReviewTests
         Assert.Equal(new ConnectionReview([s_web], []).Held, Compare(s_web).Held);
 
     [Fact]
+    public void Holds_a_new_container_as_a_changed_address()
+    {
+        var review = Compare(s_web with { Container = new ProjectContainer { Name = "api" } });
+
+        var change = Assert.Single(review.Held);
+        Assert.Equal((ConnectionReview.AddressSetting, "web1", "web1 docker:api"), (change.Setting, change.Confirmed, change.Proposed));
+        Assert.Null(Assert.Single(review.Effective).Container);
+    }
+
+    [Fact]
     public void Holds_a_label_that_leaves_production_and_keeps_asking()
     {
         var review = Compare(s_web with { Environment = "development" });

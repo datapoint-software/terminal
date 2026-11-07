@@ -11,7 +11,7 @@ public sealed partial class MainWindow
     IReadOnlyList<AgentConnection> ITerminalOpener.Connections =>
     [
         new AgentConnection(Strings.TabLocal, Environment: null, _settings.Current.DefaultApprovalMode),
-        .. Connections.Select(connection => new AgentConnection(connection.Name, connection.Environment, DefaultModeFor(connection))),
+        .. Connections.Select(connection => new AgentConnection(connection.Name, connection.Environment, DefaultModeFor(connection), connection.Container?.Describe())),
     ];
 
     Task<string?> ITerminalOpener.OpenAsync(string connection, CancellationToken cancellationToken) =>

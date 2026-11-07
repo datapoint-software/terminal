@@ -88,9 +88,7 @@ public sealed partial class MainWindow
 
     private static string DescribeConnection(ProjectConnection connection)
     {
-        var user = connection.User is null ? string.Empty : connection.User + "@";
-        var port = connection.Port is { } number ? $":{number}" : string.Empty;
-        var target = connection.SshHost ?? user + connection.Host + port;
+        var target = ConnectionReview.Address(connection);
         var environment = connection.Environment is null ? string.Empty : $" ({connection.Environment})";
         return $"{connection.Name} → {target}{environment}";
     }

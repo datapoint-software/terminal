@@ -16,4 +16,7 @@ public sealed record LocalSessionOptions
     public IReadOnlyDictionary<string, string> Environment { get; init; } = new Dictionary<string, string>(StringComparer.Ordinal);
 
     public bool ShellIntegration { get; init; } = true;
+
+    // Given to Shell in place of the usual login flag, e.g. to run a command; shell integration is then left out.
+    public IReadOnlyList<string>? Arguments { get; init; }
 }

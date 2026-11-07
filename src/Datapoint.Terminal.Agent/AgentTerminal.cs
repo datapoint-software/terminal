@@ -27,6 +27,9 @@ public sealed class AgentTerminal
     // On another machine, whose files the project's .terminalignore doesn't describe.
     public bool IsRemote { get; init; }
 
+    // What the terminal's shell runs in when that isn't a machine, e.g. "Docker container", so the agent knows.
+    public string? Place { get; init; }
+
     // The connection the terminal was opened for, which history is kept under.
     public string? Connection { get; init; }
 

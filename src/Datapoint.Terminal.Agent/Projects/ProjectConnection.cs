@@ -18,6 +18,11 @@ public sealed record ProjectConnection
 
     public string? Model { get; init; }
 
+    // A container on the connection's host, or on the local machine when it names no host.
+    public ProjectContainer? Container { get; init; }
+
+    public bool IsLocal => SshHost is null && Host is null;
+
     public bool IsProduction => EnvironmentLabels.IsProduction(Environment);
 
     // Names and labels come from a shared file and reach the model and the screen, so they're kept to short, plain text that
@@ -32,6 +37,6 @@ public sealed record ProjectConnection
         !IsPlainLabel(Name) ? "a connection's name must be up to 40 letters, digits, spaces, dots, dashes, underscores or @."
         : Environment is not null && !IsPlainLabel(Environment) ? $"the environment label of {Name} must be up to 40 letters, digits, spaces, dots, dashes, underscores or @."
         : SshHost is not null && !IsPlainLabel(SshHost) ? $"the SSH host of {Name} isn't a plain host name."
-        : SshHost is null && Host is null ? $"{Name} names neither an SSH host nor a host."
-        : null;
+        : SshHost is null && Host is null && Container is null ? $"{Name} names neither an SSH host, a host nor a container."
+        : Container?.Problem(Name);
 }

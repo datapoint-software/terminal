@@ -245,4 +245,23 @@ public sealed class OpenSshInteropTests(OpenSshServer server) : IClassFixture<Op
 
         Assert.Equal(7, await session.Exited.WaitAsync(Token));
     }
+
+    [Fact]
+    public async Task Runs_a_command_in_place_of_the_login_shell()
+    {
+        server.SkipIfUnavailable();
+        await using var client = await OpenSshServer.ConnectWithPasswordAsync(server.Options());
+        await using var session = await SshTerminalSession.StartAsync(client, "xterm-256color", 80, 24, Token, command: "printf 'in %s' container; exit 3");
+
+        var output = new StringBuilder();
+        var buffer = new byte[64];
+        int count;
+        while ((count = await session.ReadAsync(buffer, Token)) > 0)
+        {
+            output.Append(Encoding.UTF8.GetString(buffer, 0, count));
+        }
+
+        Assert.Contains("in container", output.ToString(), StringComparison.Ordinal);
+        Assert.Equal(3, await session.Exited.WaitAsync(Token));
+    }
 }

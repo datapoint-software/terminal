@@ -41,17 +41,19 @@ public sealed record ConnectionReview(IReadOnlyList<ProjectConnection> Effective
             && string.Equals(Address(first), Address(second), StringComparison.Ordinal);
     }
 
+    // A changed container counts as a changed address: it decides where the agent's commands run.
     public static string Address(ProjectConnection connection)
     {
         ArgumentNullException.ThrowIfNull(connection);
+        var container = connection.Container is { } target ? (connection.IsLocal ? string.Empty : " ") + target.Address() : string.Empty;
         if (connection.SshHost is { } alias)
         {
-            return alias;
+            return alias + container;
         }
 
         var user = connection.User is null ? string.Empty : connection.User + "@";
         var port = connection.Port is { } number ? ":" + number.ToString(System.Globalization.CultureInfo.InvariantCulture) : string.Empty;
-        return user + connection.Host + port;
+        return user + connection.Host + port + container;
     }
 
     private static ProjectConnection Merge(ProjectConnection connection, ProjectConnection previous, ApprovalMode defaultMode, List<ConnectionChange> held)
@@ -72,7 +74,7 @@ public sealed record ConnectionReview(IReadOnlyList<ProjectConnection> Effective
         if (!string.Equals(Address(connection), Address(previous), StringComparison.Ordinal))
         {
             held.Add(new ConnectionChange(connection.Name, AddressSetting, Address(previous), Address(connection)));
-            merged = merged with { SshHost = previous.SshHost, Host = previous.Host, User = previous.User, Port = previous.Port };
+            merged = merged with { SshHost = previous.SshHost, Host = previous.Host, User = previous.User, Port = previous.Port, Container = previous.Container };
         }
 
         return merged;
