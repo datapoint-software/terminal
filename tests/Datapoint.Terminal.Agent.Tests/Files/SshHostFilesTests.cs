@@ -29,4 +29,20 @@ public sealed class SshHostFilesTests(OpenSshServer server) : IClassFixture<Open
         await Assert.ThrowsAsync<IOException>(() => files.ReadAsync("/etc", 10, Token));
         await Assert.ThrowsAsync<IOException>(() => files.ReadAsync("/nowhere/x", 10, Token));
     }
+
+    [Fact]
+    public async Task Lists_folders_over_a_real_connection()
+    {
+        server.SkipIfUnavailable();
+        await using var client = await OpenSshServer.ConnectWithPasswordAsync(server.Options());
+        var files = new SshHostFiles(client);
+
+        var root = await files.ListAsync("/", 100, Token);
+        var two = await files.ListAsync("/etc/", 2, Token);
+
+        Assert.Contains(new HostEntry("etc", IsFolder: true), root);
+        Assert.Equal(2, two.Count);
+        await Assert.ThrowsAsync<IOException>(() => files.ListAsync("/etc/passwd", 10, Token));
+        await Assert.ThrowsAsync<IOException>(() => files.ListAsync("/nowhere", 10, Token));
+    }
 }

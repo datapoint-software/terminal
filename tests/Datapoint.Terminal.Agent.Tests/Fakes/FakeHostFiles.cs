@@ -30,6 +30,17 @@ internal sealed class FakeHostFiles : IHostFiles
             : HostFile.Missing(writable));
     }
 
+    public Task<IReadOnlyList<HostEntry>> ListAsync(string folder, int maxEntries, CancellationToken cancellationToken)
+    {
+        var prefix = folder.TrimEnd('/') + "/";
+        IReadOnlyList<HostEntry> entries = [.. Files.Keys.Where(path => path.StartsWith(prefix, StringComparison.Ordinal))
+            .Select(path => path[prefix.Length..])
+            .Select(rest => rest.Contains('/', StringComparison.Ordinal) ? new HostEntry(rest[..rest.IndexOf('/', StringComparison.Ordinal)], IsFolder: true) : new HostEntry(rest, IsFolder: false))
+            .Distinct()
+            .Take(maxEntries)];
+        return Task.FromResult(entries);
+    }
+
     public Task<string> StageAsync(ReadOnlyMemory<byte> content, CancellationToken cancellationToken)
     {
         var path = $"~/.datapoint-terminal/staging/{Staged.Count + 1}";

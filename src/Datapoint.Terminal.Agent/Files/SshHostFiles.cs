@@ -27,6 +27,25 @@ public sealed class SshHostFiles(SshClient client) : IHostFiles
         return Parse(result, maxBytes);
     }
 
+    public async Task<IReadOnlyList<HostEntry>> ListAsync(string folder, int maxEntries, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(folder);
+        var script = $$"""
+            d={{ShellText.QuotePath(FolderPath(folder))}}
+            [ -d "$d" ] || exit 6
+            [ -r "$d" ] && [ -x "$d" ] || exit 4
+            cd -- "$d" && ls -1pA | head -n {{maxEntries.ToString(CultureInfo.InvariantCulture)}}
+            """;
+        var result = await client.RunAsync("sh -c " + ShellText.Quote(script), ReadOnlyMemory<byte>.Empty, maxEntries * 256, cancellationToken).ConfigureAwait(false);
+        return result.ExitCode switch
+        {
+            0 => [.. Encoding.UTF8.GetString(result.Output).Split('\n', StringSplitOptions.RemoveEmptyEntries).Select(line => new HostEntry(line.TrimEnd('/'), line.EndsWith('/')))],
+            4 => throw new IOException("It can't be read with the connection's user."),
+            6 => throw new IOException("There's no such folder."),
+            _ => throw new IOException(Problem(result, "couldn't list it")),
+        };
+    }
+
     public async Task<string> StageAsync(ReadOnlyMemory<byte> content, CancellationToken cancellationToken)
     {
         var name = Guid.NewGuid().ToString("N");
@@ -35,6 +54,14 @@ public sealed class SshHostFiles(SshClient client) : IHostFiles
         var result = await client.RunAsync("sh -c " + ShellText.Quote(script), content, 0, cancellationToken).ConfigureAwait(false);
         return result.ExitCode == 0 ? target : throw new IOException(Problem(result, "couldn't save the new content"));
     }
+
+    // "~", "~/" and "/" name a folder the way the shell would.
+    private static string FolderPath(string folder) => folder.TrimEnd('/') switch
+    {
+        "" => "/",
+        "~" => "~/",
+        var trimmed => trimmed,
+    };
 
     private static HostFile Parse(SshCommandResult result, int maxBytes)
     {

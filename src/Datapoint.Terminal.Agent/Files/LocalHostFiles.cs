@@ -25,6 +25,30 @@ public sealed class LocalHostFiles(string home) : IHostFiles
         return new HostFile(Exists: true, buffer[..Math.Min(read, maxBytes)], CanWrite(full), isTruncated);
     }
 
+    public Task<IReadOnlyList<HostEntry>> ListAsync(string folder, int maxEntries, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(folder);
+        var full = folder is "~" or "~/" ? home : Expand(folder);
+        if (!Directory.Exists(full))
+        {
+            throw new IOException("There's no such folder.");
+        }
+
+        var options = new EnumerationOptions { IgnoreInaccessible = true, AttributesToSkip = FileAttributes.None };
+        try
+        {
+            IReadOnlyList<HostEntry> entries = [.. new DirectoryInfo(full).EnumerateFileSystemInfos("*", options)
+                .OrderBy(entry => entry.Name, StringComparer.Ordinal)
+                .Take(maxEntries)
+                .Select(entry => new HostEntry(entry.Name, entry is DirectoryInfo))];
+            return Task.FromResult(entries);
+        }
+        catch (UnauthorizedAccessException exception)
+        {
+            throw new IOException("It can't be read with your user.", exception);
+        }
+    }
+
     public async Task<string> StageAsync(ReadOnlyMemory<byte> content, CancellationToken cancellationToken)
     {
         var folder = Expand(HostFolders.Staging);

@@ -72,4 +72,19 @@ public sealed class LocalHostFilesTests : IDisposable
 
         Assert.Equal(UnixFileMode.UserRead | UnixFileMode.UserWrite, File.GetUnixFileMode(path));
     }
+
+    [Fact]
+    public async Task Lists_a_folder_with_hidden_entries_and_folders_marked()
+    {
+        Directory.CreateDirectory(Path.Combine(_home, "conf.d"));
+        await File.WriteAllTextAsync(Path.Combine(_home, ".env"), string.Empty, Token);
+        await File.WriteAllTextAsync(Path.Combine(_home, "nginx.conf"), string.Empty, Token);
+        var files = new LocalHostFiles(_home);
+
+        var entries = await files.ListAsync("~/", 10, Token);
+
+        Assert.Equal([new HostEntry(".env", false), new HostEntry("conf.d", true), new HostEntry("nginx.conf", false)], entries);
+        Assert.Single(await files.ListAsync("~", 1, Token));
+        await Assert.ThrowsAsync<IOException>(() => files.ListAsync("~/missing", 10, Token));
+    }
 }
