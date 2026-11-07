@@ -183,7 +183,9 @@ The emulator parses everything a shell prints, and output can arrive at hundreds
 
 - **`FluentTheme`, following the operating system's light or dark setting** (`RequestedThemeVariant="Default"`).
 - **Colors are tokens** in `ResourceDictionary.ThemeDictionaries` (`Light`, `Dark`), used through `DynamicResource`. No color is written in a view.
-- **`ControlTheme` to restyle a control; `Styles` with selectors only for small, app-wide adjustments** such as `:focus-visible`.
+- **Sizes are tokens too:** type sizes, corner radii and row, button and field heights in `Styles/Tokens.axaml`, used through `StaticResource`. No size is written in a view, except for a shape of its own (a circle, a bubble).
+- **Shared before local.** Text roles, surfaces (cards, grouped rows, bordered lists) and variants of stock controls are app-wide style classes in `Styles/` (`Text.axaml`, `Surfaces.axaml`, `Controls.axaml`), named for their role (`secondary`, `group`, `primary`), not their look. A view's own `Styles` hold only what no other view needs; a second view needing it moves it to `Styles/`.
+- **The application's own controls are templated controls with a `ControlTheme`** in `Styles/Components.axaml`, such as `Badge` and `Avatar` in `Components/`. Variants of stock controls stay style classes rather than control themes, because classes combine (`plain danger`) and a control takes only one theme (autopilot decision 107).
 - **Our own high-contrast theme.** FluentTheme has none in Avalonia 12.1. The application switches to it when the operating system asks for high contrast, which Avalonia reports on Windows and macOS; on Linux, where it doesn't, the user chooses it in settings.
 - **The terminal's color scheme is data,** not XAML: a typed model (the 16 ANSI colors, foreground, background, cursor, selection) that users edit and that changes at run time.
 
