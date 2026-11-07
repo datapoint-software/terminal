@@ -121,7 +121,9 @@ public sealed partial class MainWindow : Window, ITerminalOpener
 
     private void OnWorkspacesChanged(object? sender, EventArgs e) => FillRecentMenu();
 
-    private void UpdateTitle() => Title = WindowTitles.For(Workspace.Name, SelectedTab?.ShellTitle, _chat.NeedsUser);
+    // A document shown over the terminals names the window, so the title says what's in front of the user.
+    private void UpdateTitle() =>
+        Title = WindowTitles.For(Workspace.Name, (DocumentTabs.SelectedItem as Editor.IOpenDocument)?.Name ?? SelectedTab?.ShellTitle, _chat.NeedsUser);
 
     private void ApplySettings()
     {

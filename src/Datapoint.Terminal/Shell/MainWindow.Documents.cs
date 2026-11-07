@@ -95,6 +95,7 @@ public sealed partial class MainWindow
 
         _showMarkdownItem?.IsEnabled = shown is { Document.CanShowMarkdown: true };
         _showMarkdownItem?.IsChecked = shown?.Document.IsSourceMode == true;
+        UpdateTitle();
         if (shown is null)
         {
             return;
