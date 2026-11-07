@@ -1851,4 +1851,28 @@ Fingerprint: {2}</value>
   <data name="SidebarRevealWindows" xml:space="preserve">
     <value>Show {0} in File Explorer</value>
   </data>
+  <data name="DocumentLogHeading" xml:space="preserve">
+    <value>Maintenance log</value>
+  </data>
+  <data name="DocumentLogShowAll" xml:space="preserve">
+    <value>All {0} entries</value>
+  </data>
+  <data name="DocumentLogShowFewer" xml:space="preserve">
+    <value>Show fewer</value>
+  </data>
+  <data name="DocumentLogYou" xml:space="preserve">
+    <value>You</value>
+  </data>
+  <data name="DocumentLogWithAgent" xml:space="preserve">
+    <value>{0}, with the agent</value>
+  </data>
+  <data name="DocumentLogAgentOnly" xml:space="preserve">
+    <value>With the agent</value>
+  </data>
+  <data name="DocumentLogNone" xml:space="preserve">
+    <value>No entries yet. The agent adds one after each change it makes on this host.</value>
+  </data>
+  <data name="DocumentLogLabel" xml:space="preserve">
+    <value>Maintenance log of {0}</value>
+  </data>
 </root>

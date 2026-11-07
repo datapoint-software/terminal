@@ -7,6 +7,28 @@
              x:DataType="ed:DocumentViewModel"
              Background="{DynamicResource WindowBrush}" Focusable="True">
   <UserControl.Styles>
+    <!-- The host's environment, red for production as on its tabs. -->
+    <Style Selector="Border.environment">
+      <Setter Property="Background" Value="{DynamicResource FillBrush}" />
+    </Style>
+    <Style Selector="Border.environment > TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
+    </Style>
+    <Style Selector="Border.environment.production">
+      <Setter Property="Background" Value="{DynamicResource DangerBrush}" />
+    </Style>
+    <Style Selector="Border.environment.production > TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <!-- Log entries, a hairline between each. -->
+    <Style Selector="Border.logEntry">
+      <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
+      <Setter Property="BorderThickness" Value="0,1,0,0" />
+    </Style>
+    <Style Selector="ContentPresenter:nth-child(1) > Border.logEntry">
+      <Setter Property="BorderThickness" Value="0" />
+    </Style>
     <!-- The block being edited: no field around it, so it reads as the same text, now as Markdown. -->
     <Style Selector="TextBox.block">
       <Setter Property="Background" Value="Transparent" />
@@ -90,13 +112,28 @@
           <!-- A host's documentation starts with the host: where it is and whether a terminal is open on it. -->
           <DockPanel IsVisible="{Binding HasHost}" Margin="0,0,0,20">
             <Button DockPanel.Dock="Right" Classes="plain" Content="{x:Static res:Strings.DocumentOpenTerminal}" Command="{Binding Host.OpenTerminalCommand, FallbackValue={x:Null}}" VerticalAlignment="Center" />
-            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-              <Border IsVisible="{Binding Host.HasEnvironment, FallbackValue=False}" Background="{DynamicResource FillBrush}" CornerRadius="4" Padding="6,1" VerticalAlignment="Center">
-                <TextBlock Text="{Binding Host.Environment, FallbackValue={x:Null}}" FontSize="11" Foreground="{DynamicResource SecondaryLabelBrush}" />
+            <WrapPanel ItemSpacing="8" LineSpacing="6" VerticalAlignment="Center">
+              <Border IsVisible="{Binding Host.HasEnvironment, FallbackValue=False}" Classes="environment" Classes.production="{Binding Host.IsProduction, FallbackValue=False}"
+                      CornerRadius="4" Padding="6,1" VerticalAlignment="Center">
+                <TextBlock Text="{Binding Host.Environment, FallbackValue={x:Null}}" FontSize="11" />
               </Border>
+              <ItemsControl ItemsSource="{Binding Host.Labels, FallbackValue={x:Null}}" IsVisible="{Binding Host.HasLabels, FallbackValue=False}" VerticalAlignment="Center">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" Spacing="6" />
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="x:String">
+                    <Border BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="1" CornerRadius="9" Padding="7,0">
+                      <TextBlock Text="{Binding}" FontSize="11" Foreground="{DynamicResource SecondaryLabelBrush}" />
+                    </Border>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
               <TextBlock Text="{Binding Host.Address, FallbackValue={x:Null}}" IsVisible="{Binding Host.HasAddress, FallbackValue=False}" FontFamily="{StaticResource MonoFont}" FontSize="12" Foreground="{DynamicResource SecondaryLabelBrush}" VerticalAlignment="Center" />
               <TextBlock Text="{Binding Host.OpenText, FallbackValue={x:Null}}" IsVisible="{Binding Host.HasOpenText, FallbackValue=False}" FontSize="12" Foreground="{DynamicResource SecondaryLabelBrush}" VerticalAlignment="Center" />
-            </StackPanel>
+            </WrapPanel>
           </DockPanel>
           <ItemsControl x:Name="BlockList" ItemsSource="{Binding Blocks}">
             <ItemsControl.ItemTemplate>
@@ -123,10 +160,37 @@
             </ItemsControl.ItemTemplate>
           </ItemsControl>
           <!-- Below the last block: a click starts a new paragraph at the end. -->
-          <Panel x:Name="EndArea" Background="Transparent" MinHeight="160" Cursor="Ibeam">
+          <Panel x:Name="EndArea" Background="Transparent" MinHeight="{Binding EndAreaHeight}" Cursor="Ibeam">
             <TextBlock Text="{x:Static res:Strings.DocumentPlaceholder}" IsVisible="{Binding IsEmpty}" FontSize="14"
                        Foreground="{DynamicResource SecondaryLabelBrush}" VerticalAlignment="Top" IsHitTestVisible="False" />
           </Panel>
+          <!-- The host's maintenance log: one file per entry in log/, shown here rather than as part of the document. -->
+          <StackPanel IsVisible="{Binding HasHost}" Margin="0,0,0,40">
+            <DockPanel Margin="0,0,0,10">
+              <Button DockPanel.Dock="Right" Classes="plain" Content="{Binding Host.ShowAllText, FallbackValue={x:Null}}"
+                      IsVisible="{Binding Host.CanShowAll, FallbackValue=False}" Command="{Binding Host.ToggleLogCommand, FallbackValue={x:Null}}" />
+              <TextBlock Text="{x:Static res:Strings.DocumentLogHeading}" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" />
+            </DockPanel>
+            <TextBlock Text="{x:Static res:Strings.DocumentLogNone}" IsVisible="{Binding !Host.HasLog, FallbackValue=False}" FontSize="13"
+                       Foreground="{DynamicResource SecondaryLabelBrush}" TextWrapping="Wrap" />
+            <Border IsVisible="{Binding Host.HasLog, FallbackValue=False}" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="1" CornerRadius="10" ClipToBounds="True">
+              <ItemsControl ItemsSource="{Binding Host.LogEntries, FallbackValue={x:Null}}" AutomationProperties.Name="{Binding Host.LogHeading, FallbackValue={x:Null}}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="ed:HostLogItem">
+                    <Border Classes="logEntry" Padding="16,10" AutomationProperties.Name="{Binding AccessibleName}">
+                      <Grid ColumnDefinitions="160,*" ColumnSpacing="16">
+                        <StackPanel>
+                          <TextBlock Text="{Binding When}" FontSize="13" Foreground="{DynamicResource SecondaryLabelBrush}" />
+                          <TextBlock Text="{Binding Who}" FontSize="12" Foreground="{DynamicResource DisabledLabelBrush}" />
+                        </StackPanel>
+                        <SelectableTextBlock Grid.Column="1" Text="{Binding Text}" FontSize="14" TextWrapping="Wrap" VerticalAlignment="Center" />
+                      </Grid>
+                    </Border>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </Border>
+          </StackPanel>
         </StackPanel>
       </ScrollViewer>
       <ScrollViewer IsVisible="{Binding IsSourceMode}" HorizontalScrollBarVisibility="Disabled">

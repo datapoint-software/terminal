@@ -6,6 +6,7 @@ using Avalonia.Input;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
+using Datapoint.Terminal.Agent.Hosts;
 using Datapoint.Terminal.Editor;
 using Datapoint.Terminal.Markdown;
 
@@ -47,8 +48,16 @@ public sealed class DocumentViewTests : IDisposable
         File.WriteAllText(path, text);
         var document = new DocumentViewModel(MarkdownFile.Open(path, out _)!)
         {
-            Host = new HostHeaderViewModel("web1", "production", "deploy@web1.example.com", () => { }) { OpenText = "1 open" },
+            Host = new HostHeaderViewModel("web1", "production", "deploy@web1.example.com", () => { }) { OpenText = "1 open", Labels = ["web", "debian"] },
         };
+        document.Host.SetLog(
+            [
+                new HostLogEntry(new DateTimeOffset(2026, 11, 7, 14, 32, 0, TimeSpan.Zero), "joao", true, "Patched and rebooted. Kernel 6.1.0-27 to 6.1.0-28.", "a.md"),
+                new HostLogEntry(new DateTimeOffset(2026, 11, 3, 9, 10, 0, TimeSpan.Zero), "rita", false, "Renewed the TLS certificate.", "b.md"),
+                new HostLogEntry(new DateTimeOffset(2026, 10, 28, 22, 5, 0, TimeSpan.Zero), string.Empty, true, "Raised client_max_body_size to 50m.", "c.md"),
+                new HostLogEntry(new DateTimeOffset(2026, 10, 1, 8, 0, 0, TimeSpan.Zero), "joao", false, "Installed nginx.", "d.md"),
+            ],
+            userName: "joao");
         var view = new DocumentView { DataContext = document };
         var window = new Window { Width = 820, Height = 760, Content = view };
         window.Show();
@@ -65,6 +74,27 @@ public sealed class DocumentViewTests : IDisposable
         Directory.CreateDirectory("rendered");
         using var frame = window.CaptureRenderedFrame();
         frame?.Save($"rendered/{name}.png", new PngBitmapEncoderOptions());
+    }
+
+    [AvaloniaFact]
+    public void Shows_the_hosts_labels_and_its_latest_log_entries_until_asked_for_all()
+    {
+        var (window, view, document) = Show(HostNotes);
+        Save(window, "document-log");
+
+        var texts = view.GetVisualDescendants().OfType<TextBlock>().Where(text => text.IsEffectivelyVisible).Select(text => text.Text).ToList();
+        Assert.Contains("debian", texts, StringComparer.Ordinal);
+        Assert.Contains("You, with the agent", texts, StringComparer.Ordinal);
+        Assert.Contains("rita", texts, StringComparer.Ordinal);
+        Assert.Contains("With the agent", texts, StringComparer.Ordinal);
+        Assert.Equal(3, document.Host!.LogEntries.Count);
+        Assert.Equal("All 4 entries", document.Host.ShowAllText);
+
+        document.Host.ToggleLogCommand.Execute(null);
+
+        Assert.Equal(4, document.Host.LogEntries.Count);
+        Assert.Equal("Show fewer", document.Host.ShowAllText);
+        window.Close();
     }
 
     [AvaloniaFact]

@@ -1232,6 +1232,22 @@ public static class Strings
 
     public static string SidebarRevealWindows => Get(nameof(SidebarRevealWindows));
 
+    public static string DocumentLogHeading => Get(nameof(DocumentLogHeading));
+
+    public static string DocumentLogShowAll => Get(nameof(DocumentLogShowAll));
+
+    public static string DocumentLogShowFewer => Get(nameof(DocumentLogShowFewer));
+
+    public static string DocumentLogYou => Get(nameof(DocumentLogYou));
+
+    public static string DocumentLogWithAgent => Get(nameof(DocumentLogWithAgent));
+
+    public static string DocumentLogAgentOnly => Get(nameof(DocumentLogAgentOnly));
+
+    public static string DocumentLogNone => Get(nameof(DocumentLogNone));
+
+    public static string DocumentLogLabel => Get(nameof(DocumentLogLabel));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

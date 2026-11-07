@@ -93,7 +93,11 @@ public sealed partial class MainWindow
         }
         else if (e.Kind == AgentEventKind.HostDocsChanged)
         {
-            Dispatcher.UIThread.Post(() => _chat.AddNotice(e.Text, Strings.HostDocsOpen, () => _ = Launcher.LaunchFileInfoAsync(new FileInfo(path))));
+            Dispatcher.UIThread.Post(() =>
+            {
+                RefreshHostLogs();
+                _chat.AddNotice(e.Text, Strings.HostDocsOpen, () => OpenWorkspaceFile(path));
+            });
         }
     }
 }

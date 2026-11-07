@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
+using Datapoint.Terminal.Agent.Hosts;
 using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Editor;
 using Datapoint.Terminal.Resources;
@@ -197,14 +198,27 @@ public sealed partial class MainWindow
             return null;
         }
 
-        return new HostHeaderViewModel(connection.Name, connection.Environment, AddressOf(connection), () =>
+        var header = new HostHeaderViewModel(connection.Name, connection.Environment, AddressOf(connection), () =>
         {
             HideDocument();
             _ = OpenConnectionAsync(connection);
         })
         {
             OpenText = OpenTextFor(connection.Name),
+            Labels = connection.Labels ?? [],
         };
+        header.SetLog(HostLog.Read(docs.LogFor(connection.Name)), Environment.UserName);
+        return header;
+    }
+
+    // After the agent logs a change, or the window comes back to the front: a teammate's entry may have arrived.
+    private void RefreshHostLogs()
+    {
+        var docs = CreateHostDocs();
+        foreach (var host in _documents.OfType<DocumentViewModel>().Select(document => document.Host).OfType<HostHeaderViewModel>())
+        {
+            host.SetLog(HostLog.Read(docs.LogFor(host.Name)), Environment.UserName);
+        }
     }
 
     private void RefreshDocumentHosts()

@@ -108,7 +108,11 @@ public sealed partial class MainWindow
             _workspaceWatcher = null;
         }
 
-        Activated += (_, _) => _sidebar.RefreshSkills();
+        Activated += (_, _) =>
+        {
+            _sidebar.RefreshSkills();
+            RefreshHostLogs();
+        };
     }
 
     private void OnWorkspaceChanged(string path)

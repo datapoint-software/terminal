@@ -47,6 +47,9 @@ public sealed partial class DocumentViewModel : ObservableObject, IOpenDocument
 
     public string ToolTip => Path;
 
+    // The space below the last block that starts a new paragraph; shorter above a host's log, so the log stays near.
+    public double EndAreaHeight => Host is null ? 160 : 48;
+
     // Saved as the user types.
     public bool IsUnsaved => false;
 
@@ -95,7 +98,7 @@ public sealed partial class DocumentViewModel : ObservableObject, IOpenDocument
 
     // The host this document describes, if it's one in hosts/: shown above it.
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(HasHost))]
+    [NotifyPropertyChangedFor(nameof(HasHost), nameof(EndAreaHeight))]
     public partial HostHeaderViewModel? Host { get; set; }
 
     public bool HasHost => Host is not null;
