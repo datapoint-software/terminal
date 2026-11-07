@@ -692,6 +692,8 @@ public static class Strings
 
     public static string ApprovalAlsoApproves => Get(nameof(ApprovalAlsoApproves));
 
+    public static string NoticeJumping => Get(nameof(NoticeJumping));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

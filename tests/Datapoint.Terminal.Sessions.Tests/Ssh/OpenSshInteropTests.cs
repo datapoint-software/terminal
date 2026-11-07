@@ -264,4 +264,31 @@ public sealed class OpenSshInteropTests(OpenSshServer server) : IClassFixture<Op
         Assert.Contains("in container", output.ToString(), StringComparison.Ordinal);
         Assert.Equal(3, await session.Exited.WaitAsync(Token));
     }
+
+    // The server is its own jump host: the second connection runs inside a direct-tcpip channel of the first.
+    [Fact]
+    public async Task Connects_through_a_jump_host_and_closes_it_with_the_target()
+    {
+        server.SkipIfUnavailable();
+        var jump = await OpenSshServer.ConnectWithPasswordAsync(server.Options());
+        var channel = await jump.OpenDirectTcpIpAsync("127.0.0.1", 22, Token);
+        var stream = new SshChannelStream(channel, jump);
+        var target = await SshClient.ConnectAsync(server.Options() with { Port = 22 }, stream, Token);
+        await target.AuthenticateAsync([], new OpenSshServer.ScriptedPrompts(OpenSshServer.Password), Token);
+
+        var result = await target.RunAsync("echo inside", ReadOnlyMemory<byte>.Empty, 1024, Token);
+        await target.DisposeAsync();
+
+        Assert.Equal("inside", Encoding.UTF8.GetString(result.Output).Trim());
+        await Assert.ThrowsAnyAsync<Exception>(() => jump.OpenSessionAsync(Token));
+    }
+
+    [Fact]
+    public async Task Reports_a_target_the_jump_host_cant_reach()
+    {
+        server.SkipIfUnavailable();
+        await using var jump = await OpenSshServer.ConnectWithPasswordAsync(server.Options());
+
+        await Assert.ThrowsAsync<SshChannelException>(() => jump.OpenDirectTcpIpAsync("127.0.0.1", 1, Token));
+    }
 }

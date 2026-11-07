@@ -14,7 +14,7 @@ public static class SshLoginPlan
     public static string? Unsupported(SshHostConfig host)
     {
         ArgumentNullException.ThrowIfNull(host);
-        string[] unsupported = ["ProxyJump", "LocalForward", "RemoteForward", "DynamicForward", "CertificateFile", "PKCS11Provider"];
+        string[] unsupported = ["LocalForward", "RemoteForward", "DynamicForward", "CertificateFile", "PKCS11Provider"];
         var setting = unsupported.FirstOrDefault(name => host.Get(name) is { } value && !string.Equals(value, "none", StringComparison.OrdinalIgnoreCase))
             ?? (host.Get("ProxyCommand") is { } proxy && !string.Equals(proxy, "none", StringComparison.OrdinalIgnoreCase) ? "ProxyCommand" : null)
             ?? (host.IsYes("ForwardAgent") ? "ForwardAgent" : null)

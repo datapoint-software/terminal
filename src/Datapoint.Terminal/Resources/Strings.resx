@@ -1043,4 +1043,7 @@ git rm -r --cached .terminal</value>
   <data name="ApprovalAlsoApproves" xml:space="preserve">
     <value>Approving also lets the agent run this exact command in {0} until the task ends.</value>
   </data>
+  <data name="NoticeJumping" xml:space="preserve">
+    <value>Connecting to {0} through {1}…</value>
+  </data>
 </root>

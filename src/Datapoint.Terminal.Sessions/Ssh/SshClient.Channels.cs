@@ -12,7 +12,23 @@ public sealed partial class SshClient
     private readonly Dictionary<uint, SshChannel> _channels = [];
     private uint _nextChannelId;
 
-    public async Task<SshChannel> OpenSessionAsync(CancellationToken cancellationToken)
+    public Task<SshChannel> OpenSessionAsync(CancellationToken cancellationToken) =>
+        OpenChannelAsync("session", cancellationToken);
+
+    // A TCP connection from the server to host and port, as for a jump host or a forwarded port. The originator is reported
+    // as the loopback address: the server learns nothing about this computer's network from it.
+    public Task<SshChannel> OpenDirectTcpIpAsync(string host, int port, CancellationToken cancellationToken)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(host);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(port);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(port, 65535);
+        return OpenChannelAsync(
+            "direct-tcpip",
+            cancellationToken,
+            extra => extra.WriteString(host).WriteUInt32((uint)port).WriteString("127.0.0.1").WriteUInt32(0));
+    }
+
+    private async Task<SshChannel> OpenChannelAsync(string type, CancellationToken cancellationToken, Action<SshWriter>? extra = null)
     {
         ThrowIfClosed();
         if (!_isAuthenticated)
@@ -23,14 +39,14 @@ public sealed partial class SshClient
         var channel = RegisterChannel();
         try
         {
-            var open = new SshWriter()
+            var message = new SshWriter()
                 .WriteByte(MessageNumber.ChannelOpen)
-                .WriteString("session")
+                .WriteString(type)
                 .WriteUInt32(channel.LocalId)
                 .WriteUInt32(SshChannel.InitialWindow)
-                .WriteUInt32(SshChannel.MaxPacket)
-                .ToArray();
-            await SendAsync(open, cancellationToken).ConfigureAwait(false);
+                .WriteUInt32(SshChannel.MaxPacket);
+            extra?.Invoke(message);
+            await SendAsync(message.ToArray(), cancellationToken).ConfigureAwait(false);
             await channel.WaitUntilOpenAsync(cancellationToken).ConfigureAwait(false);
             return channel;
         }
