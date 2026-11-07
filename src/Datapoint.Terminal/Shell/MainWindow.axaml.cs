@@ -70,6 +70,7 @@ public sealed partial class MainWindow : Window
     {
         ApplySettings();
         await ReviewTrustAsync(always: false).ConfigureAwait(true);
+        await OfferGitIgnoreAsync().ConfigureAwait(true);
         await OpenLocalTabAsync().ConfigureAwait(true);
     }
 

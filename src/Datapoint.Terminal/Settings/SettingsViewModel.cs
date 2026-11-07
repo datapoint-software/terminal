@@ -35,6 +35,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         RecentProjects = settings.RecentProjects;
         OpenProjects = settings.OpenProjects;
         TrustedProjects = settings.TrustedProjects;
+        DeclinedGitIgnore = settings.DeclinedGitIgnore;
         SelectedProviderId = settings.SelectedProvider?.Id;
         foreach (var account in settings.Providers)
         {
@@ -56,6 +57,8 @@ public sealed partial class SettingsViewModel : ObservableObject
     public IReadOnlyList<string> OpenProjects { get; private set; }
 
     public IReadOnlyList<ProjectTrustRecord> TrustedProjects { get; private set; }
+
+    public IReadOnlyList<string> DeclinedGitIgnore { get; private set; }
 
     public IReadOnlyList<KindOption> Kinds { get; }
 
@@ -82,7 +85,16 @@ public sealed partial class SettingsViewModel : ObservableObject
         RecentProjects = RecentProjects,
         OpenProjects = OpenProjects,
         TrustedProjects = TrustedProjects,
+        DeclinedGitIgnore = DeclinedGitIgnore,
     };
+
+    public bool HasDeclinedGitIgnore(string folder) => DeclinedGitIgnore.Any(item => ProjectFolders.AreSame(item, folder));
+
+    public void DeclineGitIgnore(string folder)
+    {
+        DeclinedGitIgnore = [.. DeclinedGitIgnore.Where(item => !ProjectFolders.AreSame(item, folder)), folder];
+        SaveProjectData();
+    }
 
     public ProjectTrustRecord? TrustFor(string folder) =>
         TrustedProjects.FirstOrDefault(record => ProjectFolders.AreSame(record.Folder, folder));
@@ -91,6 +103,12 @@ public sealed partial class SettingsViewModel : ObservableObject
     {
         ArgumentNullException.ThrowIfNull(record);
         TrustedProjects = [.. TrustedProjects.Where(item => !ProjectFolders.AreSame(item.Folder, record.Folder)), record];
+        SaveProjectData();
+    }
+
+    // Saved without raising Changed: nothing a window shows depends on it.
+    private void SaveProjectData()
+    {
         if (_store.IsReadOnly)
         {
             return;

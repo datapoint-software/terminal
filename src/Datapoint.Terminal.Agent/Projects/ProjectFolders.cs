@@ -16,6 +16,21 @@ public static class ProjectFolders
         ? StringComparer.OrdinalIgnoreCase
         : StringComparer.Ordinal;
 
+    public static StringComparison Comparison => OperatingSystem.IsWindows() || OperatingSystem.IsMacOS()
+        ? StringComparison.OrdinalIgnoreCase
+        : StringComparison.Ordinal;
+
+    // The path below the folder with '/' between names, or null when it isn't inside it.
+    public static string? RelativeInside(string folder, string path)
+    {
+        var relative = Path.GetRelativePath(Normalize(folder), Normalize(path));
+        return string.Equals(relative, ".", StringComparison.Ordinal) || relative.StartsWith("..", StringComparison.Ordinal) || Path.IsPathRooted(relative)
+            ? null
+            : relative.Replace(Path.DirectorySeparatorChar, '/');
+    }
+
+    public static bool IsSameOrInside(string path, string folder) => AreSame(path, folder) || RelativeInside(folder, path) is not null;
+
     public static string Normalize(string folder)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(folder);
@@ -28,7 +43,7 @@ public static class ProjectFolders
     public static string Display(string path)
     {
         var home = Normalize(Home);
-        return path.StartsWith(home + Path.DirectorySeparatorChar, OperatingSystem.IsLinux() ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase)
+        return path.StartsWith(home + Path.DirectorySeparatorChar, Comparison)
             ? "~" + path[home.Length..]
             : path;
     }

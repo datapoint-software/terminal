@@ -483,4 +483,33 @@ Fingerprint: {2}</value>
   <data name="NoticeInstructionsUnreadable" xml:space="preserve">
     <value>{0} couldn't be read: {1}</value>
   </data>
+  <data name="GitIgnoreTitle" xml:space="preserve">
+    <value>Keep .terminal out of Git?</value>
+  </data>
+  <data name="GitIgnoreMessage" xml:space="preserve">
+    <value>{0} is in a Git repository, and its .terminal folder isn't ignored. That folder is personal: it holds your terminal history and the agent's notes, which can include command output and details of your machines. If it's committed, everyone who can read the repository can read them. Add .terminal/ to the .gitignore in {1}?</value>
+  </data>
+  <data name="GitIgnoreTracked" xml:space="preserve">
+    <value>Some of .terminal is already committed. Ignoring it doesn't remove it from the repository; to stop tracking it, run this in the project's folder, then commit:
+
+git rm -r --cached .terminal</value>
+  </data>
+  <data name="GitIgnoreDont" xml:space="preserve">
+    <value>Don't Add</value>
+  </data>
+  <data name="GitIgnoreAdd" xml:space="preserve">
+    <value>Add to .gitignore</value>
+  </data>
+  <data name="NoticeGitIgnoreAdded" xml:space="preserve">
+    <value>Added .terminal/ to {0}. Commit that change so others' copies ignore it too.</value>
+  </data>
+  <data name="NoticeGitIgnoreStillNot" xml:space="preserve">
+    <value>Added .terminal/ to {0}, but another rule still includes it, so check the repository's ignore files.</value>
+  </data>
+  <data name="NoticeGitIgnoreFailed" xml:space="preserve">
+    <value>The .gitignore couldn't be changed: {0}</value>
+  </data>
+  <data name="NoticeGitTracked" xml:space="preserve">
+    <value>Some of this project's .terminal folder is committed to Git, although it's ignored now. To stop tracking it, run git rm -r --cached .terminal in the project's folder, then commit.</value>
+  </data>
 </root>

@@ -320,6 +320,24 @@ public static class Strings
 
     public static string NoticeInstructionsUnreadable => Get(nameof(NoticeInstructionsUnreadable));
 
+    public static string GitIgnoreTitle => Get(nameof(GitIgnoreTitle));
+
+    public static string GitIgnoreMessage => Get(nameof(GitIgnoreMessage));
+
+    public static string GitIgnoreTracked => Get(nameof(GitIgnoreTracked));
+
+    public static string GitIgnoreDont => Get(nameof(GitIgnoreDont));
+
+    public static string GitIgnoreAdd => Get(nameof(GitIgnoreAdd));
+
+    public static string NoticeGitIgnoreAdded => Get(nameof(NoticeGitIgnoreAdded));
+
+    public static string NoticeGitIgnoreStillNot => Get(nameof(NoticeGitIgnoreStillNot));
+
+    public static string NoticeGitIgnoreFailed => Get(nameof(NoticeGitIgnoreFailed));
+
+    public static string NoticeGitTracked => Get(nameof(NoticeGitTracked));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;
