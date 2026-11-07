@@ -57,6 +57,8 @@ public sealed partial class SidebarViewModel(string workspaceFolder) : Observabl
 
     public Action<WorkspaceConnection>? TerminalRequested { get; set; }
 
+    public Action<WorkspaceConnection>? HostRemoved { get; set; }
+
     public Action<string>? HostAdded { get; set; }
 
     public Action<SkillItemViewModel>? SkillChosen { get; set; }
@@ -149,6 +151,9 @@ public sealed partial class SidebarViewModel(string workspaceFolder) : Observabl
 
     [RelayCommand]
     private void OpenTerminal(HostItemViewModel host) => TerminalRequested?.Invoke(host.Connection);
+
+    [RelayCommand]
+    private void RemoveHost(HostItemViewModel host) => HostRemoved?.Invoke(host.Connection);
 
     [RelayCommand]
     private void ChooseSkill(SkillItemViewModel skill) => SkillChosen?.Invoke(skill);

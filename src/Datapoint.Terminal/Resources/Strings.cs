@@ -1466,6 +1466,18 @@ public static class Strings
 
     public static string NoticeConflictSettled => Get(nameof(NoticeConflictSettled));
 
+    public static string SidebarRemoveHost => Get(nameof(SidebarRemoveHost));
+
+    public static string RemoveHostTitle => Get(nameof(RemoveHostTitle));
+
+    public static string RemoveHostMessage => Get(nameof(RemoveHostMessage));
+
+    public static string RemoveHostAction => Get(nameof(RemoveHostAction));
+
+    public static string NoticeHostRemoved => Get(nameof(NoticeHostRemoved));
+
+    public static string NoticeWorkspaceReadOnlyNotRemoved => Get(nameof(NoticeWorkspaceReadOnlyNotRemoved));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

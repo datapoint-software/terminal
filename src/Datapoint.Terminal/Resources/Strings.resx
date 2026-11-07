@@ -2202,4 +2202,22 @@ Fingerprint: {2}</value>
   <data name="NoticeConflictSettled" xml:space="preserve">
     <value>Settled {0}. The other version is kept in {1}.</value>
   </data>
+  <data name="SidebarRemoveHost" xml:space="preserve">
+    <value>Remove from Workspace…</value>
+  </data>
+  <data name="RemoveHostTitle" xml:space="preserve">
+    <value>Remove {0} from this workspace?</value>
+  </data>
+  <data name="RemoveHostMessage" xml:space="preserve">
+    <value>The host leaves the workspace's list for everyone who shares it. Its documentation and maintenance log stay in the hosts folder, and terminals open on it stay open.</value>
+  </data>
+  <data name="RemoveHostAction" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="NoticeHostRemoved" xml:space="preserve">
+    <value>Removed {0} from the workspace.</value>
+  </data>
+  <data name="NoticeWorkspaceReadOnlyNotRemoved" xml:space="preserve">
+    <value>{0} wasn't removed: this workspace is read-only.</value>
+  </data>
 </root>

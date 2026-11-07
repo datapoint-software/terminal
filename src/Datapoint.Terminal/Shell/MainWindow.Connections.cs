@@ -129,4 +129,40 @@ public sealed partial class MainWindow
         RefreshSidebarHosts();
         await OpenConnectionAsync(connection).ConfigureAwait(true);
     }
+
+    // Only the workspace's list changes: the host's notes are worth keeping, and a terminal open on it is the user's to close.
+    private async Task RemoveHostAsync(WorkspaceConnection connection)
+    {
+        if (Workspace.IsReadOnly)
+        {
+            _chat.AddNotice(Strings.Format(Strings.NoticeWorkspaceReadOnlyNotRemoved, connection.Name));
+            return;
+        }
+
+        var choice = await ChoiceWindow.AskAsync(
+            this,
+            Strings.Format(Strings.RemoveHostTitle, connection.Name),
+            Strings.RemoveHostMessage,
+            details: null,
+            hasDefault: false,
+            Strings.Cancel,
+            Strings.RemoveHostAction).ConfigureAwait(true);
+        if (choice != 1)
+        {
+            return;
+        }
+
+        try
+        {
+            Workspace.SaveSettings(Workspace.Settings with { Connections = [.. Workspace.Settings.Connections.Where(item => !IsNamed(item, connection.Name))] }, _redactor);
+            Confirm([.. Connections.Where(item => !IsNamed(item, connection.Name))]);
+            _chat.AddNotice(Strings.Format(Strings.NoticeHostRemoved, connection.Name));
+        }
+        catch (Exception exception) when (exception is WorkspaceException or IOException or UnauthorizedAccessException)
+        {
+            _chat.AddNotice(exception.Message);
+        }
+    }
+
+    private static bool IsNamed(WorkspaceConnection connection, string name) => string.Equals(connection.Name, name, StringComparison.OrdinalIgnoreCase);
 }

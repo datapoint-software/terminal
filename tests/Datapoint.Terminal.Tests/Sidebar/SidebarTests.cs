@@ -125,4 +125,27 @@ public sealed class SidebarTests : IDisposable
         Assert.Null(Assert.IsType<MenuItem>(menu.Items[1]).Icon);
         Assert.False(Assert.IsType<MenuItem>(menu.Items[3]).IsEnabled);
     }
+
+    [AvaloniaFact]
+    public void Clicking_a_host_opens_its_documentation_and_never_a_terminal()
+    {
+        var sidebar = new SidebarViewModel(_workspace);
+        var events = new List<string>();
+        sidebar.HostChosen = connection => events.Add("docs " + connection.Name);
+        sidebar.TerminalRequested = connection => events.Add("terminal " + connection.Name);
+        sidebar.HostRemoved = connection => events.Add("removed " + connection.Name);
+        sidebar.SetHosts([new WorkspaceConnection { Name = "web1", SshHost = "web1" }, new WorkspaceConnection { Name = "db1", SshHost = "db1" }], []);
+        var window = new Window { Width = 260, Height = 620, Content = new SidebarView { DataContext = sidebar } };
+        window.Show();
+        Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+
+        var row = window.GetVisualDescendants().OfType<TextBlock>().First(text => string.Equals(text.Text, "db1", StringComparison.Ordinal));
+        var point = Avalonia.VisualExtensions.TranslatePoint(row, new Avalonia.Point(4, row.Bounds.Height / 2), window)!.Value;
+        window.MouseDown(point, Avalonia.Input.MouseButton.Left);
+        window.MouseUp(point, Avalonia.Input.MouseButton.Left);
+        Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+        sidebar.RemoveHostCommand.Execute(sidebar.Hosts[0]);
+
+        Assert.Equal("docs db1|removed web1", string.Join('|', events));
+    }
 }

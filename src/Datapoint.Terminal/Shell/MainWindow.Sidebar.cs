@@ -31,6 +31,7 @@ public sealed partial class MainWindow
         {
             HostChosen = OpenHostDocument,
             TerminalRequested = connection => _ = OpenConnectionAsync(connection),
+            HostRemoved = connection => _ = RemoveHostAsync(connection),
             HostAdded = AddSshHost,
             SkillChosen = skill => OpenWorkspaceFile(skill.Path),
             InstructionsRequested = () => OpenWorkspaceFile(InstructionsPath),
