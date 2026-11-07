@@ -1640,4 +1640,76 @@ git rm -r --cached .terminal</value>
   <data name="HistoryClearOneMessage" xml:space="preserve">
     <value>This deletes the commands the agent ran on {0}, their output, and its saved terminal output. It can't be undone.</value>
   </data>
+  <data name="NewHostTitle" xml:space="preserve">
+    <value>Add a Host</value>
+  </data>
+  <data name="NewHostCaption" xml:space="preserve">
+    <value>Saved in .terminal.json, which everyone on this project shares.</value>
+  </data>
+  <data name="NewHostName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="NewHostAddress" xml:space="preserve">
+    <value>Address</value>
+  </data>
+  <data name="NewHostAddressHint" xml:space="preserve">
+    <value>host name, IP address or SSH config alias</value>
+  </data>
+  <data name="NewHostUser" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="NewHostPort" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="NewHostEnvironment" xml:space="preserve">
+    <value>Environment</value>
+  </data>
+  <data name="NewHostEnvironmentNone" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="NewHostEnvironmentDevelopment" xml:space="preserve">
+    <value>Development</value>
+  </data>
+  <data name="NewHostEnvironmentStaging" xml:space="preserve">
+    <value>Staging</value>
+  </data>
+  <data name="NewHostEnvironmentProduction" xml:space="preserve">
+    <value>Production</value>
+  </data>
+  <data name="NewHostProductionNote" xml:space="preserve">
+    <value>Production tabs are marked in red, and the agent asks before every command there.</value>
+  </data>
+  <data name="NewHostFromConfig" xml:space="preserve">
+    <value>From your SSH config</value>
+  </data>
+  <data name="NewHostFromConfigItem" xml:space="preserve">
+    <value>Fill in {0} from your SSH config</value>
+  </data>
+  <data name="NewHostLogin" xml:space="preserve">
+    <value>Logs in with your SSH agent and keys, or asks for a password.</value>
+  </data>
+  <data name="NewHostAdd" xml:space="preserve">
+    <value>Add Host</value>
+  </data>
+  <data name="NewHostMenu" xml:space="preserve">
+    <value>Add a Host…</value>
+  </data>
+  <data name="NewHostNameProblem" xml:space="preserve">
+    <value>Give the host a name of up to 40 letters, digits, spaces, dots, dashes, underscores or @.</value>
+  </data>
+  <data name="NewHostNameTaken" xml:space="preserve">
+    <value>This project already has a host named {0}.</value>
+  </data>
+  <data name="NewHostAddressProblem" xml:space="preserve">
+    <value>Enter a host name, an IP address or a host from your SSH config.</value>
+  </data>
+  <data name="NewHostUserProblem" xml:space="preserve">
+    <value>A user name is letters, digits, dots, dashes and underscores.</value>
+  </data>
+  <data name="NewHostPortProblem" xml:space="preserve">
+    <value>The port is a number from 1 to 65535.</value>
+  </data>
+  <data name="NewHostReadOnly" xml:space="preserve">
+    <value>This project's settings can't be changed here, so hosts can't be added.</value>
+  </data>
 </root>

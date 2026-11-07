@@ -48,6 +48,8 @@ public sealed partial class SidebarViewModel(string projectFolder, string hostsF
 
     public Action? NewFileRequested { get; set; }
 
+    public Action? NewHostRequested { get; set; }
+
     public void SetHosts(IReadOnlyList<ProjectConnection> connections, IReadOnlyList<string> otherAliases)
     {
         ArgumentNullException.ThrowIfNull(connections);
@@ -118,6 +120,9 @@ public sealed partial class SidebarViewModel(string projectFolder, string hostsF
 
     [RelayCommand]
     private void NewFile() => NewFileRequested?.Invoke();
+
+    [RelayCommand]
+    private void NewHost() => NewHostRequested?.Invoke();
 
     private void AddHost(string alias) => HostAdded?.Invoke(alias);
 }

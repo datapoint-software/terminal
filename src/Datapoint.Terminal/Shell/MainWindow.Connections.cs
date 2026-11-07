@@ -27,6 +27,11 @@ public sealed partial class MainWindow
 
         menu.Items.Add(new Separator());
         menu.Items.Add(SshHostsMenu(Project.Settings.Connections));
+        if (!Project.IsReadOnly)
+        {
+            menu.Items.Add(MenuItem(Strings.NewHostMenu, () => _ = NewHostAsync()));
+        }
+
         menu.ShowAt(NewTabButton);
     }
 
@@ -102,5 +107,26 @@ public sealed partial class MainWindow
         {
             _chat.AddNotice(exception.Message);
         }
+    }
+
+    // A host typed in by the user, which then opens straight away: adding one is nearly always to work on it.
+    private async Task NewHostAsync()
+    {
+        if (Project.IsReadOnly)
+        {
+            _chat.AddNotice(Strings.NewHostReadOnly);
+            return;
+        }
+
+        var aliases = OtherSshHosts(Project.Settings.Connections);
+        var connection = await NewHostWindow.AskAsync(this, Project.Settings.Connections, aliases).ConfigureAwait(true);
+        if (connection is null)
+        {
+            return;
+        }
+
+        AddConnection(connection);
+        RefreshSidebarHosts();
+        await OpenConnectionAsync(connection).ConfigureAwait(true);
     }
 }

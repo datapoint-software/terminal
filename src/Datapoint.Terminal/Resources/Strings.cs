@@ -1090,6 +1090,54 @@ public static class Strings
 
     public static string HistoryClearOneMessage => Get(nameof(HistoryClearOneMessage));
 
+    public static string NewHostTitle => Get(nameof(NewHostTitle));
+
+    public static string NewHostCaption => Get(nameof(NewHostCaption));
+
+    public static string NewHostName => Get(nameof(NewHostName));
+
+    public static string NewHostAddress => Get(nameof(NewHostAddress));
+
+    public static string NewHostAddressHint => Get(nameof(NewHostAddressHint));
+
+    public static string NewHostUser => Get(nameof(NewHostUser));
+
+    public static string NewHostPort => Get(nameof(NewHostPort));
+
+    public static string NewHostEnvironment => Get(nameof(NewHostEnvironment));
+
+    public static string NewHostEnvironmentNone => Get(nameof(NewHostEnvironmentNone));
+
+    public static string NewHostEnvironmentDevelopment => Get(nameof(NewHostEnvironmentDevelopment));
+
+    public static string NewHostEnvironmentStaging => Get(nameof(NewHostEnvironmentStaging));
+
+    public static string NewHostEnvironmentProduction => Get(nameof(NewHostEnvironmentProduction));
+
+    public static string NewHostProductionNote => Get(nameof(NewHostProductionNote));
+
+    public static string NewHostFromConfig => Get(nameof(NewHostFromConfig));
+
+    public static string NewHostFromConfigItem => Get(nameof(NewHostFromConfigItem));
+
+    public static string NewHostLogin => Get(nameof(NewHostLogin));
+
+    public static string NewHostAdd => Get(nameof(NewHostAdd));
+
+    public static string NewHostMenu => Get(nameof(NewHostMenu));
+
+    public static string NewHostNameProblem => Get(nameof(NewHostNameProblem));
+
+    public static string NewHostNameTaken => Get(nameof(NewHostNameTaken));
+
+    public static string NewHostAddressProblem => Get(nameof(NewHostAddressProblem));
+
+    public static string NewHostUserProblem => Get(nameof(NewHostUserProblem));
+
+    public static string NewHostPortProblem => Get(nameof(NewHostPortProblem));
+
+    public static string NewHostReadOnly => Get(nameof(NewHostReadOnly));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

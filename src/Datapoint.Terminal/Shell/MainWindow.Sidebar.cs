@@ -32,6 +32,7 @@ public sealed partial class MainWindow
             HostAdded = AddSshHost,
             FileChosen = node => OpenProjectFile(node.Path),
             NewFileRequested = () => _ = NewFileAsync(),
+            NewHostRequested = () => _ = NewHostAsync(),
         };
         Sidebar.DataContext = _sidebar;
         _sidebar.RefreshFiles();

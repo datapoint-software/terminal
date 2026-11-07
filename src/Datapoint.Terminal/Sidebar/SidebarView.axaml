@@ -115,6 +115,10 @@
         <!-- Hosts: the project's connections, then a quiet line for the user's other SSH hosts. -->
         <Grid ColumnDefinitions="*,Auto" Margin="8,0,0,4" Height="24">
           <TextBlock Classes="section" Text="{x:Static res:Strings.SidebarHosts}" />
+          <Button Grid.Column="1" Classes="mini" Command="{Binding NewHostCommand}"
+                  ToolTip.Tip="{x:Static res:Strings.NewHostTitle}" AutomationProperties.Name="{x:Static res:Strings.NewHostTitle}">
+            <Path Classes="glyph" Data="{StaticResource AddGlyph}" />
+          </Button>
         </Grid>
         <TextBlock Classes="quiet" FontSize="12" Text="{x:Static res:Strings.SidebarNoHosts}" IsVisible="{Binding !HasHosts}" Margin="8,2,8,4" TextWrapping="Wrap" />
         <ListBox x:Name="HostList" Classes="source" ItemsSource="{Binding Hosts}" SelectedItem="{Binding SelectedHost}" SelectionMode="Single"
