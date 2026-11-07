@@ -292,7 +292,7 @@ public sealed partial class TerminalAgent
     private string Untrusted(string text)
     {
         var redacted = _redactor.Redact(text);
-        var limit = _options.MaxOutputCharacters;
+        var limit = OutputLimit;
         if (redacted.Length > limit)
         {
             var half = limit / 2;

@@ -18,6 +18,21 @@ public sealed partial class TerminalAgent : IDisposable
     private CancellationTokenSource? _task;
     private AgentStatus _status;
 
+    // Can change with the model; read when output is cut.
+    public int OutputLimit { get; set; }
+
+    // Whether there's a conversation a model switch would carry over.
+    public bool HasConversation
+    {
+        get
+        {
+            lock (_sync)
+            {
+                return _history.Count > 1;
+            }
+        }
+    }
+
     public TerminalAgent(IChatClient client, IAgentUser user, SecretRedactor redactor, AgentOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(client);
@@ -27,6 +42,7 @@ public sealed partial class TerminalAgent : IDisposable
         _user = user;
         _redactor = redactor;
         _options = options ?? new AgentOptions();
+        OutputLimit = _options.MaxOutputCharacters;
         _chatOptions = new ChatOptions { Tools = CreateTools(), MaxOutputTokens = _options.MaxOutputTokens };
     }
 

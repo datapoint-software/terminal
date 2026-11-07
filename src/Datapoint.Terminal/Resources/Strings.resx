@@ -791,4 +791,37 @@ git rm -r --cached .terminal</value>
   <data name="ApprovalRiskKeys" xml:space="preserve">
     <value>Keys go to the program that's open in the terminal. Names in angle brackets are keys, such as &lt;Enter&gt; and &lt;Esc&gt;; the rest is typed as written.</value>
   </data>
+  <data name="ProviderContextWindow" xml:space="preserve">
+    <value>Context window</value>
+  </data>
+  <data name="ProviderContextWindowHint" xml:space="preserve">
+    <value>Tokens, from the model's documentation (optional)</value>
+  </data>
+  <data name="ProviderOutputLimit" xml:space="preserve">
+    <value>Output limit</value>
+  </data>
+  <data name="ProviderOutputLimitHint" xml:space="preserve">
+    <value>Characters of output sent at once (default {0:N0})</value>
+  </data>
+  <data name="SwitchTitle" xml:space="preserve">
+    <value>Switch models?</value>
+  </data>
+  <data name="SwitchToCloud" xml:space="preserve">
+    <value>The conversation so far, including terminal output, will be sent to {0}. Until now it stayed with your local model.</value>
+  </data>
+  <data name="SwitchSmallerContext" xml:space="preserve">
+    <value>The new model's context window ({0:N0} tokens) is smaller than the current one ({1:N0}), so the conversation so far may not fit and the next request may fail. Clearing the chat starts a new conversation.</value>
+  </data>
+  <data name="SwitchConfirm" xml:space="preserve">
+    <value>Switch</value>
+  </data>
+  <data name="AutoProductionTitle" xml:space="preserve">
+    <value>Use Auto in {0}?</value>
+  </data>
+  <data name="AutoProductionMessage" xml:space="preserve">
+    <value>This terminal is labelled {0}. In Auto the agent runs commands there without asking, until the current task ends.</value>
+  </data>
+  <data name="AutoProductionConfirm" xml:space="preserve">
+    <value>Use Auto</value>
+  </data>
 </root>

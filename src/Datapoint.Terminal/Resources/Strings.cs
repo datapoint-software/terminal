@@ -524,6 +524,28 @@ public static class Strings
 
     public static string ApprovalRiskKeys => Get(nameof(ApprovalRiskKeys));
 
+    public static string ProviderContextWindow => Get(nameof(ProviderContextWindow));
+
+    public static string ProviderContextWindowHint => Get(nameof(ProviderContextWindowHint));
+
+    public static string ProviderOutputLimit => Get(nameof(ProviderOutputLimit));
+
+    public static string ProviderOutputLimitHint => Get(nameof(ProviderOutputLimitHint));
+
+    public static string SwitchTitle => Get(nameof(SwitchTitle));
+
+    public static string SwitchToCloud => Get(nameof(SwitchToCloud));
+
+    public static string SwitchSmallerContext => Get(nameof(SwitchSmallerContext));
+
+    public static string SwitchConfirm => Get(nameof(SwitchConfirm));
+
+    public static string AutoProductionTitle => Get(nameof(AutoProductionTitle));
+
+    public static string AutoProductionMessage => Get(nameof(AutoProductionMessage));
+
+    public static string AutoProductionConfirm => Get(nameof(AutoProductionConfirm));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

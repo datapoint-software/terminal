@@ -39,7 +39,8 @@ public sealed partial class MainWindow : Window, ITerminalOpener
         _chat.SettingsRequested = windows.OpenSettings;
         _chat.MessageSent = message => Record(HistoryEntryKind.User, message);
         _chat.Cleared = EndConversation;
-        _chat.ModelChosen = choice => _settings.Choose(choice.ProviderId, choice.Model);
+        _chat.ModelChosen = choice => _ = ChooseModelAsync(choice);
+        _chat.ConfirmAuto = ConfirmAutoAsync;
         Chat.DataContext = _chat;
         _chat.PropertyChanged += OnChatPropertyChanged;
         DataContext = this;
@@ -114,6 +115,11 @@ public sealed partial class MainWindow : Window, ITerminalOpener
         var current = _settings.Current;
         var provider = current.SelectedProvider;
         _chat.SetModels(ModelChoices(current), provider is null ? null : Choice(provider, provider.Model, current));
+        if (provider is not null)
+        {
+            _agent?.OutputLimit = OutputLimits.For(provider.ContextWindow, provider.OutputLimit);
+        }
+
         var key = ReadKey(provider);
         if (provider is null || !IsUsable(provider, key))
         {
@@ -150,6 +156,7 @@ public sealed partial class MainWindow : Window, ITerminalOpener
                     HistorySearch = SearchHistory,
                 };
                 _agent.EventRaised += OnMemoryEvent;
+                _agent.OutputLimit = OutputLimits.For(provider.ContextWindow, provider.OutputLimit);
                 _agent.EventRaised += OnAgentEvent;
                 _agent.EventRaised += OnHistoryEvent;
                 foreach (var tab in _tabs.Where(tab => tab.AgentTerminal is not null))

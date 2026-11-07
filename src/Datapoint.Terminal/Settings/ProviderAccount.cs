@@ -18,6 +18,12 @@ public sealed record ProviderAccount
     // The user's own word that the server runs on their machine or network, so nothing leaves it.
     public bool IsLocal { get; init; }
 
+    // In tokens, as the user gave it; unknown otherwise, since providers don't all report it.
+    public int? ContextWindow { get; init; }
+
+    // In characters; null uses the limit worked out from the context window.
+    public int? OutputLimit { get; init; }
+
     public static string NewId() => Guid.NewGuid().ToString("N");
 
     public ProviderSettings ToProviderSettings() => new()

@@ -136,6 +136,18 @@
                                MinimumPrefixLength="0" FilterMode="StartsWith"
                                AutomationProperties.Name="{x:Static res:Strings.ProviderModel}" />
             </Grid>
+            <Rectangle Classes="hairline" />
+            <Grid Classes="row" ColumnDefinitions="150,*">
+              <TextBlock Text="{x:Static res:Strings.ProviderContextWindow}" />
+              <TextBox Grid.Column="1" Text="{Binding ContextWindow}" PlaceholderText="{x:Static res:Strings.ProviderContextWindowHint}"
+                       AutomationProperties.Name="{x:Static res:Strings.ProviderContextWindow}" />
+            </Grid>
+            <Rectangle Classes="hairline" />
+            <Grid Classes="row" ColumnDefinitions="150,*">
+              <TextBlock Text="{x:Static res:Strings.ProviderOutputLimit}" />
+              <TextBox Grid.Column="1" Text="{Binding OutputLimit}" PlaceholderText="{Binding OutputLimitHint}"
+                       AutomationProperties.Name="{x:Static res:Strings.ProviderOutputLimit}" />
+            </Grid>
             <StackPanel IsVisible="{Binding IsCompatible}">
               <Rectangle Classes="hairline" />
               <Grid Classes="row" ColumnDefinitions="150,*">

@@ -193,9 +193,34 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
     [RelayCommand]
     private void OpenSettings() => SettingsRequested?.Invoke();
 
+    // Product decision 78: Auto on a production terminal is confirmed first; until then the picker shows the mode in force.
+    public Func<AgentTerminal, Task<bool>>? ConfirmAuto { get; set; }
+
     partial void OnSelectedModeChanged(ModeOption value)
     {
-        CurrentTerminal?.Mode = value.Mode;
+        if (CurrentTerminal is not { } terminal || terminal.Mode == value.Mode)
+        {
+            return;
+        }
+
+        if (value.Mode != ApprovalMode.Auto || !EnvironmentLabels.IsProduction(terminal.Environment) || ConfirmAuto is not { } confirm)
+        {
+            terminal.Mode = value.Mode;
+            return;
+        }
+
+        _ui.Post(ShowCurrentMode);
+        _ = ConfirmAutoAsync(terminal, confirm);
+    }
+
+    private static async Task ConfirmAutoAsync(AgentTerminal terminal, Func<AgentTerminal, Task<bool>> confirm)
+    {
+        if (!await confirm(terminal).ConfigureAwait(true))
+        {
+            return;
+        }
+
+        terminal.Mode = ApprovalMode.Auto;
     }
 
     private void OnTerminalModeChanged(object? sender, EventArgs e) => _ui.Post(ShowCurrentMode);

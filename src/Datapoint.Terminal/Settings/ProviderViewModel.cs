@@ -24,6 +24,8 @@ public sealed partial class ProviderViewModel : ObservableObject
         Model = account.Model;
         Endpoint = account.Endpoint ?? string.Empty;
         IsLocal = account.IsLocal;
+        ContextWindow = account.ContextWindow?.ToString(System.Globalization.CultureInfo.CurrentCulture) ?? string.Empty;
+        OutputLimit = account.OutputLimit?.ToString(System.Globalization.CultureInfo.CurrentCulture) ?? string.Empty;
         RefreshKeyState();
         _isLoaded = true;
     }
@@ -47,6 +49,20 @@ public sealed partial class ProviderViewModel : ObservableObject
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(Privacy))]
     public partial bool IsLocal { get; set; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(OutputLimitHint))]
+    public partial string ContextWindow { get; set; }
+
+    [ObservableProperty]
+    public partial string OutputLimit { get; set; }
+
+    public string OutputLimitHint => Strings.Format(Strings.ProviderOutputLimitHint, OutputLimits.For(Number(ContextWindow), null));
+
+    private static int? Number(string text) =>
+        int.TryParse(text.Replace(",", string.Empty, StringComparison.Ordinal).Replace(".", string.Empty, StringComparison.Ordinal).Trim(), System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out var value) && value > 0
+            ? value
+            : null;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveKeyCommand))]
@@ -95,6 +111,8 @@ public sealed partial class ProviderViewModel : ObservableObject
         Model = Model.Trim(),
         Endpoint = IsCompatible && !string.IsNullOrWhiteSpace(Endpoint) ? Endpoint.Trim() : null,
         IsLocal = IsCompatible && IsLocal,
+        ContextWindow = Number(ContextWindow),
+        OutputLimit = Number(OutputLimit),
     };
 
     internal void NotifyActiveChanged() => OnPropertyChanged(nameof(IsActive));
@@ -128,6 +146,10 @@ public sealed partial class ProviderViewModel : ObservableObject
     partial void OnEndpointChanged(string value) => Changed();
 
     partial void OnIsLocalChanged(bool value) => Changed();
+
+    partial void OnContextWindowChanged(string value) => Changed();
+
+    partial void OnOutputLimitChanged(string value) => Changed();
 
     [RelayCommand(CanExecute = nameof(CanSaveKey))]
     private void SaveKey()

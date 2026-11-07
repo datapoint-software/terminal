@@ -18,7 +18,7 @@ public sealed record ProjectConnection
 
     public string? Model { get; init; }
 
-    public bool IsProduction => Environment?.StartsWith("prod", StringComparison.OrdinalIgnoreCase) == true;
+    public bool IsProduction => EnvironmentLabels.IsProduction(Environment);
 
     // Names and labels come from a shared file and reach the model and the screen, so they're kept to short, plain text that
     // can't carry instructions or disguise itself.
