@@ -21,6 +21,37 @@
       <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
       <Setter Property="FontWeight" Value="SemiBold" />
     </Style>
+    <!-- The skill's form: rows with a label on the left, a hairline between each. -->
+    <Style Selector="Grid.skillRow">
+      <Setter Property="Margin" Value="16,10" />
+      <Setter Property="MinHeight" Value="32" />
+    </Style>
+    <Style Selector="Grid.skillRow > TextBlock">
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="FontSize" Value="14" />
+    </Style>
+    <Style Selector="Rectangle.skillLine">
+      <Setter Property="Height" Value="1" />
+      <Setter Property="Fill" Value="{DynamicResource SeparatorBrush}" />
+      <Setter Property="Margin" Value="16,0,0,0" />
+    </Style>
+    <Style Selector="TextBlock.hint">
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
+      <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+    <Style Selector="TextBox.number">
+      <Setter Property="Width" Value="64" />
+      <Setter Property="MaxLength" Value="6" />
+    </Style>
+    <Style Selector="Button.chipRemove">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="4,0" />
+      <Setter Property="MinHeight" Value="0" />
+      <Setter Property="FontSize" Value="13" />
+      <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
+    </Style>
     <!-- Log entries, a hairline between each. -->
     <Style Selector="Border.logEntry">
       <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
@@ -135,6 +166,115 @@
               <TextBlock Text="{Binding Host.OpenText, FallbackValue={x:Null}}" IsVisible="{Binding Host.HasOpenText, FallbackValue=False}" FontSize="12" Foreground="{DynamicResource SecondaryLabelBrush}" VerticalAlignment="Center" />
             </WrapPanel>
           </DockPanel>
+          <!-- A skill's page starts with where it runs and how it rolls out, written to its header as the user changes them. -->
+          <ContentControl Content="{Binding Skill}" IsVisible="{Binding HasSkill}" Margin="0,0,0,24">
+            <ContentControl.ContentTemplate>
+              <DataTemplate x:DataType="ed:SkillHeaderViewModel">
+                <StackPanel Spacing="14">
+                  <DockPanel>
+                    <Button DockPanel.Dock="Right" Classes="primary" Content="{Binding RunText}" Command="{Binding RunCommand}" VerticalAlignment="Center" />
+                    <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                      <Border Classes="environment" CornerRadius="4" Padding="6,1">
+                        <TextBlock Text="{x:Static res:Strings.SkillBadge}" FontSize="11" />
+                      </Border>
+                      <TextBlock Text="{Binding Location}" FontSize="12" Foreground="{DynamicResource SecondaryLabelBrush}" VerticalAlignment="Center" />
+                    </StackPanel>
+                  </DockPanel>
+                  <StackPanel Spacing="4">
+                    <TextBlock Text="{x:Static res:Strings.SkillDescription}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource SecondaryLabelBrush}" />
+                    <TextBox Classes="skillField" Text="{Binding Description}" TextWrapping="Wrap" AcceptsReturn="False" MaxLength="1024" IsEnabled="{Binding CanWrite}"
+                             PlaceholderText="{x:Static res:Strings.SkillDescriptionHint}" AutomationProperties.Name="{x:Static res:Strings.SkillDescription}" />
+                  </StackPanel>
+                  <TextBlock Text="{x:Static res:Strings.SkillHowItRollsOut}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource SecondaryLabelBrush}" />
+                  <Border BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="1" CornerRadius="10" IsEnabled="{Binding CanWrite}">
+                    <StackPanel>
+                      <Grid Classes="skillRow" ColumnDefinitions="140,*">
+                        <TextBlock Text="{x:Static res:Strings.SkillRunsOn}" />
+                        <StackPanel Grid.Column="1" Spacing="4">
+                          <WrapPanel ItemSpacing="6" LineSpacing="6">
+                            <ItemsControl ItemsSource="{Binding Labels}">
+                              <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                  <WrapPanel ItemSpacing="6" LineSpacing="6" />
+                                </ItemsPanelTemplate>
+                              </ItemsControl.ItemsPanel>
+                              <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="x:String">
+                                  <Border BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="1" CornerRadius="10" Padding="8,1,2,1">
+                                    <StackPanel Orientation="Horizontal" Spacing="2">
+                                      <TextBlock Text="{Binding}" FontSize="12" VerticalAlignment="Center" />
+                                      <Button Classes="chipRemove" Content="×" CommandParameter="{Binding}"
+                                              Command="{Binding $parent[ContentControl].((ed:SkillHeaderViewModel)DataContext).RemoveLabelCommand}"
+                                              AutomationProperties.Name="{Binding StringFormat={x:Static res:Strings.SkillRemoveLabel}}" />
+                                    </StackPanel>
+                                  </Border>
+                                </DataTemplate>
+                              </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <TextBox x:Name="NewLabelBox" Classes="label" Text="{Binding NewLabel}" Width="120" MaxLength="40"
+                                     PlaceholderText="{x:Static res:Strings.SkillAddLabel}" AutomationProperties.Name="{x:Static res:Strings.SkillAddLabel}" />
+                          </WrapPanel>
+                          <TextBlock Classes="hint" Text="{Binding MatchText}" />
+                        </StackPanel>
+                      </Grid>
+                      <Rectangle Classes="skillLine" />
+                      <Grid Classes="skillRow" ColumnDefinitions="140,*">
+                        <TextBlock Text="{x:Static res:Strings.SkillOrder}" />
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
+                          <ListBox Classes="segmented" ItemsSource="{Binding OrderChoices}" SelectedIndex="{Binding OrderIndex}"
+                                   AutomationProperties.Name="{x:Static res:Strings.SkillOrder}" />
+                          <StackPanel Orientation="Horizontal" Spacing="6" IsVisible="{Binding IsBatches}">
+                            <TextBox Classes="skillField number" Text="{Binding BatchSize}" AutomationProperties.Name="{x:Static res:Strings.SkillBatchSize}" />
+                            <TextBlock Classes="hint" Text="{x:Static res:Strings.SkillBatchSize}" VerticalAlignment="Center" />
+                          </StackPanel>
+                          <StackPanel Orientation="Horizontal" Spacing="6" IsVisible="{Binding IsAllAtOnce}">
+                            <TextBox Classes="skillField number" Text="{Binding MaxHosts}" AutomationProperties.Name="{x:Static res:Strings.SkillMaxHosts}" />
+                            <TextBlock Classes="hint" Text="{x:Static res:Strings.SkillMaxHosts}" VerticalAlignment="Center" />
+                          </StackPanel>
+                        </StackPanel>
+                      </Grid>
+                      <Rectangle Classes="skillLine" />
+                      <Grid Classes="skillRow" ColumnDefinitions="140,*">
+                        <TextBlock Text="{x:Static res:Strings.SkillHealthCheck}" />
+                        <StackPanel Grid.Column="1" Spacing="4">
+                          <TextBox Classes="skillField" Text="{Binding HealthCheck}" FontFamily="{StaticResource MonoFont}" MaxLength="500"
+                                   AutomationProperties.Name="{x:Static res:Strings.SkillHealthCheck}" />
+                          <TextBlock Classes="hint" Text="{x:Static res:Strings.SkillHealthCheckHint}" />
+                        </StackPanel>
+                      </Grid>
+                      <Rectangle Classes="skillLine" IsVisible="{Binding HasHealthCheck}" />
+                      <Grid Classes="skillRow" ColumnDefinitions="140,*" IsVisible="{Binding HasHealthCheck}">
+                        <TextBlock Text="{x:Static res:Strings.SkillHealthyFor}" />
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                          <TextBox Classes="skillField number" Text="{Binding HealthyFor}" AutomationProperties.Name="{x:Static res:Strings.SkillHealthyFor}" />
+                          <TextBlock Classes="hint" Text="{x:Static res:Strings.SkillHealthyForUnit}" VerticalAlignment="Center" />
+                        </StackPanel>
+                      </Grid>
+                      <Rectangle Classes="skillLine" />
+                      <Grid Classes="skillRow" ColumnDefinitions="140,*">
+                        <TextBlock Text="{x:Static res:Strings.SkillGiveUpAfter}" />
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                          <TextBox Classes="skillField number" Text="{Binding Timeout}" AutomationProperties.Name="{x:Static res:Strings.SkillGiveUpAfter}" />
+                          <TextBlock Classes="hint" Text="{x:Static res:Strings.SkillGiveUpAfterUnit}" VerticalAlignment="Center" />
+                        </StackPanel>
+                      </Grid>
+                      <Rectangle Classes="skillLine" />
+                      <Grid Classes="skillRow" ColumnDefinitions="140,*">
+                        <TextBlock Text="{x:Static res:Strings.SkillOnFailure}" />
+                        <StackPanel Grid.Column="1" Spacing="4">
+                          <ComboBox ItemsSource="{Binding FailureChoices}" SelectedIndex="{Binding FailureIndex}" MinWidth="240"
+                                    AutomationProperties.Name="{x:Static res:Strings.SkillOnFailure}" />
+                          <TextBlock Classes="hint" Text="{Binding FailureHint}" />
+                        </StackPanel>
+                      </Grid>
+                    </StackPanel>
+                  </Border>
+                  <TextBlock Text="{Binding Problem}" IsVisible="{Binding HasProblem}" Foreground="{DynamicResource DangerBrush}" FontSize="12"
+                             TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite" />
+                </StackPanel>
+              </DataTemplate>
+            </ContentControl.ContentTemplate>
+          </ContentControl>
           <ItemsControl x:Name="BlockList" ItemsSource="{Binding Blocks}">
             <ItemsControl.ItemTemplate>
               <DataTemplate x:DataType="ed:BlockViewModel">

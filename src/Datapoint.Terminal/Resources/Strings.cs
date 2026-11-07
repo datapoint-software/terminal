@@ -1270,6 +1270,80 @@ public static class Strings
 
     public static string SkillSaveDraft => Get(nameof(SkillSaveDraft));
 
+    public static string SkillBadge => Get(nameof(SkillBadge));
+
+    public static string SkillRunOn => Get(nameof(SkillRunOn));
+
+    public static string SkillRunOnOne => Get(nameof(SkillRunOnOne));
+
+    public static string SkillRunOnNone => Get(nameof(SkillRunOnNone));
+
+    public static string SkillDescription => Get(nameof(SkillDescription));
+
+    public static string SkillDescriptionHint => Get(nameof(SkillDescriptionHint));
+
+    public static string SkillHowItRollsOut => Get(nameof(SkillHowItRollsOut));
+
+    public static string SkillRunsOn => Get(nameof(SkillRunsOn));
+
+    public static string SkillAddLabel => Get(nameof(SkillAddLabel));
+
+    public static string SkillRemoveLabel => Get(nameof(SkillRemoveLabel));
+
+    public static string SkillMatchesHosts => Get(nameof(SkillMatchesHosts));
+
+    public static string SkillMatchesEvery => Get(nameof(SkillMatchesEvery));
+
+    public static string SkillMatchesNone => Get(nameof(SkillMatchesNone));
+
+    public static string SkillOrder => Get(nameof(SkillOrder));
+
+    public static string SkillOrderOneByOne => Get(nameof(SkillOrderOneByOne));
+
+    public static string SkillOrderBatches => Get(nameof(SkillOrderBatches));
+
+    public static string SkillOrderAllAtOnce => Get(nameof(SkillOrderAllAtOnce));
+
+    public static string SkillBatchSize => Get(nameof(SkillBatchSize));
+
+    public static string SkillMaxHosts => Get(nameof(SkillMaxHosts));
+
+    public static string SkillHealthCheck => Get(nameof(SkillHealthCheck));
+
+    public static string SkillHealthCheckHint => Get(nameof(SkillHealthCheckHint));
+
+    public static string SkillHealthyFor => Get(nameof(SkillHealthyFor));
+
+    public static string SkillHealthyForUnit => Get(nameof(SkillHealthyForUnit));
+
+    public static string SkillGiveUpAfter => Get(nameof(SkillGiveUpAfter));
+
+    public static string SkillGiveUpAfterUnit => Get(nameof(SkillGiveUpAfterUnit));
+
+    public static string SkillOnFailure => Get(nameof(SkillOnFailure));
+
+    public static string SkillOnFailureStop => Get(nameof(SkillOnFailureStop));
+
+    public static string SkillOnFailureContinue => Get(nameof(SkillOnFailureContinue));
+
+    public static string SkillOnFailureAsk => Get(nameof(SkillOnFailureAsk));
+
+    public static string SkillOnFailureStopHint => Get(nameof(SkillOnFailureStopHint));
+
+    public static string SkillOnFailureContinueHint => Get(nameof(SkillOnFailureContinueHint));
+
+    public static string SkillOnFailureAskHint => Get(nameof(SkillOnFailureAskHint));
+
+    public static string SkillNumberProblem => Get(nameof(SkillNumberProblem));
+
+    public static string SkillLabelProblem => Get(nameof(SkillLabelProblem));
+
+    public static string SkillSaveConflict => Get(nameof(SkillSaveConflict));
+
+    public static string SkillRunDraftHosts => Get(nameof(SkillRunDraftHosts));
+
+    public static string And => Get(nameof(And));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

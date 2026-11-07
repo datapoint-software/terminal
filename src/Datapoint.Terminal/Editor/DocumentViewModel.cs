@@ -40,6 +40,11 @@ public sealed partial class DocumentViewModel : ObservableObject, IOpenDocument
 
     public string Path => _file.Path;
 
+    // A skill's YAML header, kept out of the editor; the skill's form changes it.
+    public string Header => _file.Header;
+
+    public SaveResult SaveHeader(string header) => _file.SaveHeader(header);
+
     // What the tab calls the document: its own title, e.g. a host's name for its README.md, or else the file's name.
     public string? Title { get; init; }
 
@@ -100,6 +105,12 @@ public sealed partial class DocumentViewModel : ObservableObject, IOpenDocument
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasHost), nameof(EndAreaHeight))]
     public partial HostHeaderViewModel? Host { get; set; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasSkill))]
+    public partial SkillHeaderViewModel? Skill { get; set; }
+
+    public bool HasSkill => Skill is not null;
 
     public bool HasHost => Host is not null;
 

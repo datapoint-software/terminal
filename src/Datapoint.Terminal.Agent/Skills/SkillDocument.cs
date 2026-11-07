@@ -114,12 +114,12 @@ public static partial class SkillDocument
     }
 
     // Rewrites only this application's metadata keys, keeping every other line of the file as it was.
-    public static string WithSettings(string text, IReadOnlyList<string> labels, SkillRollout rollout)
+    public static string WithSettings(string text, IReadOnlyList<string> labels, SkillRollout rollout, string? description = null)
     {
         var header = ReadHeader(text);
         var others = header.Metadata.Where(item => !item.Key.StartsWith("terminal.", StringComparison.Ordinal)).ToList();
         var fields = header.Fields.Where(field => !string.Equals(field.Key, "metadata", StringComparison.Ordinal))
-            .Select(field => field.Key + ": " + RawValue(text, field.Key, field.Value));
+            .Select(field => field.Key + ": " + (description is not null && string.Equals(field.Key, "description", StringComparison.Ordinal) ? Quote(OneLine(description)) : RawValue(text, field.Key, field.Value)));
         return Fence + "\n" + string.Concat(fields.Select(line => line + "\n")) + MetadataBlock(Values(labels, rollout), others) + Fence + "\n\n" + header.Body.TrimStart('\n');
     }
 

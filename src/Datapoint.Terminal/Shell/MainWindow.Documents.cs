@@ -5,6 +5,7 @@ using Avalonia.Input;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using Datapoint.Terminal.Agent.Hosts;
+using Datapoint.Terminal.Agent.Skills;
 using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Editor;
 using Datapoint.Terminal.Resources;
@@ -54,7 +55,7 @@ public sealed partial class MainWindow
         }
 
         var isMarkdown = s_markdownExtensions.Contains(Path.GetExtension(path), StringComparer.OrdinalIgnoreCase);
-        var file = MarkdownFile.Open(path, out var problem);
+        var file = MarkdownFile.Open(path, out var problem, splitsHeader: IsSkillFile(path));
         if (file is null)
         {
             if (isMarkdown)
@@ -74,6 +75,7 @@ public sealed partial class MainWindow
             Host = HostHeaderFor(path),
             Title = TitleFor(path),
         };
+        document.Skill = SkillHeaderFor(document);
         _documentTabs[document] = new DocumentTab(document);
         _documents.Add(document);
         DocumentTabs.SelectedItem = document;
@@ -178,8 +180,7 @@ public sealed partial class MainWindow
             return Strings.SidebarInstructions;
         }
 
-        if (string.Equals(Path.GetFileName(path), Datapoint.Terminal.Sidebar.SkillListing.FileName, StringComparison.Ordinal)
-            && string.Equals(Path.GetDirectoryName(Path.GetDirectoryName(path)), _sidebar.SkillsFolder, StringComparison.Ordinal))
+        if (IsSkillFile(path))
         {
             return Datapoint.Terminal.Sidebar.SkillListing.NameOf(path);
         }
@@ -187,6 +188,34 @@ public sealed partial class MainWindow
         var docs = CreateHostDocs();
         var connections = Connections.Count > 0 ? Connections : Workspace.Settings.Connections;
         return connections.FirstOrDefault(connection => string.Equals(docs.FileFor(connection.Name), path, StringComparison.Ordinal))?.Name;
+    }
+
+    private bool IsSkillFile(string path) =>
+        string.Equals(Path.GetFileName(path), SkillDocument.FileName, StringComparison.Ordinal)
+        && string.Equals(Path.GetDirectoryName(Path.GetDirectoryName(path)), _sidebar.SkillsFolder, StringComparison.Ordinal);
+
+    // Product decision 103: a skill's page, with where it runs and how it rolls out as a form above its steps.
+    private SkillHeaderViewModel? SkillHeaderFor(DocumentViewModel document)
+    {
+        if (!IsSkillFile(document.Path))
+        {
+            return null;
+        }
+
+        var skill = SkillDocument.Read(document.Header + document.Text, document.Path);
+        var location = "skills/" + Path.GetFileName(Path.GetDirectoryName(document.Path));
+        return new SkillHeaderViewModel(skill, location, !Workspace.IsReadOnly, () => Connections.Count > 0 ? Connections : Workspace.Settings.Connections)
+        {
+            Saving = (labels, rollout, description) =>
+            {
+                // A SKILL.md written by hand without a header gets one, with the name its folder has.
+                var current = document.Header.Length > 0 ? document.Header : SkillDocument.Create(Path.GetFileName(Path.GetDirectoryName(document.Path))!, description, [], rollout, string.Empty);
+                return document.SaveHeader(SkillDocument.WithSettings(current, labels, rollout, description)) == SaveResult.Saved;
+            },
+            RunRequested = hosts => DraftInChat(hosts.Count == 0
+                ? Strings.Format(Strings.SkillRunDraft, skill.Title)
+                : Strings.Format(Strings.SkillRunDraftHosts, skill.Title, string.Join(", ", hosts))),
+        };
     }
 
     private HostHeaderViewModel? HostHeaderFor(string path)

@@ -24,6 +24,38 @@ public sealed partial class DocumentView : UserControl
         BlockList.AddHandler(PointerReleasedEvent, OnBlockReleased);
         EndArea.PointerPressed += OnEndAreaPressed;
         Source.AddHandler(KeyDownEvent, OnSourceKeyDown, RoutingStrategies.Tunnel);
+        Page.AddHandler(LostFocusEvent, OnSkillFieldLeft, handledEventsToo: true);
+        Page.AddHandler(KeyDownEvent, OnSkillFieldKeyDown, RoutingStrategies.Tunnel);
+    }
+
+    // A skill's settings are written when the user leaves a field or presses Enter in it; Enter in the label box adds the label.
+    private static void OnSkillFieldLeft(object? sender, RoutedEventArgs e)
+    {
+        if (e.Source is not TextBox { DataContext: SkillHeaderViewModel skill } box || !box.Classes.Contains("skillField"))
+        {
+            return;
+        }
+
+        skill.Commit();
+    }
+
+    private static void OnSkillFieldKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (e.Key != Key.Enter || e.Source is not TextBox { DataContext: SkillHeaderViewModel skill } box)
+        {
+            return;
+        }
+
+        if (box.Classes.Contains("label"))
+        {
+            skill.AddLabelCommand.Execute(null);
+            e.Handled = true;
+        }
+        else if (box.Classes.Contains("skillField"))
+        {
+            skill.Commit();
+            e.Handled = true;
+        }
     }
 
     private static bool IsMac => OperatingSystem.IsMacOS();

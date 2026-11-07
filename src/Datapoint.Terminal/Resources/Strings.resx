@@ -1908,4 +1908,115 @@ Fingerprint: {2}</value>
   <data name="SkillSaveDraft" xml:space="preserve">
     <value>Save the task we just finished as a skill called </value>
   </data>
+  <data name="SkillBadge" xml:space="preserve">
+    <value>Skill</value>
+  </data>
+  <data name="SkillRunOn" xml:space="preserve">
+    <value>Run on {0} Hosts…</value>
+  </data>
+  <data name="SkillRunOnOne" xml:space="preserve">
+    <value>Run on 1 Host…</value>
+  </data>
+  <data name="SkillRunOnNone" xml:space="preserve">
+    <value>Run…</value>
+  </data>
+  <data name="SkillDescription" xml:space="preserve">
+    <value>When to use it</value>
+  </data>
+  <data name="SkillDescriptionHint" xml:space="preserve">
+    <value>What it does and when to use it: the agent reads this to choose a skill.</value>
+  </data>
+  <data name="SkillHowItRollsOut" xml:space="preserve">
+    <value>How it rolls out</value>
+  </data>
+  <data name="SkillRunsOn" xml:space="preserve">
+    <value>Runs on</value>
+  </data>
+  <data name="SkillAddLabel" xml:space="preserve">
+    <value>Add label</value>
+  </data>
+  <data name="SkillRemoveLabel" xml:space="preserve">
+    <value>Remove the label {0}</value>
+  </data>
+  <data name="SkillMatchesHosts" xml:space="preserve">
+    <value>Runs on {0}: the hosts with every label listed.</value>
+  </data>
+  <data name="SkillMatchesEvery" xml:space="preserve">
+    <value>Runs on every host in the workspace: it lists no labels.</value>
+  </data>
+  <data name="SkillMatchesNone" xml:space="preserve">
+    <value>No host has every label listed yet.</value>
+  </data>
+  <data name="SkillOrder" xml:space="preserve">
+    <value>Order</value>
+  </data>
+  <data name="SkillOrderOneByOne" xml:space="preserve">
+    <value>One at a time</value>
+  </data>
+  <data name="SkillOrderBatches" xml:space="preserve">
+    <value>In batches</value>
+  </data>
+  <data name="SkillOrderAllAtOnce" xml:space="preserve">
+    <value>All at once</value>
+  </data>
+  <data name="SkillBatchSize" xml:space="preserve">
+    <value>hosts at a time</value>
+  </data>
+  <data name="SkillMaxHosts" xml:space="preserve">
+    <value>hosts at most</value>
+  </data>
+  <data name="SkillHealthCheck" xml:space="preserve">
+    <value>Health check</value>
+  </data>
+  <data name="SkillHealthCheckHint" xml:space="preserve">
+    <value>Runs in each host's terminal after its steps; it must succeed before the next host starts.</value>
+  </data>
+  <data name="SkillHealthyFor" xml:space="preserve">
+    <value>Healthy for</value>
+  </data>
+  <data name="SkillHealthyForUnit" xml:space="preserve">
+    <value>minutes, checked every 10 seconds</value>
+  </data>
+  <data name="SkillGiveUpAfter" xml:space="preserve">
+    <value>Give up after</value>
+  </data>
+  <data name="SkillGiveUpAfterUnit" xml:space="preserve">
+    <value>minutes after the host comes back</value>
+  </data>
+  <data name="SkillOnFailure" xml:space="preserve">
+    <value>If a host fails</value>
+  </data>
+  <data name="SkillOnFailureStop" xml:space="preserve">
+    <value>Stop the rollout</value>
+  </data>
+  <data name="SkillOnFailureContinue" xml:space="preserve">
+    <value>Continue with the next host</value>
+  </data>
+  <data name="SkillOnFailureAsk" xml:space="preserve">
+    <value>Ask me what to do</value>
+  </data>
+  <data name="SkillOnFailureStopHint" xml:space="preserve">
+    <value>The hosts still to go are left as they are.</value>
+  </data>
+  <data name="SkillOnFailureContinueHint" xml:space="preserve">
+    <value>The failed host is left as it is, and the rollout carries on.</value>
+  </data>
+  <data name="SkillOnFailureAskHint" xml:space="preserve">
+    <value>The rollout pauses, and the chat asks whether to stop, retry or skip the host.</value>
+  </data>
+  <data name="SkillNumberProblem" xml:space="preserve">
+    <value>Use a whole number from 1 to 1000 for hosts, and up to 1440 minutes.</value>
+  </data>
+  <data name="SkillLabelProblem" xml:space="preserve">
+    <value>A label is up to 40 letters, digits, spaces, dots, dashes, underscores or @.</value>
+  </data>
+  <data name="SkillSaveConflict" xml:space="preserve">
+    <value>The skill changed on disk since it was opened. Reload it to change its settings.</value>
+  </data>
+  <data name="SkillRunDraftHosts" xml:space="preserve">
+    <value>Run the skill "{0}" on {1}.</value>
+  </data>
+  <data name="And" xml:space="preserve">
+    <value>and</value>
+  </data>
 </root>

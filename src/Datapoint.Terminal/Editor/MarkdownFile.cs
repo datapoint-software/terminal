@@ -16,20 +16,30 @@ public sealed class MarkdownFile
     private bool _hasBom;
     private string _newline = "\n";
 
-    private MarkdownFile(string path) => Path = path;
+    private readonly bool _splitsHeader;
+
+    private MarkdownFile(string path, bool splitsHeader)
+    {
+        Path = path;
+        _splitsHeader = splitsHeader;
+    }
 
     public string Path { get; }
 
-    // The file as last read or saved, with "\n" line breaks; empty for a file that doesn't exist yet.
+    // The file as last read or saved, with "\n" line breaks; empty for a file that doesn't exist yet. For a file opened with
+    // its header split off, the text after the header.
     public string Text { get; private set; } = string.Empty;
+
+    // A skill's YAML header, from its first "---" line to the blank lines after its closing one; edited apart from the text.
+    public string Header { get; private set; } = string.Empty;
 
     public bool Exists => _disk is not null;
 
     // Null when the file can't be edited here, with the reason in problem.
-    public static MarkdownFile? Open(string path, out string? problem)
+    public static MarkdownFile? Open(string path, out string? problem, bool splitsHeader = false)
     {
         ArgumentException.ThrowIfNullOrEmpty(path);
-        var file = new MarkdownFile(path);
+        var file = new MarkdownFile(path, splitsHeader);
         problem = file.Read(out var disk, out var hasBom);
         if (problem is not null)
         {
@@ -48,7 +58,7 @@ public sealed class MarkdownFile
             return null;
         }
 
-        return Normalize(disk ?? string.Empty);
+        return Split(Normalize(disk ?? string.Empty)).Text;
     }
 
     // Takes what's on disk now, dropping what the editor had.
@@ -70,12 +80,59 @@ public sealed class MarkdownFile
             return SaveResult.Conflict;
         }
 
-        var output = string.Equals(_newline, "\n", StringComparison.Ordinal) ? text : text.Replace("\n", _newline, StringComparison.Ordinal);
+        var whole = Header + text;
+        var output = string.Equals(_newline, "\n", StringComparison.Ordinal) ? whole : whole.Replace("\n", _newline, StringComparison.Ordinal);
         var bytes = _hasBom ? [.. s_bom, .. s_strict.GetBytes(output)] : s_strict.GetBytes(output);
         Write(bytes);
         _disk = output;
         Text = text;
         return SaveResult.Saved;
+    }
+
+    // A new header in front of the text as last saved.
+    public SaveResult SaveHeader(string header, bool overwrite = false)
+    {
+        ArgumentNullException.ThrowIfNull(header);
+        if (!overwrite && ChangedOnDisk() is not null)
+        {
+            return SaveResult.Conflict;
+        }
+
+        var previous = Header;
+        Header = header;
+        try
+        {
+            return Save(Text, overwrite: true);
+        }
+        catch
+        {
+            Header = previous;
+            throw;
+        }
+    }
+
+    // The header and the text after it; no header unless asked for and the text starts with one.
+    public (string Header, string Text) Split(string text)
+    {
+        ArgumentNullException.ThrowIfNull(text);
+        if (!_splitsHeader || !text.StartsWith("---\n", StringComparison.Ordinal))
+        {
+            return (string.Empty, text);
+        }
+
+        var close = text.IndexOf("\n---\n", 3, StringComparison.Ordinal);
+        if (close < 0)
+        {
+            return text.EndsWith("\n---", StringComparison.Ordinal) ? (text + "\n", string.Empty) : (string.Empty, text);
+        }
+
+        var end = close + "\n---\n".Length;
+        while (end < text.Length && text[end] == '\n')
+        {
+            end++;
+        }
+
+        return (text[..end], text[end..]);
     }
 
     // A temporary file then a rename, so a crash can't leave half a document; a link is written through, so it stays a link.
@@ -143,7 +200,7 @@ public sealed class MarkdownFile
         _disk = disk;
         _hasBom = hasBom;
         _newline = disk?.Contains("\r\n", StringComparison.Ordinal) == true ? "\r\n" : "\n";
-        Text = Normalize(disk ?? string.Empty);
+        (Header, Text) = Split(Normalize(disk ?? string.Empty));
     }
 
     private static string Normalize(string text) => text.Replace("\r\n", "\n", StringComparison.Ordinal);
