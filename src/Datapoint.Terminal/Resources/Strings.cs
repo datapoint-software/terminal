@@ -394,6 +394,10 @@ public static class Strings
 
     public static string QuitConfirm => Get(nameof(QuitConfirm));
 
+    public static string MarkdownLinks => Get(nameof(MarkdownLinks));
+
+    public static string MarkdownLinkName => Get(nameof(MarkdownLinkName));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

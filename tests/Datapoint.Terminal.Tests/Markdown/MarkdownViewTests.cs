@@ -81,6 +81,26 @@ public sealed class MarkdownViewTests
     }
 
     [AvaloniaFact]
+    public void Gives_each_link_a_button_the_keyboard_can_reach()
+    {
+        var (_, view) = Show("See [the docs](https://example.com/docs), <https://a.example/> and [twice](https://example.com/docs).");
+
+        var buttons = view.GetVisualDescendants().OfType<Button>().ToList();
+
+        Assert.Equal(["the docs", "https://a.example/", "twice"], buttons.Select(button => button.Content as string), StringComparer.Ordinal);
+        Assert.All(buttons, button => Assert.True(button.Focusable && button.IsTabStop));
+        Assert.Equal("Link: the docs, to https://example.com/docs", Avalonia.Automation.AutomationProperties.GetName(buttons[0]));
+    }
+
+    [AvaloniaFact]
+    public void Adds_no_link_buttons_to_a_reply_without_links()
+    {
+        var (_, view) = Show("Just text, and a [relative](docs/x.md) link that can't be opened.");
+
+        Assert.Empty(view.GetVisualDescendants().OfType<Button>());
+    }
+
+    [AvaloniaFact]
     public void Marks_nested_lists_and_tasks_differently()
     {
         var (_, view) = Show(Reply);

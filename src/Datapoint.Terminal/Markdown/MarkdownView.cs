@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
+using Avalonia.LogicalTree;
 using Avalonia.Media;
 using Datapoint.Terminal.Resources;
 
@@ -45,6 +46,43 @@ public sealed partial class MarkdownView : StackPanel
         _anchor = null;
         Children.Clear();
         Children.AddRange(new MarkdownBuilder(this).Build(Text ?? string.Empty));
+        if (LinkRow() is not { } row)
+        {
+            return;
+        }
+
+        Children.Add(row);
+    }
+
+    // Links sit inside text, where the keyboard can't reach them, so each also gets a button below the reply. It's named with
+    // its label and address for screen readers, and opens through the same confirmation as a click.
+    private WrapPanel? LinkRow()
+    {
+        var links = this.GetLogicalDescendants().OfType<SelectableTextBlock>()
+            .Where(block => block.Inlines is not null)
+            .SelectMany(block => InlineText.Runs(block.Inlines!))
+            .Where(item => item.Link is not null)
+            .GroupBy(item => item.Link!)
+            .Select(group => (Link: group.Key, Label: string.Concat(group.Select(item => item.Run.Text)).Trim()))
+            .ToList();
+        if (links.Count == 0)
+        {
+            return null;
+        }
+
+        var row = new WrapPanel { ItemSpacing = 6, LineSpacing = 4 };
+        row.Children.Add(new TextBlock { Text = Strings.MarkdownLinks, Classes = { "secondary" }, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center });
+        foreach (var (link, label) in links)
+        {
+            var text = label.Length == 0 ? link.Uri.AbsoluteUri : label;
+            var button = new Button { Content = text, Classes = { "plain" } };
+            ToolTip.SetTip(button, link.Uri.AbsoluteUri);
+            Avalonia.Automation.AutomationProperties.SetName(button, Strings.Format(Strings.MarkdownLinkName, text, link.Uri.AbsoluteUri));
+            button.Click += (_, _) => OfferLink(link.Uri, button);
+            row.Children.Add(button);
+        }
+
+        return row;
     }
 
     protected override void OnKeyDown(KeyEventArgs e)
@@ -90,7 +128,7 @@ public sealed partial class MarkdownView : StackPanel
         await clipboard.SetTextAsync(text).ConfigureAwait(true);
     }
 
-    private void OfferLink(Uri uri)
+    private void OfferLink(Uri uri, Control? anchor = null)
     {
         var open = new Button { Content = Strings.MarkdownOpen };
         open.Classes.Add("primary");
@@ -115,6 +153,13 @@ public sealed partial class MarkdownView : StackPanel
             flyout.Hide();
             _ = TopLevel.GetTopLevel(this)?.Launcher.LaunchUriAsync(uri);
         };
+        if (anchor is not null)
+        {
+            flyout.Opened += (_, _) => cancel.Focus();
+            flyout.ShowAt(anchor);
+            return;
+        }
+
         flyout.ShowAt(this, showAtPointer: true);
     }
 }

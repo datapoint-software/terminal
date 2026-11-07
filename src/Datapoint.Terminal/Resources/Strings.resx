@@ -596,4 +596,10 @@ git rm -r --cached .terminal</value>
   <data name="QuitConfirm" xml:space="preserve">
     <value>Quit</value>
   </data>
+  <data name="MarkdownLinks" xml:space="preserve">
+    <value>Links:</value>
+  </data>
+  <data name="MarkdownLinkName" xml:space="preserve">
+    <value>Link: {0}, to {1}</value>
+  </data>
 </root>
