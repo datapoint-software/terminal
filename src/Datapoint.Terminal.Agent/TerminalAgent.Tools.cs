@@ -68,7 +68,7 @@ public sealed partial class TerminalAgent
         .. KeysTools(),
         .. MemoryTools(),
         .. HostDocsTools(),
-        .. RunbookTools(),
+        .. SkillTools(),
         .. HistoryTools(),
     ];
 

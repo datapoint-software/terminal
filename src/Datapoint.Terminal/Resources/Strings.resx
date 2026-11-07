@@ -975,21 +975,6 @@ Fingerprint: {2}</value>
   <data name="RecordingsNote" xml:space="preserve">
     <value>Kept on this computer only, never in the workspace folder, with secrets removed where they're recognized. Also playable with asciinema.</value>
   </data>
-  <data name="MenuRunRunbook" xml:space="preserve">
-    <value>Run Runbook</value>
-  </data>
-  <data name="MenuSaveRunbook" xml:space="preserve">
-    <value>Save Last Task as Runbook…</value>
-  </data>
-  <data name="MenuNoRunbooks" xml:space="preserve">
-    <value>No Runbooks Yet</value>
-  </data>
-  <data name="RunbookRunDraft" xml:space="preserve">
-    <value>Run the runbook "{0}" in {1}.</value>
-  </data>
-  <data name="RunbookSaveDraft" xml:space="preserve">
-    <value>Save the task we just finished as a runbook called </value>
-  </data>
   <data name="ApprovalAlsoApproves" xml:space="preserve">
     <value>Approving also lets the agent run this exact command in {0} until the task ends.</value>
   </data>
@@ -1907,5 +1892,20 @@ Fingerprint: {2}</value>
   </data>
   <data name="MemoryClearConfirm" xml:space="preserve">
     <value>Clear</value>
+  </data>
+  <data name="MenuRunSkill" xml:space="preserve">
+    <value>Run Skill</value>
+  </data>
+  <data name="MenuSaveSkill" xml:space="preserve">
+    <value>Save Last Task as Skill…</value>
+  </data>
+  <data name="MenuNoSkills" xml:space="preserve">
+    <value>No Skills Yet</value>
+  </data>
+  <data name="SkillRunDraft" xml:space="preserve">
+    <value>Run the skill "{0}".</value>
+  </data>
+  <data name="SkillSaveDraft" xml:space="preserve">
+    <value>Save the task we just finished as a skill called </value>
   </data>
 </root>

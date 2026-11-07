@@ -78,7 +78,7 @@ public sealed partial class MainWindow
         terminal.Add(Item(Strings.MenuUploadFile, null, () => _ = UploadFileAsync()));
         terminal.Add(Item(Strings.MenuDownloadFile, null, () => _ = DownloadFileAsync()));
         terminal.Add(new NativeMenuItemSeparator());
-        AddRunbookItems(terminal);
+        AddSkillItems(terminal);
         terminal.Add(new NativeMenuItemSeparator());
         terminal.Add(Item(Strings.MenuNextTab, new KeyGesture(Key.Tab, KeyModifiers.Control), () => MoveTab(1)));
         terminal.Add(Item(Strings.MenuPreviousTab, new KeyGesture(Key.Tab, KeyModifiers.Control | KeyModifiers.Shift), () => MoveTab(-1)));

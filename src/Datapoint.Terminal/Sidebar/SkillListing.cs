@@ -1,10 +1,12 @@
+using Datapoint.Terminal.Agent.Skills;
+
 namespace Datapoint.Terminal.Sidebar;
 
 // The workspace's skills: folders in skills/ with a SKILL.md, by name. A skill's name is its document's first heading, or its
 // folder's name in words, e.g. "patch-and-reboot" as "Patch and reboot".
 public static class SkillListing
 {
-    public const string FileName = "SKILL.md";
+    public const string FileName = SkillDocument.FileName;
 
     private const int MostSkills = 500;
     private const int HeadingSearchLength = 8192;
@@ -31,24 +33,11 @@ public static class SkillListing
     {
         ArgumentException.ThrowIfNullOrEmpty(path);
         var folder = System.IO.Path.GetFileName(System.IO.Path.GetDirectoryName(path)) ?? string.Empty;
-        var heading = Heading(Start(path))?.Trim();
-        return heading is { Length: > 0 and <= 80 } ? heading : Words(folder);
+        return Heading(Start(path)) ?? Words(folder);
     }
 
     // The first heading after the header, whose YAML comments also start with "# ".
-    public static string? Heading(string text)
-    {
-        ArgumentNullException.ThrowIfNull(text);
-        var lines = text.Split('\n').Select(line => line.TrimEnd('\r')).ToList();
-        var start = 0;
-        if (lines.Count > 0 && string.Equals(lines[0], "---", StringComparison.Ordinal))
-        {
-            var end = lines.FindIndex(1, line => string.Equals(line, "---", StringComparison.Ordinal));
-            start = end < 0 ? lines.Count : end + 1;
-        }
-
-        return lines.Skip(start).FirstOrDefault(line => line.StartsWith("# ", StringComparison.Ordinal))?[2..];
-    }
+    public static string? Heading(string text) => SkillDocument.Heading(SkillDocument.ReadHeader(text).Body);
 
     // Only the start is read, so a large skill can't slow the sidebar.
     private static string Start(string path)

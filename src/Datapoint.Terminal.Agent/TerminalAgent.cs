@@ -358,7 +358,7 @@ public sealed partial class TerminalAgent : IDisposable
         var openable = connections.Count == 0
             ? string.Empty
             : "[Connections open_terminal can open: " + string.Join(", ", connections.Select(item => Named(item.Name, item.Environment, item.Place) + Labeled(item.Labels))) + "]\n";
-        return open + openable + DescribeHostDocs() + DescribeRunbooks();
+        return open + openable + DescribeHostDocs() + DescribeSkills();
     }
 
     private string ExcerptBlock(TerminalExcerpt? excerpt) => excerpt is null

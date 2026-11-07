@@ -132,6 +132,7 @@ public sealed class Workspace : IDisposable
         }
 
         Hosts.HostDocsLayout.Upgrade(Path.Combine(folder, "hosts"), author: string.Empty);
+        Skills.SkillsLayout.Upgrade(folder);
 
         var legacyPersonal = Path.Combine(folder, WorkspaceFolders.LegacyPersonalFolder);
         if (!Directory.Exists(legacyPersonal))
