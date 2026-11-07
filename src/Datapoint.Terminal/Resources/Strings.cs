@@ -518,6 +518,12 @@ public static class Strings
 
     public static string MenuShowHistory => Get(nameof(MenuShowHistory));
 
+    public static string ApprovalSend => Get(nameof(ApprovalSend));
+
+    public static string ApprovalHeadingKeys => Get(nameof(ApprovalHeadingKeys));
+
+    public static string ApprovalRiskKeys => Get(nameof(ApprovalRiskKeys));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

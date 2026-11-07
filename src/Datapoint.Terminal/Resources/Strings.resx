@@ -782,4 +782,13 @@ git rm -r --cached .terminal</value>
   <data name="MenuShowHistory" xml:space="preserve">
     <value>Show History</value>
   </data>
+  <data name="ApprovalSend" xml:space="preserve">
+    <value>Send</value>
+  </data>
+  <data name="ApprovalHeadingKeys" xml:space="preserve">
+    <value>The agent wants to press keys</value>
+  </data>
+  <data name="ApprovalRiskKeys" xml:space="preserve">
+    <value>Keys go to the program that's open in the terminal. Names in angle brackets are keys, such as &lt;Enter&gt; and &lt;Esc&gt;; the rest is typed as written.</value>
+  </data>
 </root>

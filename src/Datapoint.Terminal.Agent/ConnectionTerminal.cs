@@ -65,6 +65,17 @@ public sealed class ConnectionTerminal : IAgentTerminal
         _connection.Send(Encoding.UTF8.GetBytes(text + "\r"));
     }
 
+    public void SendKeys(IReadOnlyList<string> parts)
+    {
+        bool applicationCursor;
+        lock (Emulator.SyncRoot)
+        {
+            applicationCursor = Emulator.Modes.ApplicationCursorKeys;
+        }
+
+        _connection.Send(Keys.KeyNotation.Encode(parts, applicationCursor));
+    }
+
     public void Interrupt() => _connection.Send([0x03]);
 
     private CommandRecord? FindCommand(long outputLine)

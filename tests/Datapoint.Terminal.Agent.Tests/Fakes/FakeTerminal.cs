@@ -11,6 +11,10 @@ internal sealed class FakeTerminal : IAgentTerminal
 
     public List<string> Typed { get; } = [];
 
+    public List<string> Keys { get; } = [];
+
+    public bool IsAlternateScreen { get; set; }
+
     public int Interrupts { get; private set; }
 
     public string PendingInput { get; set; } = string.Empty;
@@ -21,7 +25,7 @@ internal sealed class FakeTerminal : IAgentTerminal
 
     public Func<string, (string Output, int? ExitCode)> Run { get; set; } = command => ($"ran {command}", 0);
 
-    public TerminalState GetState() => new(HasShellIntegration: true, IsAtPrompt, PendingInput, IsAlternateScreen: false, "/home/user", _line);
+    public TerminalState GetState() => new(HasShellIntegration: true, IsAtPrompt, PendingInput, IsAlternateScreen, "/home/user", _line);
 
     public CommandResult? GetCommand(long outputLine) => _commands.GetValueOrDefault(outputLine);
 
@@ -44,6 +48,8 @@ internal sealed class FakeTerminal : IAgentTerminal
         IsAtPrompt = true;
         OutputArrived?.Invoke(this, EventArgs.Empty);
     }
+
+    public void SendKeys(IReadOnlyList<string> parts) => Keys.Add(string.Concat(parts));
 
     public void Interrupt() => Interrupts++;
 

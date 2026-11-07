@@ -36,7 +36,12 @@ public sealed partial class ApprovalViewModel : ObservableObject
     // Opening a terminal names a connection, which isn't the user's to edit; they can decline and say which one instead.
     public bool IsCommandReadOnly => Kind == ProposalKind.OpenTerminal;
 
-    public string RunLabel => Kind == ProposalKind.OpenTerminal ? Strings.ApprovalOpen : Strings.ApprovalRun;
+    public string RunLabel => Kind switch
+    {
+        ProposalKind.OpenTerminal => Strings.ApprovalOpen,
+        ProposalKind.SendKeys => Strings.ApprovalSend,
+        _ => Strings.ApprovalRun,
+    };
 
     public string TerminalText { get; }
 
@@ -47,12 +52,14 @@ public sealed partial class ApprovalViewModel : ObservableObject
     public string Heading => (Kind, IgnoredFile, Risk) switch
     {
         (ProposalKind.OpenTerminal, _, _) => Strings.ApprovalHeadingOpen,
+        (ProposalKind.SendKeys, _, _) => Strings.ApprovalHeadingKeys,
         (_, not null, _) => Strings.ApprovalHeadingIgnored,
         (_, _, CommandRisk.AlwaysAsk) => Strings.ApprovalHeadingTrust,
         _ => Strings.ApprovalHeading,
     };
 
     public string RiskText => Kind == ProposalKind.OpenTerminal ? Strings.ApprovalRiskOpen
+        : Kind == ProposalKind.SendKeys && Risk != CommandRisk.AlwaysAsk ? Strings.ApprovalRiskKeys
         : IgnoredFile is not null ? Strings.Format(Strings.ApprovalRiskIgnored, ProjectFolders.Display(IgnoredFile))
         : Risk switch
     {

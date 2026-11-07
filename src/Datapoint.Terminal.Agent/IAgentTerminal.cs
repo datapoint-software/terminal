@@ -14,5 +14,8 @@ public interface IAgentTerminal
 
     void TypeCommand(string text);
 
+    // Parts as KeyNotation.Parse returns them, encoded for the program's current modes.
+    void SendKeys(IReadOnlyList<string> parts);
+
     void Interrupt();
 }

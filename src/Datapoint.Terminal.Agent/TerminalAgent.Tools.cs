@@ -66,6 +66,7 @@ public sealed partial class TerminalAgent
              "required":["connection","purpose"]}
             """,
             OpenTerminalAsync),
+        .. KeysTools(),
         .. MemoryTools(),
         .. HostDocsTools(),
         .. HistoryTools(),
