@@ -1,3 +1,5 @@
+using Avalonia;
+using Avalonia.VisualTree;
 using Avalonia.Controls;
 using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
@@ -55,5 +57,25 @@ public sealed class ChatViewTests
         frame?.Save("rendered/chat-dark.png", new PngBitmapEncoderOptions());
 
         Assert.NotNull(frame);
+    }
+
+    // A long plan scrolls inside its box, so the buttons that approve or decline it stay on screen.
+    [AvaloniaFact]
+    public void Keeps_the_buttons_in_view_for_a_long_plan()
+    {
+        using var chat = new ChatViewModel(new ImmediateUiThread());
+        var plan = string.Join('\n', Enumerable.Range(1, 60).Select(step => $"{step}. sudo apt-get install --only-upgrade package-{step}"));
+        _ = chat.RequestApprovalAsync(new CommandProposal(plan, "Update the server", CommandRisk.Changes, "web-1") { Kind = ProposalKind.Plan }, CancellationToken.None);
+        var window = new Window { Width = 420, Height = 700, Content = new ChatView { DataContext = chat } };
+        window.Show();
+
+        Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+        using var frame = window.CaptureRenderedFrame();
+        Directory.CreateDirectory("rendered");
+        frame?.Save("rendered/chat-long-plan.png", new PngBitmapEncoderOptions());
+
+        var run = window.GetVisualDescendants().OfType<Button>().Single(button => Equals(button.Content, chat.Approval!.RunLabel));
+        var bottom = run.TranslatePoint(new Point(0, run.Bounds.Height), window)!.Value.Y;
+        Assert.InRange(bottom, 0, window.Height);
     }
 }

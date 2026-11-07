@@ -169,7 +169,9 @@
             <TextBlock Classes="title" Text="{Binding Heading}" TextWrapping="Wrap" />
             <TextBlock Text="{Binding Purpose}" TextWrapping="Wrap" />
           </StackPanel>
-          <TextBox Classes="code" Text="{Binding Command}" IsReadOnly="{Binding IsCommandReadOnly}" TextWrapping="Wrap" Background="{DynamicResource CodeBrush}"
+          <!-- Capped, so a long plan or diff scrolls inside the box and Run and Decline stay in view. -->
+          <TextBox x:Name="ApprovalCommand" Classes="code" Text="{Binding Command}" IsReadOnly="{Binding IsCommandReadOnly}" TextWrapping="Wrap" Background="{DynamicResource CodeBrush}"
+                   MaxHeight="280" ScrollViewer.VerticalScrollBarVisibility="Auto"
                    AutomationProperties.Name="{x:Static res:Strings.ApprovalCommandLabel}" />
           <TextBlock Text="{Binding PlanText}" IsVisible="{Binding HasPlanText}" FontWeight="SemiBold" TextWrapping="Wrap" />
           <TextBlock Classes="secondary" Text="{Binding RiskText}" TextWrapping="Wrap" />
@@ -187,7 +189,9 @@
       <Border Classes="card" IsVisible="{Binding Question, Converter={x:Static ObjectConverters.IsNotNull}}"
               AutomationProperties.LiveSetting="Assertive">
         <StackPanel Spacing="8" DataContext="{Binding Question}" x:DataType="chat:QuestionViewModel">
-          <SelectableTextBlock Text="{Binding Text}" FontWeight="SemiBold" TextWrapping="Wrap" />
+          <ScrollViewer MaxHeight="240" VerticalScrollBarVisibility="Auto">
+            <SelectableTextBlock Text="{Binding Text}" FontWeight="SemiBold" TextWrapping="Wrap" />
+          </ScrollViewer>
           <ItemsControl ItemsSource="{Binding Options}" IsVisible="{Binding HasOptions}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
