@@ -17,7 +17,6 @@ public static class OverlayMotion
 {
     private static readonly TimeSpan s_openDuration = TimeSpan.FromMilliseconds(150);
     private static readonly TimeSpan s_closeDuration = TimeSpan.FromMilliseconds(100);
-    private static readonly ConditionalWeakTable<Visual, CancellationTokenSource> s_running = [];
     private static readonly ConditionalWeakTable<PopupFlyoutBase, FlyoutState> s_flyouts = [];
 
     private static bool s_isStarted;
@@ -42,7 +41,7 @@ public static class OverlayMotion
         }
 
         // Also clears what a fade-out left, so the popup never reopens invisible.
-        Stop(child);
+        Playback.Stop(child);
         child.ClearValue(Visual.OpacityProperty);
         if (!MotionPreference.IsEnabled)
         {
@@ -54,12 +53,12 @@ public static class OverlayMotion
 
     private static async Task FadeInAsync(Control child)
     {
-        if (!await PlayAsync(child, Fade(from: 0, to: 1, s_openDuration, new CubicEaseOut(), FillMode.Backward)).ConfigureAwait(true))
+        if (!await Playback.PlayAsync(child, Fade(from: 0, to: 1, s_openDuration, new CubicEaseOut(), FillMode.Backward)).ConfigureAwait(true))
         {
             return;
         }
 
-        Stop(child);
+        Playback.Stop(child);
     }
 
     private static void OnFlyoutOpenChanged(PopupFlyoutBase flyout, AvaloniaPropertyChangedEventArgs e)
@@ -108,7 +107,7 @@ public static class OverlayMotion
     {
         // Held at nothing once the fade ends, so the menu doesn't flash back before it closes.
         child.Opacity = 0;
-        var isCurrent = await PlayAsync(child, Fade(from: 1, to: 0, s_closeDuration, new CubicEaseIn(), FillMode.None)).ConfigureAwait(true);
+        var isCurrent = await Playback.PlayAsync(child, Fade(from: 1, to: 0, s_closeDuration, new CubicEaseIn(), FillMode.None)).ConfigureAwait(true);
         child.IsHitTestVisible = true;
         if (state.IsClosing)
         {
@@ -123,31 +122,7 @@ public static class OverlayMotion
             return;
         }
 
-        Stop(child);
-    }
-
-    // A new animation replaces the one running. Each is cut short once it should have ended, so a popup is never left half
-    // faded, nor a menu left open, when frames stop coming. False when another animation took over.
-    private static async Task<bool> PlayAsync(Visual target, Animation animation)
-    {
-        Stop(target);
-        var cancellation = new CancellationTokenSource();
-        s_running.AddOrUpdate(target, cancellation);
-        var deadline = Task.Delay(animation.Duration + TimeSpan.FromMilliseconds(100), CancellationToken.None);
-        await Task.WhenAny(animation.RunAsync(target, cancellation.Token), deadline).ConfigureAwait(true);
-        return s_running.TryGetValue(target, out var current) && current == cancellation;
-    }
-
-    private static void Stop(Visual target)
-    {
-        if (!s_running.TryGetValue(target, out var running))
-        {
-            return;
-        }
-
-        s_running.Remove(target);
-        running.Cancel();
-        running.Dispose();
+        Playback.Stop(child);
     }
 
     private static Animation Fade(double from, double to, TimeSpan duration, Easing easing, FillMode fill) => new()
