@@ -12,6 +12,12 @@ public sealed record CommandProposal(string Command, string Purpose, CommandRisk
     // For a request to look before planning, its hosts and reasons.
     public AgentLook? Look { get; init; }
 
+    // For a plan, each host its steps name with its environment label, e.g. production, so the plan can mark them.
+    public IReadOnlyDictionary<string, string> Environments { get; init; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+    // For a revised plan, the one proposed before it in the same task, so the user can see what changed.
+    public AgentPlan? PreviousPlan { get; init; }
+
     // A session opened inside the terminal, e.g. "ssh session to web1", where the command will actually run.
     public string? Session { get; init; }
 

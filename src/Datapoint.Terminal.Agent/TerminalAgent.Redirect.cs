@@ -100,6 +100,7 @@ public sealed partial class TerminalAgent
         }
 
         _plan = null;
+        _proposedPlan = null;
         ForgetApprovals();
         return "Cancelled: instead of answering, the user sent a new message. It replaces the task you were working on, and any "
             + "plan they approved for it no longer applies. Don't go back to that task unless the message asks you to. Their message:\n"

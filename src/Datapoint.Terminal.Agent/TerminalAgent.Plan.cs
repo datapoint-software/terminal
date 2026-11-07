@@ -12,6 +12,9 @@ public sealed partial class TerminalAgent
 
     private AgentPlan? _plan;
 
+    // The last plan proposed in this task, approved or not, so a revision can show what changed.
+    private AgentPlan? _proposedPlan;
+
     public AgentPlan? Plan => _plan;
 
     private List<AITool> PlanTools() =>
@@ -54,7 +57,8 @@ public sealed partial class TerminalAgent
         var summary = plan.Summary;
         var terminal = FindTerminal(arguments, out _);
         SetStatus(AgentStatus.WaitingForApproval, terminal);
-        var proposal = new CommandProposal(plan.Text, summary, CommandRisk.Changes, terminal?.Name ?? string.Empty, terminal?.Environment) { Kind = ProposalKind.Plan, Plan = plan, Session = terminal?.Terminal.GetState().Session };
+        var proposal = new CommandProposal(plan.Text, summary, CommandRisk.Changes, terminal?.Name ?? string.Empty, terminal?.Environment) { Kind = ProposalKind.Plan, Plan = plan, Session = terminal?.Terminal.GetState().Session, Environments = EnvironmentsOf(plan), PreviousPlan = _proposedPlan };
+        _proposedPlan = plan;
         var approval = await RequestApprovalAsync(proposal, cancellationToken).ConfigureAwait(false);
         SetStatus(AgentStatus.Thinking);
         if (!approval.Approved)
@@ -92,6 +96,26 @@ public sealed partial class TerminalAgent
 
     private static string? Optional(AIFunctionArguments arguments, string name) =>
         ToolArguments.GetString(arguments, name)?.Trim() is { Length: > 0 } text ? text : null;
+
+    private Dictionary<string, string> EnvironmentsOf(AgentPlan plan)
+    {
+        var environments = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var name in plan.Steps.SelectMany(step => step.Terminals).Distinct(StringComparer.OrdinalIgnoreCase))
+        {
+            if (EnvironmentOf(name) is not { } environment)
+            {
+                continue;
+            }
+
+            environments[name] = environment;
+        }
+
+        return environments;
+    }
+
+    private string? EnvironmentOf(string name) =>
+        Terminals.FirstOrDefault(item => string.Equals(item.Name, name, StringComparison.OrdinalIgnoreCase) || string.Equals(item.Connection, name, StringComparison.OrdinalIgnoreCase))?.Environment
+        ?? (TerminalOpener?.Connections ?? []).FirstOrDefault(item => string.Equals(item.Name, name, StringComparison.OrdinalIgnoreCase))?.Environment;
 
     private string? UnknownHost(IReadOnlyList<AgentPlanStep> steps)
     {

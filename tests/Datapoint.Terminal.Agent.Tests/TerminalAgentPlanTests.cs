@@ -179,6 +179,20 @@ public sealed class TerminalAgentPlanTests
     }
 
     [Fact]
+    public async Task A_revised_plan_carries_the_one_before_it_and_its_hosts_environments()
+    {
+        using var steps = System.Text.Json.JsonDocument.Parse("""[{"title":"Check","terminals":["web1","web2"],"command":"uname -r","purpose":"Confirm"}]""");
+        _user.Decide = proposal => _user.Proposals.Count == 1 ? CommandApproval.Reject(proposal.Command, "Pin the version.") : CommandApproval.Approve(proposal.Command);
+        ChatResponse Propose(IReadOnlyList<ChatMessage> messages) => Call("propose_plan", Arguments(("summary", "Update"), ("steps", steps.RootElement.Clone()), ("rollback", "None.")));
+
+        using var agent = await RunAsync(ApprovalMode.Ask, Propose, Propose);
+
+        Assert.Null(_user.Proposals[0].PreviousPlan);
+        Assert.Same(_user.Proposals[0].Plan, _user.Proposals[1].PreviousPlan);
+        Assert.Equal(("production", "production"), (_user.Proposals[1].Environments["web1"], _user.Proposals[1].Environments["WEB2"]));
+    }
+
+    [Fact]
     public async Task Reports_a_declined_plan_with_the_users_words()
     {
         _user.Decide = proposal => CommandApproval.Reject(proposal.Command, "Use the distribution's package, not a PPA.");

@@ -355,6 +355,7 @@ public sealed partial class TerminalAgent : IDisposable
     {
         MarkAllSeen();
         _plan = null;
+        _proposedPlan = null;
         ForgetApprovals();
         EndRun();
         foreach (var terminal in Terminals)
