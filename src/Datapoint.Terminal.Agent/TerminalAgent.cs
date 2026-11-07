@@ -89,6 +89,7 @@ public sealed partial class TerminalAgent : IDisposable
                 throw new ArgumentException($"There is already a terminal called {terminal.Name}.", nameof(terminal));
             }
 
+            terminal.SeenUpTo = terminal.Terminal.GetState().NextOutputLine;
             _terminals.Add(terminal);
         }
     }
@@ -170,7 +171,7 @@ public sealed partial class TerminalAgent : IDisposable
         try
         {
             var opening = await StartConversationAsync(message, task.Token).ConfigureAwait(false);
-            _history.Add(new ChatMessage(ChatRole.User, DescribeTerminals() + opening));
+            _history.Add(new ChatMessage(ChatRole.User, DescribeTerminals() + NewOutputBlock() + opening));
             await RunStepsAsync(task.Token).ConfigureAwait(false);
             SetStatus(AgentStatus.Idle);
         }
@@ -304,6 +305,7 @@ public sealed partial class TerminalAgent : IDisposable
     // Auto lasts for one task, then each terminal falls back to its default.
     private void EndTask()
     {
+        MarkAllSeen();
         foreach (var terminal in Terminals)
         {
             terminal.IsAwaitingInput = false;

@@ -125,6 +125,26 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
         ActionCommand = new RelayCommand(action),
     });
 
+    // Product.md, Output sent to the provider: what goes with the next message is said before it's sent.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasPendingOutput))]
+    public partial string PendingOutputText { get; private set; } = string.Empty;
+
+    public bool HasPendingOutput => PendingOutputText.Length > 0;
+
+    public void RefreshPendingOutput()
+    {
+        var pending = _agent is null || IsWorking || NeedsUser ? [] : _agent.PendingOutput();
+        if (pending.Count == 0)
+        {
+            PendingOutputText = string.Empty;
+            return;
+        }
+
+        var terminals = string.Join(", ", pending.Select(item => Strings.Format(Strings.PendingOutputTerminal, item.Terminal, item.Lines)));
+        PendingOutputText = Strings.Format(Strings.PendingOutput, terminals) + (pending.Any(item => item.IsCut) ? " " + Strings.PendingOutputCut : string.Empty);
+    }
+
     public AgentTerminal? CurrentTerminal { get; private set; }
 
     public void ShowTerminal(AgentTerminal? terminal)

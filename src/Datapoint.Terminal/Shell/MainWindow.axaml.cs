@@ -21,6 +21,7 @@ public sealed partial class MainWindow : Window, ITerminalOpener
     private readonly SecretRedactor _redactor = new();
     private readonly ProjectWindows _windows;
     private readonly SettingsViewModel _settings;
+    private readonly Avalonia.Threading.DispatcherTimer _pendingOutputTimer = new() { Interval = TimeSpan.FromSeconds(1) };
     private readonly NativeMenu _recentMenu = [];
     private TerminalAgent? _agent;
     private string? _clientSignature;
@@ -65,8 +66,14 @@ public sealed partial class MainWindow : Window, ITerminalOpener
         NativeMenu.SetMenu(this, BuildMenu());
         AddHandler(KeyDownEvent, OnShortcutKeyDown, Avalonia.Interactivity.RoutingStrategies.Tunnel);
         Opened += (_, _) => _ = OnOpenedAsync();
+        _pendingOutputTimer.Tick += (_, _) => _chat.RefreshPendingOutput();
+        _pendingOutputTimer.Start();
         Closing += OnWindowClosing;
-        Closed += (_, _) => _ = StopAsync();
+        Closed += (_, _) =>
+        {
+            _pendingOutputTimer.Stop();
+            _ = StopAsync();
+        };
     }
 
     public Project Project { get; }

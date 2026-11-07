@@ -49,6 +49,18 @@ internal sealed class FakeTerminal : IAgentTerminal
         OutputArrived?.Invoke(this, EventArgs.Empty);
     }
 
+    public string NewOutput { get; set; } = string.Empty;
+
+    public void Advance(long lines) => _line += lines;
+
+    public long NewOutputSince { get; private set; } = -1;
+
+    public string GetTextSince(long line)
+    {
+        NewOutputSince = line;
+        return NewOutput;
+    }
+
     public void SendKeys(IReadOnlyList<string> parts) => Keys.Add(string.Concat(parts));
 
     public void Interrupt() => Interrupts++;

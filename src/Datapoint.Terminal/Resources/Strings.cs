@@ -546,6 +546,12 @@ public static class Strings
 
     public static string AutoProductionConfirm => Get(nameof(AutoProductionConfirm));
 
+    public static string PendingOutput => Get(nameof(PendingOutput));
+
+    public static string PendingOutputTerminal => Get(nameof(PendingOutputTerminal));
+
+    public static string PendingOutputCut => Get(nameof(PendingOutputCut));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

@@ -59,6 +59,15 @@ public sealed class ConnectionTerminal : IAgentTerminal
 
     public string GetVisibleText() => Emulator.GetVisibleText();
 
+    public string GetTextSince(long line)
+    {
+        lock (Emulator.SyncRoot)
+        {
+            var last = Emulator.Primary.FirstVisibleLine + Emulator.Cursor.Row;
+            return line > last ? string.Empty : Emulator.GetLineText(line, last);
+        }
+    }
+
     public void TypeCommand(string text)
     {
         Emulator.MarkNextCommandSource(CommandSource.Agent);

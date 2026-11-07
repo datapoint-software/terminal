@@ -32,6 +32,16 @@ public sealed class AgentTerminal
 
     public ApprovalMode DefaultMode { get; }
 
+    private long _seenUpTo;
+
+    // The first line of output the agent hasn't been given: where the last task ended, or where the terminal was when it was
+    // added. Output after it goes with the user's next message (product.md, Output sent to the provider).
+    public long SeenUpTo
+    {
+        get => Interlocked.Read(ref _seenUpTo);
+        set => Interlocked.Exchange(ref _seenUpTo, value);
+    }
+
     public ApprovalMode Mode
     {
         get => (ApprovalMode)_mode;

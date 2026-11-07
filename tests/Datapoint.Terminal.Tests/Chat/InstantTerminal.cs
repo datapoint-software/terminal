@@ -28,6 +28,8 @@ internal sealed class InstantTerminal : IAgentTerminal
         OutputArrived?.Invoke(this, EventArgs.Empty);
     }
 
+    public string GetTextSince(long line) => string.Empty;
+
     public void SendKeys(IReadOnlyList<string> parts)
     {
     }

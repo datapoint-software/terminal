@@ -209,6 +209,9 @@
         </StackPanel>
       </Border>
 
+      <TextBlock Classes="secondary" Text="{Binding PendingOutputText}" IsVisible="{Binding HasPendingOutput}" TextWrapping="Wrap"
+                 Margin="4,0,4,6" />
+
       <!-- Composer: a rounded field with the send button inside, and quiet menus for the model and approval under it. -->
       <Border Classes="composer">
         <Grid ColumnDefinitions="*,Auto">

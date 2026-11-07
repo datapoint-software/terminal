@@ -824,4 +824,13 @@ git rm -r --cached .terminal</value>
   <data name="AutoProductionConfirm" xml:space="preserve">
     <value>Use Auto</value>
   </data>
+  <data name="PendingOutput" xml:space="preserve">
+    <value>Your next message also sends new output from {0}.</value>
+  </data>
+  <data name="PendingOutputTerminal" xml:space="preserve">
+    <value>{0} ({1:N0} lines)</value>
+  </data>
+  <data name="PendingOutputCut" xml:space="preserve">
+    <value>Long output is cut to its start and end.</value>
+  </data>
 </root>
