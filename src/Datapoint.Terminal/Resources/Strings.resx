@@ -2235,4 +2235,43 @@ Fingerprint: {2}</value>
   <data name="NoTerminalsOpen" xml:space="preserve">
     <value>Open a Terminal…</value>
   </data>
+  <data name="WebAccessHeading" xml:space="preserve">
+    <value>The agent wants to use the web</value>
+  </data>
+  <data name="WebSearchQuestion" xml:space="preserve">
+    <value>Search the web for “{0}”?</value>
+  </data>
+  <data name="WebReadQuestion" xml:space="preserve">
+    <value>Read {0}?</value>
+  </data>
+  <data name="WebSearchSent" xml:space="preserve">
+    <value>The query goes to {0}, as shown.</value>
+  </data>
+  <data name="WebReadSent" xml:space="preserve">
+    <value>This computer fetches the page, without cookies or passwords, and the agent reads its text.</value>
+  </data>
+  <data name="WebLeavesNetwork" xml:space="preserve">
+    <value>Your model runs on your own network, but this request goes out to the internet.</value>
+  </data>
+  <data name="WebDeny" xml:space="preserve">
+    <value>Don't allow</value>
+  </data>
+  <data name="WebDenyDescription" xml:space="preserve">
+    <value>The agent goes on without it.</value>
+  </data>
+  <data name="WebAllowOnce" xml:space="preserve">
+    <value>Allow once</value>
+  </data>
+  <data name="WebAllowOnceSearch" xml:space="preserve">
+    <value>Only this search.</value>
+  </data>
+  <data name="WebAllowOncePage" xml:space="preserve">
+    <value>Only this page.</value>
+  </data>
+  <data name="WebAllowAlways" xml:space="preserve">
+    <value>Allow always</value>
+  </data>
+  <data name="WebAllowAlwaysDescription" xml:space="preserve">
+    <value>Every search and page read from now on, without asking. You can take it back in Settings.</value>
+  </data>
 </root>

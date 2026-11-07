@@ -61,6 +61,9 @@ public sealed record AppSettings
     // Overlays and cards appear without animating; the system's own reduce motion setting does the same.
     public bool ReduceMotion { get; init; }
 
+    // The agent searches the web and reads pages without asking each time (product decision 105).
+    public bool AlwaysAllowWeb { get; init; }
+
     // How long conversation history is kept, in days; null keeps it forever (product decision 52).
     public int? HistoryDays { get; init; }
 

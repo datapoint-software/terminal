@@ -127,6 +127,12 @@ public sealed partial class TerminalAgent : IDisposable
         {
             _task?.Cancel();
         }
+
+        lock (_webSync)
+        {
+            _pageReader?.Dispose();
+            _pageReader = null;
+        }
     }
 
     // Typing is the awaited answer only in the terminal the agent asked the user to type into; anywhere else it interrupts.

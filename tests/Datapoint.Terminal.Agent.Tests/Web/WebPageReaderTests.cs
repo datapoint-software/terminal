@@ -83,17 +83,6 @@ public sealed class WebPageReaderTests
         Assert.Equal("The server answered 404 Not Found.", page.Problem);
     }
 
-    [Fact]
-    public async Task Cuts_long_pages()
-    {
-        using var reader = Reader(_ => new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(new string('a', WebPageReader.MaxCharacters + 10), Encoding.UTF8, "text/plain") });
-
-        var page = await reader.ReadAsync(s_page, CancellationToken.None);
-
-        Assert.True(page.IsCut);
-        Assert.Equal(WebPageReader.MaxCharacters, page.Text.Length);
-    }
-
     // A public name can be pointed at a private address; the check happens on the address actually connected to.
     [Theory]
     [InlineData("127.0.0.1")]

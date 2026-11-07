@@ -49,6 +49,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         CustomThemeId = settings.Themes.Any(theme => string.Equals(theme.Id, settings.CustomThemeId, StringComparison.Ordinal)) ? settings.CustomThemeId : null;
         MatchWindowToTheme = settings.MatchWindowToTheme;
         ReduceMotion = settings.ReduceMotion;
+        AlwaysAllowWeb = settings.AlwaysAllowWeb;
         TerminalFontSize = settings.TerminalFontSize is >= 8 and <= 40 ? settings.TerminalFontSize : 14;
         SelectedProviderId = settings.SelectedProvider?.Id;
         foreach (var account in settings.Providers)
@@ -119,6 +120,20 @@ public sealed partial class SettingsViewModel : ObservableObject
     public bool MatchWindowToTheme { get; private set; }
 
     public bool ReduceMotion { get; private set; }
+
+    public bool AlwaysAllowWeb { get; private set; }
+
+    // Every window's agent follows it, so allowing or taking it back applies everywhere at once.
+    public void SetAlwaysAllowWeb(bool allow)
+    {
+        if (AlwaysAllowWeb == allow)
+        {
+            return;
+        }
+
+        AlwaysAllowWeb = allow;
+        Save();
+    }
 
     // The colours terminals use now: a chosen custom theme, or the built-in light or dark one.
     public Themes.ColorTheme ActiveTheme(bool systemIsDark) =>
@@ -217,6 +232,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         CustomThemeId = CustomThemeId,
         MatchWindowToTheme = MatchWindowToTheme,
         ReduceMotion = ReduceMotion,
+        AlwaysAllowWeb = AlwaysAllowWeb,
     };
 
     public IReadOnlyList<WorkspaceConnection>? ConfirmedFor(string folder) =>

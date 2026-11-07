@@ -5,24 +5,26 @@ using Datapoint.Terminal.Resources;
 
 namespace Datapoint.Terminal.Chat;
 
-// One list to click or pick by number; the last row opens a box for an answer in the user's own words.
+// One list to click or pick by number; the last row opens a box for an answer in the user's own words, unless the answer
+// grants something (web access), which only a choice may do.
 public sealed partial class QuestionViewModel : ObservableObject
 {
     private readonly TaskCompletionSource<string?> _answer = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-    public QuestionViewModel(AgentQuestion question)
+    public QuestionViewModel(AgentQuestion question, bool allowsOwnWords = true)
     {
         ArgumentNullException.ThrowIfNull(question);
         Text = question.Text;
         Details = question.Details;
         Options = question.Options;
         Rows = [.. question.Options.Select((option, index) => new QuestionRowViewModel(index + 1, option.Label, option.Description, option.IsRecommended)),
-            .. question.Options.Count == 0 ? [] : new[] { new QuestionRowViewModel(question.Options.Count + 1, Strings.QuestionSomethingElse, null, false) { IsOther = true } }];
+            .. question.Options.Count == 0 || !allowsOwnWords ? [] : new[] { new QuestionRowViewModel(question.Options.Count + 1, Strings.QuestionSomethingElse, null, false) { IsOther = true } }];
         IsWriting = Rows.Count == 0;
         KeysText = Strings.Format(Strings.QuestionKeys, Rows.Count);
         var where = question.Terminal is { } terminal ? Strings.Format(Strings.ApprovalInTerminal, terminal) : null;
         where = question.Session is { } session && where is not null ? Strings.Format(Strings.CommandInTerminal, where, session) : where;
-        HeaderText = where is null ? Strings.QuestionHeading : Strings.Format(Strings.CommandInTerminal, Strings.QuestionHeading, where);
+        var heading = question.Heading ?? Strings.QuestionHeading;
+        HeaderText = where is null ? heading : Strings.Format(Strings.CommandInTerminal, heading, where);
     }
 
     public string HeaderText { get; }

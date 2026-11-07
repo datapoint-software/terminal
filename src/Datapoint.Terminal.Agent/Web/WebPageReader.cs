@@ -10,8 +10,6 @@ namespace Datapoint.Terminal.Agent.Web;
 // second time can't get through. No cookies, credentials or proxy: a proxy would look the host up itself, past the check.
 public sealed class WebPageReader : IDisposable
 {
-    public const int MaxCharacters = 40_000;
-
     private const int MaxBytes = 3 * 1024 * 1024;
     private const int MaxRedirects = 5;
     private static readonly TimeSpan s_timeout = TimeSpan.FromSeconds(20);
@@ -94,8 +92,7 @@ public sealed class WebPageReader : IDisposable
         var bytes = await ReadLimitedAsync(content, cancellationToken).ConfigureAwait(false);
         var text = Decode(bytes, content.Headers.ContentType);
         var (title, body) = isHtml ? HtmlText.ToMarkdown(text, address) : (null, text);
-        var isCut = body.Length > MaxCharacters;
-        return new WebPage(address, title, isCut ? body[..MaxCharacters] : body, isCut, Problem: null);
+        return new WebPage(address, title, body, Problem: null);
     }
 
     private static async Task<byte[]> ReadLimitedAsync(HttpContent content, CancellationToken cancellationToken)

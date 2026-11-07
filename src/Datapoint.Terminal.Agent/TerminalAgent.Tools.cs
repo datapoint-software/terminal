@@ -61,6 +61,11 @@ public sealed partial class TerminalAgent
                "required":["label"]}}},"required":["question"]}
             """,
             AskUserAsync),
+        .. FeatureTools(),
+    ];
+
+    private List<AITool> FeatureTools() =>
+    [
         .. OpenTools(),
         .. PlanTools(),
         .. FileTools(),
@@ -70,6 +75,7 @@ public sealed partial class TerminalAgent
         .. HostDocsTools(),
         .. SkillTools(),
         .. HistoryTools(),
+        .. WebTools(),
     ];
 
     private async Task<string> RunCommandAsync(AIFunctionArguments arguments, CancellationToken cancellationToken)

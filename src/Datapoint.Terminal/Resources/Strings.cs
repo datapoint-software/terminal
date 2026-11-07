@@ -1488,6 +1488,32 @@ public static class Strings
 
     public static string NoTerminalsOpen => Get(nameof(NoTerminalsOpen));
 
+    public static string WebAccessHeading => Get(nameof(WebAccessHeading));
+
+    public static string WebSearchQuestion => Get(nameof(WebSearchQuestion));
+
+    public static string WebReadQuestion => Get(nameof(WebReadQuestion));
+
+    public static string WebSearchSent => Get(nameof(WebSearchSent));
+
+    public static string WebReadSent => Get(nameof(WebReadSent));
+
+    public static string WebLeavesNetwork => Get(nameof(WebLeavesNetwork));
+
+    public static string WebDeny => Get(nameof(WebDeny));
+
+    public static string WebDenyDescription => Get(nameof(WebDenyDescription));
+
+    public static string WebAllowOnce => Get(nameof(WebAllowOnce));
+
+    public static string WebAllowOnceSearch => Get(nameof(WebAllowOnceSearch));
+
+    public static string WebAllowOncePage => Get(nameof(WebAllowOncePage));
+
+    public static string WebAllowAlways => Get(nameof(WebAllowAlways));
+
+    public static string WebAllowAlwaysDescription => Get(nameof(WebAllowAlwaysDescription));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

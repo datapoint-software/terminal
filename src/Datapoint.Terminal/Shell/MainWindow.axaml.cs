@@ -39,11 +39,7 @@ public sealed partial class MainWindow : Window, ITerminalOpener
         _settings.AppearanceChanged += OnAppearanceChanged;
         ActualThemeVariantChanged += (_, _) => ApplyAppearance();
         _settings.WorkspacesChanged += OnWorkspacesChanged;
-        _chat.SettingsRequested = windows.OpenSettings;
-        _chat.MessageSent = message => Record(HistoryEntryKind.User, message);
-        _chat.Cleared = EndConversation;
-        _chat.ModelChosen = choice => _ = ChooseModelAsync(choice);
-        _chat.ConfirmAuto = ConfirmAutoAsync;
+        WireChat(windows);
         Chat.DataContext = _chat;
         _chat.PropertyChanged += OnChatPropertyChanged;
         DataContext = this;
@@ -115,6 +111,16 @@ public sealed partial class MainWindow : Window, ITerminalOpener
 
     public static IChatClient CreateClient(ProviderAccount provider, string? key) => ChatClientFactory.Create(provider.ToProviderSettings(), key);
 
+    private void WireChat(WorkspaceWindows windows)
+    {
+        _chat.SettingsRequested = windows.OpenSettings;
+        _chat.MessageSent = message => Record(HistoryEntryKind.User, message);
+        _chat.Cleared = EndConversation;
+        _chat.ModelChosen = choice => _ = ChooseModelAsync(choice);
+        _chat.ConfirmAuto = ConfirmAutoAsync;
+        _chat.WebAlwaysAllowed += (_, _) => _settings.SetAlwaysAllowWeb(true);
+    }
+
     private void OnSettingsChanged(object? sender, EventArgs e) => ApplySettings();
 
     private void OnAppearanceChanged(object? sender, EventArgs e) => ApplyAppearance();
@@ -129,6 +135,7 @@ public sealed partial class MainWindow : Window, ITerminalOpener
     {
         var current = _settings.Current;
         var provider = current.SelectedProvider;
+        ApplyWebSettings();
         _chat.SetModels(ModelChoices(current), provider is null ? null : Choice(provider, provider.Model, current));
         if (provider is not null)
         {
@@ -197,6 +204,7 @@ public sealed partial class MainWindow : Window, ITerminalOpener
             }
 
             _provider = provider;
+            ApplyWebSettings();
         }
         catch (ArgumentException exception)
         {

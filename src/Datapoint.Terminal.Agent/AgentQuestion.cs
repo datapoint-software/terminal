@@ -9,4 +9,7 @@ public sealed record AgentQuestion(string Text, IReadOnlyList<AgentOption> Optio
     public string? Terminal { get; init; }
 
     public string? Session { get; init; }
+
+    // In place of the usual heading, for questions the application asks on the agent's behalf.
+    public string? Heading { get; init; }
 }
