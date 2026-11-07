@@ -377,7 +377,7 @@ public sealed class TerminalAgentTests
 
         await agent.SendAsync("Hello", Token);
 
-        Assert.StartsWith("[Open terminals: \"Local\", \"web\" (production)]\nHello", seen![^1].Text, StringComparison.Ordinal);
+        Assert.StartsWith("[Open terminals: \"Local\", \"web\" (production)]\n[Approval mode: Ask]\nHello", seen![^1].Text, StringComparison.Ordinal);
     }
 
     [Fact]

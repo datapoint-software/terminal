@@ -373,8 +373,17 @@ public sealed partial class TerminalAgent : IDisposable
         var openable = connections.Count == 0
             ? string.Empty
             : "[Connections open_terminal can open: " + string.Join(", ", connections.Select(item => Named(item.Name, item.Environment, item.Place) + Labeled(item.Labels))) + "]\n";
-        return open + openable + DescribeHostDocs() + DescribeSkills() + DescribeRun();
+        return open + openable + DescribeMode() + DescribeHostDocs() + DescribeSkills() + DescribeRun();
     }
+
+    // The model otherwise learns the mode only when a command is held back, and plans or asks better knowing it up front.
+    private string DescribeMode() => "[Approval mode: " + Mode switch
+    {
+        ApprovalMode.AskForRisky => "Ask if risky",
+        ApprovalMode.Plan => "Plan",
+        ApprovalMode.IgnorePermissions => "Ignore permissions",
+        _ => "Ask",
+    } + "]\n";
 
     private string ExcerptBlock(TerminalExcerpt? excerpt) => excerpt is null
         ? string.Empty
