@@ -56,7 +56,11 @@ public sealed partial class SecretRedactor
         List<(int Index, int Length)> spans;
         try
         {
-            spans = [.. KnownSpans(text), .. Spans(PrivateKey(), text), .. Spans(TokenFormats(), text), .. AssignmentSpans(text)];
+            spans =
+            [
+                .. KnownSpans(text), .. Spans(PrivateKey(), text), .. Spans(TokenFormats(), text),
+                .. ValueSpans(Assignment(), text), .. ValueSpans(ShortNameAssignment(), text), .. ValueSpans(UrlPassword(), text),
+            ];
         }
         catch (RegexMatchTimeoutException)
         {
@@ -96,9 +100,9 @@ public sealed partial class SecretRedactor
     private static IEnumerable<(int Index, int Length)> Spans(Regex regex, string text) =>
         regex.Matches(text).Select(match => (match.Index, match.Length));
 
-    // Only the value is a secret; its name stays so the text still reads.
-    private static IEnumerable<(int Index, int Length)> AssignmentSpans(string text) =>
-        Assignment().Matches(text).Select(match => match.Groups["value"]).Select(value => (value.Index, value.Length));
+    // Only the value is a secret; its name, or the rest of the address, stays so the text still reads.
+    private static IEnumerable<(int Index, int Length)> ValueSpans(Regex regex, string text) =>
+        regex.Matches(text).Select(match => match.Groups["value"]).Select(value => (value.Index, value.Length));
 
     private static List<(int Index, int Length)> Merge(List<(int Index, int Length)> spans)
     {
@@ -129,9 +133,24 @@ public sealed partial class SecretRedactor
         matchTimeoutMilliseconds: 500)]
     private static partial Regex TokenFormats();
 
+    // A quote may close the name, as in JSON and YAML ("password": "…").
     [GeneratedRegex(
-        @"(?<name>\b[A-Za-z_]*(password|passwd|secret|token|api[_-]?key)[A-Za-z_]*)(?<separator>\s*[=:]\s*)(?<value>""[^""\n]{4,}""|'[^'\n]{4,}'|[^\s""']{4,})",
+        @"(?<name>\b[A-Za-z_]*(password|passwd|secret|token|api[_-]?key)[A-Za-z_]*)(?<separator>[""']?\s*[=:]\s*)(?<value>""[^""\n]{4,}""|'[^'\n]{4,}'|[^\s""']{4,})",
         RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture,
         matchTimeoutMilliseconds: 500)]
     private static partial Regex Assignment();
+
+    // Short or common words only count as a whole part of a name (DB_PASS, db.pwd, ssh-passphrase), so compass or bypass don't.
+    [GeneratedRegex(
+        @"(?<name>\b([A-Za-z0-9]+[_.-])*(pass|pwd|pw|passphrase|credentials?|dsn|conn(ection)?[_-]?str(ing)?|(private|access|auth|secret)[_-]?key)([_.-][A-Za-z0-9]+)*)(?<separator>[""']?\s*[=:]\s*)(?<value>""[^""\n]{4,}""|'[^'\n]{4,}'|[^\s""']{4,})",
+        RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture,
+        matchTimeoutMilliseconds: 500)]
+    private static partial Regex ShortNameAssignment();
+
+    // scheme://user:password@host, as in database and broker addresses.
+    [GeneratedRegex(
+        @"\b[a-z][a-z0-9+.\-]*://[^\s/:@]+:(?<value>[^\s/@]+)@",
+        RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture,
+        matchTimeoutMilliseconds: 500)]
+    private static partial Regex UrlPassword();
 }
