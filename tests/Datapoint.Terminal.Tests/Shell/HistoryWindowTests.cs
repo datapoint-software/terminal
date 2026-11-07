@@ -2,7 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
 using Avalonia.Media.Imaging;
-using Datapoint.Terminal.Agent.Projects.History;
+using Datapoint.Terminal.Agent.Workspaces.History;
 using Datapoint.Terminal.Shell;
 
 namespace Datapoint.Terminal.Tests.Shell;
@@ -35,6 +35,6 @@ public sealed class HistoryWindowTests
         var window = new HistoryWindow(new FakeHistory { IsEmpty = true });
         window.Show();
 
-        Assert.Equal("No conversations yet. Conversations with the agent in this project are kept here.", window.FindControl<TextBlock>("Status")!.Text);
+        Assert.Equal("No conversations yet. Conversations with the agent in this workspace are kept here.", window.FindControl<TextBlock>("Status")!.Text);
     }
 }

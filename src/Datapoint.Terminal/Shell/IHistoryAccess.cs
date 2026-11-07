@@ -1,8 +1,8 @@
-using Datapoint.Terminal.Agent.Projects.History;
+using Datapoint.Terminal.Agent.Workspaces.History;
 
 namespace Datapoint.Terminal.Shell;
 
-// What the history window may do with a project's history. Failures are InvalidOperationException, with a message to show.
+// What the history window may do with a workspace's history. Failures are InvalidOperationException, with a message to show.
 public interface IHistoryAccess
 {
     int? RetentionDays { get; }
@@ -17,7 +17,7 @@ public interface IHistoryAccess
 
     IReadOnlyList<ConnectionUsage> Usage();
 
-    string ProjectName { get; }
+    string WorkspaceName { get; }
 
     // Null clears everything.
     void Clear(string? connection);

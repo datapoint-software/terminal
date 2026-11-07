@@ -1,7 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Datapoint.Terminal.Agent;
-using Datapoint.Terminal.Agent.Projects;
+using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Agent.Safety;
 using Datapoint.Terminal.Resources;
 
@@ -103,7 +103,7 @@ public sealed partial class ApprovalViewModel : ObservableObject
         : Kind == ProposalKind.Plan ? Strings.ApprovalRiskPlan
         : Kind == ProposalKind.EditFile ? Strings.ApprovalRiskEdit
         : Kind == ProposalKind.SendKeys && Risk != CommandRisk.AlwaysAsk ? Strings.ApprovalRiskKeys
-        : IgnoredFile is not null ? Strings.Format(Strings.ApprovalRiskIgnored, ProjectFolders.Display(IgnoredFile))
+        : IgnoredFile is not null ? Strings.Format(Strings.ApprovalRiskIgnored, WorkspaceFolders.Display(IgnoredFile))
         : Risk switch
     {
         CommandRisk.ReadOnly => Strings.ApprovalRiskReadOnly,

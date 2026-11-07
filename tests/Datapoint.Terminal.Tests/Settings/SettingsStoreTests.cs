@@ -1,4 +1,4 @@
-using Datapoint.Terminal.Agent.Projects;
+using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Agent;
 using Datapoint.Terminal.Agent.Providers;
 using Datapoint.Terminal.Settings;
@@ -49,10 +49,10 @@ public sealed class SettingsStoreTests : IDisposable
     [Fact]
     public void Keeps_trust_decisions_with_the_files_they_covered()
     {
-        var record = new ProjectTrustRecord { Folder = "/work/site", IsTrusted = true, InstructionFiles = ["/work/site/AGENTS.md"] };
-        new SettingsStore(FilePath).Save(new AppSettings { TrustedProjects = [record] });
+        var record = new WorkspaceTrustRecord { Folder = "/work/site", IsTrusted = true, InstructionFiles = ["/work/site/AGENTS.md"] };
+        new SettingsStore(FilePath).Save(new AppSettings { TrustedWorkspaces = [record] });
 
-        var loaded = Assert.Single(new SettingsStore(FilePath).Load().TrustedProjects);
+        var loaded = Assert.Single(new SettingsStore(FilePath).Load().TrustedWorkspaces);
 
         Assert.Equal(("/work/site", true), (loaded.Folder, loaded.IsTrusted));
         Assert.Equal(record.InstructionFiles, loaded.InstructionFiles);
@@ -61,7 +61,7 @@ public sealed class SettingsStoreTests : IDisposable
     [Fact]
     public void Keeps_confirmed_connections()
     {
-        var web = new ProjectConnection { Name = "web", SshHost = "web1", Environment = "production", ApprovalMode = ApprovalMode.Ask };
+        var web = new WorkspaceConnection { Name = "web", SshHost = "web1", Environment = "production", ApprovalMode = ApprovalMode.Ask };
         new SettingsStore(FilePath).Save(new AppSettings { ConfirmedConnections = [new ConfirmedConnections { Folder = "/work/site", Connections = [web] }] });
 
         var loaded = Assert.Single(new SettingsStore(FilePath).Load().ConfirmedConnections);
@@ -110,14 +110,14 @@ public sealed class SettingsStoreTests : IDisposable
     }
 
     [Fact]
-    public void Reads_a_file_from_before_projects_with_no_project_lists()
+    public void Reads_a_file_from_before_workspaces_with_no_workspace_lists()
     {
         Directory.CreateDirectory(Path.GetDirectoryName(FilePath)!);
         File.WriteAllText(FilePath, "{\"version\": 1, \"providers\": []}");
 
         var settings = new SettingsStore(FilePath).Load();
 
-        Assert.Empty(settings.RecentProjects);
-        Assert.Empty(settings.OpenProjects);
+        Assert.Empty(settings.RecentWorkspaces);
+        Assert.Empty(settings.OpenWorkspaces);
     }
 }

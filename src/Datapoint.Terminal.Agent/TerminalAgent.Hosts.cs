@@ -18,7 +18,7 @@ public sealed partial class TerminalAgent
     [
         new ToolFunction(
             "read_host_docs",
-            "Returns a connection's documentation from the project's hosts/ folder: what the machine is, what runs on it, and a "
+            "Returns a connection's documentation from the workspace's hosts/ folder: what the machine is, what runs on it, and a "
             + "maintenance log. Read it before working on a host, and before changing it.",
             """
             {"type":"object","properties":{
@@ -127,7 +127,7 @@ public sealed partial class TerminalAgent
 
         if (!HostDocs!.CanWrite)
         {
-            return "Not changed: this window can't write the project's files (it's open read-only).";
+            return "Not changed: this window can't write the workspace's files (it's open read-only).";
         }
 
         if (_redactor.Find(written).Count > 0)

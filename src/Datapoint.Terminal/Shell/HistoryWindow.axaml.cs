@@ -3,7 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Threading;
-using Datapoint.Terminal.Agent.Projects.History;
+using Datapoint.Terminal.Agent.Workspaces.History;
 using Datapoint.Terminal.Resources;
 
 namespace Datapoint.Terminal.Shell;

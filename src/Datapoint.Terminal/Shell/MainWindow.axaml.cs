@@ -2,8 +2,8 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Threading;
 using Datapoint.Terminal.Agent;
-using Datapoint.Terminal.Agent.Projects;
-using Datapoint.Terminal.Agent.Projects.History;
+using Datapoint.Terminal.Agent.Workspaces;
+using Datapoint.Terminal.Agent.Workspaces.History;
 using Datapoint.Terminal.Agent.Providers;
 using Datapoint.Terminal.Agent.Safety;
 using Datapoint.Terminal.Chat;
@@ -19,7 +19,7 @@ public sealed partial class MainWindow : Window, ITerminalOpener
 {
     private readonly ChatViewModel _chat = new(new AvaloniaUiThread());
     private readonly SecretRedactor _redactor = new();
-    private readonly ProjectWindows _windows;
+    private readonly WorkspaceWindows _windows;
     private readonly SettingsViewModel _settings;
     private readonly Avalonia.Threading.DispatcherTimer _pendingOutputTimer = new() { Interval = TimeSpan.FromSeconds(1) };
     private readonly NativeMenu _recentMenu = [];
@@ -27,18 +27,18 @@ public sealed partial class MainWindow : Window, ITerminalOpener
     private string? _clientSignature;
     private ProviderAccount? _provider;
 
-    public MainWindow(Project project, ProjectWindows windows)
+    public MainWindow(Workspace workspace, WorkspaceWindows windows)
     {
-        ArgumentNullException.ThrowIfNull(project);
+        ArgumentNullException.ThrowIfNull(workspace);
         ArgumentNullException.ThrowIfNull(windows);
         InitializeComponent();
-        Project = project;
+        Workspace = workspace;
         _windows = windows;
         _settings = windows.Settings;
         _settings.Changed += OnSettingsChanged;
         _settings.AppearanceChanged += OnAppearanceChanged;
         ActualThemeVariantChanged += (_, _) => ApplyAppearance();
-        _settings.ProjectsChanged += OnProjectsChanged;
+        _settings.WorkspacesChanged += OnWorkspacesChanged;
         _chat.SettingsRequested = windows.OpenSettings;
         _chat.MessageSent = message => Record(HistoryEntryKind.User, message);
         _chat.Cleared = EndConversation;
@@ -54,14 +54,14 @@ public sealed partial class MainWindow : Window, ITerminalOpener
             _chat.AddNotice(problem);
         }
 
-        foreach (var projectProblem in project.Problems)
+        foreach (var workspaceProblem in workspace.Problems)
         {
-            _chat.AddNotice(projectProblem);
+            _chat.AddNotice(workspaceProblem);
         }
 
-        if (project.IsReadOnly)
+        if (workspace.IsReadOnly)
         {
-            _chat.AddNotice(Strings.NoticeProjectReadOnly);
+            _chat.AddNotice(Strings.NoticeWorkspaceReadOnly);
         }
 
         UpdateTitle();
@@ -82,7 +82,7 @@ public sealed partial class MainWindow : Window, ITerminalOpener
         };
     }
 
-    public Project Project { get; }
+    public Workspace Workspace { get; }
 
     // Trust is settled before any terminal opens, so the first conversation already reads the files the right way.
     private async Task OnOpenedAsync()
@@ -121,9 +121,9 @@ public sealed partial class MainWindow : Window, ITerminalOpener
 
     private void OnAppearanceChanged(object? sender, EventArgs e) => ApplyAppearance();
 
-    private void OnProjectsChanged(object? sender, EventArgs e) => FillRecentMenu();
+    private void OnWorkspacesChanged(object? sender, EventArgs e) => FillRecentMenu();
 
-    private void UpdateTitle() => Title = WindowTitles.For(Project.Name, SelectedTab?.ShellTitle, _chat.NeedsUser);
+    private void UpdateTitle() => Title = WindowTitles.For(Workspace.Name, SelectedTab?.ShellTitle, _chat.NeedsUser);
 
     private void ApplySettings()
     {
@@ -241,7 +241,7 @@ public sealed partial class MainWindow : Window, ITerminalOpener
     private async Task StopAsync()
     {
         _settings.Changed -= OnSettingsChanged;
-        _settings.ProjectsChanged -= OnProjectsChanged;
+        _settings.WorkspacesChanged -= OnWorkspacesChanged;
         _agent?.Dispose();
         _chat.Dispose();
         CloseHistory();
@@ -250,6 +250,6 @@ public sealed partial class MainWindow : Window, ITerminalOpener
             await DisposeTabAsync(tab).ConfigureAwait(true);
         }
 
-        Project.Dispose();
+        Workspace.Dispose();
     }
 }

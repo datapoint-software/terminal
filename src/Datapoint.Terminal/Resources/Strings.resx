@@ -258,11 +258,11 @@
   <data name="MenuFile" xml:space="preserve">
     <value>_File</value>
   </data>
-  <data name="MenuNewProject" xml:space="preserve">
-    <value>_New Project…</value>
+  <data name="MenuNewWorkspace" xml:space="preserve">
+    <value>_New Workspace…</value>
   </data>
-  <data name="MenuOpenProject" xml:space="preserve">
-    <value>_Open Project…</value>
+  <data name="MenuOpenWorkspace" xml:space="preserve">
+    <value>_Open Workspace…</value>
   </data>
   <data name="MenuOpenRecent" xml:space="preserve">
     <value>Open _Recent</value>
@@ -276,20 +276,20 @@
   <data name="MenuCloseWindow" xml:space="preserve">
     <value>_Close Window</value>
   </data>
-  <data name="PickerNewProject" xml:space="preserve">
-    <value>Choose or create a folder for the new project</value>
+  <data name="PickerNewWorkspace" xml:space="preserve">
+    <value>Choose or create a folder for the new workspace</value>
   </data>
-  <data name="PickerOpenProject" xml:space="preserve">
-    <value>Choose a project folder</value>
+  <data name="PickerOpenWorkspace" xml:space="preserve">
+    <value>Choose a workspace folder</value>
   </data>
-  <data name="NoticeProjectReadOnly" xml:space="preserve">
-    <value>This project is open in another copy of Datapoint Terminal, so nothing is saved to it from this window.</value>
+  <data name="NoticeWorkspaceReadOnly" xml:space="preserve">
+    <value>This workspace is open in another copy of Datapoint Terminal, so nothing is saved to it from this window.</value>
   </data>
-  <data name="NoticeProjectFailed" xml:space="preserve">
-    <value>The project couldn't be opened. {0}</value>
+  <data name="NoticeWorkspaceFailed" xml:space="preserve">
+    <value>The workspace couldn't be opened. {0}</value>
   </data>
-  <data name="NoticeProjectIsNotNew" xml:space="preserve">
-    <value>{0} is already a project, so it was opened as it is.</value>
+  <data name="NoticeWorkspaceIsNotNew" xml:space="preserve">
+    <value>{0} is already a workspace, so it was opened as it is.</value>
   </data>
   <data name="WindowTitle" xml:space="preserve">
     <value>{0} — Datapoint Terminal</value>
@@ -352,13 +352,13 @@
     <value>No hosts in ~/.ssh/config</value>
   </data>
   <data name="AddHostTitle" xml:space="preserve">
-    <value>Add {0} to this project?</value>
+    <value>Add {0} to this workspace?</value>
   </data>
   <data name="AddHostMessage" xml:space="preserve">
-    <value>{0} is in your ~/.ssh/config but not in this project. Adding it lists it in .terminal.json, which is shared with the project, and lets the agent keep documentation for it in hosts/. You can also open it once without adding it.</value>
+    <value>{0} is in your ~/.ssh/config but not in this workspace. Adding it lists it in .terminal.json, which is shared with the workspace, and lets the agent keep documentation for it in hosts/. You can also open it once without adding it.</value>
   </data>
   <data name="AddHostAdd" xml:space="preserve">
-    <value>Add to Project</value>
+    <value>Add to Workspace</value>
   </data>
   <data name="AddHostOpenOnce" xml:space="preserve">
     <value>Open Without Adding</value>
@@ -366,11 +366,11 @@
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
-  <data name="NoticeProjectReadOnlyNotAdded" xml:space="preserve">
-    <value>{0} wasn't added: this project is read-only here.</value>
+  <data name="NoticeWorkspaceReadOnlyNotAdded" xml:space="preserve">
+    <value>{0} wasn't added: this workspace is read-only here.</value>
   </data>
   <data name="NoticeHostAdded" xml:space="preserve">
-    <value>{0} was added to this project's connections.</value>
+    <value>{0} was added to this workspace's connections.</value>
   </data>
   <data name="PromptFromServer" xml:space="preserve">
     <value>From the server:</value>
@@ -444,14 +444,14 @@ Fingerprint: {2}</value>
   <data name="NoticeLoginNote" xml:space="preserve">
     <value>{0}: {1}</value>
   </data>
-  <data name="MenuProjectTrust" xml:space="preserve">
-    <value>Project Trust…</value>
+  <data name="MenuWorkspaceTrust" xml:space="preserve">
+    <value>Workspace Trust…</value>
   </data>
   <data name="TrustTitle" xml:space="preserve">
     <value>Trust {0}?</value>
   </data>
   <data name="TrustMessage" xml:space="preserve">
-    <value>When you trust a project, its instruction files guide the agent and its connections can be opened. Trust it only if you know where its files come from: a cloned repository or a shared folder can hold instructions written to mislead the agent. Until you trust it, the agent reads these files as data, not instructions.</value>
+    <value>When you trust a workspace, its instruction files guide the agent and its connections can be opened. Trust it only if you know where its files come from: a cloned repository or a shared folder can hold instructions written to mislead the agent. Until you trust it, the agent reads these files as data, not instructions.</value>
   </data>
   <data name="TrustFiles" xml:space="preserve">
     <value>Instruction files:</value>
@@ -460,7 +460,7 @@ Fingerprint: {2}</value>
     <value>Connections in .terminal.json:</value>
   </data>
   <data name="TrustNothing" xml:space="preserve">
-    <value>This project has no instruction files or connections yet.</value>
+    <value>This workspace has no instruction files or connections yet.</value>
   </data>
   <data name="TrustNew" xml:space="preserve">
     <value>{0} (new)</value>
@@ -469,13 +469,13 @@ Fingerprint: {2}</value>
     <value>Don't Trust</value>
   </data>
   <data name="TrustTrust" xml:space="preserve">
-    <value>Trust Project</value>
+    <value>Trust Workspace</value>
   </data>
   <data name="NoticeInstructions" xml:space="preserve">
     <value>The agent follows the instructions in {0}.</value>
   </data>
   <data name="NoticeInstructionsData" xml:space="preserve">
-    <value>The agent reads {0} as data, not instructions, because you haven't trusted it. To change this, choose File › Project Trust…</value>
+    <value>The agent reads {0} as data, not instructions, because you haven't trusted it. To change this, choose File › Workspace Trust…</value>
   </data>
   <data name="NoticeInstructionsCut" xml:space="preserve">
     <value>Instruction files are limited to 32 KB in all, so {0} was cut short.</value>
@@ -490,7 +490,7 @@ Fingerprint: {2}</value>
     <value>{0} is in a Git repository, and its .terminal folder isn't ignored. That folder is personal: it holds your terminal history and the agent's notes, which can include command output and details of your machines. If it's committed, everyone who can read the repository can read them. Add .terminal/ to the .gitignore in {1}?</value>
   </data>
   <data name="GitIgnoreTracked" xml:space="preserve">
-    <value>Some of .terminal is already committed. Ignoring it doesn't remove it from the repository; to stop tracking it, run this in the project's folder, then commit:
+    <value>Some of .terminal is already committed. Ignoring it doesn't remove it from the repository; to stop tracking it, run this in the workspace's folder, then commit:
 
 git rm -r --cached .terminal</value>
   </data>
@@ -510,7 +510,7 @@ git rm -r --cached .terminal</value>
     <value>The .gitignore couldn't be changed: {0}</value>
   </data>
   <data name="NoticeGitTracked" xml:space="preserve">
-    <value>Some of this project's .terminal folder is committed to Git, although it's ignored now. To stop tracking it, run git rm -r --cached .terminal in the project's folder, then commit.</value>
+    <value>Some of this workspace's .terminal folder is committed to Git, although it's ignored now. To stop tracking it, run git rm -r --cached .terminal in the workspace's folder, then commit.</value>
   </data>
   <data name="ReviewTitle" xml:space="preserve">
     <value>Review connection changes</value>
@@ -540,7 +540,7 @@ git rm -r --cached .terminal</value>
     <value>Applied changes to {0} from .terminal.json, since they only make things stricter.</value>
   </data>
   <data name="NoticeConnectionsHeld" xml:space="preserve">
-    <value>Changes to connections in .terminal.json are waiting for your review; the connections keep the settings you confirmed. They're shown again when you next open the project.</value>
+    <value>Changes to connections in .terminal.json are waiting for your review; the connections keep the settings you confirmed. They're shown again when you next open the workspace.</value>
   </data>
   <data name="NoticeInstructionsChanged" xml:space="preserve">
     <value>{0} changed since the agent last read it.</value>
@@ -606,7 +606,7 @@ git rm -r --cached .terminal</value>
     <value>Waiting for you — {0}</value>
   </data>
   <data name="NoticeSyncFolder" xml:space="preserve">
-    <value>{0} is inside {1} ({2}). Its .terminal folder holds this project's conversations and terminal output, which {1} would upload, and syncing can damage a database while it's open. Consider moving the project out of {2}, or excluding .terminal from syncing. This warning isn't shown again.</value>
+    <value>{0} is inside {1} ({2}). Its .terminal folder holds this workspace's conversations and terminal output, which {1} would upload, and syncing can damage a database while it's open. Consider moving the workspace out of {2}, or excluding .terminal from syncing. This warning isn't shown again.</value>
   </data>
   <data name="SecretTitle" xml:space="preserve">
     <value>Possible Secret in a File</value>
@@ -639,7 +639,7 @@ git rm -r --cached .terminal</value>
     <value>Not sent to the AI provider, as you chose: {0}</value>
   </data>
   <data name="NoticeHistoryUnavailable" xml:space="preserve">
-    <value>This conversation isn't being kept in the project's history, which couldn't be written: {0}</value>
+    <value>This conversation isn't being kept in the workspace's history, which couldn't be written: {0}</value>
   </data>
   <data name="ApprovalHeadingOpen" xml:space="preserve">
     <value>The agent wants to open a terminal</value>
@@ -657,7 +657,7 @@ git rm -r --cached .terminal</value>
     <value>For {0} · {1}</value>
   </data>
   <data name="NoticeAgentConnectionGone" xml:space="preserve">
-    <value>The agent asked for a terminal on {0}, which the project no longer lists.</value>
+    <value>The agent asked for a terminal on {0}, which the workspace no longer lists.</value>
   </data>
   <data name="NoticeInstructionsSecretChanged" xml:space="preserve">
     <value>{0} changed since the agent last read it, only in values that look like secrets. Those values aren't kept, so the change can't be shown; open the file to check it.</value>
@@ -672,28 +672,28 @@ git rm -r --cached .terminal</value>
     <value>The agent's memory goes with this conversation: {0}.</value>
   </data>
   <data name="MenuOpenGlobalMemory" xml:space="preserve">
-    <value>Open Agent Memory (All Projects)</value>
+    <value>Open Agent Memory (All Workspaces)</value>
   </data>
-  <data name="MenuOpenProjectMemory" xml:space="preserve">
-    <value>Open Agent Memory (This Project)</value>
+  <data name="MenuOpenWorkspaceMemory" xml:space="preserve">
+    <value>Open Agent Memory (This Workspace)</value>
   </data>
-  <data name="MenuClearProjectMemory" xml:space="preserve">
-    <value>Clear This Project's Agent Memory…</value>
+  <data name="MenuClearWorkspaceMemory" xml:space="preserve">
+    <value>Clear This Workspace's Agent Memory…</value>
   </data>
   <data name="NoticeMemoryUnwritable" xml:space="preserve">
     <value>Couldn't write the memory file {0}: {1}</value>
   </data>
   <data name="ClearMemoryTitle" xml:space="preserve">
-    <value>Clear this project's memory?</value>
+    <value>Clear this workspace's memory?</value>
   </data>
   <data name="ClearMemoryMessage" xml:space="preserve">
-    <value>The agent forgets every note it kept for this project. Notes kept for all projects stay.</value>
+    <value>The agent forgets every note it kept for this workspace. Notes kept for all workspaces stay.</value>
   </data>
   <data name="ClearMemoryConfirm" xml:space="preserve">
     <value>Clear Memory</value>
   </data>
   <data name="NoticeMemoryCleared" xml:space="preserve">
-    <value>This project's memory was cleared.</value>
+    <value>This workspace's memory was cleared.</value>
   </data>
   <data name="MemoryOpen" xml:space="preserve">
     <value>Open memory</value>
@@ -729,7 +729,7 @@ git rm -r --cached .terminal</value>
     <value>{0} entries</value>
   </data>
   <data name="HistoryEmpty" xml:space="preserve">
-    <value>No conversations yet. Conversations with the agent in this project are kept here.</value>
+    <value>No conversations yet. Conversations with the agent in this workspace are kept here.</value>
   </data>
   <data name="HistoryNoMatches" xml:space="preserve">
     <value>Nothing matches. Every word must appear.</value>
@@ -762,7 +762,7 @@ git rm -r --cached .terminal</value>
     <value>Clear history?</value>
   </data>
   <data name="HistoryClearMessage" xml:space="preserve">
-    <value>Clearing a connection deletes the commands the agent ran there and their output; the rest of each conversation stays. Clearing everything deletes all of this project's history. This can't be undone.</value>
+    <value>Clearing a connection deletes the commands the agent ran there and their output; the rest of each conversation stays. Clearing everything deletes all of this workspace's history. This can't be undone.</value>
   </data>
   <data name="HistoryClearConnection" xml:space="preserve">
     <value>Clear {0}</value>
@@ -936,7 +936,7 @@ git rm -r --cached .terminal</value>
     <value>Move Pane to Its Own Tab</value>
   </data>
   <data name="NoticePaneConnectionGone" xml:space="preserve">
-    <value>Couldn't split: the project no longer lists the connection {0}.</value>
+    <value>Couldn't split: the workspace no longer lists the connection {0}.</value>
   </data>
   <data name="ApprovalHeadingPlan" xml:space="preserve">
     <value>The agent proposes this plan</value>
@@ -1023,7 +1023,7 @@ git rm -r --cached .terminal</value>
     <value>This recording can't be played: {0}</value>
   </data>
   <data name="RecordingsNote" xml:space="preserve">
-    <value>Kept on this computer in the project's .terminal folder, with secrets removed where they're recognized. Also playable with asciinema.</value>
+    <value>Kept on this computer in the workspace's .terminal folder, with secrets removed where they're recognized. Also playable with asciinema.</value>
   </data>
   <data name="MenuRunRunbook" xml:space="preserve">
     <value>Run Runbook</value>
@@ -1353,7 +1353,7 @@ git rm -r --cached .terminal</value>
     <value>Open documentation</value>
   </data>
   <data name="SidebarNoHosts" xml:space="preserve">
-    <value>No hosts in this project yet.</value>
+    <value>No hosts in this workspace yet.</value>
   </data>
   <data name="MenuHideSidebar" xml:space="preserve">
     <value>Hide Sidebar</value>
@@ -1362,16 +1362,16 @@ git rm -r --cached .terminal</value>
     <value>Show Sidebar</value>
   </data>
   <data name="SidebarLabel" xml:space="preserve">
-    <value>Project hosts and files</value>
+    <value>Workspace hosts and files</value>
   </data>
   <data name="SidebarAddHost" xml:space="preserve">
-    <value>Add {0} to the project</value>
+    <value>Add {0} to the workspace</value>
   </data>
   <data name="SidebarNoDocumentation" xml:space="preserve">
     <value>{0} has no documentation yet.</value>
   </data>
   <data name="SidebarReadOnly" xml:space="preserve">
-    <value>This project is open read-only in this window, so files can't be added here.</value>
+    <value>This workspace is open read-only in this window, so files can't be added here.</value>
   </data>
   <data name="SidebarNewFileTitle" xml:space="preserve">
     <value>New file</value>
@@ -1457,26 +1457,26 @@ git rm -r --cached .terminal</value>
   <data name="NoticeRemoteNoIntegration" xml:space="preserve">
     <value>{0}'s login shell isn't bash, zsh or fish, so the app judges when commands finish from their output.</value>
   </data>
-  <data name="ProjectHostKeyTitle" xml:space="preserve">
+  <data name="WorkspaceHostKeyTitle" xml:space="preserve">
     <value>{0} has a different host key</value>
   </data>
-  <data name="ProjectHostKeyMessage" xml:space="preserve">
-    <value>Your known_hosts accepts the key {1} sent, but it isn't the one this project last saw for {0}. The machine may have been rebuilt or replaced, so this project's documentation for {0} may no longer be right.</value>
+  <data name="WorkspaceHostKeyMessage" xml:space="preserve">
+    <value>Your known_hosts accepts the key {1} sent, but it isn't the one this workspace last saw for {0}. The machine may have been rebuilt or replaced, so this workspace's documentation for {0} may no longer be right.</value>
   </data>
-  <data name="ProjectHostKeyDetails" xml:space="preserve">
+  <data name="WorkspaceHostKeyDetails" xml:space="preserve">
     <value>Last seen: {0}\nNow: {1}</value>
   </data>
-  <data name="ProjectHostKeyArchive" xml:space="preserve">
+  <data name="WorkspaceHostKeyArchive" xml:space="preserve">
     <value>Set Documentation Aside</value>
   </data>
-  <data name="ProjectHostKeyReview" xml:space="preserve">
+  <data name="WorkspaceHostKeyReview" xml:space="preserve">
     <value>Review Documentation</value>
   </data>
-  <data name="ProjectHostKeyKeep" xml:space="preserve">
+  <data name="WorkspaceHostKeyKeep" xml:space="preserve">
     <value>Keep Documentation</value>
   </data>
-  <data name="NoticeProjectHostKeyChanged" xml:space="preserve">
-    <value>{0} has a different host key from the one this project last saw. Your known_hosts accepts it, and there's no documentation for {0} to review.</value>
+  <data name="NoticeWorkspaceHostKeyChanged" xml:space="preserve">
+    <value>{0} has a different host key from the one this workspace last saw. Your known_hosts accepts it, and there's no documentation for {0} to review.</value>
   </data>
   <data name="NoticeHostDocsArchived" xml:space="preserve">
     <value>Moved the documentation for {0} to {1}, since the machine may have been replaced.</value>
@@ -1611,9 +1611,9 @@ git rm -r --cached .terminal</value>
     <value>Keep history for</value>
   </data>
   <data name="HistoryKeepHint" xml:space="preserve">
-    <value>Conversations and terminal output, kept in each project's .terminal folder. Older history is deleted when the project opens.</value>
+    <value>Conversations and terminal output, kept in each workspace's .terminal folder. Older history is deleted when the workspace opens.</value>
   </data>
-  <data name="HistoryInProject" xml:space="preserve">
+  <data name="HistoryInWorkspace" xml:space="preserve">
     <value>In {0}</value>
   </data>
   <data name="HistoryUsage" xml:space="preserve">
@@ -1628,11 +1628,11 @@ git rm -r --cached .terminal</value>
   <data name="HistoryClearHint" xml:space="preserve">
     <value>Clearing deletes a connection's conversations, recordings and saved output. It can't be undone.</value>
   </data>
-  <data name="HistoryNoProject" xml:space="preserve">
-    <value>Open a project to see and clear its history here.</value>
+  <data name="HistoryNoWorkspace" xml:space="preserve">
+    <value>Open a workspace to see and clear its history here.</value>
   </data>
   <data name="HistoryNothingKept" xml:space="preserve">
-    <value>Nothing is kept for this project's connections yet.</value>
+    <value>Nothing is kept for this workspace's connections yet.</value>
   </data>
   <data name="HistoryClearOneTitle" xml:space="preserve">
     <value>Clear the history of {0}?</value>
@@ -1644,7 +1644,7 @@ git rm -r --cached .terminal</value>
     <value>Add a Host</value>
   </data>
   <data name="NewHostCaption" xml:space="preserve">
-    <value>Saved in .terminal.json, which everyone on this project shares.</value>
+    <value>Saved in .terminal.json, which everyone on this workspace shares.</value>
   </data>
   <data name="NewHostName" xml:space="preserve">
     <value>Name</value>
@@ -1698,7 +1698,7 @@ git rm -r --cached .terminal</value>
     <value>Give the host a name of up to 40 letters, digits, spaces, dots, dashes, underscores or @.</value>
   </data>
   <data name="NewHostNameTaken" xml:space="preserve">
-    <value>This project already has a host named {0}.</value>
+    <value>This workspace already has a host named {0}.</value>
   </data>
   <data name="NewHostAddressProblem" xml:space="preserve">
     <value>Enter a host name, an IP address or a host from your SSH config.</value>
@@ -1710,7 +1710,7 @@ git rm -r --cached .terminal</value>
     <value>The port is a number from 1 to 65535.</value>
   </data>
   <data name="NewHostReadOnly" xml:space="preserve">
-    <value>This project's settings can't be changed here, so hosts can't be added.</value>
+    <value>This workspace's settings can't be changed here, so hosts can't be added.</value>
   </data>
   <data name="HostFileMenu" xml:space="preserve">
     <value>Open File on Host…</value>

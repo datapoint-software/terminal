@@ -1,6 +1,6 @@
 namespace Datapoint.Terminal.Agent.Runbooks;
 
-// The project's runbooks/ folder. In a project the user hasn't trusted, runbooks are shown to the model as data, not steps to
+// The workspace's runbooks/ folder. In a workspace the user hasn't trusted, runbooks are shown to the model as data, not steps to
 // follow. IsTrusted is asked each time, since trust can change while the window is open.
 public sealed record RunbookFolder(string Path, Func<string, bool> IsIgnored, bool CanWrite, Func<bool> IsTrusted)
 {

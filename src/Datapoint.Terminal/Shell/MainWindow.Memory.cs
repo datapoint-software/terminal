@@ -4,8 +4,8 @@ using Avalonia.Threading;
 using Datapoint.Terminal.Agent;
 using Datapoint.Terminal.Agent.Hosts;
 using Datapoint.Terminal.Agent.Memory;
-using Datapoint.Terminal.Agent.Projects;
-using Datapoint.Terminal.Agent.Projects.Ignore;
+using Datapoint.Terminal.Agent.Workspaces;
+using Datapoint.Terminal.Agent.Workspaces.Ignore;
 using Datapoint.Terminal.Resources;
 
 namespace Datapoint.Terminal.Shell;
@@ -13,26 +13,26 @@ namespace Datapoint.Terminal.Shell;
 // Product decisions 29 and 88: memory is plain files the user can read, edit and clear, and every change is shown in the chat.
 public sealed partial class MainWindow
 {
-    // A read-only window would race the window that holds the project's lock, so only the global memory is written from it.
-    private AgentMemory CreateMemory() => new(GlobalMemoryPath, Project.IsReadOnly ? null : ProjectMemoryPath);
+    // A read-only window would race the window that holds the workspace's lock, so only the global memory is written from it.
+    private AgentMemory CreateMemory() => new(GlobalMemoryPath, Workspace.IsReadOnly ? null : WorkspaceMemoryPath);
 
-    // Product decision 89: documentation for each connection, in the project's hosts/ folder.
+    // Product decision 89: documentation for each connection, in the workspace's hosts/ folder.
     private HostDocsFolder CreateHostDocs() => new(
-        Path.Combine(Project.Folder, "hosts"),
-        path => TerminalIgnore.IsIgnored(path, Project.Folder, ProjectFolders.Home),
-        CanWrite: !Project.IsReadOnly);
+        Path.Combine(Workspace.Folder, "hosts"),
+        path => TerminalIgnore.IsIgnored(path, Workspace.Folder, WorkspaceFolders.Home),
+        CanWrite: !Workspace.IsReadOnly);
 
     private void AddMemoryItems(NativeMenu file)
     {
         file.Add(Item(Strings.MenuOpenGlobalMemory, null, () => OpenMemory(GlobalMemoryPath)));
-        if (ProjectMemoryPath is not { } project)
+        if (WorkspaceMemoryPath is not { } workspace)
         {
             return;
         }
 
-        file.Add(Item(Strings.MenuOpenProjectMemory, null, () => OpenMemory(project)));
-        var clear = Item(Strings.MenuClearProjectMemory, null, () => _ = ClearMemoryAsync(project));
-        clear.IsEnabled = !Project.IsReadOnly;
+        file.Add(Item(Strings.MenuOpenWorkspaceMemory, null, () => OpenMemory(workspace)));
+        var clear = Item(Strings.MenuClearWorkspaceMemory, null, () => _ = ClearMemoryAsync(workspace));
+        clear.IsEnabled = !Workspace.IsReadOnly;
         file.Add(clear);
     }
 
@@ -47,7 +47,7 @@ public sealed partial class MainWindow
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {
-            _chat.AddNotice(Strings.Format(Strings.NoticeMemoryUnwritable, ProjectFolders.Display(path), exception.Message));
+            _chat.AddNotice(Strings.Format(Strings.NoticeMemoryUnwritable, WorkspaceFolders.Display(path), exception.Message));
             return;
         }
 
@@ -76,7 +76,7 @@ public sealed partial class MainWindow
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {
-            _chat.AddNotice(Strings.Format(Strings.NoticeMemoryUnwritable, ProjectFolders.Display(path), exception.Message));
+            _chat.AddNotice(Strings.Format(Strings.NoticeMemoryUnwritable, WorkspaceFolders.Display(path), exception.Message));
         }
     }
 

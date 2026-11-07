@@ -1,11 +1,11 @@
 using System.Globalization;
-using Datapoint.Terminal.Agent.Projects;
+using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Resources;
 
 namespace Datapoint.Terminal.Shell;
 
 // What the Add a Host sheet asks for, turned into a connection for .terminal.json, or the first thing to correct.
-public sealed class NewHostForm(IReadOnlyCollection<ProjectConnection> existing, IReadOnlyCollection<string> sshAliases)
+public sealed class NewHostForm(IReadOnlyCollection<WorkspaceConnection> existing, IReadOnlyCollection<string> sshAliases)
 {
     // Lowercase, as the labels are written in .terminal.json; the order matches the segmented control.
     public static IReadOnlyList<string?> Environments { get; } = [null, "development", "staging", "production"];
@@ -35,7 +35,7 @@ public sealed class NewHostForm(IReadOnlyCollection<ProjectConnection> existing,
         Name = alias;
     }
 
-    public (ProjectConnection? Connection, string? Problem) Build()
+    public (WorkspaceConnection? Connection, string? Problem) Build()
     {
         var name = Name.Trim();
         var address = Address.Trim();
@@ -50,7 +50,7 @@ public sealed class NewHostForm(IReadOnlyCollection<ProjectConnection> existing,
             return (null, Strings.NewHostPortProblem);
         }
 
-        var connection = new ProjectConnection
+        var connection = new WorkspaceConnection
         {
             Name = name,
             SshHost = alias,
@@ -63,7 +63,7 @@ public sealed class NewHostForm(IReadOnlyCollection<ProjectConnection> existing,
     }
 
     private string? NameProblem(string name) =>
-        !ProjectConnection.IsPlainLabel(name) ? Strings.NewHostNameProblem
+        !WorkspaceConnection.IsPlainLabel(name) ? Strings.NewHostNameProblem
         : existing.Any(connection => string.Equals(connection.Name, name, StringComparison.OrdinalIgnoreCase)) ? Strings.Format(Strings.NewHostNameTaken, name)
         : null;
 

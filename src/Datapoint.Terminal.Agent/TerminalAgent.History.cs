@@ -1,6 +1,6 @@
 using System.Globalization;
 using System.Text;
-using Datapoint.Terminal.Agent.Projects.History;
+using Datapoint.Terminal.Agent.Workspaces.History;
 using Datapoint.Terminal.Agent.Tools;
 using Microsoft.Extensions.AI;
 
@@ -11,14 +11,14 @@ public sealed partial class TerminalAgent
     private const int HistoryResults = 20;
     private const int HistoryEntryCharacters = 600;
 
-    // Searches the project's history, already redacted when it was stored; null where there's none.
+    // Searches the workspace's history, already redacted when it was stored; null where there's none.
     public Func<string, int, IReadOnlyList<HistoryEntry>>? HistorySearch { get; set; }
 
     private List<AITool> HistoryTools() =>
     [
         new ToolFunction(
             "search_history",
-            "Searches this project's earlier conversations and the commands you ran, with their output, newest first. Use it when the "
+            "Searches this workspace's earlier conversations and the commands you ran, with their output, newest first. Use it when the "
             + "user refers to earlier work (e.g. \"what did we change on web1 last week?\"). Every word must appear.",
             """
             {"type":"object","properties":{

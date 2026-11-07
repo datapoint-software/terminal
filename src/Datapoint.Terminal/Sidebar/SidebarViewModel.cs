@@ -1,15 +1,15 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Datapoint.Terminal.Agent.Projects;
+using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Resources;
 
 namespace Datapoint.Terminal.Sidebar;
 
-// Product decision 98: the project's hosts, then its files. The window says what happens when one is chosen.
-public sealed partial class SidebarViewModel(string projectFolder, string hostsFolder) : ObservableObject
+// Product decision 98: the workspace's hosts, then its files. The window says what happens when one is chosen.
+public sealed partial class SidebarViewModel(string workspaceFolder, string hostsFolder) : ObservableObject
 {
-    public string ProjectFolder { get; } = projectFolder;
+    public string WorkspaceFolder { get; } = workspaceFolder;
 
     public string HostsFolder { get; } = hostsFolder;
 
@@ -17,7 +17,7 @@ public sealed partial class SidebarViewModel(string projectFolder, string hostsF
 
     public bool HasHosts => Hosts.Count > 0;
 
-    // Hosts in the user's SSH configuration that the project doesn't list, folded into one line until asked for.
+    // Hosts in the user's SSH configuration that the workspace doesn't list, folded into one line until asked for.
     public ObservableCollection<SshHostItemViewModel> OtherHosts { get; } = [];
 
     public bool HasOtherHosts => OtherHosts.Count > 0;
@@ -38,9 +38,9 @@ public sealed partial class SidebarViewModel(string projectFolder, string hostsF
     [ObservableProperty]
     public partial FileNodeViewModel? SelectedFile { get; set; }
 
-    public Action<ProjectConnection>? HostChosen { get; set; }
+    public Action<WorkspaceConnection>? HostChosen { get; set; }
 
-    public Action<ProjectConnection>? TerminalRequested { get; set; }
+    public Action<WorkspaceConnection>? TerminalRequested { get; set; }
 
     public Action<string>? HostAdded { get; set; }
 
@@ -50,7 +50,7 @@ public sealed partial class SidebarViewModel(string projectFolder, string hostsF
 
     public Action? NewHostRequested { get; set; }
 
-    public void SetHosts(IReadOnlyList<ProjectConnection> connections, IReadOnlyList<string> otherAliases)
+    public void SetHosts(IReadOnlyList<WorkspaceConnection> connections, IReadOnlyList<string> otherAliases)
     {
         ArgumentNullException.ThrowIfNull(connections);
         ArgumentNullException.ThrowIfNull(otherAliases);
@@ -90,7 +90,7 @@ public sealed partial class SidebarViewModel(string projectFolder, string hostsF
 
     public void RefreshFiles()
     {
-        FileNodeViewModel.Merge(Files, ProjectListing.List(ProjectFolder, ProjectFolder), ProjectFolder, HostsFolder);
+        FileNodeViewModel.Merge(Files, WorkspaceListing.List(WorkspaceFolder, WorkspaceFolder), WorkspaceFolder, HostsFolder);
         foreach (var node in Files)
         {
             node.Refresh();

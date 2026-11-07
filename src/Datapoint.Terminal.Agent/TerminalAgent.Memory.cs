@@ -17,7 +17,7 @@ public sealed partial class TerminalAgent
             + "The user sees each note. Facts about a machine belong in its host documentation instead, and secrets never go here.",
             """
             {"type":"object","properties":{
-              "scope":{"type":"string","enum":["project","global"],"description":"project for this project only; global for everywhere."},
+              "scope":{"type":"string","enum":["workspace","global"],"description":"workspace for this workspace only; global for everywhere."},
               "note":{"type":"string","description":"One line, under 300 characters."}},
              "required":["scope","note"]}
             """,
@@ -27,7 +27,7 @@ public sealed partial class TerminalAgent
             "Removes a note from your memory, given exactly as it appears there, e.g. when it's wrong or no longer applies.",
             """
             {"type":"object","properties":{
-              "scope":{"type":"string","enum":["project","global"]},
+              "scope":{"type":"string","enum":["workspace","global"]},
               "note":{"type":"string"}},
              "required":["scope","note"]}
             """,
@@ -85,7 +85,7 @@ public sealed partial class TerminalAgent
     private string? MemoryTarget(AIFunctionArguments arguments, out MemoryScope scope, out string note)
     {
         var scopeText = ToolArguments.GetString(arguments, "scope");
-        scope = string.Equals(scopeText, "global", StringComparison.OrdinalIgnoreCase) ? MemoryScope.Global : MemoryScope.Project;
+        scope = string.Equals(scopeText, "global", StringComparison.OrdinalIgnoreCase) ? MemoryScope.Global : MemoryScope.Workspace;
         note = string.Join(' ', (ToolArguments.GetString(arguments, "note") ?? string.Empty).Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
         if (note.Length == 0)
         {
@@ -101,8 +101,8 @@ public sealed partial class TerminalAgent
 
         if (Memory?.PathFor(scope) is not { } path)
         {
-            note = scope == MemoryScope.Project
-                ? "Not changed: this window can't write the project's memory (it's open read-only)."
+            note = scope == MemoryScope.Workspace
+                ? "Not changed: this window can't write the workspace's memory (it's open read-only)."
                 : "Not changed: memory isn't available here.";
             return null;
         }
@@ -123,5 +123,5 @@ public sealed partial class TerminalAgent
     }
 
     private void RaiseMemory(MemoryScope scope, string path, string verb, string note) =>
-        Raise(new AgentEventArgs(AgentEventKind.MemoryChanged, $"{verb} {(scope == MemoryScope.Global ? "everywhere" : "for this project")}: {note}") { Path = path });
+        Raise(new AgentEventArgs(AgentEventKind.MemoryChanged, $"{verb} {(scope == MemoryScope.Global ? "everywhere" : "for this workspace")}: {note}") { Path = path });
 }

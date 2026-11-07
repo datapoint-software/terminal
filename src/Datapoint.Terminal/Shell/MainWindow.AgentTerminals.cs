@@ -4,8 +4,8 @@ using Datapoint.Terminal.Resources;
 
 namespace Datapoint.Terminal.Shell;
 
-// Terminals the agent opens: a local shell, or one of the project's connections as the user last confirmed it. A host from
-// ~/.ssh/config that the project doesn't list isn't offered; the user opens and adds those.
+// Terminals the agent opens: a local shell, or one of the workspace's connections as the user last confirmed it. A host from
+// ~/.ssh/config that the workspace doesn't list isn't offered; the user opens and adds those.
 public sealed partial class MainWindow
 {
     IReadOnlyList<AgentConnection> ITerminalOpener.Connections =>

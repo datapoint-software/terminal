@@ -4,7 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
-using Datapoint.Terminal.Agent.Projects;
+using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Editor;
 using Datapoint.Terminal.Resources;
 
@@ -44,7 +44,7 @@ public sealed partial class MainWindow
         };
     }
 
-    private void OpenProjectFile(string path)
+    private void OpenWorkspaceFile(string path)
     {
         if (_documents.OfType<DocumentViewModel>().FirstOrDefault(document => string.Equals(document.Path, path, StringComparison.Ordinal)) is { } open)
         {
@@ -171,7 +171,7 @@ public sealed partial class MainWindow
     private HostHeaderViewModel? HostHeaderFor(string path)
     {
         var docs = CreateHostDocs();
-        var connections = Connections.Count > 0 ? Connections : Project.Settings.Connections;
+        var connections = Connections.Count > 0 ? Connections : Workspace.Settings.Connections;
         if (connections.FirstOrDefault(connection => string.Equals(docs.FileFor(connection.Name), path, StringComparison.Ordinal)) is not { } connection)
         {
             return null;
@@ -201,7 +201,7 @@ public sealed partial class MainWindow
         return count == 0 ? string.Empty : Strings.Format(Strings.SidebarOpenTerminals, count);
     }
 
-    private static string? AddressOf(ProjectConnection connection)
+    private static string? AddressOf(WorkspaceConnection connection)
     {
         if (connection.SshHost is { } alias)
         {

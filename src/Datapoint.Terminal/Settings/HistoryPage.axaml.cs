@@ -2,14 +2,14 @@ using System.Globalization;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Layout;
-using Datapoint.Terminal.Agent.Projects.History;
+using Datapoint.Terminal.Agent.Workspaces.History;
 using Datapoint.Terminal.Resources;
 using Datapoint.Terminal.Shell;
 
 namespace Datapoint.Terminal.Settings;
 
-// Settings › History (product decision 52): how long history is kept, for every project, and clearing it per connection in
-// the project whose window Settings was opened from.
+// Settings › History (product decision 52): how long history is kept, for every workspace, and clearing it per connection in
+// the workspace whose window Settings was opened from.
 public sealed partial class HistoryPage : UserControl
 {
     private IHistoryAccess? _access;
@@ -39,7 +39,7 @@ public sealed partial class HistoryPage : UserControl
         RetentionBox.SelectedIndex = Math.Max(0, Array.IndexOf(HistoryWindow.s_retention, _access?.RetentionDays));
         _isLoading = false;
         Connections.Children.Clear();
-        ProjectHeading.Text = _access is null ? string.Empty : Strings.Format(Strings.HistoryInProject, _access.ProjectName);
+        WorkspaceHeading.Text = _access is null ? string.Empty : Strings.Format(Strings.HistoryInWorkspace, _access.WorkspaceName);
         IReadOnlyList<ConnectionUsage> usage = [];
         Try(() => usage = _access?.Usage() ?? []);
         foreach (var item in usage)
@@ -55,7 +55,7 @@ public sealed partial class HistoryPage : UserControl
         var isEmpty = usage.Count == 0;
         ConnectionsGroup.IsVisible = !isEmpty;
         ClearHint.IsVisible = !isEmpty;
-        Status.Text = _access is null ? Strings.HistoryNoProject : isEmpty ? Strings.HistoryNothingKept : Status.Text;
+        Status.Text = _access is null ? Strings.HistoryNoWorkspace : isEmpty ? Strings.HistoryNothingKept : Status.Text;
     }
 
     private Grid Row(ConnectionUsage item)

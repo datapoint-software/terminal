@@ -3,37 +3,37 @@ using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
 using Avalonia.Media.Imaging;
 using Avalonia.VisualTree;
-using Datapoint.Terminal.Agent.Projects;
+using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Sidebar;
 
 namespace Datapoint.Terminal.Tests.Sidebar;
 
 public sealed class SidebarTests : IDisposable
 {
-    private readonly string _project = Path.Combine(Path.GetTempPath(), "sidebar-" + Guid.NewGuid().ToString("N"));
+    private readonly string _workspace = Path.Combine(Path.GetTempPath(), "sidebar-" + Guid.NewGuid().ToString("N"));
 
     public SidebarTests()
     {
         foreach (var folder in new[] { "hosts", "runbooks", ".terminal", ".git", "src/.git" })
         {
-            Directory.CreateDirectory(Path.Combine(_project, folder));
+            Directory.CreateDirectory(Path.Combine(_workspace, folder));
         }
 
         foreach (var file in new[] { "hosts/web1.md", "hosts/db1.md", "runbooks/renew.md", "notes.md", "CLAUDE.md", ".gitignore", ".terminal.json", "deploy.sh", ".terminal/MEMORY.md", "src/.terminal" })
         {
-            File.WriteAllText(Path.Combine(_project, file), string.Empty);
+            File.WriteAllText(Path.Combine(_workspace, file), string.Empty);
         }
     }
 
-    private string HostsFolder => Path.Combine(_project, "hosts");
+    private string HostsFolder => Path.Combine(_workspace, "hosts");
 
-    public void Dispose() => Directory.Delete(_project, recursive: true);
+    public void Dispose() => Directory.Delete(_workspace, recursive: true);
 
     [Fact]
     public void Lists_folders_first_and_hides_only_the_personal_folder_and_git()
     {
-        var top = ProjectListing.List(_project, _project);
-        var inside = ProjectListing.List(Path.Combine(_project, "src"), _project);
+        var top = WorkspaceListing.List(_workspace, _workspace);
+        var inside = WorkspaceListing.List(Path.Combine(_workspace, "src"), _workspace);
 
         Assert.Equal<string>(["hosts", "runbooks", "src", ".gitignore", ".terminal.json", "CLAUDE.md", "deploy.sh", "notes.md"], [.. top.Select(entry => entry.Name)]);
         Assert.True(top.Single(entry => string.Equals(entry.Name, ".gitignore", StringComparison.Ordinal)).IsQuiet);
@@ -43,7 +43,7 @@ public sealed class SidebarTests : IDisposable
     [Fact]
     public void Lists_a_folder_once_opened_and_keeps_what_was_open_on_refresh()
     {
-        var sidebar = new SidebarViewModel(_project, HostsFolder);
+        var sidebar = new SidebarViewModel(_workspace, HostsFolder);
         sidebar.RefreshFiles();
         var hosts = sidebar.Files.Single(node => string.Equals(node.Name, "hosts", StringComparison.Ordinal));
         Assert.Single(hosts.Children);
@@ -55,8 +55,8 @@ public sealed class SidebarTests : IDisposable
         Assert.True(sidebar.Files.Single(node => string.Equals(node.Name, "notes.md", StringComparison.Ordinal)).IsDocument);
         Assert.True(sidebar.Files.Single(node => string.Equals(node.Name, "deploy.sh", StringComparison.Ordinal)).IsOtherFile);
 
-        File.WriteAllText(Path.Combine(_project, "hosts", "backup.md"), string.Empty);
-        File.Delete(Path.Combine(_project, "notes.md"));
+        File.WriteAllText(Path.Combine(_workspace, "hosts", "backup.md"), string.Empty);
+        File.Delete(Path.Combine(_workspace, "notes.md"));
         sidebar.RefreshFiles();
 
         Assert.Same(hosts, sidebar.Files.Single(node => string.Equals(node.Name, "hosts", StringComparison.Ordinal)));
@@ -68,13 +68,13 @@ public sealed class SidebarTests : IDisposable
     [Fact]
     public void Shows_hosts_their_open_terminals_and_the_others_from_ssh_config()
     {
-        var sidebar = new SidebarViewModel(_project, HostsFolder);
+        var sidebar = new SidebarViewModel(_workspace, HostsFolder);
         var chosen = new List<string>();
         var added = new List<string>();
         sidebar.HostChosen = connection => chosen.Add(connection.Name);
         sidebar.HostAdded = added.Add;
 
-        sidebar.SetHosts([new ProjectConnection { Name = "web1", SshHost = "web1", Environment = "production" }, new ProjectConnection { Name = "db1", SshHost = "db1" }], ["bastion", "nas"]);
+        sidebar.SetHosts([new WorkspaceConnection { Name = "web1", SshHost = "web1", Environment = "production" }, new WorkspaceConnection { Name = "db1", SshHost = "db1" }], ["bastion", "nas"]);
         sidebar.SetOpenTerminals(new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase) { ["WEB1"] = 2 });
         sidebar.ShowHost("db1");
         sidebar.ChooseHostCommand.Execute(sidebar.Hosts[0]);
@@ -92,8 +92,8 @@ public sealed class SidebarTests : IDisposable
     [AvaloniaFact]
     public void Renders_hosts_and_files()
     {
-        var sidebar = new SidebarViewModel(_project, HostsFolder);
-        sidebar.SetHosts([new ProjectConnection { Name = "web1", SshHost = "web1" }, new ProjectConnection { Name = "db1", SshHost = "db1" }, new ProjectConnection { Name = "backup", SshHost = "backup" }], ["bastion", "nas", "router"]);
+        var sidebar = new SidebarViewModel(_workspace, HostsFolder);
+        sidebar.SetHosts([new WorkspaceConnection { Name = "web1", SshHost = "web1" }, new WorkspaceConnection { Name = "db1", SshHost = "db1" }, new WorkspaceConnection { Name = "backup", SshHost = "backup" }], ["bastion", "nas", "router"]);
         sidebar.SetOpenTerminals(new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase) { ["web1"] = 1 });
         sidebar.RefreshFiles();
         sidebar.Files.Single(node => string.Equals(node.Name, "hosts", StringComparison.Ordinal)).IsExpanded = true;

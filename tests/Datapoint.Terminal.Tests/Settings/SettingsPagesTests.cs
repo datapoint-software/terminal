@@ -53,7 +53,7 @@ public sealed class SettingsPagesTests : IDisposable
     }
 
     [AvaloniaFact]
-    public void Shows_what_each_connection_keeps_in_the_project()
+    public void Shows_what_each_connection_keeps_in_the_workspace()
     {
         var window = Show(Create(), page: 2);
         window.CaptureRenderedFrame()?.Save("rendered/settings-history.png", new PngBitmapEncoderOptions());

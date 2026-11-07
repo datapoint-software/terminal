@@ -1,6 +1,6 @@
 using Avalonia.Controls;
-using Datapoint.Terminal.Agent.Projects;
-using Datapoint.Terminal.Agent.Projects.Ignore;
+using Datapoint.Terminal.Agent.Workspaces;
+using Datapoint.Terminal.Agent.Workspaces.Ignore;
 using Datapoint.Terminal.Agent.Runbooks;
 using Datapoint.Terminal.Resources;
 
@@ -13,10 +13,10 @@ public sealed partial class MainWindow
     private NativeMenu? _runbookMenu;
 
     private RunbookFolder CreateRunbooks() => new(
-        Path.Combine(Project.Folder, "runbooks"),
-        path => TerminalIgnore.IsIgnored(path, Project.Folder, ProjectFolders.Home),
-        CanWrite: !Project.IsReadOnly,
-        IsTrusted: () => Project.IsDefault || _trust is { IsTrusted: true });
+        Path.Combine(Workspace.Folder, "runbooks"),
+        path => TerminalIgnore.IsIgnored(path, Workspace.Folder, WorkspaceFolders.Home),
+        CanWrite: !Workspace.IsReadOnly,
+        IsTrusted: () => Workspace.IsDefault || _trust is { IsTrusted: true });
 
     private void AddRunbookItems(NativeMenu terminal)
     {

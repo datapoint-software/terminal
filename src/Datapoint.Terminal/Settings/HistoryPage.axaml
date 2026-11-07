@@ -10,7 +10,7 @@
       </Grid>
     </Border>
     <TextBlock Classes="secondary" Text="{x:Static res:Strings.HistoryKeepHint}" Margin="4,-12,4,18" />
-    <TextBlock x:Name="ProjectHeading" Classes="heading" />
+    <TextBlock x:Name="WorkspaceHeading" Classes="heading" />
     <Border x:Name="ConnectionsGroup" Classes="group">
       <StackPanel x:Name="Connections" />
     </Border>

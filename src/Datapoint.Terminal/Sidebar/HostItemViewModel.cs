@@ -1,13 +1,13 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-using Datapoint.Terminal.Agent.Projects;
+using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Resources;
 
 namespace Datapoint.Terminal.Sidebar;
 
-// One of the project's hosts. Its environment shows on its document, not here, so the list stays calm.
-public sealed partial class HostItemViewModel(ProjectConnection connection) : ObservableObject
+// One of the workspace's hosts. Its environment shows on its document, not here, so the list stays calm.
+public sealed partial class HostItemViewModel(WorkspaceConnection connection) : ObservableObject
 {
-    public ProjectConnection Connection { get; } = connection;
+    public WorkspaceConnection Connection { get; } = connection;
 
     public string Name => Connection.Name;
 

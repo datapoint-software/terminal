@@ -1,21 +1,21 @@
 using System.Globalization;
 using Avalonia.Threading;
-using Datapoint.Terminal.Agent.Projects;
-using Datapoint.Terminal.Agent.Projects.HostKeys;
+using Datapoint.Terminal.Agent.Workspaces;
+using Datapoint.Terminal.Agent.Workspaces.HostKeys;
 using Datapoint.Terminal.Resources;
 using Datapoint.Terminal.Sessions.Ssh;
 
 namespace Datapoint.Terminal.Shell;
 
-// Product decision 93: the project remembers the host key it last saw for each connection, and a different one, even if
-// known_hosts accepts it, is a reason to ask whether this project's documentation for the machine still holds.
+// Product decision 93: the workspace remembers the host key it last saw for each connection, and a different one, even if
+// known_hosts accepts it, is a reason to ask whether this workspace's documentation for the machine still holds.
 public sealed partial class MainWindow
 {
-    private ProjectHostKeys? _hostKeys;
+    private WorkspaceHostKeys? _hostKeys;
 
-    private ProjectHostKeys HostKeys => _hostKeys ??= new ProjectHostKeys(Project.IsReadOnly ? null : Path.Combine(Project.PersonalPath, ProjectHostKeys.FileName));
+    private WorkspaceHostKeys HostKeys => _hostKeys ??= new WorkspaceHostKeys(Workspace.IsReadOnly ? null : Path.Combine(Workspace.PersonalPath, WorkspaceHostKeys.FileName));
 
-    private ProjectHostKeyVerifier ForProject(IHostKeyVerifier verifier, string connection) =>
+    private WorkspaceHostKeyVerifier ForWorkspace(IHostKeyVerifier verifier, string connection) =>
         new(verifier, HostKeys, connection, (change, _) => Dispatcher.UIThread.InvokeAsync(() => AskAboutChangedKeyAsync(change)));
 
     private async Task<bool> AskAboutChangedKeyAsync(HostKeyChange change)
@@ -24,29 +24,29 @@ public sealed partial class MainWindow
         var file = docs.FileFor(change.Connection);
         if (!File.Exists(file))
         {
-            _chat.AddNotice(Strings.Format(Strings.NoticeProjectHostKeyChanged, change.Connection));
+            _chat.AddNotice(Strings.Format(Strings.NoticeWorkspaceHostKeyChanged, change.Connection));
             return true;
         }
 
         var host = change.Port == 22 ? change.Host : $"{change.Host}:{change.Port}";
         var choices = docs.CanWrite
-            ? new[] { Strings.Cancel, Strings.ProjectHostKeyArchive, Strings.ProjectHostKeyReview, Strings.ProjectHostKeyKeep }
-            : [Strings.Cancel, Strings.ProjectHostKeyReview, Strings.ProjectHostKeyKeep];
+            ? new[] { Strings.Cancel, Strings.WorkspaceHostKeyArchive, Strings.WorkspaceHostKeyReview, Strings.WorkspaceHostKeyKeep }
+            : [Strings.Cancel, Strings.WorkspaceHostKeyReview, Strings.WorkspaceHostKeyKeep];
         var answer = await ChoiceWindow.AskAsync(
             this,
-            Strings.Format(Strings.ProjectHostKeyTitle, change.Connection),
-            Strings.Format(Strings.ProjectHostKeyMessage, change.Connection, host),
-            Strings.Format(Strings.ProjectHostKeyDetails, change.Before, change.Now),
+            Strings.Format(Strings.WorkspaceHostKeyTitle, change.Connection),
+            Strings.Format(Strings.WorkspaceHostKeyMessage, change.Connection, host),
+            Strings.Format(Strings.WorkspaceHostKeyDetails, change.Before, change.Now),
             hasDefault: false,
             choices).ConfigureAwait(true);
         var chosen = answer is { } index ? choices[index] : Strings.Cancel;
-        if (string.Equals(chosen, Strings.ProjectHostKeyArchive, StringComparison.Ordinal))
+        if (string.Equals(chosen, Strings.WorkspaceHostKeyArchive, StringComparison.Ordinal))
         {
             SetDocumentationAside(change.Connection, file);
         }
-        else if (string.Equals(chosen, Strings.ProjectHostKeyReview, StringComparison.Ordinal))
+        else if (string.Equals(chosen, Strings.WorkspaceHostKeyReview, StringComparison.Ordinal))
         {
-            OpenProjectFile(file);
+            OpenWorkspaceFile(file);
         }
 
         return !string.Equals(chosen, Strings.Cancel, StringComparison.Ordinal);
@@ -67,7 +67,7 @@ public sealed partial class MainWindow
             }
 
             File.Move(file, target);
-            _chat.AddNotice(Strings.Format(Strings.NoticeHostDocsArchived, connection, ProjectFolders.RelativeInside(Project.Folder, target) ?? target));
+            _chat.AddNotice(Strings.Format(Strings.NoticeHostDocsArchived, connection, WorkspaceFolders.RelativeInside(Workspace.Folder, target) ?? target));
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {

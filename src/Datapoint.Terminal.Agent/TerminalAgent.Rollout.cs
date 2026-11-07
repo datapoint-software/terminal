@@ -1,7 +1,7 @@
 namespace Datapoint.Terminal.Agent;
 
 // Product decision 46, several hosts at once: approving a command in one terminal approves the identical command in the
-// project's other terminals for the rest of the task, so a rollout asks once. Only between terminals with the same environment
+// workspace's other terminals for the rest of the task, so a rollout asks once. Only between terminals with the same environment
 // label, so approving on staging never approves production, and never for commands that always ask.
 public sealed partial class TerminalAgent
 {

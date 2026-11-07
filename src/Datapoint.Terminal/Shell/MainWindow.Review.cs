@@ -1,31 +1,31 @@
 using System.Text;
-using Datapoint.Terminal.Agent.Projects;
+using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Resources;
 
 namespace Datapoint.Terminal.Shell;
 
 public sealed partial class MainWindow
 {
-    private IReadOnlyList<ProjectConnection> _connections = [];
+    private IReadOnlyList<WorkspaceConnection> _connections = [];
     private string? _keptHeld;
 
     // Connections as they apply: the confirmed settings, plus whatever changes from outside made stricter.
-    private IReadOnlyList<ProjectConnection> Connections => _connections;
+    private IReadOnlyList<WorkspaceConnection> Connections => _connections;
 
     // Product decision 92. Runs when the window opens and again before connections are listed, so a git pull made while the
-    // window is open is caught too. A review the user put off isn't shown again until the project is next opened.
+    // window is open is caught too. A review the user put off isn't shown again until the workspace is next opened.
     private async Task ReviewConnectionsAsync(bool reload)
     {
         if (reload)
         {
-            foreach (var problem in Project.ReloadSettings())
+            foreach (var problem in Workspace.ReloadSettings())
             {
                 _chat.AddNotice(problem);
             }
         }
 
-        var current = Project.Settings.Connections;
-        if (_settings.ConfirmedFor(Project.Folder) is not { } confirmed)
+        var current = Workspace.Settings.Connections;
+        if (_settings.ConfirmedFor(Workspace.Folder) is not { } confirmed)
         {
             Confirm(current);
             return;
@@ -40,7 +40,7 @@ public sealed partial class MainWindow
         }
 
         var details = Describe(review.Held);
-        _settings.SetConfirmed(Project.Folder, review.Effective);
+        _settings.SetConfirmed(Workspace.Folder, review.Effective);
         _connections = review.Effective;
         RefreshSidebarHosts();
         if (string.Equals(details, _keptHeld, StringComparison.Ordinal))
@@ -51,7 +51,7 @@ public sealed partial class MainWindow
         var choice = await ChoiceWindow.AskAsync(
             this,
             Strings.ReviewTitle,
-            Strings.Format(Strings.ReviewMessage, Project.Name),
+            Strings.Format(Strings.ReviewMessage, Workspace.Name),
             details,
             hasDefault: false,
             Strings.ReviewKeep,
@@ -66,14 +66,14 @@ public sealed partial class MainWindow
         _chat.AddNotice(Strings.NoticeConnectionsHeld);
     }
 
-    private void Confirm(IReadOnlyList<ProjectConnection> connections)
+    private void Confirm(IReadOnlyList<WorkspaceConnection> connections)
     {
         _connections = connections;
-        _settings.SetConfirmed(Project.Folder, connections);
+        _settings.SetConfirmed(Workspace.Folder, connections);
         RefreshSidebarHosts();
     }
 
-    private void ReportStricter(IReadOnlyList<ProjectConnection> confirmed, IReadOnlyList<ProjectConnection> effective)
+    private void ReportStricter(IReadOnlyList<WorkspaceConnection> confirmed, IReadOnlyList<WorkspaceConnection> effective)
     {
         var changed = confirmed
             .Where(previous => effective.FirstOrDefault(item => string.Equals(item.Name, previous.Name, StringComparison.OrdinalIgnoreCase)) is not { } now

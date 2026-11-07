@@ -2,8 +2,8 @@ using System.Text;
 using Avalonia.Threading;
 using Datapoint.Terminal.Agent;
 using Datapoint.Terminal.Agent.Memory;
-using Datapoint.Terminal.Agent.Projects;
-using Datapoint.Terminal.Agent.Projects.Ignore;
+using Datapoint.Terminal.Agent.Workspaces;
+using Datapoint.Terminal.Agent.Workspaces.Ignore;
 using Datapoint.Terminal.Resources;
 
 namespace Datapoint.Terminal.Shell;
@@ -11,38 +11,38 @@ namespace Datapoint.Terminal.Shell;
 public sealed partial class MainWindow
 {
     // Read on the agent's thread when a conversation starts.
-    private volatile ProjectTrustRecord? _trust;
+    private volatile WorkspaceTrustRecord? _trust;
 
-    private IReadOnlyList<string> ProjectInstructionFiles(string? globalFile) =>
-        InstructionFiles.FindForProject(Project.Folder, ProjectFolders.Home, globalFile);
+    private IReadOnlyList<string> WorkspaceInstructionFiles(string? globalFile) =>
+        InstructionFiles.FindForWorkspace(Workspace.Folder, WorkspaceFolders.Home, globalFile);
 
-    // Asks when the project has something to trust and no decision covers it yet; from the menu, it always asks.
+    // Asks when the workspace has something to trust and no decision covers it yet; from the menu, it always asks.
     private async Task ReviewTrustAsync(bool always)
     {
-        var files = ProjectInstructionFiles(InstructionFiles.FindGlobal(ProjectFolders.Global));
-        var record = _settings.TrustFor(Project.Folder);
-        var state = ProjectTrust.Evaluate(Project.IsDefault, Project.Settings.Connections.Count > 0, files, record);
-        if (state == TrustState.Trusted && record is null && !Project.IsDefault)
+        var files = WorkspaceInstructionFiles(InstructionFiles.FindGlobal(WorkspaceFolders.Global));
+        var record = _settings.TrustFor(Workspace.Folder);
+        var state = WorkspaceTrust.Evaluate(Workspace.IsDefault, Workspace.Settings.Connections.Count > 0, files, record);
+        if (state == TrustState.Trusted && record is null && !Workspace.IsDefault)
         {
-            record = new ProjectTrustRecord { Folder = Project.Folder, IsTrusted = true, InstructionFiles = files };
+            record = new WorkspaceTrustRecord { Folder = Workspace.Folder, IsTrusted = true, InstructionFiles = files };
             _settings.SetTrust(record);
         }
 
-        if (state == TrustState.Ask || (always && !Project.IsDefault))
+        if (state == TrustState.Ask || (always && !Workspace.IsDefault))
         {
             var choice = await ChoiceWindow.AskAsync(
                 this,
-                Strings.Format(Strings.TrustTitle, Project.Name),
+                Strings.Format(Strings.TrustTitle, Workspace.Name),
                 Strings.TrustMessage,
                 TrustDetails(files, record),
                 hasDefault: false,
                 Strings.TrustDont,
                 Strings.TrustTrust).ConfigureAwait(true);
 
-            // Closing the question decides nothing: the project stays as it was, and is asked about again next time.
+            // Closing the question decides nothing: the workspace stays as it was, and is asked about again next time.
             if (choice is { } answer)
             {
-                record = new ProjectTrustRecord { Folder = Project.Folder, IsTrusted = answer == 1, InstructionFiles = files };
+                record = new WorkspaceTrustRecord { Folder = Workspace.Folder, IsTrusted = answer == 1, InstructionFiles = files };
                 _settings.SetTrust(record);
             }
         }
@@ -50,9 +50,9 @@ public sealed partial class MainWindow
         _trust = record;
     }
 
-    private string TrustDetails(IReadOnlyList<string> files, ProjectTrustRecord? record)
+    private string TrustDetails(IReadOnlyList<string> files, WorkspaceTrustRecord? record)
     {
-        var connections = Project.Settings.Connections;
+        var connections = Workspace.Settings.Connections;
         if (files.Count == 0 && connections.Count == 0)
         {
             return Strings.TrustNothing;
@@ -80,42 +80,42 @@ public sealed partial class MainWindow
         return text.ToString().TrimEnd();
     }
 
-    private static string DescribeFile(string file, ProjectTrustRecord? record)
+    private static string DescribeFile(string file, WorkspaceTrustRecord? record)
     {
-        var shown = ProjectFolders.Display(file);
+        var shown = WorkspaceFolders.Display(file);
         return record is not null && !record.Covers(file) ? Strings.Format(Strings.TrustNew, shown) : shown;
     }
 
-    private static string DescribeConnection(ProjectConnection connection)
+    private static string DescribeConnection(WorkspaceConnection connection)
     {
         var target = ConnectionReview.Address(connection);
         var environment = connection.Environment is null ? string.Empty : $" ({connection.Environment})";
         return $"{connection.Name} → {target}{environment}";
     }
 
-    // The global file is the user's own; the project's files are instructions only when the user trusted them as they were shown.
+    // The global file is the user's own; the workspace's files are instructions only when the user trusted them as they were shown.
     // Files listed in .terminalignore aren't read at all, and those that look like they hold a secret wait for the user's choice.
     private async Task<AgentInstructions> LoadInstructionsAsync(CancellationToken cancellationToken)
     {
-        var global = InstructionFiles.FindGlobal(ProjectFolders.Global);
-        List<string> paths = [.. global is null ? [] : new[] { global }, .. ProjectInstructionFiles(global)];
-        var ignored = paths.Where(path => TerminalIgnore.IsIgnored(path, Project.Folder, ProjectFolders.Home)).ToList();
-        var files = InstructionFiles.Read([.. paths.Except(ignored, ProjectFolders.Comparer)]);
+        var global = InstructionFiles.FindGlobal(WorkspaceFolders.Global);
+        List<string> paths = [.. global is null ? [] : new[] { global }, .. WorkspaceInstructionFiles(global)];
+        var ignored = paths.Where(path => TerminalIgnore.IsIgnored(path, Workspace.Folder, WorkspaceFolders.Home)).ToList();
+        var files = InstructionFiles.Read([.. paths.Except(ignored, WorkspaceFolders.Comparer)]);
         var changes = _windows.InstructionSnapshots.Update(files, _redactor);
         var (reviewed, skipped) = await ReviewSecretsAsync(files, cancellationToken).ConfigureAwait(false);
         var (memory, ignoredMemory, skippedMemory) = await LoadMemoryAsync(cancellationToken).ConfigureAwait(false);
         ignored.AddRange(ignoredMemory);
         skipped.AddRange(skippedMemory);
         var trust = _trust;
-        var isTrusted = (InstructionFile file) => Project.IsDefault
-            || ProjectFolders.AreSame(file.Path, global ?? string.Empty)
-            || ProjectFolders.AreSame(file.Path, GlobalMemoryPath)
+        var isTrusted = (InstructionFile file) => Workspace.IsDefault
+            || WorkspaceFolders.AreSame(file.Path, global ?? string.Empty)
+            || WorkspaceFolders.AreSame(file.Path, GlobalMemoryPath)
             || (trust is { IsTrusted: true } && trust.Covers(file.Path));
         var instructions = new AgentInstructions(
             [.. reviewed.Where(isTrusted)],
             [.. memory.Where(file => !isTrusted(file)), .. reviewed.Where(file => !isTrusted(file))])
         {
-            Ignored = TerminalIgnore.Describe(Project.Folder, ProjectFolders.Home),
+            Ignored = TerminalIgnore.Describe(Workspace.Folder, WorkspaceFolders.Home),
             Memory = [.. memory.Where(isTrusted)],
         };
         Dispatcher.UIThread.Post(() =>
@@ -128,16 +128,16 @@ public sealed partial class MainWindow
         return instructions;
     }
 
-    private static string GlobalMemoryPath => Path.Combine(ProjectFolders.Global, MemoryFile.FileName);
+    private static string GlobalMemoryPath => Path.Combine(WorkspaceFolders.Global, MemoryFile.FileName);
 
-    private string? ProjectMemoryPath => Project.IsDefault ? null : Path.Combine(Project.PersonalPath, MemoryFile.FileName);
+    private string? WorkspaceMemoryPath => Workspace.IsDefault ? null : Path.Combine(Workspace.PersonalPath, MemoryFile.FileName);
 
     // Memory goes through the same checks as instruction files, but not their change notices: the agent changes it, in view.
     private async Task<(List<InstructionFile> Memory, List<string> Ignored, List<string> Skipped)> LoadMemoryAsync(CancellationToken cancellationToken)
     {
-        var paths = new[] { GlobalMemoryPath, ProjectMemoryPath }.OfType<string>().Where(File.Exists).ToList();
-        var ignored = paths.Where(path => TerminalIgnore.IsIgnored(path, Project.Folder, ProjectFolders.Home)).ToList();
-        var files = InstructionFiles.Read([.. paths.Except(ignored, ProjectFolders.Comparer)], 2 * MemoryFile.MaxBytes);
+        var paths = new[] { GlobalMemoryPath, WorkspaceMemoryPath }.OfType<string>().Where(File.Exists).ToList();
+        var ignored = paths.Where(path => TerminalIgnore.IsIgnored(path, Workspace.Folder, WorkspaceFolders.Home)).ToList();
+        var files = InstructionFiles.Read([.. paths.Except(ignored, WorkspaceFolders.Comparer)], 2 * MemoryFile.MaxBytes);
         var (reviewed, skipped) = await ReviewSecretsAsync(files, cancellationToken).ConfigureAwait(false);
         return (reviewed, ignored, skipped);
     }
@@ -149,12 +149,12 @@ public sealed partial class MainWindow
             return;
         }
 
-        _chat.AddNotice(Strings.Format(format, string.Join(", ", paths.Select(ProjectFolders.Display))));
+        _chat.AddNotice(Strings.Format(format, string.Join(", ", paths.Select(WorkspaceFolders.Display))));
     }
 
     private void ReportInstructions(AgentInstructions instructions)
     {
-        static string Names(IEnumerable<InstructionFile> files) => string.Join(", ", files.Select(file => ProjectFolders.Display(file.Path)));
+        static string Names(IEnumerable<InstructionFile> files) => string.Join(", ", files.Select(file => WorkspaceFolders.Display(file.Path)));
         var all = instructions.Instructions.Concat(instructions.Data).Concat(instructions.Memory).ToList();
         if (instructions.Memory.Any(file => file.Text.Length > 0))
         {
@@ -178,7 +178,7 @@ public sealed partial class MainWindow
 
         foreach (var file in all.Where(file => file.Problem is not null))
         {
-            _chat.AddNotice(Strings.Format(Strings.NoticeInstructionsUnreadable, ProjectFolders.Display(file.Path), file.Problem));
+            _chat.AddNotice(Strings.Format(Strings.NoticeInstructionsUnreadable, WorkspaceFolders.Display(file.Path), file.Problem));
         }
     }
 
@@ -186,7 +186,7 @@ public sealed partial class MainWindow
     {
         foreach (var change in changes)
         {
-            var shown = ProjectFolders.Display(change.Path);
+            var shown = WorkspaceFolders.Display(change.Path);
             if (change.IsOnlySecrets)
             {
                 _chat.AddNotice(Strings.Format(Strings.NoticeInstructionsSecretChanged, shown));

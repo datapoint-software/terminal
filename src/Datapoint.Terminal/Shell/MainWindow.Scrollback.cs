@@ -1,6 +1,6 @@
 using System.Globalization;
 using System.Text;
-using Datapoint.Terminal.Agent.Projects.History;
+using Datapoint.Terminal.Agent.Workspaces.History;
 using Datapoint.Terminal.Resources;
 using Datapoint.Terminal.Sessions;
 
@@ -57,7 +57,7 @@ public sealed partial class MainWindow
 
     private void SaveScrollback(TerminalTab tab)
     {
-        if (Project.IsReadOnly || tab.ConnectionName is not { } name || tab.Connection is not { } connection)
+        if (Workspace.IsReadOnly || tab.ConnectionName is not { } name || tab.Connection is not { } connection)
         {
             return;
         }

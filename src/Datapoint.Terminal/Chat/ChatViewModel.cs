@@ -84,7 +84,7 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
 
     public Action? SettingsRequested { get; set; }
 
-    // For the project's history: each message the user sends, and the conversation being cleared.
+    // For the workspace's history: each message the user sends, and the conversation being cleared.
     public Action<string>? MessageSent { get; set; }
 
     public Action? Cleared { get; set; }

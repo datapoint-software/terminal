@@ -1,12 +1,12 @@
 using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Datapoint.Terminal.Agent.Projects;
+using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Resources;
 
 namespace Datapoint.Terminal.Shell;
 
-// Add a Host: a host the project lists for everyone, by address or by an alias from the user's SSH config.
+// Add a Host: a host the workspace lists for everyone, by address or by an alias from the user's SSH config.
 public sealed partial class NewHostWindow : Window
 {
     private const int MostAliases = 12;
@@ -56,10 +56,10 @@ public sealed partial class NewHostWindow : Window
         Opened += (_, _) => NameBox.Focus();
     }
 
-    public static Task<ProjectConnection?> AskAsync(Window owner, IReadOnlyCollection<ProjectConnection> existing, IReadOnlyList<string> aliases)
+    public static Task<WorkspaceConnection?> AskAsync(Window owner, IReadOnlyCollection<WorkspaceConnection> existing, IReadOnlyList<string> aliases)
     {
         ArgumentNullException.ThrowIfNull(owner);
-        return new NewHostWindow(new NewHostForm(existing, aliases), aliases).ShowDialog<ProjectConnection?>(owner);
+        return new NewHostWindow(new NewHostForm(existing, aliases), aliases).ShowDialog<WorkspaceConnection?>(owner);
     }
 
     private void UseAlias(string alias)

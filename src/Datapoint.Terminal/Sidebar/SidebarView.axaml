@@ -112,7 +112,7 @@
   <Border Background="{DynamicResource PaneBrush}">
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
       <StackPanel Margin="10,12,10,16">
-        <!-- Hosts: the project's connections, then a quiet line for the user's other SSH hosts. -->
+        <!-- Hosts: the workspace's connections, then a quiet line for the user's other SSH hosts. -->
         <Grid ColumnDefinitions="*,Auto" Margin="8,0,0,4" Height="24">
           <TextBlock Classes="section" Text="{x:Static res:Strings.SidebarHosts}" />
           <Button Grid.Column="1" Classes="mini" Command="{Binding NewHostCommand}"
@@ -166,7 +166,7 @@
           </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <!-- Files: the project folder, .terminal/ hidden. -->
+        <!-- Files: the workspace folder, .terminal/ hidden. -->
         <Grid ColumnDefinitions="*,Auto" Margin="8,18,0,4" Height="24">
           <TextBlock Classes="section" Text="{x:Static res:Strings.SidebarFiles}" />
           <Button Grid.Column="1" Classes="mini" Command="{Binding NewFileCommand}"

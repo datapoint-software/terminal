@@ -2,35 +2,35 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
-using Datapoint.Terminal.Agent.Projects;
+using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Resources;
 using Datapoint.Terminal.Sessions.Ssh.Config;
 using Datapoint.Terminal.Sidebar;
 
 namespace Datapoint.Terminal.Shell;
 
-// Product decision 98: the project's hosts and files beside the terminals.
+// Product decision 98: the workspace's hosts and files beside the terminals.
 public sealed partial class MainWindow
 {
     private const double DefaultSidebarWidth = 240;
 
     private SidebarViewModel _sidebar = null!;
-    private FileSystemWatcher? _projectWatcher;
+    private FileSystemWatcher? _workspaceWatcher;
     private readonly DispatcherTimer _filesTimer = new() { Interval = TimeSpan.FromMilliseconds(300) };
     private bool _isSidebarHidden;
     private double _sidebarWidth = DefaultSidebarWidth;
     private NativeMenuItem? _toggleSidebarItem;
 
-    private string HostsFolder => Path.Combine(Project.Folder, "hosts");
+    private string HostsFolder => Path.Combine(Workspace.Folder, "hosts");
 
     private void SetUpSidebar()
     {
-        _sidebar = new SidebarViewModel(Project.Folder, HostsFolder)
+        _sidebar = new SidebarViewModel(Workspace.Folder, HostsFolder)
         {
             HostChosen = OpenHostDocument,
             TerminalRequested = connection => _ = OpenConnectionAsync(connection),
             HostAdded = AddSshHost,
-            FileChosen = node => OpenProjectFile(node.Path),
+            FileChosen = node => OpenWorkspaceFile(node.Path),
             NewFileRequested = () => _ = NewFileAsync(),
             NewHostRequested = () => _ = NewHostAsync(),
         };
@@ -44,47 +44,47 @@ public sealed partial class MainWindow
             _filesTimer.Stop();
             _sidebar.RefreshFiles();
         };
-        WatchProject();
+        WatchWorkspace();
         SetUpDocuments();
         Closed += (_, _) =>
         {
             _filesTimer.Stop();
-            _projectWatcher?.Dispose();
+            _workspaceWatcher?.Dispose();
         };
     }
 
-    // Changes to the project's files show without the user asking; the personal folder and Git's own change all the time and
+    // Changes to the workspace's files show without the user asking; the personal folder and Git's own change all the time and
     // aren't shown, so they're not watched for.
-    private void WatchProject()
+    private void WatchWorkspace()
     {
         try
         {
-            _projectWatcher = new FileSystemWatcher(Project.Folder)
+            _workspaceWatcher = new FileSystemWatcher(Workspace.Folder)
             {
                 IncludeSubdirectories = true,
                 NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName,
             };
-            FileSystemEventHandler changed = (_, e) => OnProjectChanged(e.FullPath);
-            _projectWatcher.Created += changed;
-            _projectWatcher.Deleted += changed;
-            _projectWatcher.Renamed += (_, e) => OnProjectChanged(e.FullPath);
-            _projectWatcher.EnableRaisingEvents = true;
+            FileSystemEventHandler changed = (_, e) => OnWorkspaceChanged(e.FullPath);
+            _workspaceWatcher.Created += changed;
+            _workspaceWatcher.Deleted += changed;
+            _workspaceWatcher.Renamed += (_, e) => OnWorkspaceChanged(e.FullPath);
+            _workspaceWatcher.EnableRaisingEvents = true;
         }
         catch (Exception exception) when (exception is IOException or ArgumentException or PlatformNotSupportedException or UnauthorizedAccessException)
         {
             // Without a watcher, the tree still refreshes when the window comes back to the front.
-            _projectWatcher?.Dispose();
-            _projectWatcher = null;
+            _workspaceWatcher?.Dispose();
+            _workspaceWatcher = null;
         }
 
         Activated += (_, _) => _sidebar.RefreshFiles();
     }
 
-    private void OnProjectChanged(string path)
+    private void OnWorkspaceChanged(string path)
     {
-        if (ProjectFolders.RelativeInside(Project.Folder, path) is not { } relative
-            || relative.StartsWith(ProjectFolders.PersonalFolder + "/", StringComparison.Ordinal)
-            || string.Equals(relative, ProjectFolders.PersonalFolder, StringComparison.Ordinal)
+        if (WorkspaceFolders.RelativeInside(Workspace.Folder, path) is not { } relative
+            || relative.StartsWith(WorkspaceFolders.PersonalFolder + "/", StringComparison.Ordinal)
+            || string.Equals(relative, WorkspaceFolders.PersonalFolder, StringComparison.Ordinal)
             || relative.Split('/').Contains(".git", StringComparer.Ordinal))
         {
             return;
@@ -99,16 +99,16 @@ public sealed partial class MainWindow
 
     private void RefreshSidebarHosts()
     {
-        var connections = Connections.Count > 0 ? Connections : Project.Settings.Connections;
-        _sidebar.SetHosts(connections, OtherSshHosts(Project.Settings.Connections));
+        var connections = Connections.Count > 0 ? Connections : Workspace.Settings.Connections;
+        _sidebar.SetHosts(connections, OtherSshHosts(Workspace.Settings.Connections));
         RefreshOpenTerminals();
     }
 
-    // Hosts in the user's SSH configuration the project doesn't list, with names plain enough to add.
-    private static IReadOnlyList<string> OtherSshHosts(IReadOnlyList<ProjectConnection> connections)
+    // Hosts in the user's SSH configuration the workspace doesn't list, with names plain enough to add.
+    private static IReadOnlyList<string> OtherSshHosts(IReadOnlyList<WorkspaceConnection> connections)
     {
         var listed = connections.SelectMany(connection => new[] { connection.SshHost, connection.Name }).OfType<string>().ToHashSet(StringComparer.OrdinalIgnoreCase);
-        return [.. SshConfig.Load().HostAliases().Where(alias => !listed.Contains(alias) && ProjectConnection.IsPlainLabel(alias))];
+        return [.. SshConfig.Load().HostAliases().Where(alias => !listed.Contains(alias) && WorkspaceConnection.IsPlainLabel(alias))];
     }
 
     private void RefreshOpenTerminals() => _sidebar.SetOpenTerminals(_tabs
@@ -118,38 +118,38 @@ public sealed partial class MainWindow
 
     private void AddSshHost(string alias)
     {
-        if (!ProjectConnection.IsPlainLabel(alias))
+        if (!WorkspaceConnection.IsPlainLabel(alias))
         {
             return;
         }
 
-        AddConnection(new ProjectConnection { Name = alias, SshHost = alias });
+        AddConnection(new WorkspaceConnection { Name = alias, SshHost = alias });
         RefreshSidebarHosts();
     }
 
-    private void OpenHostDocument(ProjectConnection connection)
+    private void OpenHostDocument(WorkspaceConnection connection)
     {
         var path = CreateHostDocs().FileFor(connection.Name);
-        if (!File.Exists(path) && Project.IsReadOnly)
+        if (!File.Exists(path) && Workspace.IsReadOnly)
         {
             _chat.AddNotice(Strings.Format(Strings.SidebarNoDocumentation, connection.Name));
             return;
         }
 
-        OpenProjectFile(path);
+        OpenWorkspaceFile(path);
     }
 
-    // A new file goes in the folder selected in the tree, or at the top of the project.
+    // A new file goes in the folder selected in the tree, or at the top of the workspace.
     private async Task NewFileAsync()
     {
-        if (Project.IsReadOnly)
+        if (Workspace.IsReadOnly)
         {
             _chat.AddNotice(Strings.SidebarReadOnly);
             return;
         }
 
-        var folder = _sidebar.SelectedFile is { } node ? (node.IsFolder ? node.Path : Path.GetDirectoryName(node.Path)!) : Project.Folder;
-        var answers = await PromptWindow.AskAsync(this, Strings.SidebarNewFileTitle, Strings.Format(Strings.SidebarNewFileMessage, ProjectFolders.RelativeInside(Project.Folder, folder) is { Length: > 0 } relative ? relative : Project.Name), serverText: null, [(Strings.SidebarNewFileName, false)], ["notes.md"]).ConfigureAwait(true);
+        var folder = _sidebar.SelectedFile is { } node ? (node.IsFolder ? node.Path : Path.GetDirectoryName(node.Path)!) : Workspace.Folder;
+        var answers = await PromptWindow.AskAsync(this, Strings.SidebarNewFileTitle, Strings.Format(Strings.SidebarNewFileMessage, WorkspaceFolders.RelativeInside(Workspace.Folder, folder) is { Length: > 0 } relative ? relative : Workspace.Name), serverText: null, [(Strings.SidebarNewFileName, false)], ["notes.md"]).ConfigureAwait(true);
         if (answers is not [var name] || NewFileProblem(name) is { } problem)
         {
             if (answers is [var given] && NewFileProblem(given) is { } reason)
@@ -168,7 +168,7 @@ public sealed partial class MainWindow
             }
 
             _sidebar.RefreshFiles();
-            OpenProjectFile(path);
+            OpenWorkspaceFile(path);
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {
@@ -187,7 +187,7 @@ public sealed partial class MainWindow
 
     private void ToggleSidebar()
     {
-        var column = Workspace.ColumnDefinitions[0];
+        var column = WorkArea.ColumnDefinitions[0];
         if (!_isSidebarHidden && column.ActualWidth > 0)
         {
             _sidebarWidth = column.ActualWidth;
@@ -196,7 +196,7 @@ public sealed partial class MainWindow
         _isSidebarHidden = !_isSidebarHidden;
         column.Width = new GridLength(_isSidebarHidden ? 0 : _sidebarWidth);
         column.MinWidth = _isSidebarHidden ? 0 : 160;
-        Workspace.ColumnDefinitions[1].Width = new GridLength(_isSidebarHidden ? 0 : 1);
+        WorkArea.ColumnDefinitions[1].Width = new GridLength(_isSidebarHidden ? 0 : 1);
         Sidebar.IsVisible = SidebarSeparator.IsVisible = SidebarSplitter.IsVisible = !_isSidebarHidden;
         _toggleSidebarItem?.Header = _isSidebarHidden ? Strings.MenuShowSidebar : Strings.MenuHideSidebar;
         if (!_isSidebarHidden)

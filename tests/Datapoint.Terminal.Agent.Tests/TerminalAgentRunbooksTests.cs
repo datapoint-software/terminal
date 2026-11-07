@@ -77,7 +77,7 @@ public sealed class TerminalAgentRunbooksTests : IDisposable
     }
 
     [Fact]
-    public async Task Reads_a_runbook_as_steps_in_a_trusted_project_and_as_data_otherwise()
+    public async Task Reads_a_runbook_as_steps_in_a_trusted_workspace_and_as_data_otherwise()
     {
         await RunAsync(true, Save());
         var (trusted, _) = await RunAsync(true, Tool("read_runbook", """{"name":"renew certificates"}"""));

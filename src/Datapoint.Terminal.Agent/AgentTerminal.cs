@@ -29,7 +29,7 @@ public sealed class AgentTerminal
 
     public string? Environment { get; }
 
-    // On another machine, whose files the project's .terminalignore doesn't describe.
+    // On another machine, whose files the workspace's .terminalignore doesn't describe.
     public bool IsRemote { get; init; }
 
     // What the terminal's shell runs in when that isn't a machine, e.g. "Docker container", so the agent knows.

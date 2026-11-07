@@ -1,5 +1,5 @@
 using Avalonia.Controls;
-using Datapoint.Terminal.Agent.Projects;
+using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Resources;
 using Datapoint.Terminal.Sessions.Ssh.Config;
 
@@ -26,8 +26,8 @@ public sealed partial class MainWindow
         }
 
         menu.Items.Add(new Separator());
-        menu.Items.Add(SshHostsMenu(Project.Settings.Connections));
-        if (!Project.IsReadOnly)
+        menu.Items.Add(SshHostsMenu(Workspace.Settings.Connections));
+        if (!Workspace.IsReadOnly)
         {
             menu.Items.Add(MenuItem(Strings.NewHostMenu, () => _ = NewHostAsync()));
         }
@@ -35,7 +35,7 @@ public sealed partial class MainWindow
         menu.ShowAt(NewTabButton);
     }
 
-    private MenuItem SshHostsMenu(IReadOnlyList<ProjectConnection> connections)
+    private MenuItem SshHostsMenu(IReadOnlyList<WorkspaceConnection> connections)
     {
         var config = SshConfig.Load();
         var listed = connections.Select(connection => connection.SshHost).OfType<string>().ToHashSet(StringComparer.OrdinalIgnoreCase);
@@ -63,7 +63,7 @@ public sealed partial class MainWindow
 
     private async Task OfferToAddAsync(string alias)
     {
-        if (!ProjectConnection.IsPlainLabel(alias))
+        if (!WorkspaceConnection.IsPlainLabel(alias))
         {
             return;
         }
@@ -75,7 +75,7 @@ public sealed partial class MainWindow
             Strings.Cancel,
             Strings.AddHostOpenOnce,
             Strings.AddHostAdd).ConfigureAwait(true);
-        var connection = new ProjectConnection { Name = alias, SshHost = alias };
+        var connection = new WorkspaceConnection { Name = alias, SshHost = alias };
         if (choice == 2)
         {
             AddConnection(connection);
@@ -89,21 +89,21 @@ public sealed partial class MainWindow
         await OpenConnectionAsync(connection).ConfigureAwait(true);
     }
 
-    private void AddConnection(ProjectConnection connection)
+    private void AddConnection(WorkspaceConnection connection)
     {
-        if (Project.IsReadOnly)
+        if (Workspace.IsReadOnly)
         {
-            _chat.AddNotice(Strings.Format(Strings.NoticeProjectReadOnlyNotAdded, connection.Name));
+            _chat.AddNotice(Strings.Format(Strings.NoticeWorkspaceReadOnlyNotAdded, connection.Name));
             return;
         }
 
         try
         {
-            Project.SaveSettings(Project.Settings with { Connections = [.. Project.Settings.Connections, connection] }, _redactor);
+            Workspace.SaveSettings(Workspace.Settings with { Connections = [.. Workspace.Settings.Connections, connection] }, _redactor);
             Confirm([.. Connections, connection]);
             _chat.AddNotice(Strings.Format(Strings.NoticeHostAdded, connection.Name));
         }
-        catch (Exception exception) when (exception is ProjectException or IOException or UnauthorizedAccessException)
+        catch (Exception exception) when (exception is WorkspaceException or IOException or UnauthorizedAccessException)
         {
             _chat.AddNotice(exception.Message);
         }
@@ -112,14 +112,14 @@ public sealed partial class MainWindow
     // A host typed in by the user, which then opens straight away: adding one is nearly always to work on it.
     private async Task NewHostAsync()
     {
-        if (Project.IsReadOnly)
+        if (Workspace.IsReadOnly)
         {
             _chat.AddNotice(Strings.NewHostReadOnly);
             return;
         }
 
-        var aliases = OtherSshHosts(Project.Settings.Connections);
-        var connection = await NewHostWindow.AskAsync(this, Project.Settings.Connections, aliases).ConfigureAwait(true);
+        var aliases = OtherSshHosts(Workspace.Settings.Connections);
+        var connection = await NewHostWindow.AskAsync(this, Workspace.Settings.Connections, aliases).ConfigureAwait(true);
         if (connection is null)
         {
             return;

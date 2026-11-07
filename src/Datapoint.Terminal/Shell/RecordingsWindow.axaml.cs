@@ -9,7 +9,7 @@ using EmulatorTerminal = Datapoint.Terminal.Emulator.Terminal;
 
 namespace Datapoint.Terminal.Shell;
 
-// Plays a project's session recordings, with a list of who did what to jump to (product decision 45).
+// Plays a workspace's session recordings, with a list of who did what to jump to (product decision 45).
 public sealed partial class RecordingsWindow : Window
 {
     private static readonly double[] s_speeds = [0.5, 1, 2, 4, 8];

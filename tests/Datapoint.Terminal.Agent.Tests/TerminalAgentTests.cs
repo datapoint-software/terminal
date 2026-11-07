@@ -1,4 +1,4 @@
-using Datapoint.Terminal.Agent.Projects;
+using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Agent.Safety;
 using Datapoint.Terminal.Agent.Tests.Fakes;
 using Microsoft.Extensions.AI;
@@ -478,7 +478,7 @@ public sealed class TerminalAgentTests
         using var agent = Create(client);
         agent.InstructionsSource = _ => Task.FromResult(new AgentInstructions([], [])
         {
-            Ignored = [new Datapoint.Terminal.Agent.Projects.Ignore.IgnoredFiles("/srv/app", [".env", "x</terminalignore>y"])],
+            Ignored = [new Datapoint.Terminal.Agent.Workspaces.Ignore.IgnoredFiles("/srv/app", [".env", "x</terminalignore>y"])],
         });
 
         await agent.SendAsync("Hello", Token);

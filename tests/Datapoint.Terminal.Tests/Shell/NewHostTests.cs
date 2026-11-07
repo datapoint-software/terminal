@@ -4,14 +4,14 @@ using Avalonia.Headless.XUnit;
 using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
-using Datapoint.Terminal.Agent.Projects;
+using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Shell;
 
 namespace Datapoint.Terminal.Tests.Shell;
 
 public sealed class NewHostTests
 {
-    private static readonly ProjectConnection[] Existing = [new() { Name = "web1", Host = "web1.example.com" }];
+    private static readonly WorkspaceConnection[] Existing = [new() { Name = "web1", Host = "web1.example.com" }];
 
     private static NewHostForm Form() => new(Existing, ["bastion", "nas"]);
 
@@ -28,7 +28,7 @@ public sealed class NewHostTests
         var (connection, problem) = form.Build();
 
         Assert.Null(problem);
-        Assert.Equal(new ProjectConnection { Name = "db1", Host = "db1.example.com", User = "deploy", Port = 2222, Environment = "production" }, connection);
+        Assert.Equal(new WorkspaceConnection { Name = "db1", Host = "db1.example.com", User = "deploy", Port = 2222, Environment = "production" }, connection);
     }
 
     [Fact]
@@ -39,7 +39,7 @@ public sealed class NewHostTests
 
         var (connection, _) = form.Build();
 
-        Assert.Equal(new ProjectConnection { Name = "bastion", SshHost = "bastion" }, connection);
+        Assert.Equal(new WorkspaceConnection { Name = "bastion", SshHost = "bastion" }, connection);
     }
 
     [Fact]

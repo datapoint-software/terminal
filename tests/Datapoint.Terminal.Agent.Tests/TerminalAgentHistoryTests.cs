@@ -1,4 +1,4 @@
-using Datapoint.Terminal.Agent.Projects.History;
+using Datapoint.Terminal.Agent.Workspaces.History;
 using Datapoint.Terminal.Agent.Safety;
 using Datapoint.Terminal.Agent.Tests.Fakes;
 using Microsoft.Extensions.AI;

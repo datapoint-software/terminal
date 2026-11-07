@@ -3,17 +3,17 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Datapoint.Terminal.Sidebar;
 
-// A file or folder in the sidebar's tree. A folder lists what's in it only once it's opened, so a large project costs nothing
+// A file or folder in the sidebar's tree. A folder lists what's in it only once it's opened, so a large workspace costs nothing
 // until the user looks; until then it holds one placeholder, so the tree still shows that it can be opened.
 public sealed partial class FileNodeViewModel : ObservableObject
 {
-    private readonly string _projectFolder;
+    private readonly string _workspaceFolder;
     private bool _isLoaded;
 
-    public FileNodeViewModel(ProjectEntry entry, string projectFolder, string hostsFolder)
+    public FileNodeViewModel(WorkspaceEntry entry, string workspaceFolder, string hostsFolder)
     {
         ArgumentNullException.ThrowIfNull(entry);
-        _projectFolder = projectFolder;
+        _workspaceFolder = workspaceFolder;
         HostsFolder = hostsFolder;
         Name = entry.Name;
         Path = entry.Path;
@@ -32,7 +32,7 @@ public sealed partial class FileNodeViewModel : ObservableObject
 
     private FileNodeViewModel()
     {
-        _projectFolder = string.Empty;
+        _workspaceFolder = string.Empty;
         HostsFolder = string.Empty;
         Name = string.Empty;
         Path = string.Empty;
@@ -86,7 +86,7 @@ public sealed partial class FileNodeViewModel : ObservableObject
         }
 
         _isLoaded = true;
-        Merge(Children, ProjectListing.List(Path, _projectFolder), _projectFolder, HostsFolder);
+        Merge(Children, WorkspaceListing.List(Path, _workspaceFolder), _workspaceFolder, HostsFolder);
     }
 
     // Lists again only what's been opened: a closed folder will list itself when it's opened.
@@ -104,10 +104,10 @@ public sealed partial class FileNodeViewModel : ObservableObject
         }
     }
 
-    internal static void Merge(ObservableCollection<FileNodeViewModel> nodes, IReadOnlyList<ProjectEntry> entries, string projectFolder, string hostsFolder)
+    internal static void Merge(ObservableCollection<FileNodeViewModel> nodes, IReadOnlyList<WorkspaceEntry> entries, string workspaceFolder, string hostsFolder)
     {
         var existing = nodes.Where(node => !ReferenceEquals(node, Placeholder)).ToDictionary(node => (node.Path, node.IsFolder));
-        var merged = entries.Select(entry => existing.TryGetValue((entry.Path, entry.IsFolder), out var node) ? node : new FileNodeViewModel(entry, projectFolder, hostsFolder)).ToList();
+        var merged = entries.Select(entry => existing.TryGetValue((entry.Path, entry.IsFolder), out var node) ? node : new FileNodeViewModel(entry, workspaceFolder, hostsFolder)).ToList();
         for (var index = nodes.Count - 1; index >= 0; index--)
         {
             if (!merged.Contains(nodes[index]))

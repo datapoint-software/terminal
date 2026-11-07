@@ -1,5 +1,5 @@
 using Datapoint.Terminal.Agent.Memory;
-using Datapoint.Terminal.Agent.Projects;
+using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Agent.Safety;
 using Datapoint.Terminal.Agent.Tests.Fakes;
 using Microsoft.Extensions.AI;
@@ -17,7 +17,7 @@ public sealed class TerminalAgentMemoryTests : IDisposable
 
     private string Global => Path.Combine(_folder, "global", MemoryFile.FileName);
 
-    private string ProjectPath => Path.Combine(_folder, "project", MemoryFile.FileName);
+    private string WorkspacePath => Path.Combine(_folder, "workspace", MemoryFile.FileName);
 
     public void Dispose() => Directory.Delete(_folder, recursive: true);
 
@@ -28,7 +28,7 @@ public sealed class TerminalAgentMemoryTests : IDisposable
     {
         string? seen = null;
         var client = new ScriptedChatClient(call, messages => { seen = LastToolResult(messages); return Text("OK."); });
-        using var agent = new TerminalAgent(client, _user, new SecretRedactor()) { Memory = memory ?? new AgentMemory(Global, ProjectPath) };
+        using var agent = new TerminalAgent(client, _user, new SecretRedactor()) { Memory = memory ?? new AgentMemory(Global, WorkspacePath) };
         agent.EventRaised += (_, e) => _events.Add(e);
         await agent.SendAsync("From now on, use doas", Token);
         return seen;
@@ -37,14 +37,14 @@ public sealed class TerminalAgentMemoryTests : IDisposable
     [Fact]
     public async Task Remembers_a_note_and_says_so_in_the_chat()
     {
-        var result = await RunAsync(Tool("remember", "project", "Use  doas,\nnot sudo"));
+        var result = await RunAsync(Tool("remember", "workspace", "Use  doas,\nnot sudo"));
 
         Assert.Equal("Remembered.", result);
-        Assert.Equal(["Use doas, not sudo"], MemoryFile.Notes(ProjectPath), StringComparer.Ordinal);
+        Assert.Equal(["Use doas, not sudo"], MemoryFile.Notes(WorkspacePath), StringComparer.Ordinal);
         Assert.False(File.Exists(Global));
         var change = Assert.Single(_events, e => e.Kind == AgentEventKind.MemoryChanged);
-        Assert.Equal(ProjectPath, change.Path);
-        Assert.Equal("Remembered for this project: Use doas, not sudo", change.Text);
+        Assert.Equal(WorkspacePath, change.Path);
+        Assert.Equal("Remembered for this workspace: Use doas, not sudo", change.Text);
     }
 
     [Fact]
@@ -66,12 +66,12 @@ public sealed class TerminalAgentMemoryTests : IDisposable
     }
 
     [Fact]
-    public async Task Does_not_write_the_project_memory_from_a_read_only_window()
+    public async Task Does_not_write_the_workspace_memory_from_a_read_only_window()
     {
-        var result = await RunAsync(Tool("remember", "project", "Use doas"), new AgentMemory(Global, ProjectPath: null));
+        var result = await RunAsync(Tool("remember", "workspace", "Use doas"), new AgentMemory(Global, WorkspacePath: null));
 
-        Assert.Equal("Not changed: this window can't write the project's memory (it's open read-only).", result);
-        Assert.False(File.Exists(ProjectPath));
+        Assert.Equal("Not changed: this window can't write the workspace's memory (it's open read-only).", result);
+        Assert.False(File.Exists(WorkspacePath));
     }
 
     [Fact]

@@ -12,7 +12,7 @@ public sealed partial class SettingsWindow : Window
         DataContextChanged += (_, _) => AppearancePage.DataContext = DataContext is SettingsViewModel settings ? new AppearanceViewModel(settings) : null;
     }
 
-    // The project whose history the History page shows: the window Settings was opened from.
+    // The workspace whose history the History page shows: the window Settings was opened from.
     public IHistoryAccess? History
     {
         get => HistoryPage.Access;

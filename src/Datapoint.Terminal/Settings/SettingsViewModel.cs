@@ -2,7 +2,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Datapoint.Terminal.Agent;
-using Datapoint.Terminal.Agent.Projects;
+using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Agent.Providers;
 using Datapoint.Terminal.Agent.Safety;
 using Datapoint.Terminal.Resources;
@@ -33,9 +33,9 @@ public sealed partial class SettingsViewModel : ObservableObject
             new(ProviderKind.OpenAICompatible, Strings.ProviderKindCompatible),
         ];
         _defaultApprovalMode = settings.DefaultApprovalMode;
-        RecentProjects = settings.RecentProjects;
-        OpenProjects = settings.OpenProjects;
-        TrustedProjects = settings.TrustedProjects;
+        RecentWorkspaces = settings.RecentWorkspaces;
+        OpenWorkspaces = settings.OpenWorkspaces;
+        TrustedWorkspaces = settings.TrustedWorkspaces;
         DeclinedGitIgnore = settings.DeclinedGitIgnore;
         ConfirmedConnections = settings.ConfirmedConnections;
         WarnedSyncFolders = settings.WarnedSyncFolders;
@@ -63,15 +63,15 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     public event EventHandler? Changed;
 
-    public event EventHandler? ProjectsChanged;
+    public event EventHandler? WorkspacesChanged;
 
     public ProviderKeys Keys { get; }
 
-    public IReadOnlyList<string> RecentProjects { get; private set; }
+    public IReadOnlyList<string> RecentWorkspaces { get; private set; }
 
-    public IReadOnlyList<string> OpenProjects { get; private set; }
+    public IReadOnlyList<string> OpenWorkspaces { get; private set; }
 
-    public IReadOnlyList<ProjectTrustRecord> TrustedProjects { get; private set; }
+    public IReadOnlyList<WorkspaceTrustRecord> TrustedWorkspaces { get; private set; }
 
     public IReadOnlyList<string> DeclinedGitIgnore { get; private set; }
 
@@ -92,7 +92,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     public void SetNotifications(bool enabled)
     {
         Notifications = enabled;
-        SaveProjectData();
+        SaveWorkspaceData();
     }
 
     public bool RecordSessions { get; private set; }
@@ -100,7 +100,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     public void SetRecordSessions(bool enabled)
     {
         RecordSessions = enabled;
-        SaveProjectData();
+        SaveWorkspaceData();
     }
 
     public decimal? SpendingLimit { get; private set; }
@@ -108,7 +108,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     public void SetSpendingLimit(decimal? limit)
     {
         SpendingLimit = limit;
-        SaveProjectData();
+        SaveWorkspaceData();
     }
 
     public string? TerminalFont { get; private set; }
@@ -171,7 +171,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         TerminalTheme = theme;
         TerminalFont = font;
         TerminalFontSize = Math.Clamp(size, 8, 40);
-        SaveProjectData();
+        SaveWorkspaceData();
         AppearanceChanged?.Invoke(this, EventArgs.Empty);
     }
 
@@ -197,9 +197,9 @@ public sealed partial class SettingsViewModel : ObservableObject
         Providers = [.. Providers.Select(provider => provider.ToAccount())],
         SelectedProviderId = SelectedProviderId,
         DefaultApprovalMode = _defaultApprovalMode,
-        RecentProjects = RecentProjects,
-        OpenProjects = OpenProjects,
-        TrustedProjects = TrustedProjects,
+        RecentWorkspaces = RecentWorkspaces,
+        OpenWorkspaces = OpenWorkspaces,
+        TrustedWorkspaces = TrustedWorkspaces,
         DeclinedGitIgnore = DeclinedGitIgnore,
         ConfirmedConnections = ConfirmedConnections,
         WarnedSyncFolders = WarnedSyncFolders,
@@ -217,30 +217,30 @@ public sealed partial class SettingsViewModel : ObservableObject
         MatchWindowToTheme = MatchWindowToTheme,
     };
 
-    public IReadOnlyList<ProjectConnection>? ConfirmedFor(string folder) =>
-        ConfirmedConnections.FirstOrDefault(record => ProjectFolders.AreSame(record.Folder, folder))?.Connections;
+    public IReadOnlyList<WorkspaceConnection>? ConfirmedFor(string folder) =>
+        ConfirmedConnections.FirstOrDefault(record => WorkspaceFolders.AreSame(record.Folder, folder))?.Connections;
 
-    public void SetConfirmed(string folder, IReadOnlyList<ProjectConnection> connections)
+    public void SetConfirmed(string folder, IReadOnlyList<WorkspaceConnection> connections)
     {
         var record = new ConfirmedConnections { Folder = folder, Connections = connections };
-        ConfirmedConnections = [.. ConfirmedConnections.Where(item => !ProjectFolders.AreSame(item.Folder, folder)), record];
-        SaveProjectData();
+        ConfirmedConnections = [.. ConfirmedConnections.Where(item => !WorkspaceFolders.AreSame(item.Folder, folder)), record];
+        SaveWorkspaceData();
     }
 
-    public bool HasDeclinedGitIgnore(string folder) => DeclinedGitIgnore.Any(item => ProjectFolders.AreSame(item, folder));
+    public bool HasDeclinedGitIgnore(string folder) => DeclinedGitIgnore.Any(item => WorkspaceFolders.AreSame(item, folder));
 
     public void DeclineGitIgnore(string folder)
     {
-        DeclinedGitIgnore = [.. DeclinedGitIgnore.Where(item => !ProjectFolders.AreSame(item, folder)), folder];
-        SaveProjectData();
+        DeclinedGitIgnore = [.. DeclinedGitIgnore.Where(item => !WorkspaceFolders.AreSame(item, folder)), folder];
+        SaveWorkspaceData();
     }
 
-    public bool HasWarnedSyncFolder(string folder) => WarnedSyncFolders.Any(item => ProjectFolders.AreSame(item, folder));
+    public bool HasWarnedSyncFolder(string folder) => WarnedSyncFolders.Any(item => WorkspaceFolders.AreSame(item, folder));
 
     public void WarnedSyncFolder(string folder)
     {
-        WarnedSyncFolders = [.. WarnedSyncFolders.Where(item => !ProjectFolders.AreSame(item, folder)), folder];
-        SaveProjectData();
+        WarnedSyncFolders = [.. WarnedSyncFolders.Where(item => !WorkspaceFolders.AreSame(item, folder)), folder];
+        SaveWorkspaceData();
     }
 
     // Read from the agent's thread too; the list is replaced, never changed in place.
@@ -249,33 +249,33 @@ public sealed partial class SettingsViewModel : ObservableObject
     public void MarkNotSecret(IEnumerable<string> values)
     {
         NotSecrets = [.. NotSecrets.Union(values.Select(SecretRedactor.Fingerprint), StringComparer.Ordinal)];
-        SaveProjectData();
+        SaveWorkspaceData();
     }
 
     public void SetChatSide(Shell.ChatSide side)
     {
         ChatSide = side;
-        SaveProjectData();
+        SaveWorkspaceData();
     }
 
     public void SetHistoryDays(int? days)
     {
         HistoryDays = days;
-        SaveProjectData();
+        SaveWorkspaceData();
     }
 
-    public ProjectTrustRecord? TrustFor(string folder) =>
-        TrustedProjects.FirstOrDefault(record => ProjectFolders.AreSame(record.Folder, folder));
+    public WorkspaceTrustRecord? TrustFor(string folder) =>
+        TrustedWorkspaces.FirstOrDefault(record => WorkspaceFolders.AreSame(record.Folder, folder));
 
-    public void SetTrust(ProjectTrustRecord record)
+    public void SetTrust(WorkspaceTrustRecord record)
     {
         ArgumentNullException.ThrowIfNull(record);
-        TrustedProjects = [.. TrustedProjects.Where(item => !ProjectFolders.AreSame(item.Folder, record.Folder)), record];
-        SaveProjectData();
+        TrustedWorkspaces = [.. TrustedWorkspaces.Where(item => !WorkspaceFolders.AreSame(item.Folder, record.Folder)), record];
+        SaveWorkspaceData();
     }
 
     // Saved without raising Changed: nothing a window shows depends on it.
-    private void SaveProjectData()
+    private void SaveWorkspaceData()
     {
         if (_store.IsReadOnly)
         {
@@ -285,16 +285,16 @@ public sealed partial class SettingsViewModel : ObservableObject
         _store.Save(Current);
     }
 
-    public void SetProjects(IReadOnlyList<string> recent, IReadOnlyList<string> open)
+    public void SetWorkspaces(IReadOnlyList<string> recent, IReadOnlyList<string> open)
     {
-        RecentProjects = recent;
-        OpenProjects = open;
+        RecentWorkspaces = recent;
+        OpenWorkspaces = open;
         if (!_store.IsReadOnly)
         {
             _store.Save(Current);
         }
 
-        ProjectsChanged?.Invoke(this, EventArgs.Empty);
+        WorkspacesChanged?.Invoke(this, EventArgs.Empty);
     }
 
     internal IChatClient CreateClient(ProviderAccount account, string? key) => _createClient(account, key);

@@ -2,7 +2,7 @@ using System.Net.Sockets;
 using Avalonia;
 using Datapoint.Terminal.Agent;
 using Datapoint.Terminal.Agent.Files;
-using Datapoint.Terminal.Agent.Projects;
+using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Controls;
 using Datapoint.Terminal.Resources;
 using Datapoint.Terminal.Sessions;
@@ -17,7 +17,7 @@ namespace Datapoint.Terminal.Shell;
 
 public sealed partial class MainWindow
 {
-    private async Task<TerminalTab?> OpenConnectionAsync(ProjectConnection connection, bool select = true)
+    private async Task<TerminalTab?> OpenConnectionAsync(WorkspaceConnection connection, bool select = true)
     {
         if (connection.IsLocal)
         {
@@ -51,7 +51,7 @@ public sealed partial class MainWindow
         }
     }
 
-    private void NoteIntegration(ProjectConnection connection, SshTerminalSession session)
+    private void NoteIntegration(WorkspaceConnection connection, SshTerminalSession session)
     {
         if (connection.Container is not null || connection.ShellIntegration == false)
         {
@@ -63,7 +63,7 @@ public sealed partial class MainWindow
 
     // A split of an SSH tab opens another terminal on the same connection: no second login, and the tab's forwards aren't
     // started again. Null when that connection has closed, so the caller logs in afresh.
-    private async Task<TerminalTab?> OpenOnSameConnectionAsync(TerminalTab tab, ProjectConnection connection)
+    private async Task<TerminalTab?> OpenOnSameConnectionAsync(TerminalTab tab, WorkspaceConnection connection)
     {
         if (tab.SharedClient is not { IsClosed: false } shared)
         {
@@ -81,7 +81,7 @@ public sealed partial class MainWindow
         }
     }
 
-    private TerminalTab AttachSsh(ProjectConnection connection, SshHostConfig? host, SshTerminalSession session, SharedSshClient shared, bool select)
+    private TerminalTab AttachSsh(WorkspaceConnection connection, SshHostConfig? host, SshTerminalSession session, SharedSshClient shared, bool select)
     {
         var view = new TerminalView { Padding = new Thickness(12, 10), IsVisible = false };
         var tab = new TerminalTab(NextTabName(connection.Name), view, RequestClose) { IsRemote = true, ConnectionName = connection.Name };
@@ -100,7 +100,7 @@ public sealed partial class MainWindow
         return tab;
     }
 
-    private async Task<(SshTerminalSession Session, SharedSshClient Shared)> LogInAsync(ProjectConnection connection, SshConfig config, SshHostConfig host, IReadOnlyList<SshJump> jumps)
+    private async Task<(SshTerminalSession Session, SharedSshClient Shared)> LogInAsync(WorkspaceConnection connection, SshConfig config, SshHostConfig host, IReadOnlyList<SshJump> jumps)
     {
         SshClient? via = null;
         foreach (var jump in jumps)
@@ -136,9 +136,9 @@ public sealed partial class MainWindow
         var prompts = new SshLoginPrompts(this, name, _redactor, _chat.AddNotice);
         var knownHosts = new KnownHostsFile([.. host.UserKnownHostsFiles, .. host.GlobalKnownHostsFiles]);
         var verifier = new KnownHostsVerifier(knownHosts, prompts, name, host.Get("HostKeyAlias"), isStrict: host.IsYes("StrictHostKeyChecking"));
-        var options = new SshConnectionOptions { Host = address, Port = port, UserName = user, HostKeyVerifier = ForProject(verifier, name) };
+        var options = new SshConnectionOptions { Host = address, Port = port, UserName = user, HostKeyVerifier = ForWorkspace(verifier, name) };
         var client = await ConnectAsync(options, via).ConfigureAwait(true);
-        var (keys, notes) = await SshLoginPlan.FindKeysAsync(host, ProjectFolders.Home, CancellationToken.None).ConfigureAwait(true);
+        var (keys, notes) = await SshLoginPlan.FindKeysAsync(host, WorkspaceFolders.Home, CancellationToken.None).ConfigureAwait(true);
         try
         {
             foreach (var note in notes)
@@ -205,8 +205,8 @@ public sealed partial class MainWindow
             ? $"ProxyJump in your SSH configuration for the jump host {hop.Alias} isn't supported yet; list every hop in the target's ProxyJump instead."
             : null;
 
-    // Production connections ask before every command unless the project says otherwise (product decision 72).
-    private ApprovalMode DefaultModeFor(ProjectConnection connection) =>
+    // Production connections ask before every command unless the workspace says otherwise (product decision 72).
+    private ApprovalMode DefaultModeFor(WorkspaceConnection connection) =>
         connection.ApprovalMode
         ?? (connection.IsProduction ? ApprovalMode.Ask : _settings.Current.DefaultApprovalMode);
 }

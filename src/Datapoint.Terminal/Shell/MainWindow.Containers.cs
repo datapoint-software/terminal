@@ -1,5 +1,5 @@
 using Avalonia;
-using Datapoint.Terminal.Agent.Projects;
+using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Controls;
 using Datapoint.Terminal.Resources;
 using Datapoint.Terminal.Sessions;
@@ -10,7 +10,7 @@ namespace Datapoint.Terminal.Shell;
 // Product.md, Containers: a container on this machine opens like a local tab, with docker or kubectl in place of the shell.
 public sealed partial class MainWindow
 {
-    private async Task<TerminalTab?> OpenLocalContainerAsync(ProjectConnection connection, bool select)
+    private async Task<TerminalTab?> OpenLocalContainerAsync(WorkspaceConnection connection, bool select)
     {
         var container = connection.Container!;
         var view = new TerminalView { Padding = new Thickness(12, 10), IsVisible = false };
@@ -30,9 +30,9 @@ public sealed partial class MainWindow
 
     // Through the user's login shell on macOS and Linux, so docker and kubectl are found on the PATH they set up there, which
     // apps started from the Dock don't get.
-    private LocalSessionOptions ContainerOptions(ProjectContainer container)
+    private LocalSessionOptions ContainerOptions(WorkspaceContainer container)
     {
-        var folder = Project.IsDefault ? new LocalSessionOptions().WorkingDirectory : Project.Folder;
+        var folder = Workspace.IsDefault ? new LocalSessionOptions().WorkingDirectory : Workspace.Folder;
         if (OperatingSystem.IsWindows())
         {
             var command = container.Command();

@@ -172,9 +172,9 @@ public static class Strings
 
     public static string MenuFile => Get(nameof(MenuFile));
 
-    public static string MenuNewProject => Get(nameof(MenuNewProject));
+    public static string MenuNewWorkspace => Get(nameof(MenuNewWorkspace));
 
-    public static string MenuOpenProject => Get(nameof(MenuOpenProject));
+    public static string MenuOpenWorkspace => Get(nameof(MenuOpenWorkspace));
 
     public static string MenuOpenRecent => Get(nameof(MenuOpenRecent));
 
@@ -184,15 +184,15 @@ public static class Strings
 
     public static string MenuCloseWindow => Get(nameof(MenuCloseWindow));
 
-    public static string PickerNewProject => Get(nameof(PickerNewProject));
+    public static string PickerNewWorkspace => Get(nameof(PickerNewWorkspace));
 
-    public static string PickerOpenProject => Get(nameof(PickerOpenProject));
+    public static string PickerOpenWorkspace => Get(nameof(PickerOpenWorkspace));
 
-    public static string NoticeProjectReadOnly => Get(nameof(NoticeProjectReadOnly));
+    public static string NoticeWorkspaceReadOnly => Get(nameof(NoticeWorkspaceReadOnly));
 
-    public static string NoticeProjectFailed => Get(nameof(NoticeProjectFailed));
+    public static string NoticeWorkspaceFailed => Get(nameof(NoticeWorkspaceFailed));
 
-    public static string NoticeProjectIsNotNew => Get(nameof(NoticeProjectIsNotNew));
+    public static string NoticeWorkspaceIsNotNew => Get(nameof(NoticeWorkspaceIsNotNew));
 
     public static string WindowTitle => Get(nameof(WindowTitle));
 
@@ -244,7 +244,7 @@ public static class Strings
 
     public static string Cancel => Get(nameof(Cancel));
 
-    public static string NoticeProjectReadOnlyNotAdded => Get(nameof(NoticeProjectReadOnlyNotAdded));
+    public static string NoticeWorkspaceReadOnlyNotAdded => Get(nameof(NoticeWorkspaceReadOnlyNotAdded));
 
     public static string NoticeHostAdded => Get(nameof(NoticeHostAdded));
 
@@ -294,7 +294,7 @@ public static class Strings
 
     public static string NoticeLoginNote => Get(nameof(NoticeLoginNote));
 
-    public static string MenuProjectTrust => Get(nameof(MenuProjectTrust));
+    public static string MenuWorkspaceTrust => Get(nameof(MenuWorkspaceTrust));
 
     public static string TrustTitle => Get(nameof(TrustTitle));
 
@@ -446,9 +446,9 @@ public static class Strings
 
     public static string MenuOpenGlobalMemory => Get(nameof(MenuOpenGlobalMemory));
 
-    public static string MenuOpenProjectMemory => Get(nameof(MenuOpenProjectMemory));
+    public static string MenuOpenWorkspaceMemory => Get(nameof(MenuOpenWorkspaceMemory));
 
-    public static string MenuClearProjectMemory => Get(nameof(MenuClearProjectMemory));
+    public static string MenuClearWorkspaceMemory => Get(nameof(MenuClearWorkspaceMemory));
 
     public static string NoticeMemoryUnwritable => Get(nameof(NoticeMemoryUnwritable));
 
@@ -968,19 +968,19 @@ public static class Strings
 
     public static string NoticeRemoteNoIntegration => Get(nameof(NoticeRemoteNoIntegration));
 
-    public static string ProjectHostKeyTitle => Get(nameof(ProjectHostKeyTitle));
+    public static string WorkspaceHostKeyTitle => Get(nameof(WorkspaceHostKeyTitle));
 
-    public static string ProjectHostKeyMessage => Get(nameof(ProjectHostKeyMessage));
+    public static string WorkspaceHostKeyMessage => Get(nameof(WorkspaceHostKeyMessage));
 
-    public static string ProjectHostKeyDetails => Get(nameof(ProjectHostKeyDetails));
+    public static string WorkspaceHostKeyDetails => Get(nameof(WorkspaceHostKeyDetails));
 
-    public static string ProjectHostKeyArchive => Get(nameof(ProjectHostKeyArchive));
+    public static string WorkspaceHostKeyArchive => Get(nameof(WorkspaceHostKeyArchive));
 
-    public static string ProjectHostKeyReview => Get(nameof(ProjectHostKeyReview));
+    public static string WorkspaceHostKeyReview => Get(nameof(WorkspaceHostKeyReview));
 
-    public static string ProjectHostKeyKeep => Get(nameof(ProjectHostKeyKeep));
+    public static string WorkspaceHostKeyKeep => Get(nameof(WorkspaceHostKeyKeep));
 
-    public static string NoticeProjectHostKeyChanged => Get(nameof(NoticeProjectHostKeyChanged));
+    public static string NoticeWorkspaceHostKeyChanged => Get(nameof(NoticeWorkspaceHostKeyChanged));
 
     public static string NoticeHostDocsArchived => Get(nameof(NoticeHostDocsArchived));
 
@@ -1072,7 +1072,7 @@ public static class Strings
 
     public static string HistoryKeepHint => Get(nameof(HistoryKeepHint));
 
-    public static string HistoryInProject => Get(nameof(HistoryInProject));
+    public static string HistoryInWorkspace => Get(nameof(HistoryInWorkspace));
 
     public static string HistoryUsage => Get(nameof(HistoryUsage));
 
@@ -1082,7 +1082,7 @@ public static class Strings
 
     public static string HistoryClearHint => Get(nameof(HistoryClearHint));
 
-    public static string HistoryNoProject => Get(nameof(HistoryNoProject));
+    public static string HistoryNoWorkspace => Get(nameof(HistoryNoWorkspace));
 
     public static string HistoryNothingKept => Get(nameof(HistoryNothingKept));
 

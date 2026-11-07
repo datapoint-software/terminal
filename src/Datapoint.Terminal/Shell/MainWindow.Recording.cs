@@ -8,7 +8,7 @@ using Datapoint.Terminal.Sessions.Recording;
 namespace Datapoint.Terminal.Shell;
 
 // Product decisions 45, 58 and 75: each tab is recorded as it happens, with markers for who typed each command and what the
-// agent did beside the terminal. Recordings stay in the project's personal folder, redacted like its history, and are pruned
+// agent did beside the terminal. Recordings stay in the workspace's personal folder, redacted like its history, and are pruned
 // with it. They're the user's own record, not an audit log.
 public sealed partial class MainWindow
 {
@@ -18,11 +18,11 @@ public sealed partial class MainWindow
     private readonly ConcurrentDictionary<string, SessionRecorder> _recorders = new(StringComparer.OrdinalIgnoreCase);
     private bool _hasPrunedRecordings;
 
-    private string RecordingsFolder => Path.Combine(Project.PersonalPath, RecordingsFolderName);
+    private string RecordingsFolder => Path.Combine(Workspace.PersonalPath, RecordingsFolderName);
 
     private void StartRecording(TerminalTab tab, TerminalConnection connection)
     {
-        if (!_settings.RecordSessions || Project.IsReadOnly)
+        if (!_settings.RecordSessions || Workspace.IsReadOnly)
         {
             return;
         }
@@ -31,7 +31,7 @@ public sealed partial class MainWindow
         {
             PruneRecordings();
             var stream = CreateRecordingFile(tab.Name);
-            var recorder = new SessionRecorder(stream, connection.Terminal.Columns, connection.Terminal.Rows, $"{tab.Label} — {Project.Name}", _redactor.Redact);
+            var recorder = new SessionRecorder(stream, connection.Terminal.Columns, connection.Terminal.Rows, $"{tab.Label} — {Workspace.Name}", _redactor.Redact);
             tab.Recorder = recorder;
             _recorders[tab.Name] = recorder;
             connection.OutputObserver = recorder;
@@ -138,7 +138,7 @@ public sealed partial class MainWindow
             return;
         }
 
-        _recordingsWindow = new RecordingsWindow(RecordingsFolder, ApplyAppearance) { Title = $"{Strings.RecordingsTitle} — {Project.Name}" };
+        _recordingsWindow = new RecordingsWindow(RecordingsFolder, ApplyAppearance) { Title = $"{Strings.RecordingsTitle} — {Workspace.Name}" };
         _recordingsWindow.Closed += (_, _) => _recordingsWindow = null;
         _recordingsWindow.Show(this);
     }

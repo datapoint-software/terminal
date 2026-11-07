@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 using Datapoint.Terminal.Agent;
-using Datapoint.Terminal.Agent.Projects;
+using Datapoint.Terminal.Agent.Workspaces;
 
 namespace Datapoint.Terminal.Settings;
 
@@ -19,18 +19,18 @@ public sealed record AppSettings
 
     public ApprovalMode DefaultApprovalMode { get; set; } = ApprovalMode.Ask;
 
-    public IReadOnlyList<string> RecentProjects { get; init => field = value ?? []; } = [];
+    public IReadOnlyList<string> RecentWorkspaces { get; init => field = value ?? []; } = [];
 
-    public IReadOnlyList<string> OpenProjects { get; init => field = value ?? []; } = [];
+    public IReadOnlyList<string> OpenWorkspaces { get; init => field = value ?? []; } = [];
 
-    public IReadOnlyList<ProjectTrustRecord> TrustedProjects { get; init => field = value ?? []; } = [];
+    public IReadOnlyList<WorkspaceTrustRecord> TrustedWorkspaces { get; init => field = value ?? []; } = [];
 
-    // Projects whose owner chose not to add .terminal/ to .gitignore, so they aren't asked again.
+    // Workspaces whose owner chose not to add .terminal/ to .gitignore, so they aren't asked again.
     public IReadOnlyList<string> DeclinedGitIgnore { get; init => field = value ?? []; } = [];
 
     public IReadOnlyList<ConfirmedConnections> ConfirmedConnections { get; init => field = value ?? []; } = [];
 
-    // Projects already warned that they're inside a sync service's folder, so the warning is shown once.
+    // Workspaces already warned that they're inside a sync service's folder, so the warning is shown once.
     public IReadOnlyList<string> WarnedSyncFolders { get; init => field = value ?? []; } = [];
 
     // SHA-256 fingerprints of values the user marked as not secret, never the values themselves.
@@ -42,7 +42,7 @@ public sealed record AppSettings
     // Desktop notifications when the agent finishes or needs the user in a background window.
     public bool Notifications { get; set; } = true;
 
-    // Session recordings in each project's .terminal/recordings, kept as long as its history (product decision 45).
+    // Session recordings in each workspace's .terminal/recordings, kept as long as its history (product decision 45).
     public bool RecordSessions { get; set; } = true;
 
     // In US dollars per window session; null for no limit.

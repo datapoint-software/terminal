@@ -4,7 +4,7 @@ using Avalonia;
 using Avalonia.Threading;
 using Datapoint.Terminal.Agent;
 using Datapoint.Terminal.Agent.Files;
-using Datapoint.Terminal.Agent.Projects;
+using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Controls;
 using Datapoint.Terminal.Resources;
 using Datapoint.Terminal.Sessions;
@@ -26,9 +26,9 @@ public sealed partial class MainWindow
         var tab = new TerminalTab(NextTabName(Strings.TabLocal), view, RequestClose) { ConnectionName = Strings.TabLocal };
         try
         {
-            var options = Project.IsDefault ? new LocalSessionOptions() : new LocalSessionOptions { WorkingDirectory = Project.Folder };
+            var options = Workspace.IsDefault ? new LocalSessionOptions() : new LocalSessionOptions { WorkingDirectory = Workspace.Folder };
             var session = await LocalSession.StartAsync(options, CancellationToken.None).ConfigureAwait(true);
-            var files = OperatingSystem.IsWindows() ? null : new LocalHostFiles(ProjectFolders.Home);
+            var files = OperatingSystem.IsWindows() ? null : new LocalHostFiles(WorkspaceFolders.Home);
             Attach(tab, Connect(tab, session), environment: null, _settings.Current.DefaultApprovalMode, select, files);
             return tab;
         }
@@ -243,18 +243,18 @@ public sealed partial class MainWindow
     private bool _isCloseConfirmed;
 
     // The tabs that closing would cut off, one line each, for the question asked before closing a window or quitting.
-    public IReadOnlyList<string> BusyTabs(bool withProject) => [.. _tabs
+    public IReadOnlyList<string> BusyTabs(bool withWorkspace) => [.. _tabs
         .Select(tab => (label: tab.Label, reason: tab.BusyReason))
         .Concat(UnsavedHostFiles.Select(file => (label: file.Name, reason: (string?)Strings.HostFileUnsavedReason)))
         .Where(item => item.reason is not null)
-        .Select(item => Strings.Format(Strings.CloseTabLine, withProject ? $"{Project.Name} › {item.label}" : item.label, item.reason))];
+        .Select(item => Strings.Format(Strings.CloseTabLine, withWorkspace ? $"{Workspace.Name} › {item.label}" : item.label, item.reason))];
 
     // Set when quitting was confirmed for all windows at once.
     public void AllowClose() => _isCloseConfirmed = true;
 
     private void OnWindowClosing(object? sender, WindowClosingEventArgs e)
     {
-        var busy = BusyTabs(withProject: false);
+        var busy = BusyTabs(withWorkspace: false);
         if (_isCloseConfirmed || busy.Count == 0)
         {
             return;

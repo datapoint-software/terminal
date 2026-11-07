@@ -88,7 +88,7 @@
   <Grid RowDefinitions="Auto,*">
     <NativeMenuBar />
     <!-- The sidebar on the left (product decision 98), then the terminals and the chat. -->
-    <Grid x:Name="Workspace" Grid.Row="1" ColumnDefinitions="240,1,*">
+    <Grid x:Name="WorkArea" Grid.Row="1" ColumnDefinitions="240,1,*">
     <side:SidebarView x:Name="Sidebar" AutomationProperties.AutomationId="Sidebar" />
     <Rectangle x:Name="SidebarSeparator" Grid.Column="1" Fill="{DynamicResource SeparatorBrush}" />
     <GridSplitter x:Name="SidebarSplitter" Grid.Column="1" ResizeDirection="Columns" Margin="-3,0" ZIndex="1" />

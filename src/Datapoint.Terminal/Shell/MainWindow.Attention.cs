@@ -54,6 +54,6 @@ public sealed partial class MainWindow
             return;
         }
 
-        Notifications.DesktopNotifications.Show(Project.Name, message);
+        Notifications.DesktopNotifications.Show(Workspace.Name, message);
     }
 }

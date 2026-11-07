@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Input;
-using Datapoint.Terminal.Agent.Projects;
+using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Resources;
 
 namespace Datapoint.Terminal.Shell;
@@ -20,18 +20,18 @@ public sealed partial class MainWindow
     private NativeMenu BuildMenu()
     {
         var file = new NativeMenu();
-        file.Add(Item(Strings.MenuNewProject, Shortcut(Key.N, shift: true), () => _ = _windows.PickAsync(this, isNew: true)));
-        file.Add(Item(Strings.MenuOpenProject, Shortcut(Key.O), () => _ = _windows.PickAsync(this, isNew: false)));
+        file.Add(Item(Strings.MenuNewWorkspace, Shortcut(Key.N, shift: true), () => _ = _windows.PickAsync(this, isNew: true)));
+        file.Add(Item(Strings.MenuOpenWorkspace, Shortcut(Key.O), () => _ = _windows.PickAsync(this, isNew: false)));
         FillRecentMenu();
         file.Add(new NativeMenuItem(Strings.MenuOpenRecent) { Menu = _recentMenu });
         file.Add(new NativeMenuItemSeparator());
-        if (!Project.IsDefault)
+        if (!Workspace.IsDefault)
         {
-            file.Add(Item(Strings.MenuProjectTrust, null, () => _ = ReviewTrustAsync(always: true)));
+            file.Add(Item(Strings.MenuWorkspaceTrust, null, () => _ = ReviewTrustAsync(always: true)));
         }
 
         var history = Item(Strings.MenuShowHistory, Shortcut(Key.Y), ShowHistory);
-        history.IsEnabled = !Project.IsReadOnly;
+        history.IsEnabled = !Workspace.IsReadOnly;
         file.Add(history);
         file.Add(Item(Strings.MenuShowRecordings, null, ShowRecordings));
         var record = Item(Strings.MenuRecordSessions, null, () => { });
@@ -132,7 +132,7 @@ public sealed partial class MainWindow
 
     private static string ShortPath(string folder)
     {
-        var home = ProjectFolders.Home;
+        var home = WorkspaceFolders.Home;
         return folder.StartsWith(home + Path.DirectorySeparatorChar, StringComparison.Ordinal) ? "~" + folder[home.Length..] : folder;
     }
 }

@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace Datapoint.Terminal.Editor;
 
-// What the document tab strip shows for each open file, a project document or a file on a host.
+// What the document tab strip shows for each open file, a workspace document or a file on a host.
 public interface IOpenDocument : INotifyPropertyChanged
 {
     string Name { get; }

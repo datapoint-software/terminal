@@ -5,7 +5,7 @@ namespace Datapoint.Terminal.Tests.Shell;
 public sealed class WindowTitlesTests
 {
     [Fact]
-    public void Names_the_project() =>
+    public void Names_the_workspace() =>
         Assert.Equal("api — Datapoint Terminal", WindowTitles.For("api", shellTitle: null, needsUser: false));
 
     [Fact]

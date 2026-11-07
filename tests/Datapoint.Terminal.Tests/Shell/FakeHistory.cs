@@ -1,4 +1,4 @@
-using Datapoint.Terminal.Agent.Projects.History;
+using Datapoint.Terminal.Agent.Workspaces.History;
 using Datapoint.Terminal.Shell;
 
 namespace Datapoint.Terminal.Tests.Shell;
@@ -28,7 +28,7 @@ internal sealed class FakeHistory : IHistoryAccess
 
     public IReadOnlyList<ConnectionUsage> Usage() => IsEmpty ? [] : [new ConnectionUsage("db1", 7, 410_000), new ConnectionUsage("web1", 42, 3_100_000)];
 
-    public string ProjectName => "shop";
+    public string WorkspaceName => "shop";
 
     public List<string?> Cleared { get; } = [];
 

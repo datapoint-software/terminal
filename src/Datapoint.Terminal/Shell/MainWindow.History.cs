@@ -1,5 +1,5 @@
 using Datapoint.Terminal.Agent;
-using Datapoint.Terminal.Agent.Projects.History;
+using Datapoint.Terminal.Agent.Workspaces.History;
 using Datapoint.Terminal.Resources;
 using Microsoft.Data.Sqlite;
 
@@ -29,11 +29,11 @@ public sealed partial class MainWindow : IHistoryAccess
         }
     }
 
-    // A read-only window leaves the history to the window that holds the project's lock. The store is opened on the first entry,
-    // so a project that's never used with the agent gets no history file.
+    // A read-only window leaves the history to the window that holds the workspace's lock. The store is opened on the first entry,
+    // so a workspace that's never used with the agent gets no history file.
     private void Record(HistoryEntryKind kind, string text, string? terminal = null, string? detail = null, int? exitCode = null, string? connection = null)
     {
-        if (Project.IsReadOnly)
+        if (Workspace.IsReadOnly)
         {
             return;
         }
@@ -62,14 +62,14 @@ public sealed partial class MainWindow : IHistoryAccess
     // Read-only windows don't open the store, since opening it can upgrade its format. The file isn't created just to search it.
     private IReadOnlyList<HistoryEntry> SearchHistory(string words, int limit)
     {
-        if (Project.IsReadOnly)
+        if (Workspace.IsReadOnly)
         {
             return [];
         }
 
         lock (_historyLock)
         {
-            if (_isHistoryUnavailable || (_history is null && !File.Exists(Path.Combine(Project.PersonalPath, HistoryStore.FileName))))
+            if (_isHistoryUnavailable || (_history is null && !File.Exists(Path.Combine(Workspace.PersonalPath, HistoryStore.FileName))))
             {
                 return [];
             }
@@ -85,7 +85,7 @@ public sealed partial class MainWindow : IHistoryAccess
         }
     }
 
-    // Opening applies the retention setting, so old entries go when a project is next used, not only while it stays open.
+    // Opening applies the retention setting, so old entries go when a workspace is next used, not only while it stays open.
     private HistoryStore OpenHistory()
     {
         if (_history is not null)
@@ -93,7 +93,7 @@ public sealed partial class MainWindow : IHistoryAccess
             return _history;
         }
 
-        _history = HistoryStore.Open(Project.PersonalPath, _redactor);
+        _history = HistoryStore.Open(Workspace.PersonalPath, _redactor);
         Prune(_history);
         return _history;
     }
@@ -111,14 +111,14 @@ public sealed partial class MainWindow : IHistoryAccess
     // For the history window: an existing history only, never created to be read, and nothing from a read-only window.
     private T WithHistory<T>(Func<HistoryStore, T> use, T empty)
     {
-        if (Project.IsReadOnly)
+        if (Workspace.IsReadOnly)
         {
             return empty;
         }
 
         lock (_historyLock)
         {
-            if (_isHistoryUnavailable || (_history is null && !File.Exists(Path.Combine(Project.PersonalPath, HistoryStore.FileName))))
+            if (_isHistoryUnavailable || (_history is null && !File.Exists(Path.Combine(Workspace.PersonalPath, HistoryStore.FileName))))
             {
                 return empty;
             }
@@ -146,7 +146,7 @@ public sealed partial class MainWindow : IHistoryAccess
 
     IReadOnlyList<ConnectionUsage> IHistoryAccess.Usage() => WithHistory(store => store.Usage(), []);
 
-    string IHistoryAccess.ProjectName => Project.Name;
+    string IHistoryAccess.WorkspaceName => Workspace.Name;
 
     // The current conversation ends with it, so what comes next starts a new one.
     void IHistoryAccess.Clear(string? connection) => WithHistory(
@@ -166,7 +166,7 @@ public sealed partial class MainWindow : IHistoryAccess
         },
         0);
 
-    // Applies to every project; this one is pruned now, others when they next open their history.
+    // Applies to every workspace; this one is pruned now, others when they next open their history.
     void IHistoryAccess.SetRetentionDays(int? days)
     {
         _settings.SetHistoryDays(days);
@@ -182,7 +182,7 @@ public sealed partial class MainWindow : IHistoryAccess
     {
         if (_historyWindow is null)
         {
-            _historyWindow = new HistoryWindow(this) { Title = $"{Strings.HistoryTitle} — {Project.Name}" };
+            _historyWindow = new HistoryWindow(this) { Title = $"{Strings.HistoryTitle} — {Workspace.Name}" };
             _historyWindow.Closed += (_, _) => _historyWindow = null;
             _historyWindow.Show(this);
         }

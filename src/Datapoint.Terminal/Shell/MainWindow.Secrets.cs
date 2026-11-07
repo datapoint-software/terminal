@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using System.Text;
 using Avalonia.Threading;
-using Datapoint.Terminal.Agent.Projects;
+using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Agent.Safety;
 using Datapoint.Terminal.Resources;
 
@@ -66,7 +66,7 @@ public sealed partial class MainWindow
         var answer = await ChoiceWindow.AskAsync(
             this,
             Strings.SecretTitle,
-            Strings.Format(Strings.SecretMessage, ProjectFolders.Display(file.Path), SecretRedactor.Mask),
+            Strings.Format(Strings.SecretMessage, WorkspaceFolders.Display(file.Path), SecretRedactor.Mask),
             DescribeMatches(file.Text, matches),
             hasDefault: true,
             Strings.SecretSkip,
