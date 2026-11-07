@@ -4,7 +4,7 @@ using Microsoft.Data.Sqlite;
 
 namespace Datapoint.Terminal.Agent.Workspaces.History;
 
-// A workspace's conversations and the agent's commands, in .terminal/history.db (product decisions 52 and 90). Everything is
+// A workspace's conversations and the agent's commands, in history.db in its personal data (product decisions 52 and 100). Everything is
 // redacted before it's stored. The rollback journal is used rather than WAL, whose extra files break when a sync service copies
 // the folder; one window writes to a workspace at a time, so WAL's concurrency isn't needed.
 public sealed class HistoryStore : IDisposable

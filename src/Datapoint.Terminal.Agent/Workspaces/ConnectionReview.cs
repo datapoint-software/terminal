@@ -1,6 +1,6 @@
 namespace Datapoint.Terminal.Agent.Workspaces;
 
-// Product decision 92: changes to .terminal.json from outside the application may make a connection stricter on their own,
+// Product decision 92: changes to workspace.json from outside the application may make a connection stricter on their own,
 // never looser. Looser or redirecting changes are held, and the connection keeps its confirmed value until the user accepts.
 public sealed record ConnectionReview(IReadOnlyList<WorkspaceConnection> Effective, IReadOnlyList<ConnectionChange> Held)
 {

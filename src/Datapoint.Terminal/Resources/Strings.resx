@@ -355,7 +355,7 @@
     <value>Add {0} to this workspace?</value>
   </data>
   <data name="AddHostMessage" xml:space="preserve">
-    <value>{0} is in your ~/.ssh/config but not in this workspace. Adding it lists it in .terminal.json, which is shared with the workspace, and lets the agent keep documentation for it in hosts/. You can also open it once without adding it.</value>
+    <value>{0} is in your ~/.ssh/config but not in this workspace. Adding it lists it in workspace.json, which is shared with the workspace, and lets the agent keep documentation for it in hosts/. You can also open it once without adding it.</value>
   </data>
   <data name="AddHostAdd" xml:space="preserve">
     <value>Add to Workspace</value>
@@ -457,7 +457,7 @@ Fingerprint: {2}</value>
     <value>Instruction files:</value>
   </data>
   <data name="TrustConnections" xml:space="preserve">
-    <value>Connections in .terminal.json:</value>
+    <value>Connections in workspace.json:</value>
   </data>
   <data name="TrustNothing" xml:space="preserve">
     <value>This workspace has no instruction files or connections yet.</value>
@@ -516,7 +516,7 @@ git rm -r --cached .terminal</value>
     <value>Review connection changes</value>
   </data>
   <data name="ReviewMessage" xml:space="preserve">
-    <value>.terminal.json in {0} was changed outside Datapoint Terminal, e.g. by a git pull or a teammate. These changes make connections less strict or point them somewhere else, so they wait for you. Until you accept them, the connections keep the settings you last confirmed.</value>
+    <value>workspace.json in {0} was changed outside Datapoint Terminal, e.g. by a git pull or a teammate. These changes make connections less strict or point them somewhere else, so they wait for you. Until you accept them, the connections keep the settings you last confirmed.</value>
   </data>
   <data name="ReviewKeep" xml:space="preserve">
     <value>Keep Confirmed Settings</value>
@@ -537,10 +537,10 @@ git rm -r --cached .terminal</value>
     <value>default</value>
   </data>
   <data name="NoticeConnectionsStricter" xml:space="preserve">
-    <value>Applied changes to {0} from .terminal.json, since they only make things stricter.</value>
+    <value>Applied changes to {0} from workspace.json, since they only make things stricter.</value>
   </data>
   <data name="NoticeConnectionsHeld" xml:space="preserve">
-    <value>Changes to connections in .terminal.json are waiting for your review; the connections keep the settings you confirmed. They're shown again when you next open the workspace.</value>
+    <value>Changes to connections in workspace.json are waiting for your review; the connections keep the settings you confirmed. They're shown again when you next open the workspace.</value>
   </data>
   <data name="NoticeInstructionsChanged" xml:space="preserve">
     <value>{0} changed since the agent last read it.</value>
@@ -1023,7 +1023,7 @@ git rm -r --cached .terminal</value>
     <value>This recording can't be played: {0}</value>
   </data>
   <data name="RecordingsNote" xml:space="preserve">
-    <value>Kept on this computer in the workspace's .terminal folder, with secrets removed where they're recognized. Also playable with asciinema.</value>
+    <value>Kept on this computer only, never in the workspace folder, with secrets removed where they're recognized. Also playable with asciinema.</value>
   </data>
   <data name="MenuRunRunbook" xml:space="preserve">
     <value>Run Runbook</value>
@@ -1611,7 +1611,7 @@ git rm -r --cached .terminal</value>
     <value>Keep history for</value>
   </data>
   <data name="HistoryKeepHint" xml:space="preserve">
-    <value>Conversations and terminal output, kept in each workspace's .terminal folder. Older history is deleted when the workspace opens.</value>
+    <value>Conversations and terminal output, kept on this computer only, never in a workspace folder. Older history is deleted when the workspace opens.</value>
   </data>
   <data name="HistoryInWorkspace" xml:space="preserve">
     <value>In {0}</value>
@@ -1644,7 +1644,7 @@ git rm -r --cached .terminal</value>
     <value>Add a Host</value>
   </data>
   <data name="NewHostCaption" xml:space="preserve">
-    <value>Saved in .terminal.json, which everyone on this workspace shares.</value>
+    <value>Saved in workspace.json, which everyone who shares this workspace sees.</value>
   </data>
   <data name="NewHostName" xml:space="preserve">
     <value>Name</value>

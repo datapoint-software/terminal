@@ -4,10 +4,10 @@ using Datapoint.Terminal.Resources;
 
 namespace Datapoint.Terminal.Shell;
 
-// What the Add a Host sheet asks for, turned into a connection for .terminal.json, or the first thing to correct.
+// What the Add a Host sheet asks for, turned into a connection for workspace.json, or the first thing to correct.
 public sealed class NewHostForm(IReadOnlyCollection<WorkspaceConnection> existing, IReadOnlyCollection<string> sshAliases)
 {
-    // Lowercase, as the labels are written in .terminal.json; the order matches the segmented control.
+    // Lowercase, as the labels are written in workspace.json; the order matches the segmented control.
     public static IReadOnlyList<string?> Environments { get; } = [null, "development", "staging", "production"];
 
     public string Name { get; set; } = string.Empty;

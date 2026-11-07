@@ -42,7 +42,7 @@ public sealed record AppSettings
     // Desktop notifications when the agent finishes or needs the user in a background window.
     public bool Notifications { get; set; } = true;
 
-    // Session recordings in each workspace's .terminal/recordings, kept as long as its history (product decision 45).
+    // Session recordings in each workspace's personal data, kept as long as its history (product decision 45).
     public bool RecordSessions { get; set; } = true;
 
     // In US dollars per window session; null for no limit.

@@ -83,8 +83,8 @@ public sealed partial class MainWindow
     private void OnWorkspaceChanged(string path)
     {
         if (WorkspaceFolders.RelativeInside(Workspace.Folder, path) is not { } relative
-            || relative.StartsWith(WorkspaceFolders.PersonalFolder + "/", StringComparison.Ordinal)
-            || string.Equals(relative, WorkspaceFolders.PersonalFolder, StringComparison.Ordinal)
+            || relative.StartsWith(WorkspaceFolders.LegacyPersonalFolder + "/", StringComparison.Ordinal)
+            || string.Equals(relative, WorkspaceFolders.LegacyPersonalFolder, StringComparison.Ordinal)
             || relative.Split('/').Contains(".git", StringComparer.Ordinal))
         {
             return;

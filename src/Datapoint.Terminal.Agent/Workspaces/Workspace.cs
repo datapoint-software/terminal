@@ -9,9 +9,10 @@ public sealed class Workspace : IDisposable
 
     private readonly FileStream? _lock;
 
-    private Workspace(string folder, WorkspaceSettings settings, FileStream? heldLock, bool isDefault, bool isNew)
+    private Workspace(string folder, string personal, WorkspaceSettings settings, FileStream? heldLock, bool isDefault, bool isNew)
     {
         Folder = folder;
+        PersonalPath = personal;
         Settings = settings;
         _lock = heldLock;
         IsDefault = isDefault;
@@ -34,13 +35,13 @@ public sealed class Workspace : IDisposable
 
     public string SettingsPath => Path.Combine(Folder, WorkspaceFolders.SettingsFile);
 
-    public string PersonalPath => Path.Combine(Folder, WorkspaceFolders.PersonalFolder);
+    public string PersonalPath { get; }
 
     public static Workspace OpenDefault() => Open(WorkspaceFolders.DefaultWorkspace, WorkspaceFolders.Home, create: true);
 
     public static Workspace Open(string folder) => Open(folder, WorkspaceFolders.Home, create: false);
 
-    public static Workspace Open(string folder, string home, bool create)
+    public static Workspace Open(string folder, string home, bool create, string? personalRoot = null)
     {
         var normalized = WorkspaceFolders.Normalize(folder);
         var isDefault = WorkspaceFolders.AreSame(normalized, WorkspaceFolders.DefaultWorkspace);
@@ -55,12 +56,24 @@ public sealed class Workspace : IDisposable
         }
 
         var isNew = !WorkspaceFolders.IsWorkspace(normalized);
-        var personal = Path.Combine(normalized, WorkspaceFolders.PersonalFolder);
+        var personal = WorkspaceFolders.PersonalData(personalRoot ?? WorkspaceFolders.PersonalRoot, normalized);
         try
         {
             CreatePrivateFolder(personal);
-            var (settings, problems) = ReadValidSettings(Path.Combine(normalized, WorkspaceFolders.SettingsFile));
-            return new Workspace(normalized, settings, TryLock(personal), isDefault, isNew) { Problems = problems };
+            var heldLock = TryLock(personal);
+            if (heldLock is not null)
+            {
+                MoveLegacyLayout(normalized, personal);
+            }
+
+            var settingsPath = Path.Combine(normalized, WorkspaceFolders.SettingsFile);
+            var (settings, problems) = ReadValidSettings(settingsPath);
+            if (heldLock is not null && !File.Exists(settingsPath))
+            {
+                File.WriteAllText(settingsPath, JsonSerializer.Serialize(settings, WorkspaceJsonContext.Default.WorkspaceSettings));
+            }
+
+            return new Workspace(normalized, personal, settings, heldLock, isDefault, isNew) { Problems = problems };
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {
@@ -68,7 +81,7 @@ public sealed class Workspace : IDisposable
         }
     }
 
-    // Reads .terminal.json again, e.g. after a git pull; returns its problems, and keeps the old settings if it can't be read.
+    // Reads workspace.json again, e.g. after a sync; returns its problems, and keeps the old settings if it can't be read.
     public IReadOnlyList<string> ReloadSettings()
     {
         try
@@ -106,6 +119,62 @@ public sealed class Workspace : IDisposable
 
     public void Dispose() => _lock?.Dispose();
 
+    // Before workspaces, a project kept its settings in .terminal.json and personal data in .terminal/ inside the folder. Both
+    // move once: the settings to workspace.json, and the personal data next to the workspace's other data in the application's
+    // own folder, so none of it stays where a sync service or a commit could take it.
+    private static void MoveLegacyLayout(string folder, string personal)
+    {
+        var legacySettings = Path.Combine(folder, WorkspaceFolders.LegacySettingsFile);
+        var settings = Path.Combine(folder, WorkspaceFolders.SettingsFile);
+        if (File.Exists(legacySettings) && !File.Exists(settings))
+        {
+            File.Move(legacySettings, settings);
+        }
+
+        var legacyPersonal = Path.Combine(folder, WorkspaceFolders.LegacyPersonalFolder);
+        if (!Directory.Exists(legacyPersonal))
+        {
+            return;
+        }
+
+        bool IsLock(string entry) => string.Equals(Path.GetFileName(entry), LockFile, StringComparison.Ordinal);
+        foreach (var source in Directory.EnumerateFileSystemEntries(legacyPersonal).Where(entry => !IsLock(entry)))
+        {
+            var target = Path.Combine(personal, Path.GetFileName(source));
+            if (!Path.Exists(target))
+            {
+                MoveEntry(source, target);
+            }
+        }
+
+        // Anything left had a newer copy in the application's data already, so the folder stays for the user to look at.
+        if (!Directory.EnumerateFileSystemEntries(legacyPersonal).All(IsLock))
+        {
+            return;
+        }
+
+        Directory.Delete(legacyPersonal, recursive: true);
+    }
+
+    // The application's data may be on another disk than the workspace, where a folder can't simply be renamed across.
+    private static void MoveEntry(string source, string target)
+    {
+        if (File.Exists(source))
+        {
+            File.Copy(source, target);
+            File.Delete(source);
+            return;
+        }
+
+        Directory.CreateDirectory(target);
+        foreach (var entry in Directory.EnumerateFileSystemEntries(source))
+        {
+            MoveEntry(entry, Path.Combine(target, Path.GetFileName(entry)));
+        }
+
+        Directory.Delete(source);
+    }
+
     private static void CreatePrivateFolder(string path)
     {
         if (Directory.Exists(path))
@@ -113,6 +182,7 @@ public sealed class Workspace : IDisposable
             return;
         }
 
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
         if (OperatingSystem.IsWindows())
         {
             Directory.CreateDirectory(path);

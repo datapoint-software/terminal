@@ -2,7 +2,7 @@ using System.Text.Json;
 
 namespace Datapoint.Terminal.Agent.Workspaces.HostKeys;
 
-// The host key this workspace last saw for each connection, in .terminal/ (product decision 93). It never decides whether a key
+// The host key this workspace last saw for each connection, in its personal data (product decisions 93 and 100). It never decides whether a key
 // is trusted, which only the user's known_hosts does; it only notices that a machine may have been replaced since this
 // workspace's documentation was written. A null path, as in a read-only window, remembers nothing.
 public sealed class WorkspaceHostKeys(string? path)

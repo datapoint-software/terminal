@@ -33,5 +33,5 @@ public static class WorkspaceListing
 
     private static bool IsHidden(FileSystemInfo entry, bool isRoot) =>
         entry is DirectoryInfo && (string.Equals(entry.Name, ".git", StringComparison.Ordinal)
-            || (isRoot && string.Equals(entry.Name, WorkspaceFolders.PersonalFolder, StringComparison.Ordinal)));
+            || (isRoot && string.Equals(entry.Name, WorkspaceFolders.LegacyPersonalFolder, StringComparison.Ordinal)));
 }
