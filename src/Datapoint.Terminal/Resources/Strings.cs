@@ -1572,6 +1572,10 @@ public static class Strings
 
     public static string IgnorePermissionsConfirm => Get(nameof(IgnorePermissionsConfirm));
 
+    public static string MenuNextArea => Get(nameof(MenuNextArea));
+
+    public static string MenuPreviousArea => Get(nameof(MenuPreviousArea));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

@@ -12,8 +12,8 @@ using Datapoint.Terminal.Resources;
 
 namespace Datapoint.Terminal.Shell;
 
-// Product decision 98: Markdown files open in the editor, as tabs after the terminals; other text files open as plain text, and
-// anything else in the system's default application.
+// Product decision 98: Markdown files open in the editor, as tabs in the documents pane (decision 108); other text files open as
+// plain text, and anything else in the system's default application.
 public sealed partial class MainWindow
 {
     private static readonly string[] s_markdownExtensions = [".md", ".markdown", ".mdown", ".mkd"];
@@ -28,7 +28,9 @@ public sealed partial class MainWindow
     {
         DocumentTabs.ItemsSource = _documents;
         DocumentTabs.SelectionChanged += (_, _) => ShowSelectedDocument();
-        Tabs.AddHandler(PointerReleasedEvent, (_, _) => HideDocument(), Avalonia.Interactivity.RoutingStrategies.Bubble, handledEventsToo: true);
+        _documents.CollectionChanged += (_, _) => LayOutDocuments();
+        DocumentArea.GotFocus += (_, _) => UpdateTitle();
+        TerminalArea.GotFocus += (_, _) => UpdateTitle();
         _tabs.CollectionChanged += (_, _) => RefreshDocumentHosts();
         Closing += (_, _) =>
         {
@@ -86,8 +88,6 @@ public sealed partial class MainWindow
         var shown = ShownDocument;
         var hostFile = ShownHostFile;
         DocumentHost.Content = (Control?)shown?.View ?? hostFile;
-        DocumentHost.IsVisible = DocumentHost.Content is not null;
-        Tabs.Classes.Set("behind", DocumentHost.Content is not null);
         if (hostFile is not null)
         {
             Dispatcher.UIThread.Post(hostFile.FocusText, DispatcherPriority.Background);
@@ -102,18 +102,6 @@ public sealed partial class MainWindow
         }
 
         Dispatcher.UIThread.Post(shown.View.FocusText, DispatcherPriority.Background);
-    }
-
-    // The terminals come back to the front: the document stays open in its tab.
-    private void HideDocument()
-    {
-        if (DocumentTabs.SelectedItem is null)
-        {
-            return;
-        }
-
-        ShownDocument?.SaveNow();
-        DocumentTabs.SelectedItem = null;
     }
 
     private void CloseDocument(DocumentViewModel document)
@@ -135,7 +123,7 @@ public sealed partial class MainWindow
         RemoveFromStrip(document);
     }
 
-    // The tab beside a closed one comes to the front, or the terminals when it was the last.
+    // The tab beside a closed one comes to the front; when it was the last, the pane goes and the keyboard returns to the terminal.
     private void RemoveFromStrip(IOpenDocument document)
     {
         var index = _documents.IndexOf(document);
@@ -155,22 +143,21 @@ public sealed partial class MainWindow
         SelectedTab?.View.Focus();
     }
 
-    // Cmd+W closes what's in front: the document, if one is shown.
+    // Cmd+W closes the tab in the pane that has the keyboard: a document's, or the terminal's.
     private void CloseShownTab()
     {
-        if (DocumentTabs.SelectedItem is DocumentViewModel document)
+        switch (DocumentArea.IsKeyboardFocusWithin ? DocumentTabs.SelectedItem : null)
         {
-            CloseDocument(document);
-            return;
+            case DocumentViewModel document:
+                CloseDocument(document);
+                break;
+            case ServerFileViewModel file:
+                CloseHostFile(file);
+                break;
+            default:
+                CloseSelectedTab();
+                break;
         }
-
-        if (DocumentTabs.SelectedItem is ServerFileViewModel file)
-        {
-            CloseHostFile(file);
-            return;
-        }
-
-        CloseSelectedTab();
     }
 
     // The workspace's files are named for what they are, without extensions (product decision 100).
@@ -228,11 +215,7 @@ public sealed partial class MainWindow
             return null;
         }
 
-        var header = new HostHeaderViewModel(connection.Name, connection.Environment, AddressOf(connection), () =>
-        {
-            HideDocument();
-            _ = OpenConnectionAsync(connection);
-        })
+        var header = new HostHeaderViewModel(connection.Name, connection.Environment, AddressOf(connection), () => _ = OpenConnectionAsync(connection))
         {
             OpenText = OpenTextFor(connection.Name),
             Labels = connection.Labels ?? [],

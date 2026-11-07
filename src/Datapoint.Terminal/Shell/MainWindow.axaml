@@ -60,14 +60,6 @@
     <Style Selector="ListBox.tabs ListBoxItem:selected:focus /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource FillBrush}" />
     </Style>
-    <!-- While a document is in front, the terminal tab behind it isn't shown as selected. -->
-    <Style Selector="ListBox.tabs.behind ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="Transparent" />
-      <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
-    </Style>
-    <Style Selector="ListBox.tabs.behind ListBoxItem:selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource FillHoverBrush}" />
-    </Style>
     <Style Selector="Button.tabclose">
       <Setter Property="Width" Value="20" />
       <Setter Property="Height" Value="20" />
@@ -95,7 +87,10 @@
     <GridSplitter x:Name="SidebarSplitter" Grid.Column="1" ResizeDirection="Columns" Margin="-3,0" ZIndex="1" />
     <!-- The chat fills the window; the terminals dock beside it, their side and size set in code (MainWindow.Layout.cs). -->
     <Grid x:Name="Body" Grid.Column="2" ColumnDefinitions="*,1,380">
-    <DockPanel x:Name="TerminalArea">
+    <!-- The terminals, with documents in a pane of their own below them, or beside them when they're docked below the chat
+         (product decision 108). The split is set in code (MainWindow.Layout.cs). -->
+    <Grid x:Name="DockedArea">
+    <DockPanel x:Name="TerminalArea" AutomationProperties.Name="{x:Static res:Strings.TabsName}">
       <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
         <DockPanel>
           <Button x:Name="NewTabButton" DockPanel.Dock="Right" Classes="icon" Margin="0,0,6,0" VerticalAlignment="Center" Click="OnNewTabClicked"
@@ -117,25 +112,6 @@
                   </Panel>
                   <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
                   <c:Badge Text="{Binding Environment}" IsVisible="{Binding HasEnvironment}" Classes.danger="{Binding IsProduction}" />
-                  <Button Classes="icon tabclose" Command="{Binding CloseCommand}" VerticalAlignment="Center"
-                          AutomationProperties.Name="{Binding CloseName}" ToolTip.Tip="{Binding CloseName}">
-                    <PathIcon Data="{StaticResource CloseGlyph}" />
-                  </Button>
-                </StackPanel>
-              </DataTemplate>
-            </ListBox.ItemTemplate>
-          </ListBox>
-          <!-- Documents open from the sidebar, after the terminals. -->
-          <ListBox x:Name="DocumentTabs" Classes="tabs" SelectionMode="Single" Padding="0,4,6,4"
-                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                   AutomationProperties.Name="{x:Static res:Strings.DocumentTabsName}">
-            <ListBox.ItemTemplate>
-              <DataTemplate x:DataType="ed:IOpenDocument">
-                <StackPanel Orientation="Horizontal" Spacing="6">
-                  <Ellipse Width="7" Height="7" Fill="{DynamicResource LabelBrush}" IsVisible="{Binding IsUnsaved}" VerticalAlignment="Center" />
-                  <Path Data="{StaticResource DocumentTabGlyph}" Width="12" Height="12" Stretch="Uniform" VerticalAlignment="Center"
-                        Stroke="{DynamicResource SecondaryLabelBrush}" StrokeThickness="1.25" StrokeJoin="Round" />
-                  <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
                   <Button Classes="icon tabclose" Command="{Binding CloseCommand}" VerticalAlignment="Center"
                           AutomationProperties.Name="{Binding CloseName}" ToolTip.Tip="{Binding CloseName}">
                     <PathIcon Data="{StaticResource CloseGlyph}" />
@@ -171,10 +147,36 @@
           <Button x:Name="OpenTerminalButton" Classes="primary" Content="{x:Static res:Strings.NoTerminalsOpen}" HorizontalAlignment="Center"
                   Margin="0,8,0,0" Click="OnOpenTerminalClicked" />
         </StackPanel>
-        <!-- A document in front of the terminals, which keep running and keep their size behind it. -->
-        <ContentControl x:Name="DocumentHost" IsVisible="False" />
       </Panel>
     </DockPanel>
+    <Rectangle x:Name="DocumentSeparator" Fill="{DynamicResource SeparatorBrush}" IsVisible="False" />
+    <GridSplitter x:Name="DocumentSplitter" ZIndex="1" IsVisible="False" />
+    <DockPanel x:Name="DocumentArea" IsVisible="False" AutomationProperties.Name="{x:Static res:Strings.DocumentTabsName}">
+      <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
+        <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
+              <ListBox x:Name="DocumentTabs" Classes="tabs" SelectionMode="Single,AlwaysSelected"
+                       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                       AutomationProperties.Name="{x:Static res:Strings.DocumentTabsName}">
+                <ListBox.ItemTemplate>
+                  <DataTemplate x:DataType="ed:IOpenDocument">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                      <Ellipse Width="7" Height="7" Fill="{DynamicResource LabelBrush}" IsVisible="{Binding IsUnsaved}" VerticalAlignment="Center" />
+                      <Path Data="{StaticResource DocumentTabGlyph}" Width="12" Height="12" Stretch="Uniform" VerticalAlignment="Center"
+                            Stroke="{DynamicResource SecondaryLabelBrush}" StrokeThickness="1.25" StrokeJoin="Round" />
+                      <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                      <Button Classes="icon tabclose" Command="{Binding CloseCommand}" VerticalAlignment="Center"
+                              AutomationProperties.Name="{Binding CloseName}" ToolTip.Tip="{Binding CloseName}">
+                        <PathIcon Data="{StaticResource CloseGlyph}" />
+                      </Button>
+                    </StackPanel>
+                  </DataTemplate>
+                </ListBox.ItemTemplate>
+              </ListBox>
+        </ScrollViewer>
+      </Border>
+      <ContentControl x:Name="DocumentHost" />
+    </DockPanel>
+    </Grid>
     <!-- A hairline separator, with a wider invisible handle for dragging. -->
     <Rectangle x:Name="ChatSeparator" Grid.Column="1" Fill="{DynamicResource SeparatorBrush}" />
     <GridSplitter x:Name="ChatSplitter" Grid.Column="1" ResizeDirection="Columns" Margin="-3,0" ZIndex="1" />

@@ -2361,4 +2361,10 @@ Fingerprint: {2}</value>
   <data name="IgnorePermissionsConfirm" xml:space="preserve">
     <value>Ignore permissions</value>
   </data>
+  <data name="MenuNextArea" xml:space="preserve">
+    <value>Next Area</value>
+  </data>
+  <data name="MenuPreviousArea" xml:space="preserve">
+    <value>Previous Area</value>
+  </data>
 </root>

@@ -100,7 +100,6 @@ public sealed partial class MainWindow
 
     private void ShowSelectedTab()
     {
-        HideDocument();
         var selected = SelectedTab;
         LayOutPanes(selected);
 
@@ -160,11 +159,11 @@ public sealed partial class MainWindow
         CloseTab(tab);
     }
 
-    // Focus goes to its button, so the keyboard isn't left on a closed terminal, unless a document is in front.
+    // Focus goes to its button, so the keyboard isn't left on a closed terminal, unless it's in a document.
     private void ShowNoTerminals()
     {
         NoTerminals.IsVisible = true;
-        if (DocumentHost.IsVisible)
+        if (DocumentArea.IsKeyboardFocusWithin)
         {
             return;
         }
