@@ -19,6 +19,12 @@ internal static class HtmlText
     // Their content is raw text, so a "<" inside doesn't open a tag and only their own end tag closes them.
     private static readonly HashSet<string> s_rawText = new(StringComparer.Ordinal) { "script", "style", "textarea", "noscript" };
 
+    // Elements without an end tag, which can't be skipped to their end.
+    private static readonly HashSet<string> s_void = new(StringComparer.Ordinal)
+    {
+        "area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr",
+    };
+
     private static readonly HashSet<string> s_blocks = new(StringComparer.Ordinal)
     {
         "p", "div", "section", "article", "main", "header", "blockquote", "figure", "figcaption", "details", "summary",
@@ -155,7 +161,7 @@ internal static class HtmlText
             }
 
             var name = TagName(tag);
-            if (s_dropped.Contains(name) && !tag.EndsWith("/"))
+            if ((s_dropped.Contains(name) || IsHidden(tag)) && !tag.EndsWith("/") && !s_void.Contains(name))
             {
                 return SkipElement(html, gt + 1, name);
             }
@@ -386,6 +392,31 @@ internal static class HtmlText
                 : null;
         }
 
+        // Hidden from readers on the page: the hidden attribute (but not "until-found", which is only collapsed) or aria-hidden.
+        private static bool IsHidden(ReadOnlySpan<char> tag)
+        {
+            if (string.Equals(Attribute(tag, "aria-hidden"), "true", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            var text = tag.ToString();
+            var at = 0;
+            while ((at = text.IndexOf("hidden", at, StringComparison.OrdinalIgnoreCase)) >= 0)
+            {
+                var end = at + "hidden".Length;
+                var isWord = at > 0 && char.IsWhiteSpace(text[at - 1]) && (end == text.Length || char.IsWhiteSpace(text[end]) || text[end] is '=' or '/');
+                if (isWord)
+                {
+                    return !string.Equals(Attribute(tag, "hidden"), "until-found", StringComparison.OrdinalIgnoreCase);
+                }
+
+                at = end;
+            }
+
+            return false;
+        }
+
         // The value of the named attribute in a start tag, quoted or not.
         private static string? Attribute(ReadOnlySpan<char> tag, string name)
         {
@@ -485,6 +516,20 @@ internal static class HtmlText
             }
         }
 
-        public override string ToString() => _text.ToString().Trim();
+        // List items whose content was dropped (menus, icons) would leave a bare marker.
+        public override string ToString()
+        {
+            var lines = _text.ToString().Split('\n').Where(line => !IsBareMarker(line.Trim()));
+            var text = string.Join('\n', lines);
+            while (text.Contains("\n\n\n", StringComparison.Ordinal))
+            {
+                text = text.Replace("\n\n\n", "\n\n", StringComparison.Ordinal);
+            }
+
+            return text.Trim();
+        }
+
+        private static bool IsBareMarker(string line) =>
+            line is "-" || (line.Length > 1 && line[^1] == '.' && line[..^1].All(char.IsAsciiDigit));
     }
 }

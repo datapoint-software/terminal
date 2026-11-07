@@ -56,6 +56,20 @@ public sealed class HtmlTextTests
     }
 
     [Fact]
+    public void Leaves_out_what_the_page_hides_from_readers()
+    {
+        var text = Convert("<div data-x hidden><p>Sign in</p></div><p>Shown<span aria-hidden=\"true\">★</span><img hidden src=a.png> here</p><details hidden=\"until-found\">Collapsed</details><p data-hidden-note=\"x\">Kept</p>");
+
+        Assert.Equal("Shown here\n\nCollapsed\n\nKept", text);
+    }
+
+    [Fact]
+    public void Leaves_out_list_items_with_nothing_left_in_them()
+    {
+        Assert.Equal("Intro\n\n- Real", Convert("<p>Intro</p><ul><li><button>Menu</button></li><li>Real</li><li><svg></svg></li></ul>"));
+    }
+
+    [Fact]
     public void Treats_a_stray_less_than_sign_as_text()
     {
         Assert.Equal("a < b and c", Convert("<p>a < b and c</p>"));
