@@ -18,13 +18,13 @@ public sealed partial class MainWindow
         terminal.Add(Item(Strings.MenuFixFailedCommand, null, () => FixLastFailedCommand(SelectedTab)));
     }
 
-    private ContextMenu BuildTerminalContextMenu(TerminalTab tab)
+    private MenuFlyout BuildTerminalContextMenu(TerminalTab tab)
     {
         var explain = new MenuItem { Header = Strings.MenuExplainSelection };
         explain.Click += (_, _) => ExplainSelection(tab);
         var fix = new MenuItem { Header = Strings.MenuFixFailedCommand };
         fix.Click += (_, _) => FixLastFailedCommand(tab);
-        var menu = new ContextMenu { ItemsSource = new[] { explain, fix } };
+        var menu = new MenuFlyout { ItemsSource = new[] { explain, fix } };
         menu.Opening += (_, _) =>
         {
             explain.IsEnabled = tab.View.HasSelection;

@@ -27,7 +27,7 @@ public sealed partial class MarkdownView : StackPanel
         AddHandler(PointerPressedEvent, OnPointerPressedTunnel, RoutingStrategies.Tunnel);
         AddHandler(PointerMovedEvent, OnPointerMovedTunnel, RoutingStrategies.Tunnel);
         AddHandler(PointerReleasedEvent, OnPointerReleasedTunnel, RoutingStrategies.Tunnel);
-        ContextMenu = Menu();
+        ContextFlyout = Menu();
     }
 
     public string? Text
@@ -123,13 +123,13 @@ public sealed partial class MarkdownView : StackPanel
         }
     }
 
-    private ContextMenu Menu()
+    private MenuFlyout Menu()
     {
         var copy = new MenuItem { Header = Strings.MarkdownCopy, InputGesture = new KeyGesture(Key.C, CommandModifier) };
         copy.Click += (_, _) => _ = CopyAsync();
         var all = new MenuItem { Header = Strings.MarkdownSelectAll, InputGesture = new KeyGesture(Key.A, CommandModifier) };
         all.Click += (_, _) => SelectAll();
-        return new ContextMenu { Items = { copy, all } };
+        return new MenuFlyout { Items = { copy, all } };
     }
 
     public string SelectedText =>

@@ -85,5 +85,7 @@
     <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
     <Setter Property="BorderThickness" Value="1" />
     <Setter Property="CornerRadius" Value="{StaticResource ControlRadius}" />
+    <!-- The Fluent theme's own fade ignores the reduce motion setting; OverlayMotion fades tooltips in when it may. -->
+    <Setter Property="Transitions" Value="{x:Null}" />
   </Style>
 </Styles>

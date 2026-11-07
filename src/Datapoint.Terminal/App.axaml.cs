@@ -23,6 +23,7 @@ public sealed partial class App : Application
             var settings = new SettingsViewModel(store, MainWindow.FirstRun(store.Load()), keys, MainWindow.CreateClient);
             MotionPreference.Apply(settings.ReduceMotion);
             settings.AppearanceChanged += (_, _) => MotionPreference.Apply(settings.ReduceMotion);
+            OverlayMotion.Start();
             _windows = new WorkspaceWindows(desktop, settings);
             _windows.OpenAtStartup();
         }
