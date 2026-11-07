@@ -15,7 +15,7 @@ using EmulatorTerminal = Datapoint.Terminal.Emulator.Terminal;
 
 namespace Datapoint.Terminal.Controls;
 
-public sealed class TerminalView : Control
+public sealed partial class TerminalView : Control
 {
     public static readonly StyledProperty<FontFamily> FontFamilyProperty =
         AvaloniaProperty.Register<TerminalView, FontFamily>(nameof(FontFamily), new FontFamily("Cascadia Mono, SF Mono, Menlo, Consolas, DejaVu Sans Mono, Liberation Mono, monospace"));
@@ -138,6 +138,7 @@ public sealed class TerminalView : Control
                 _renderer.Draw(context, VisibleRow(terminal, index), index * metrics.Height, palette);
             }
 
+            DrawSelection(context, terminal);
             DrawCursor(context, terminal, palette);
             DrawMarks(context, terminal);
         }
@@ -270,13 +271,14 @@ public sealed class TerminalView : Control
     {
         base.OnPointerPressed(e);
         Focus();
-        if (MarkAt(e.GetPosition(this)) is not { } command)
+        if (MarkAt(e.GetPosition(this)) is { } command)
         {
+            e.Handled = true;
+            CommandMarkClicked?.Invoke(this, new CommandMarkEventArgs(command));
             return;
         }
 
-        e.Handled = true;
-        CommandMarkClicked?.Invoke(this, new CommandMarkEventArgs(command));
+        e.Handled = StartSelection(e);
     }
 
     private CommandRecord? MarkAt(Point point)
@@ -426,6 +428,14 @@ public sealed class TerminalView : Control
         var terminal = _terminal;
         if (terminal is null || e.Handled)
         {
+            return;
+        }
+
+        if (IsCopyGesture(e))
+        {
+            // Without a selection, ⌘C has nothing to copy; on other systems Ctrl+Shift+C isn't a key a shell expects either.
+            e.Handled = true;
+            _ = CopyAsync();
             return;
         }
 

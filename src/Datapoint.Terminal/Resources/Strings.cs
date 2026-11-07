@@ -568,6 +568,20 @@ public static class Strings
 
     public static string MenuChatSideDefault => Get(nameof(MenuChatSideDefault));
 
+    public static string FindPlaceholder => Get(nameof(FindPlaceholder));
+
+    public static string FindOlder => Get(nameof(FindOlder));
+
+    public static string FindNewer => Get(nameof(FindNewer));
+
+    public static string FindClose => Get(nameof(FindClose));
+
+    public static string FindNone => Get(nameof(FindNone));
+
+    public static string FindCount => Get(nameof(FindCount));
+
+    public static string MenuFind => Get(nameof(MenuFind));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

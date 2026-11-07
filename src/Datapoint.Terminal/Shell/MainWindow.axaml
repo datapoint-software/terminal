@@ -102,6 +102,18 @@
           </ListBox>
         </DockPanel>
       </Border>
+      <Border x:Name="FindBar" DockPanel.Dock="Top" IsVisible="False" Padding="8,6" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
+        <DockPanel>
+          <Button x:Name="FindClose" DockPanel.Dock="Right" Classes="icon" Margin="4,0,0,0"
+                  ToolTip.Tip="{x:Static res:Strings.FindClose}" AutomationProperties.Name="{x:Static res:Strings.FindClose}">
+            <PathIcon Data="{StaticResource CloseGlyph}" Width="10" Height="10" />
+          </Button>
+          <Button x:Name="FindNewer" DockPanel.Dock="Right" Content="{x:Static res:Strings.FindNewer}" Margin="4,0,0,0" />
+          <Button x:Name="FindOlder" DockPanel.Dock="Right" Content="{x:Static res:Strings.FindOlder}" Margin="4,0,0,0" />
+          <TextBlock x:Name="FindStatus" DockPanel.Dock="Right" VerticalAlignment="Center" Margin="8,0" Foreground="{DynamicResource SecondaryLabelBrush}" />
+          <TextBox x:Name="FindBox" PlaceholderText="{x:Static res:Strings.FindPlaceholder}" AutomationProperties.Name="{x:Static res:Strings.FindPlaceholder}" />
+        </DockPanel>
+      </Border>
       <Panel x:Name="TerminalHost" />
     </DockPanel>
     <!-- A hairline separator, with a wider invisible handle for dragging. -->

@@ -857,4 +857,25 @@ git rm -r --cached .terminal</value>
   <data name="MenuChatSideDefault" xml:space="preserve">
     <value>Use This Side for New Windows</value>
   </data>
+  <data name="FindPlaceholder" xml:space="preserve">
+    <value>Find in terminal</value>
+  </data>
+  <data name="FindOlder" xml:space="preserve">
+    <value>Older</value>
+  </data>
+  <data name="FindNewer" xml:space="preserve">
+    <value>Newer</value>
+  </data>
+  <data name="FindClose" xml:space="preserve">
+    <value>Close find</value>
+  </data>
+  <data name="FindNone" xml:space="preserve">
+    <value>No matches</value>
+  </data>
+  <data name="FindCount" xml:space="preserve">
+    <value>{0:N0} matches</value>
+  </data>
+  <data name="MenuFind" xml:space="preserve">
+    <value>Find…</value>
+  </data>
 </root>
