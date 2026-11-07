@@ -101,7 +101,8 @@
                   ToolTip.Tip="{x:Static res:Strings.TabNew}" AutomationProperties.Name="{x:Static res:Strings.TabNew}">
             <PathIcon Data="{StaticResource PlusGlyph}" />
           </Button>
-          <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+          <!-- Scrolls with the wheel, the trackpad and the arrow keys; a bar would lie over the tabs, as Fluent's bars overlay. -->
+          <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
           <StackPanel Orientation="Horizontal">
           <ListBox x:Name="Tabs" Classes="tabs" ItemsSource="{Binding TabList}" SelectionMode="Single,AlwaysSelected"
                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
