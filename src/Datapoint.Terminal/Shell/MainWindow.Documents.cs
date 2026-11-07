@@ -32,6 +32,8 @@ public sealed partial class MainWindow
         DocumentArea.GotFocus += (_, _) => UpdateTitle();
         TerminalArea.GotFocus += (_, _) => UpdateTitle();
         _tabs.CollectionChanged += (_, _) => RefreshDocumentHosts();
+        _tabs.CollectionChanged += (_, _) => ShowTerminalCount();
+        ShowTerminalCount();
         Closing += (_, _) =>
         {
             foreach (var tab in _documentTabs.Values)

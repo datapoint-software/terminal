@@ -2367,4 +2367,13 @@ Fingerprint: {2}</value>
   <data name="MenuPreviousArea" xml:space="preserve">
     <value>Previous Area</value>
   </data>
+  <data name="TerminalsNoneOpen" xml:space="preserve">
+    <value>None open</value>
+  </data>
+  <data name="TerminalsOneOpen" xml:space="preserve">
+    <value>1 open</value>
+  </data>
+  <data name="TerminalsOpen" xml:space="preserve">
+    <value>{0} open</value>
+  </data>
 </root>

@@ -91,12 +91,21 @@
          (product decision 108). The split is set in code (MainWindow.Layout.cs). -->
     <Grid x:Name="DockedArea">
     <DockPanel x:Name="TerminalArea" AutomationProperties.Name="{x:Static res:Strings.TabsName}">
-      <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
-        <DockPanel>
-          <Button x:Name="NewTabButton" DockPanel.Dock="Right" Classes="icon" Margin="0,0,6,0" VerticalAlignment="Center" Click="OnNewTabClicked"
+      <!-- A header like the chat's, at the same height, so the two line up side by side. -->
+      <Border DockPanel.Dock="Top" Height="{StaticResource PaneHeaderHeight}" Padding="16,0,10,0" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
+        <Grid ColumnDefinitions="*,Auto">
+          <StackPanel Spacing="2" VerticalAlignment="Center">
+            <TextBlock Classes="title" Text="{x:Static res:Strings.TabsName}" />
+            <TextBlock x:Name="TerminalsSummary" Classes="secondary" TextTrimming="CharacterEllipsis" />
+          </StackPanel>
+          <Button x:Name="NewTabButton" Grid.Column="1" Classes="icon" VerticalAlignment="Center" Click="OnNewTabClicked"
                   ToolTip.Tip="{x:Static res:Strings.TabNew}" AutomationProperties.Name="{x:Static res:Strings.TabNew}">
             <PathIcon Data="{StaticResource PlusGlyph}" />
           </Button>
+        </Grid>
+      </Border>
+      <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
+        <DockPanel>
           <!-- Scrolls with the wheel, the trackpad and the arrow keys; a bar would lie over the tabs, as Fluent's bars overlay. -->
           <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
           <StackPanel Orientation="Horizontal">

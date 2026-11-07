@@ -291,4 +291,11 @@ public sealed partial class MainWindow
         _isCloseConfirmed = true;
         Close();
     }
+
+    private void ShowTerminalCount() => TerminalsSummary.Text = _tabs.Count switch
+    {
+        0 => Strings.TerminalsNoneOpen,
+        1 => Strings.TerminalsOneOpen,
+        var count => Strings.Format(Strings.TerminalsOpen, count),
+    };
 }
