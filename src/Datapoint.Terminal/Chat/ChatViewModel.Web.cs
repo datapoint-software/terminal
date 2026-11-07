@@ -24,6 +24,14 @@ public sealed partial class ChatViewModel
         }
 
         details.Add(isSearch ? Strings.Format(Strings.WebSearchSent, request.Service ?? string.Empty) : Strings.WebReadSent);
+        if (request.TerminalText is { } terminalText)
+        {
+            details.Add(Strings.Format(Strings.WebHoldsTerminalText, terminalText));
+        }
+        else if (request.IsComposed && request.IsAlwaysAllowed)
+        {
+            details.Add(Strings.WebComposedAddress + " " + Strings.WebComposedAlways);
+        }
         if (IsModelLocal)
         {
             details.Add(Strings.WebLeavesNetwork);
@@ -31,11 +39,7 @@ public sealed partial class ChatViewModel
 
         var question = new AgentQuestion(
             isSearch ? Strings.Format(Strings.WebSearchQuestion, request.Target) : Strings.Format(Strings.WebReadQuestion, request.Target),
-            [
-                new AgentOption(Strings.WebDeny, Strings.WebDenyDescription),
-                new AgentOption(Strings.WebAllowOnce, isSearch ? Strings.WebAllowOnceSearch : Strings.WebAllowOncePage),
-                new AgentOption(Strings.WebAllowAlways, Strings.WebAllowAlwaysDescription),
-            ])
+            Options(request))
         {
             Heading = Strings.WebAccessHeading,
             Details = string.Join("\n\n", details.Select(EscapeMarkdown)),
@@ -46,6 +50,22 @@ public sealed partial class ChatViewModel
         var registration = cancellationToken.Register(view.Cancel);
         var answer = await FinishAsync(view.Response, registration, () => ReferenceEquals(Question, view), () => Question = null).ConfigureAwait(false);
         return Access(answer);
+    }
+
+    // Allowing always is offered only when it would change something: not when it's on, nor for an address that asks anyway.
+    private static List<AgentOption> Options(WebAccessRequest request)
+    {
+        var options = new List<AgentOption>
+        {
+            new(Strings.WebDeny, Strings.WebDenyDescription),
+            new(Strings.WebAllowOnce, request.Kind == WebAccessKind.Search ? Strings.WebAllowOnceSearch : Strings.WebAllowOncePage),
+        };
+        if (!request.IsAlwaysAllowed && request.TerminalText is null)
+        {
+            options.Add(new AgentOption(Strings.WebAllowAlways, Strings.WebAllowAlwaysDescription));
+        }
+
+        return options;
     }
 
     private static WebAccess Access(string? answer) => answer switch
@@ -82,7 +102,11 @@ public sealed partial class ChatViewModel
         var detail = e.Problem is { } problem
             ? EscapeMarkdown(problem)
             : e.Sources.Count == 0 ? Strings.WebNoResults : string.Join('\n', e.Sources.Select(source => "- " + Link(source)));
-        return new ChatItemViewModel(ChatItemKind.Web, title) { Detail = detail };
+        return new ChatItemViewModel(ChatItemKind.Web, title)
+        {
+            Detail = detail,
+            Warning = e.Warning is { } found ? Strings.Format(Strings.WebInjectionWarning, found) : null,
+        };
     }
 
     private static string Link(WebSearchResult source)

@@ -20,6 +20,12 @@ public sealed record CommandProposal(string Command, string Purpose, CommandRisk
 
     public bool IsOutsidePlan { get; init; }
 
+    // Why a command that can send data to another machine asks even in Auto: web text is in the conversation, or the
+    // command holds text from the terminals (TerminalText).
+    public bool IsAfterWeb { get; init; }
+
+    public string? TerminalText { get; init; }
+
     // The other terminals where approving this also approves the identical command until the task ends.
     public IReadOnlyList<string> AlsoApproves { get; init; } = [];
 }

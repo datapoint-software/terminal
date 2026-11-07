@@ -40,4 +40,7 @@ public sealed class AgentEventArgs(AgentEventKind kind, string text) : EventArgs
 
     // Who ran a search.
     public string? Service { get; init; }
+
+    // Text on a page or in search results that addresses an AI model, a likely prompt injection.
+    public string? Warning { get; init; }
 }

@@ -1558,6 +1558,18 @@ public static class Strings
 
     public static string WebNoResults => Get(nameof(WebNoResults));
 
+    public static string ApprovalRiskSendsTerminalText => Get(nameof(ApprovalRiskSendsTerminalText));
+
+    public static string ApprovalRiskAfterWeb => Get(nameof(ApprovalRiskAfterWeb));
+
+    public static string WebComposedAddress => Get(nameof(WebComposedAddress));
+
+    public static string WebComposedAlways => Get(nameof(WebComposedAlways));
+
+    public static string WebHoldsTerminalText => Get(nameof(WebHoldsTerminalText));
+
+    public static string WebInjectionWarning => Get(nameof(WebInjectionWarning));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

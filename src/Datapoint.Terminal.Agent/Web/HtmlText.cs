@@ -31,12 +31,12 @@ internal static class HtmlText
         "dl", "dt", "dd", "address", "table", "center",
     };
 
-    public static (string? Title, string Text) ToMarkdown(string html, Uri address)
+    public static HtmlPage ToMarkdown(string html, Uri address)
     {
         ArgumentNullException.ThrowIfNull(html);
         var writer = new Writer(address);
         writer.Write(Focus(html));
-        return (FindTitle(html), writer.ToString());
+        return new HtmlPage(FindTitle(html), writer.ToString(), writer.Links);
     }
 
     // Most pages wrap what they say in main or article; reading only that leaves out menus and banners the drop list misses.
@@ -104,8 +104,12 @@ internal static class HtmlText
         private readonly StringBuilder _text = new();
         private readonly Stack<(string? Href, int Start)> _links = new();
         private readonly Stack<(bool Ordered, int Count)> _lists = new();
+        private readonly List<Uri> _targets = [];
         private int _pre;
         private int _cell;
+
+        // The pages the text links to, which the agent may follow: the page wrote them, so they carry nothing from the terminals.
+        public IReadOnlyList<Uri> Links => _targets;
 
         public void Write(string html)
         {
@@ -387,9 +391,17 @@ internal static class HtmlText
                 return null;
             }
 
-            return Uri.TryCreate(address, WebUtility.HtmlDecode(href.Trim()), out var target) && WebAddressGuard.IsWebScheme(target.Scheme)
-                ? target.AbsoluteUri.Replace(" ", "%20", StringComparison.Ordinal).Replace(")", "%29", StringComparison.Ordinal)
-                : null;
+            if (!Uri.TryCreate(address, WebUtility.HtmlDecode(href.Trim()), out var target) || !WebAddressGuard.IsWebScheme(target.Scheme))
+            {
+                return null;
+            }
+
+            if (_targets.Count < 2_000)
+            {
+                _targets.Add(target);
+            }
+
+            return target.AbsoluteUri.Replace(" ", "%20", StringComparison.Ordinal).Replace(")", "%29", StringComparison.Ordinal);
         }
 
         // Hidden from readers on the page: the hidden attribute (but not "until-found", which is only collapsed) or aria-hidden.

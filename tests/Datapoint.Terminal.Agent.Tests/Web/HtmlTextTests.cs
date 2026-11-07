@@ -41,7 +41,7 @@ public sealed class HtmlTextTests
     [Fact]
     public void Reads_only_the_main_content_when_the_page_marks_it()
     {
-        var (title, text) = HtmlText.ToMarkdown("<html><head><title> A &amp; B </title></head><body><div>Banner</div><main><p>Content</p></main><div>Sidebar</div></body></html>", s_page);
+        var (title, text, _) = HtmlText.ToMarkdown("<html><head><title> A &amp; B </title></head><body><div>Banner</div><main><p>Content</p></main><div>Sidebar</div></body></html>", s_page);
 
         Assert.Equal("A & B", title);
         Assert.Equal("Content", text);

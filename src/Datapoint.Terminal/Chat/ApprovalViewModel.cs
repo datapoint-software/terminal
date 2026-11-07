@@ -24,6 +24,8 @@ public sealed partial class ApprovalViewModel : ObservableObject
         PlanTitle = proposal.Plan?.Title;
         StepCountText = StepCount(PlanSteps);
         IgnoredFile = proposal.IgnoredFile;
+        CarriedText = proposal.TerminalText;
+        IsAfterWeb = proposal.IsAfterWeb;
         AlsoApprovesText = proposal.AlsoApproves.Count == 0 ? null : Strings.Format(Strings.ApprovalAlsoApproves, string.Join(", ", proposal.AlsoApproves));
         PlanText = proposal.IsOutsidePlan ? Strings.ApprovalOutsidePlan
             : proposal.PlanStep is { } step ? Strings.Format(Strings.ApprovalPlanStep, step)
@@ -63,6 +65,11 @@ public sealed partial class ApprovalViewModel : ObservableObject
     public bool HasRollback => Rollback is not null;
 
     public string? IgnoredFile { get; }
+
+    // Why a network command asks: it holds text from the terminals, or web text is in the conversation.
+    public string? CarriedText { get; }
+
+    public bool IsAfterWeb { get; }
 
     // Opening a terminal names a connection, which isn't the user's to edit; they can decline and say which one instead.
     public bool IsCommandReadOnly => Kind is ProposalKind.OpenTerminal or ProposalKind.Plan or ProposalKind.EditFile or ProposalKind.Rollout;
@@ -109,6 +116,8 @@ public sealed partial class ApprovalViewModel : ObservableObject
         : Kind == ProposalKind.Rollout ? Strings.ApprovalRiskRollout
         : Kind == ProposalKind.SendKeys && Risk != CommandRisk.AlwaysAsk ? Strings.ApprovalRiskKeys
         : IgnoredFile is not null ? Strings.Format(Strings.ApprovalRiskIgnored, WorkspaceFolders.Display(IgnoredFile))
+        : CarriedText is not null ? Strings.Format(Strings.ApprovalRiskSendsTerminalText, CarriedText)
+        : IsAfterWeb ? Strings.ApprovalRiskAfterWeb
         : Risk switch
     {
         CommandRisk.ReadOnly => Strings.ApprovalRiskReadOnly,

@@ -614,6 +614,9 @@
               <!-- A web search or page read: what it was, then the pages, which ask before opening. -->
               <StackPanel Margin="0,6" Spacing="2" IsVisible="{Binding IsWeb}">
                 <SelectableTextBlock Classes="secondary" FontWeight="SemiBold" Text="{Binding Text}" TextWrapping="Wrap" />
+                <Border Classes="warning" IsVisible="{Binding HasWarning}">
+                  <TextBlock Text="{Binding Warning, StringFormat=⚠ {0}}" TextWrapping="Wrap" />
+                </Border>
                 <md:MarkdownView Text="{Binding Detail}" />
               </StackPanel>
               <StackPanel Margin="12,6" Spacing="4" IsVisible="{Binding IsNotice}">

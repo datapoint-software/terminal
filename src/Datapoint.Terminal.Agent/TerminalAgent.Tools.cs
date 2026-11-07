@@ -214,13 +214,14 @@ public sealed partial class TerminalAgent
     {
         var risk = CommandClassifier.Classify(command);
         var ignored = IgnoredFileCheck?.Invoke(terminal, command);
-        var needsApproval = ignored is not null || plan.IsOutside || NeedsApproval(terminal.Mode, risk);
+        var outgoing = OutgoingCheck(command);
+        var needsApproval = ignored is not null || plan.IsOutside || outgoing.Asks || NeedsApproval(terminal.Mode, risk);
         if (!needsApproval)
         {
             return CommandApproval.Approve(command);
         }
 
-        var canCarry = ignored is null && risk != CommandRisk.AlwaysAsk && !plan.IsOutside;
+        var canCarry = CanCarry(ignored, risk, plan, outgoing);
         if (canCarry && CarriedApproval(terminal, command) is { } carried)
         {
             return carried;
@@ -234,10 +235,25 @@ public sealed partial class TerminalAgent
             PlanStep = plan.Step,
             IsOutsidePlan = plan.IsOutside,
             AlsoApproves = canCarry ? SameEnvironment(terminal) : [],
+            IsAfterWeb = outgoing.IsAfterWeb,
+            TerminalText = outgoing.TerminalText,
         };
         var approval = await RequestApprovalAsync(proposal, cancellationToken).ConfigureAwait(false);
         RememberApproval(terminal, approval, canCarry);
         return approval;
+    }
+
+    // A command that can reach another machine asks first once web text is in the conversation, or when it carries text the
+    // terminals showed, whatever the approval mode: either may be a prompt injection sending data out.
+    private OutgoingRisk OutgoingCheck(string command) =>
+        CommandClassifier.IsNetwork(command) ? new OutgoingRisk(_hasReadWeb, TerminalTextIn(command)) : default;
+
+    private static bool CanCarry(string? ignored, CommandRisk risk, PlanCheck plan, OutgoingRisk outgoing) =>
+        ignored is null && risk != CommandRisk.AlwaysAsk && !plan.IsOutside && !outgoing.Asks;
+
+    private readonly record struct OutgoingRisk(bool IsAfterWeb, string? TerminalText)
+    {
+        public bool Asks => IsAfterWeb || TerminalText is not null;
     }
 
     private static bool NeedsApproval(ApprovalMode mode, CommandRisk risk) => mode switch

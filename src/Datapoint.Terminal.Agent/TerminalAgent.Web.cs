@@ -104,15 +104,36 @@ public sealed partial class TerminalAgent
         }
 
         var results = await search.SearchAsync(query, cancellationToken).ConfigureAwait(false);
-        Raise(new AgentEventArgs(AgentEventKind.WebUsed, query) { WebKind = WebAccessKind.Search, Sources = results.Results, Problem = results.Problem, Service = search.Name });
+        return FinishSearch(search, query, results);
+    }
+
+    private string FinishSearch(IWebSearch search, string query, WebSearchResults results)
+    {
+        var injection = results.Problem is null ? InjectionCheck.Find(SearchText(results)) : null;
+        Raise(new AgentEventArgs(AgentEventKind.WebUsed, query)
+        {
+            WebKind = WebAccessKind.Search,
+            Sources = results.Results,
+            Problem = results.Problem,
+            Service = search.Name,
+            Warning = injection,
+        });
+        if (results.Problem is null)
+        {
+            NoteWebAddresses(results.Results.Select(result => result.Address));
+        }
+
         if (results.Usage is { } usage)
         {
             Usage.Record(_usageTerminal, usage);
             Raise(new AgentEventArgs(AgentEventKind.UsageChanged, string.Empty));
         }
 
-        return results.Problem is { } problem ? "Not searched: " + problem : FormatResults(query, results);
+        return results.Problem is { } problem ? "Not searched: " + problem : WithInjectionWarning(FormatResults(query, results), injection);
     }
+
+    private static string SearchText(WebSearchResults results) =>
+        string.Join('\n', results.Results.Select(result => result.Title + "\n" + result.Snippet).Prepend(results.Summary ?? string.Empty));
 
     private async Task<string> ReadPageAsync(AIFunctionArguments arguments, CancellationToken cancellationToken)
     {
@@ -126,25 +147,49 @@ public sealed partial class TerminalAgent
         if (page is null)
         {
             var purpose = ToolArguments.GetString(arguments, "purpose")?.Trim() ?? string.Empty;
-            if (!await AllowWebAsync(new WebAccessRequest(WebAccessKind.ReadPage, address.AbsoluteUri, purpose), cancellationToken).ConfigureAwait(false))
+            if (!await AllowWebAsync(PageRequest(address, purpose), cancellationToken).ConfigureAwait(false))
             {
                 return "Not read: the user didn't allow it. Don't try to reach the web another way for this; go on without it or ask them.";
             }
 
             page = await PageReader.ReadAsync(address, cancellationToken).ConfigureAwait(false);
-            Raise(new AgentEventArgs(AgentEventKind.WebUsed, address.AbsoluteUri)
-            {
-                WebKind = WebAccessKind.ReadPage,
-                Sources = page.Problem is null ? [new WebSearchResult(page.Title ?? page.Address.Host, page.Address, Snippet: null)] : [],
-                Problem = page.Problem,
-            });
             lock (_webSync)
             {
                 _lastPage = page;
             }
+
+            ShowPage(page);
         }
 
-        return page.Problem is { } failed ? "Not read: " + failed : FormatPage(page, part);
+        return page.Problem is { } failed ? "Not read: " + failed : WithInjectionWarning(FormatPage(page, part), InjectionCheck.Find(page.Text));
+    }
+
+    // An address the agent wrote itself is asked about even when the user allows the web always, and says so; one holding
+    // text from the terminals also says what.
+    private WebAccessRequest PageRequest(Uri address, string purpose)
+    {
+        var isComposed = !IsKnownAddress(address);
+        return new WebAccessRequest(WebAccessKind.ReadPage, address.AbsoluteUri, purpose)
+        {
+            IsComposed = isComposed,
+            TerminalText = isComposed ? TerminalTextIn(address.OriginalString) : null,
+        };
+    }
+
+    private void ShowPage(WebPage page)
+    {
+        if (page.Problem is null)
+        {
+            NoteWebAddresses([page.Address, .. page.Links]);
+        }
+
+        Raise(new AgentEventArgs(AgentEventKind.WebUsed, page.Address.AbsoluteUri)
+        {
+            WebKind = WebAccessKind.ReadPage,
+            Sources = page.Problem is null ? [new WebSearchResult(page.Title ?? page.Address.Host, page.Address, Snippet: null)] : [],
+            Problem = page.Problem,
+            Warning = page.Problem is null ? InjectionCheck.Find(page.Text) : null,
+        });
     }
 
     // Checked before the user is asked: there's no point asking about an address that won't be read.
@@ -180,10 +225,13 @@ public sealed partial class TerminalAgent
 
     private async Task<bool> AllowWebAsync(WebAccessRequest request, CancellationToken cancellationToken)
     {
-        if (IsWebAlwaysAllowed)
+        var isAlways = IsWebAlwaysAllowed;
+        if (isAlways && !request.IsComposed && request.TerminalText is null)
         {
             return true;
         }
+
+        request = request with { IsAlwaysAllowed = isAlways };
 
         SetStatus(AgentStatus.WaitingForUser);
         var access = await WaitForUserAsync(token => _user.RequestWebAccessAsync(request, token), cancellationToken).ConfigureAwait(false);

@@ -28,6 +28,11 @@ public sealed partial class ChatItemViewModel(ChatItemKind kind, string text) : 
 
     public bool IsWeb => Kind == ChatItemKind.Web;
 
+    // Something the user should know about a web item, such as text in it aimed at the model.
+    public string? Warning { get; init; }
+
+    public bool HasWarning => Warning is not null;
+
     // For an approved plan, its progress, shown here once it's no longer pinned above the conversation.
     public PlanProgressViewModel? Plan { get; init; }
 

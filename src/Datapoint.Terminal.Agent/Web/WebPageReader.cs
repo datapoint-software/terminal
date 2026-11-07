@@ -91,8 +91,13 @@ public sealed class WebPageReader : IDisposable
 
         var bytes = await ReadLimitedAsync(content, cancellationToken).ConfigureAwait(false);
         var text = Decode(bytes, content.Headers.ContentType);
-        var (title, body) = isHtml ? HtmlText.ToMarkdown(text, address) : (null, text);
-        return new WebPage(address, title, body, Problem: null);
+        if (!isHtml)
+        {
+            return new WebPage(address, Title: null, text, Problem: null);
+        }
+
+        var html = HtmlText.ToMarkdown(text, address);
+        return new WebPage(address, html.Title, html.Text, Problem: null) { Links = html.Links };
     }
 
     private static async Task<byte[]> ReadLimitedAsync(HttpContent content, CancellationToken cancellationToken)

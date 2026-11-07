@@ -157,6 +157,7 @@ public sealed partial class TerminalAgent : IDisposable
             }
 
             _history.RemoveRange(1, _history.Count - 1);
+            ForgetWebGuard();
             StopRollout();
             EndRun();
         }
@@ -186,7 +187,11 @@ public sealed partial class TerminalAgent : IDisposable
         try
         {
             var opening = await StartConversationAsync(message, task.Token).ConfigureAwait(false);
-            _history.Add(new ChatMessage(ChatRole.User, DescribeTerminals() + NewOutputBlock() + opening + ExcerptBlock(excerpt)));
+            var newOutput = NewOutputBlock();
+            var attached = ExcerptBlock(excerpt);
+            _seen.Add(newOutput + attached);
+            NoteUserMessage(message);
+            _history.Add(new ChatMessage(ChatRole.User, DescribeTerminals() + newOutput + opening + attached));
             await RunStepsAsync(task.Token).ConfigureAwait(false);
             SetStatus(AgentStatus.Idle);
         }
@@ -245,6 +250,7 @@ public sealed partial class TerminalAgent : IDisposable
             foreach (var call in calls)
             {
                 var result = IsRedirected ? SkippedForNewMessage : await InvokeToolAsync(call, cancellationToken).ConfigureAwait(false);
+                NoteSeen(call, result);
                 results.Contents.Add(new FunctionResultContent(call.CallId, result));
             }
 

@@ -2340,4 +2340,22 @@ Fingerprint: {2}</value>
   <data name="WebNoResults" xml:space="preserve">
     <value>No results.</value>
   </data>
+  <data name="ApprovalRiskSendsTerminalText" xml:space="preserve">
+    <value>Can send data to another machine, and holds text from your terminals: “{0}”. Check it isn't carrying something out.</value>
+  </data>
+  <data name="ApprovalRiskAfterWeb" xml:space="preserve">
+    <value>Can send data to another machine. The agent has read web content in this conversation, which could try to make it send your data out, so this asks even in Auto.</value>
+  </data>
+  <data name="WebComposedAddress" xml:space="preserve">
+    <value>The agent wrote this address itself: it isn't from a search result, a page it read or your message.</value>
+  </data>
+  <data name="WebComposedAlways" xml:space="preserve">
+    <value>It's asked about even though you allow the web always.</value>
+  </data>
+  <data name="WebHoldsTerminalText" xml:space="preserve">
+    <value>The address holds text from your terminals: “{0}”. Something the agent read may be trying to get it to send that out.</value>
+  </data>
+  <data name="WebInjectionWarning" xml:space="preserve">
+    <value>This contains text addressed to an AI model: “{0}”. The agent was told not to follow it.</value>
+  </data>
 </root>
