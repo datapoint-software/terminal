@@ -3,6 +3,7 @@
         xmlns:chat="clr-namespace:Datapoint.Terminal.Chat"
         xmlns:shell="clr-namespace:Datapoint.Terminal.Shell"
         xmlns:res="clr-namespace:Datapoint.Terminal.Resources"
+        xmlns:controls="clr-namespace:Datapoint.Terminal.Controls;assembly=Datapoint.Terminal.Controls"
         x:Class="Datapoint.Terminal.Shell.MainWindow"
         x:DataType="shell:MainWindow"
         Width="1300" Height="760" MinWidth="640" MinHeight="400">
@@ -61,6 +62,10 @@
     <Style Selector="Button.tabclose PathIcon">
       <Setter Property="Width" Value="10" />
       <Setter Property="Height" Value="10" />
+    </Style>
+    <Style Selector="controls|TerminalView">
+      <Setter Property="AgentMarkBrush" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="UserMarkBrush" Value="{DynamicResource SecondaryLabelBrush}" />
     </Style>
   </Window.Styles>
   <Grid RowDefinitions="Auto,*">

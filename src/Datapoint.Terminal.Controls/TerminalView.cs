@@ -10,6 +10,7 @@ using Avalonia.Threading;
 using Datapoint.Terminal.Controls.Input;
 using Datapoint.Terminal.Controls.Rendering;
 using Datapoint.Terminal.Emulator.Screen;
+using Datapoint.Terminal.Emulator.ShellIntegration;
 using EmulatorTerminal = Datapoint.Terminal.Emulator.Terminal;
 
 namespace Datapoint.Terminal.Controls;
@@ -21,6 +22,14 @@ public sealed class TerminalView : Control
 
     public static readonly StyledProperty<double> FontSizeProperty =
         AvaloniaProperty.Register<TerminalView, double>(nameof(FontSize), 14);
+
+    // Product decision 80: a mark beside each command's line in the left padding, solid for the agent's, a thin line for the
+    // user's, so the difference doesn't rest on colour alone.
+    public static readonly StyledProperty<IBrush?> AgentMarkBrushProperty =
+        AvaloniaProperty.Register<TerminalView, IBrush?>(nameof(AgentMarkBrush), Brushes.DodgerBlue);
+
+    public static readonly StyledProperty<IBrush?> UserMarkBrushProperty =
+        AvaloniaProperty.Register<TerminalView, IBrush?>(nameof(UserMarkBrush), Brushes.Gray);
 
     public static readonly StyledProperty<Thickness> PaddingProperty =
         AvaloniaProperty.Register<TerminalView, Thickness>(nameof(Padding));
@@ -60,6 +69,21 @@ public sealed class TerminalView : Control
         get => GetValue(FontSizeProperty);
         set => SetValue(FontSizeProperty, value);
     }
+
+    public IBrush? AgentMarkBrush
+    {
+        get => GetValue(AgentMarkBrushProperty);
+        set => SetValue(AgentMarkBrushProperty, value);
+    }
+
+    public IBrush? UserMarkBrush
+    {
+        get => GetValue(UserMarkBrushProperty);
+        set => SetValue(UserMarkBrushProperty, value);
+    }
+
+    // Raised when an agent's mark is clicked, to show the chat step that sent the command.
+    public event EventHandler<CommandMarkEventArgs>? CommandMarkClicked;
 
     public Thickness Padding
     {
@@ -115,6 +139,42 @@ public sealed class TerminalView : Control
             }
 
             DrawCursor(context, terminal, palette);
+            DrawMarks(context, terminal);
+        }
+    }
+
+    private const double MarkWidth = 3;
+
+    private void DrawMarks(DrawingContext context, EmulatorTerminal terminal)
+    {
+        if (terminal.IsAlternateScreen || Padding.Left < MarkWidth + 2)
+        {
+            return;
+        }
+
+        var height = _renderer.Metrics.Height;
+        var x = -Padding.Left + ((Padding.Left - MarkWidth) / 2);
+        foreach (var (command, row) in VisibleCommands(terminal))
+        {
+            var isAgent = command.Source == CommandSource.Agent;
+            var brush = isAgent ? AgentMarkBrush : UserMarkBrush;
+            var width = isAgent ? MarkWidth : 1;
+            context.DrawRectangle(brush, null, new Rect(x + ((MarkWidth - width) / 2), (row * height) + 2, width, height - 4), 1, 1);
+        }
+    }
+
+    // Each command whose typed line is on screen, with its row.
+    private IEnumerable<(CommandRecord Command, int Row)> VisibleCommands(EmulatorTerminal terminal)
+    {
+        var top = terminal.Primary.FirstVisibleLine - _scrollOffset;
+        foreach (var command in terminal.Commands)
+        {
+            var line = command.InputLine ?? command.PromptLine;
+            var row = line - top;
+            if (command.CommandLine is not null && row >= 0 && row < terminal.Rows)
+            {
+                yield return (command, (int)row);
+            }
         }
     }
 
@@ -210,6 +270,28 @@ public sealed class TerminalView : Control
     {
         base.OnPointerPressed(e);
         Focus();
+        if (MarkAt(e.GetPosition(this)) is not { } command)
+        {
+            return;
+        }
+
+        e.Handled = true;
+        CommandMarkClicked?.Invoke(this, new CommandMarkEventArgs(command));
+    }
+
+    private CommandRecord? MarkAt(Point point)
+    {
+        var terminal = _terminal;
+        if (terminal is null || point.X >= Padding.Left)
+        {
+            return null;
+        }
+
+        var row = (int)Math.Floor((point.Y - Padding.Top) / _renderer.Metrics.Height);
+        lock (terminal.SyncRoot)
+        {
+            return VisibleCommands(terminal).FirstOrDefault(item => item.Row == row && item.Command.Source == CommandSource.Agent).Command;
+        }
     }
 
     protected override void OnGotFocus(FocusChangedEventArgs e)

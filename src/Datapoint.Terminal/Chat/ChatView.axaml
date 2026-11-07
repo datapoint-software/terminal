@@ -19,6 +19,10 @@
     <Style Selector="TextBlock.title">
       <Setter Property="FontWeight" Value="SemiBold" />
     </Style>
+    <Style Selector="Border.code.highlight">
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="BorderThickness" Value="2" />
+    </Style>
     <Style Selector="TextBlock.secondary, SelectableTextBlock.secondary">
       <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
       <Setter Property="FontSize" Value="{StaticResource CaptionSize}" />
@@ -269,7 +273,7 @@
 
     <!-- The conversation. -->
     <ScrollViewer x:Name="Scroller" Padding="16,8">
-      <ItemsControl ItemsSource="{Binding Items}">
+      <ItemsControl x:Name="ItemList" ItemsSource="{Binding Items}">
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="chat:ChatItemViewModel">
             <Panel>
@@ -277,7 +281,7 @@
                 <SelectableTextBlock Text="{Binding Text}" TextWrapping="Wrap" />
               </Border>
               <md:MarkdownView Text="{Binding Text}" Margin="0,6" IsVisible="{Binding IsAgent}" />
-              <Border Classes="code" IsVisible="{Binding IsCommand}">
+              <Border Classes="code" Classes.highlight="{Binding IsHighlighted}" IsVisible="{Binding IsCommand}">
                 <StackPanel Spacing="4">
                   <SelectableTextBlock Classes="mono" Text="{Binding Text}" TextWrapping="Wrap" />
                   <TextBlock Classes="secondary" Text="{Binding Detail}" TextWrapping="Wrap" />

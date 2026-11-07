@@ -145,6 +145,12 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
         PendingOutputText = Strings.Format(Strings.PendingOutput, terminals) + (pending.Any(item => item.IsCut) ? " " + Strings.PendingOutputCut : string.Empty);
     }
 
+    // The latest step that ran this command line in this terminal.
+    public ChatItemViewModel? FindCommand(string terminal, string commandLine) => Items.LastOrDefault(item =>
+        item.IsCommand
+        && string.Equals(item.Terminal, terminal, StringComparison.OrdinalIgnoreCase)
+        && string.Equals(item.Text.Trim(), commandLine.Trim(), StringComparison.Ordinal));
+
     public AgentTerminal? CurrentTerminal { get; private set; }
 
     public void ShowTerminal(AgentTerminal? terminal)
@@ -339,6 +345,7 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
             case AgentEventKind.CommandStarted:
                 _command = new ChatItemViewModel(ChatItemKind.Command, e.Command ?? string.Empty)
                 {
+                    Terminal = e.Terminal,
                     Detail = e.Terminal is null ? e.Text : Strings.Format(Strings.CommandInTerminal, e.Terminal, e.Text),
                 };
                 Items.Add(_command);

@@ -24,4 +24,13 @@ public sealed partial class ChatView : UserControl
     }
 
     public void FocusInput() => DraftBox.Focus();
+
+    // Scrolls the step into view and outlines it for a moment.
+    public void Reveal(ChatItemViewModel item)
+    {
+        ArgumentNullException.ThrowIfNull(item);
+        ItemList.ContainerFromItem(item)?.BringIntoView();
+        item.IsHighlighted = true;
+        Avalonia.Threading.DispatcherTimer.RunOnce(() => item.IsHighlighted = false, TimeSpan.FromSeconds(2));
+    }
 }

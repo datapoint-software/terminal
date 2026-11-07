@@ -42,6 +42,7 @@ public sealed partial class MainWindow
         tab.Connection = connection;
         tab.AgentTerminal = new AgentTerminal(tab.Name, new ConnectionTerminal(connection), defaultMode, environment) { IsRemote = tab.IsRemote, Connection = tab.ConnectionName };
         connection.OutputArrived += (_, _) => tab.View.NotifyOutput();
+        tab.View.CommandMarkClicked += (_, e) => ShowChatStep(tab, e.Command.CommandLine);
         connection.TitleChanged += (_, _) => Dispatcher.UIThread.Post(() =>
         {
             tab.ShellTitle = connection.Terminal.Title;

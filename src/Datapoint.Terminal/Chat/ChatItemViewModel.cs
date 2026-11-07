@@ -7,6 +7,13 @@ public sealed partial class ChatItemViewModel(ChatItemKind kind, string text) : 
 {
     public ChatItemKind Kind { get; } = kind;
 
+    // For a command, the terminal it ran in, so a mark in that terminal can lead back here.
+    public string? Terminal { get; init; }
+
+    // Briefly set when the user follows a terminal's mark to this step.
+    [ObservableProperty]
+    public partial bool IsHighlighted { get; set; }
+
     public bool IsUser => Kind == ChatItemKind.User;
 
     public bool IsAgent => Kind == ChatItemKind.Agent;

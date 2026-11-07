@@ -62,6 +62,21 @@ public sealed partial class MainWindow
         UpdateChatMenu();
     }
 
+    private void ShowChatStep(TerminalTab tab, string? commandLine)
+    {
+        if (commandLine is null || _chat.FindCommand(tab.Name, commandLine) is not { } item)
+        {
+            return;
+        }
+
+        if (_isChatHidden)
+        {
+            ToggleChat();
+        }
+
+        Chat.Reveal(item);
+    }
+
     private readonly Dictionary<ChatSide, NativeMenuItem> _sideItems = [];
     private NativeMenuItem? _toggleChatItem;
 
