@@ -662,4 +662,10 @@ git rm -r --cached .terminal</value>
   <data name="NoticeInstructionsSecretChanged" xml:space="preserve">
     <value>{0} changed since the agent last read it, only in values that look like secrets. Those values aren't kept, so the change can't be shown; open the file to check it.</value>
   </data>
+  <data name="ApprovalHeadingIgnored" xml:space="preserve">
+    <value>This command reads a file listed in .terminalignore</value>
+  </data>
+  <data name="ApprovalRiskIgnored" xml:space="preserve">
+    <value>{0} is listed in .terminalignore. If this runs, what it prints is sent to the AI provider, with only likely secrets masked. Asks in every mode.</value>
+  </data>
 </root>

@@ -178,7 +178,8 @@ public sealed partial class TerminalAgent
     private async Task<CommandApproval> ApproveAsync(AgentTerminal terminal, string command, string purpose, CancellationToken cancellationToken)
     {
         var risk = CommandClassifier.Classify(command);
-        var needsApproval = terminal.Mode switch
+        var ignored = IgnoredFileCheck?.Invoke(terminal, command);
+        var needsApproval = ignored is not null || terminal.Mode switch
         {
             ApprovalMode.Auto => risk == CommandRisk.AlwaysAsk,
             ApprovalMode.AskForRisky => risk != CommandRisk.ReadOnly,
@@ -190,7 +191,7 @@ public sealed partial class TerminalAgent
         }
 
         SetStatus(AgentStatus.WaitingForApproval, terminal);
-        var proposal = new CommandProposal(command, purpose, risk, terminal.Name, terminal.Environment);
+        var proposal = new CommandProposal(command, purpose, risk, terminal.Name, terminal.Environment) { IgnoredFile = ignored };
         return await _user.RequestApprovalAsync(proposal, cancellationToken).ConfigureAwait(false);
     }
 

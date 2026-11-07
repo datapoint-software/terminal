@@ -140,7 +140,12 @@ public sealed partial class MainWindow : Window, ITerminalOpener
             _clientSignature = signature;
             if (_agent is null)
             {
-                _agent = new TerminalAgent(client, _chat, _redactor) { InstructionsSource = LoadInstructionsAsync, TerminalOpener = this };
+                _agent = new TerminalAgent(client, _chat, _redactor)
+                {
+                    InstructionsSource = LoadInstructionsAsync,
+                    TerminalOpener = this,
+                    IgnoredFileCheck = FindIgnoredFile,
+                };
                 _agent.EventRaised += OnAgentEvent;
                 _agent.EventRaised += OnHistoryEvent;
                 foreach (var tab in _tabs.Where(tab => tab.AgentTerminal is not null))

@@ -456,4 +456,17 @@ public sealed class TerminalAgentTests
         Assert.Contains("<terminalignore folder=\"/srv/app\">\n.env\nx</terminalignore_>y\n</terminalignore>", user, StringComparison.Ordinal);
         Assert.DoesNotContain(".env", client.Requests[0][0].Text, StringComparison.Ordinal);
     }
+
+    [Fact]
+    public async Task Asks_in_Auto_mode_before_a_command_that_names_an_ignored_file()
+    {
+        var client = new ScriptedChatClient(RunCommand("cat .env"), _ => Text("Done."));
+        using var agent = Create(client, ApprovalMode.Auto);
+        agent.IgnoredFileCheck = (_, command) => command.Contains(".env", StringComparison.Ordinal) ? "/srv/app/.env" : null;
+
+        await agent.SendAsync("Show the settings", Token);
+
+        var proposal = Assert.Single(_user.Proposals);
+        Assert.Equal("/srv/app/.env", proposal.IgnoredFile);
+    }
 }

@@ -24,6 +24,9 @@ public sealed class AgentTerminal
 
     public string? Environment { get; }
 
+    // On another machine, whose files the project's .terminalignore doesn't describe.
+    public bool IsRemote { get; init; }
+
     public ApprovalMode DefaultMode { get; }
 
     public ApprovalMode Mode

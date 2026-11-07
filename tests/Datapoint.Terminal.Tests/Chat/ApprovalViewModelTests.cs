@@ -31,4 +31,16 @@ public sealed class ApprovalViewModelTests
         Assert.Equal(Strings.ApprovalRiskOpen, approval.RiskText);
         Assert.Equal(Strings.Format(Strings.ApprovalForConnectionEnvironment, "web1", "production"), approval.TerminalText);
     }
+
+    [Fact]
+    public void A_command_naming_an_ignored_file_says_so()
+    {
+        var file = Path.Combine(Path.GetTempPath(), "app", ".env");
+        var proposal = new CommandProposal("cat .env", "Read settings", CommandRisk.ReadOnly, "Local") { IgnoredFile = file };
+
+        var approval = new ApprovalViewModel(proposal);
+
+        Assert.Equal(Strings.ApprovalHeadingIgnored, approval.Heading);
+        Assert.Contains(".env", approval.RiskText, StringComparison.Ordinal);
+    }
 }

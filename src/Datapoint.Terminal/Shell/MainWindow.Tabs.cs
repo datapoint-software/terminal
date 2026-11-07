@@ -40,7 +40,7 @@ public sealed partial class MainWindow
     private void Attach(TerminalTab tab, TerminalConnection connection, string? environment, ApprovalMode defaultMode, bool select = true)
     {
         tab.Connection = connection;
-        tab.AgentTerminal = new AgentTerminal(tab.Name, new ConnectionTerminal(connection), defaultMode, environment);
+        tab.AgentTerminal = new AgentTerminal(tab.Name, new ConnectionTerminal(connection), defaultMode, environment) { IsRemote = tab.IsRemote };
         connection.OutputArrived += (_, _) => tab.View.NotifyOutput();
         connection.TitleChanged += (_, _) => Dispatcher.UIThread.Post(() =>
         {

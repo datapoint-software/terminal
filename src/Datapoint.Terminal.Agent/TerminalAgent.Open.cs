@@ -9,6 +9,9 @@ public sealed partial class TerminalAgent
     // Opens terminals for the application's connections; without one, open_terminal reports that it can't.
     public ITerminalOpener? TerminalOpener { get; set; }
 
+    // Returns a file listed in .terminalignore that a command names, so it asks first in every mode; null when it names none.
+    public Func<AgentTerminal, string, string?>? IgnoredFileCheck { get; set; }
+
     // Product.md, The agent: opening a terminal is shown in the chat and, where the connection's terminals start in Ask mode,
     // waits for the user's approval like a command. It runs nothing in the new terminal.
     private async Task<string> OpenTerminalAsync(AIFunctionArguments arguments, CancellationToken cancellationToken)
