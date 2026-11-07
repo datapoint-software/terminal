@@ -14,8 +14,6 @@ public sealed partial class MainWindow
 
     private void ApplyAppearance()
     {
-        var followsSystem = _settings.CustomThemeId is null && _settings.TerminalTheme == TerminalTheme.System;
-        Themes.WindowColors.Apply(_settings.MatchWindowToTheme ? ActiveTheme : null, followsSystem);
         foreach (var tab in _tabs)
         {
             ApplyAppearance(tab);
@@ -27,7 +25,7 @@ public sealed partial class MainWindow
         }
     }
 
-    // Read from the system, not the window, since matching the window to the theme changes the window's own variant.
+    // Read from the system, not the window, since the window can have a theme of its own.
     private Themes.ColorTheme ActiveTheme => _settings.ActiveTheme(Themes.WindowColors.IsSystemDark);
 
     private void ApplyAppearance(TerminalTab tab) => ApplyAppearance(tab.View, tab.Connection?.Terminal);

@@ -7,11 +7,9 @@
   <UserControl.Styles>
     <Style Selector="ListBox.themes ListBoxItem">
       <Setter Property="Padding" Value="0" />
-      <Setter Property="Margin" Value="0,0,10,10" />
       <Setter Property="CornerRadius" Value="{StaticResource CardRadius}" />
       <Setter Property="BorderThickness" Value="2" />
       <Setter Property="BorderBrush" Value="Transparent" />
-      <Setter Property="Width" Value="166" />
     </Style>
     <Style Selector="ListBox.themes ListBoxItem /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="Transparent" />
@@ -29,13 +27,36 @@
     </Style>
   </UserControl.Styles>
 
+  <!-- The window first, then the terminal: each setting sits under what it changes. -->
   <StackPanel Classes="form">
-    <TextBlock Classes="heading" Text="{x:Static res:Strings.AppearanceThemeHeading}" />
-    <ListBox x:Name="ThemeList" Classes="themes" Background="Transparent" ItemsSource="{Binding Themes}" SelectedItem="{Binding SelectedTheme}"
+    <TextBlock Classes="heading" Text="{x:Static res:Strings.AppearanceWindowHeading}" />
+    <Border Classes="group">
+      <StackPanel>
+        <Grid Classes="row" ColumnDefinitions="*,Auto">
+          <TextBlock Text="{x:Static res:Strings.AppearanceWindowTheme}" />
+          <ListBox Grid.Column="1" Classes="segmented" ItemsSource="{Binding WindowThemes}" SelectedIndex="{Binding SelectedWindowTheme}"
+                   AutomationProperties.Name="{x:Static res:Strings.AppearanceWindowThemeName}" />
+        </Grid>
+        <Rectangle Classes="hairline" />
+        <Grid Classes="row" ColumnDefinitions="*,Auto">
+          <TextBlock Text="{x:Static res:Strings.AppearanceReduceMotion}" TextWrapping="Wrap" />
+          <ToggleSwitch Grid.Column="1" IsChecked="{Binding ReduceMotion}" OnContent="{x:Null}" OffContent="{x:Null}"
+                        AutomationProperties.Name="{x:Static res:Strings.AppearanceReduceMotion}" />
+        </Grid>
+      </StackPanel>
+    </Border>
+    <TextBlock Classes="secondary note" TextWrapping="Wrap">
+      <Run Text="{x:Static res:Strings.AppearanceWindowThemeHint}" />
+      <Run Text="{x:Static res:Strings.AppearanceReduceMotionHint}" />
+    </TextBlock>
+
+    <TextBlock Classes="heading" Text="{x:Static res:Strings.AppearanceTerminalHeading}" />
+    <!-- No padding, so the cards line up with the buttons and the group below; three to a row, sharing the width. -->
+    <ListBox x:Name="ThemeList" Classes="themes" Background="Transparent" Padding="0" ItemsSource="{Binding Themes}" SelectedItem="{Binding SelectedTheme}"
              AutomationProperties.Name="{x:Static res:Strings.AppearanceThemeHeading}">
       <ListBox.ItemsPanel>
         <ItemsPanelTemplate>
-          <WrapPanel />
+          <UniformGrid Columns="3" ColumnSpacing="10" RowSpacing="10" />
         </ItemsPanelTemplate>
       </ListBox.ItemsPanel>
       <ListBox.ItemTemplate>
@@ -61,23 +82,24 @@
                   </StackPanel>
                 </StackPanel>
               </Border>
-              <StackPanel Orientation="Horizontal" Spacing="6" Margin="10,6">
-                <TextBlock Text="{Binding Name}" FontSize="{StaticResource SmallSize}" TextTrimming="CharacterEllipsis" MaxWidth="120" />
-                <TextBlock Text="{Binding Note}" Classes="secondary" IsVisible="{Binding HasNote}" VerticalAlignment="Center" />
-              </StackPanel>
+              <Grid ColumnDefinitions="Auto,*" Margin="10,6">
+                <TextBlock Text="{Binding Name}" FontSize="{StaticResource SmallSize}" TextTrimming="CharacterEllipsis" MaxWidth="140" />
+                <TextBlock Grid.Column="1" Text="{Binding Note}" Classes="secondary" IsVisible="{Binding HasNote}" VerticalAlignment="Center"
+                           Margin="6,0,0,0" TextTrimming="CharacterEllipsis" />
+              </Grid>
             </StackPanel>
           </Border>
         </DataTemplate>
       </ListBox.ItemTemplate>
     </ListBox>
-    <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,2,0,0">
+    <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,10,0,0">
       <Button x:Name="ImportButton" Content="{x:Static res:Strings.ThemeImport}" />
       <Button x:Name="EditButton" Content="{x:Static res:Strings.ThemeEditColors}" />
     </StackPanel>
-    <TextBlock Classes="secondary" Text="{x:Static res:Strings.ThemeImportHint}" Margin="4,6,4,0" />
+    <TextBlock Classes="secondary" Text="{x:Static res:Strings.ThemeImportHint}" TextWrapping="Wrap" Margin="4,6,4,0" />
     <TextBlock x:Name="ImportStatus" Classes="secondary danger" Margin="4,4,4,0" IsVisible="False" AutomationProperties.LiveSetting="Polite" />
 
-    <Border Classes="group" Margin="0,18,0,18">
+    <Border Classes="group" Margin="0,14,0,0">
       <StackPanel>
         <Grid Classes="row" ColumnDefinitions="*,Auto">
           <TextBlock Text="{x:Static res:Strings.AppearanceFont}" />
@@ -90,23 +112,7 @@
           <ComboBox Grid.Column="1" MinWidth="180" ItemsSource="{Binding Sizes}" SelectedIndex="{Binding SelectedSize}"
                     AutomationProperties.Name="{x:Static res:Strings.AppearanceTextSize}" />
         </Grid>
-        <Rectangle Classes="hairline" />
-        <Grid Classes="row" ColumnDefinitions="*,Auto">
-          <TextBlock Text="{x:Static res:Strings.AppearanceMatchWindow}" TextWrapping="Wrap" />
-          <ToggleSwitch Grid.Column="1" IsChecked="{Binding MatchWindow}" OnContent="{x:Null}" OffContent="{x:Null}"
-                        AutomationProperties.Name="{x:Static res:Strings.AppearanceMatchWindow}" />
-        </Grid>
       </StackPanel>
     </Border>
-    <TextBlock Classes="secondary note" Text="{x:Static res:Strings.AppearanceMatchWindowHint}" />
-
-    <Border Classes="group" Margin="0,18,0,0">
-      <Grid Classes="row" ColumnDefinitions="*,Auto">
-        <TextBlock Text="{x:Static res:Strings.AppearanceReduceMotion}" TextWrapping="Wrap" />
-        <ToggleSwitch Grid.Column="1" IsChecked="{Binding ReduceMotion}" OnContent="{x:Null}" OffContent="{x:Null}"
-                      AutomationProperties.Name="{x:Static res:Strings.AppearanceReduceMotion}" />
-      </Grid>
-    </Border>
-    <TextBlock Classes="secondary note" Text="{x:Static res:Strings.AppearanceReduceMotionHint}" />
   </StackPanel>
 </UserControl>

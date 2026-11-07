@@ -37,7 +37,7 @@ public sealed partial class MainWindow : Window, ITerminalOpener
         _settings = windows.Settings;
         _settings.Changed += OnSettingsChanged;
         _settings.AppearanceChanged += OnAppearanceChanged;
-        ActualThemeVariantChanged += (_, _) => ApplyAppearance();
+        Avalonia.Application.Current?.PlatformSettings?.ColorValuesChanged += OnSystemColorsChanged;
         _settings.WorkspacesChanged += OnWorkspacesChanged;
         WireChat(windows);
         Chat.DataContext = _chat;
@@ -124,6 +124,9 @@ public sealed partial class MainWindow : Window, ITerminalOpener
     private void OnSettingsChanged(object? sender, EventArgs e) => ApplySettings();
 
     private void OnAppearanceChanged(object? sender, EventArgs e) => ApplyAppearance();
+
+    // A terminal following the system's light or dark appearance changes with it, whatever the window's own theme.
+    private void OnSystemColorsChanged(object? sender, Avalonia.Platform.PlatformColorValues e) => ApplyAppearance();
 
     private void OnWorkspacesChanged(object? sender, EventArgs e) => FillRecentMenu();
 
@@ -253,6 +256,8 @@ public sealed partial class MainWindow : Window, ITerminalOpener
     {
         _settings.Changed -= OnSettingsChanged;
         _settings.AreaLayoutChanged -= OnAreaLayoutChanged;
+        _settings.AppearanceChanged -= OnAppearanceChanged;
+        Avalonia.Application.Current?.PlatformSettings?.ColorValuesChanged -= OnSystemColorsChanged;
         _settings.WorkspacesChanged -= OnWorkspacesChanged;
         _agent?.Dispose();
         _chat.Dispose();

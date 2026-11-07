@@ -5,8 +5,9 @@ using Avalonia.Styling;
 
 namespace Datapoint.Terminal.Themes;
 
-// "Match the window to the terminal theme": the window's surfaces and text take the theme's background and text colours, mixed
-// in steps, so panes, cards and separators keep their relative depth. Accent and status colours stay ours, for contrast.
+// The window's theme, chosen apart from the terminal's. Taking the terminal theme's colours, the window's surfaces and text are
+// its background and text colours mixed in steps, so panes, cards and separators keep their relative depth. Accent and status
+// colours stay ours, for contrast.
 public static class WindowColors
 {
     private static readonly (string Key, Func<ColorTheme, Color> Color)[] s_brushes =
@@ -29,28 +30,41 @@ public static class WindowColors
     public static bool IsSystemDark =>
         Application.Current?.PlatformSettings?.GetColorValues().ThemeVariant == PlatformThemeVariant.Dark;
 
-    // Null puts the window's own colours back. The system theme keeps following the system's light or dark appearance.
-    public static void Apply(ColorTheme? theme, bool followsSystem)
+    // The terminal theme matters only when the window takes its colours; one that follows the system keeps the window following
+    // the system's light or dark appearance too.
+    public static void Apply(WindowTheme window, ColorTheme terminal, bool terminalFollowsSystem)
     {
+        ArgumentNullException.ThrowIfNull(terminal);
         if (Application.Current is not { } application)
         {
             return;
         }
 
+        var matched = window == WindowTheme.Terminal ? terminal : null;
         foreach (var (key, color) in s_brushes)
         {
-            if (theme is null)
+            if (matched is null)
             {
                 application.Resources.Remove(key);
                 continue;
             }
 
-            application.Resources[key] = new SolidColorBrush(color(theme));
+            application.Resources[key] = new SolidColorBrush(color(matched));
         }
 
-        application.RequestedThemeVariant = theme is null || followsSystem ? ThemeVariant.Default
-            : theme.IsDark ? ThemeVariant.Dark
-            : ThemeVariant.Light;
+        application.RequestedThemeVariant = Variant(window, terminal, terminalFollowsSystem);
+    }
+
+    public static ThemeVariant Variant(WindowTheme window, ColorTheme terminal, bool terminalFollowsSystem)
+    {
+        ArgumentNullException.ThrowIfNull(terminal);
+        return window switch
+        {
+            WindowTheme.Light => ThemeVariant.Light,
+            WindowTheme.Dark => ThemeVariant.Dark,
+            WindowTheme.Terminal when !terminalFollowsSystem => terminal.IsDark ? ThemeVariant.Dark : ThemeVariant.Light,
+            _ => ThemeVariant.Default,
+        };
     }
 
     // From the background (0) towards the text colour (1).

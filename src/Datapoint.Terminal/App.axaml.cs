@@ -23,12 +23,22 @@ public sealed partial class App : Application
             var settings = new SettingsViewModel(store, MainWindow.FirstRun(store.Load()), keys, MainWindow.CreateClient);
             MotionPreference.Apply(settings.ReduceMotion);
             settings.AppearanceChanged += (_, _) => MotionPreference.Apply(settings.ReduceMotion);
+            ApplyWindowTheme(settings);
+            settings.AppearanceChanged += (_, _) => ApplyWindowTheme(settings);
+            PlatformSettings?.ColorValuesChanged += (_, _) => ApplyWindowTheme(settings);
             OverlayMotion.Start();
             _windows = new WorkspaceWindows(desktop, settings);
             _windows.OpenAtStartup();
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    // Once for the whole application, at start as well as on each change, since every window shares its colours.
+    private static void ApplyWindowTheme(SettingsViewModel settings)
+    {
+        var followsSystem = settings.CustomThemeId is null && settings.TerminalTheme == TerminalTheme.System;
+        Themes.WindowColors.Apply(settings.WindowTheme, settings.ActiveTheme(Themes.WindowColors.IsSystemDark), followsSystem);
     }
 
     private void OnSettingsClicked(object? sender, EventArgs e) => _windows?.OpenSettings();

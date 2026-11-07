@@ -964,10 +964,6 @@ public static class Strings
 
     public static string AppearanceTextSizeValue => Get(nameof(AppearanceTextSizeValue));
 
-    public static string AppearanceMatchWindow => Get(nameof(AppearanceMatchWindow));
-
-    public static string AppearanceMatchWindowHint => Get(nameof(AppearanceMatchWindowHint));
-
     public static string ThemeImportTitle => Get(nameof(ThemeImportTitle));
 
     public static string ThemeImportFailed => Get(nameof(ThemeImportFailed));
@@ -1597,6 +1593,24 @@ public static class Strings
     public static string MenuResetLayout => Get(nameof(MenuResetLayout));
 
     public static string NoticeAreaDoesNotFit => Get(nameof(NoticeAreaDoesNotFit));
+
+    public static string AppearanceWindowHeading => Get(nameof(AppearanceWindowHeading));
+
+    public static string AppearanceWindowTheme => Get(nameof(AppearanceWindowTheme));
+
+    public static string WindowThemeSystem => Get(nameof(WindowThemeSystem));
+
+    public static string WindowThemeLight => Get(nameof(WindowThemeLight));
+
+    public static string WindowThemeDark => Get(nameof(WindowThemeDark));
+
+    public static string WindowThemeTerminal => Get(nameof(WindowThemeTerminal));
+
+    public static string AppearanceWindowThemeHint => Get(nameof(AppearanceWindowThemeHint));
+
+    public static string AppearanceTerminalHeading => Get(nameof(AppearanceTerminalHeading));
+
+    public static string AppearanceWindowThemeName => Get(nameof(AppearanceWindowThemeName));
 
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 

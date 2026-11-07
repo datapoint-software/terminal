@@ -163,6 +163,12 @@
     <Setter Property="BorderThickness" Value="0" />
   </Style>
 
+  <!-- Switches here never show On or Off beside them, but Fluent keeps 12 points for that text after the switch; without them,
+       a switch lines up on the right with the fields and buttons in the rows around it. -->
+  <Style Selector="ToggleSwitch">
+    <Setter Property="Margin" Value="0,0,-12,0" />
+  </Style>
+
   <!-- Segmented control: a ListBox with the .segmented class. -->
   <Style Selector="ListBox.segmented">
     <Setter Property="Background" Value="{DynamicResource FillBrush}" />

@@ -1449,12 +1449,6 @@ Fingerprint: {2}</value>
   <data name="AppearanceTextSizeValue" xml:space="preserve">
     <value>{0} pt</value>
   </data>
-  <data name="AppearanceMatchWindow" xml:space="preserve">
-    <value>Match the window to the terminal theme</value>
-  </data>
-  <data name="AppearanceMatchWindowHint" xml:space="preserve">
-    <value>The sidebar, tabs and chat take the theme's background and text colours.</value>
-  </data>
   <data name="ThemeImportTitle" xml:space="preserve">
     <value>Import a Theme</value>
   </data>
@@ -2399,5 +2393,32 @@ Fingerprint: {2}</value>
   </data>
   <data name="NoticeAreaDoesNotFit" xml:space="preserve">
     <value>{0} can't go there: the window is too small for every area to keep a usable size. Make the window larger, or hide an area first.</value>
+  </data>
+  <data name="AppearanceWindowHeading" xml:space="preserve">
+    <value>Window</value>
+  </data>
+  <data name="AppearanceWindowTheme" xml:space="preserve">
+    <value>Theme</value>
+  </data>
+  <data name="WindowThemeSystem" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="WindowThemeLight" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="WindowThemeDark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="WindowThemeTerminal" xml:space="preserve">
+    <value>Match terminal</value>
+  </data>
+  <data name="AppearanceWindowThemeHint" xml:space="preserve">
+    <value>Match terminal gives the sidebar, tabs and chat the terminal theme's background and text colours.</value>
+  </data>
+  <data name="AppearanceTerminalHeading" xml:space="preserve">
+    <value>Terminal</value>
+  </data>
+  <data name="AppearanceWindowThemeName" xml:space="preserve">
+    <value>Window theme</value>
   </data>
 </root>

@@ -60,7 +60,11 @@ public sealed record AppSettings
 
     public string? CustomThemeId { get; init; }
 
-    // The window's own colours follow the terminal theme's background and text.
+    // The window's colours: the system's, light, dark or the terminal theme's. Null in settings from before it could be
+    // chosen, which read matchWindowToTheme instead.
+    public Datapoint.Terminal.Themes.WindowTheme? WindowTheme { get; init; }
+
+    // Written as well, so an older version still matches the window to the terminal theme when it's chosen.
     public bool MatchWindowToTheme { get; init; }
 
     // Overlays and cards appear without animating; the system's own reduce motion setting does the same.

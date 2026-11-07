@@ -48,7 +48,9 @@ public sealed partial class SettingsViewModel : ObservableObject
         TerminalFont = settings.TerminalFont;
         Themes = settings.Themes;
         CustomThemeId = settings.Themes.Any(theme => string.Equals(theme.Id, settings.CustomThemeId, StringComparison.Ordinal)) ? settings.CustomThemeId : null;
-        MatchWindowToTheme = settings.MatchWindowToTheme;
+        WindowTheme = settings.WindowTheme is { } windowTheme && Enum.IsDefined(windowTheme) ? windowTheme
+            : settings.MatchWindowToTheme ? Datapoint.Terminal.Themes.WindowTheme.Terminal
+            : Datapoint.Terminal.Themes.WindowTheme.System;
         ReduceMotion = settings.ReduceMotion;
         AlwaysAllowWeb = settings.AlwaysAllowWeb;
         WebSearch = settings.WebSearch;
@@ -139,7 +141,7 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     public string? CustomThemeId { get; private set; }
 
-    public bool MatchWindowToTheme { get; private set; }
+    public Datapoint.Terminal.Themes.WindowTheme WindowTheme { get; private set; }
 
     public bool ReduceMotion { get; private set; }
 
@@ -207,9 +209,9 @@ public sealed partial class SettingsViewModel : ObservableObject
         SetAppearance(TerminalTheme, TerminalFont, TerminalFontSize);
     }
 
-    public void SetMatchWindowToTheme(bool match)
+    public void SetWindowTheme(Datapoint.Terminal.Themes.WindowTheme theme)
     {
-        MatchWindowToTheme = match;
+        WindowTheme = theme;
         SetAppearance(TerminalTheme, TerminalFont, TerminalFontSize);
     }
 
@@ -266,7 +268,8 @@ public sealed partial class SettingsViewModel : ObservableObject
         TerminalFontSize = TerminalFontSize,
         Themes = Themes,
         CustomThemeId = CustomThemeId,
-        MatchWindowToTheme = MatchWindowToTheme,
+        WindowTheme = WindowTheme,
+        MatchWindowToTheme = WindowTheme == Datapoint.Terminal.Themes.WindowTheme.Terminal,
         ReduceMotion = ReduceMotion,
         AlwaysAllowWeb = AlwaysAllowWeb,
         WebSearch = WebSearch,

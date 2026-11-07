@@ -7,7 +7,7 @@ using Datapoint.Terminal.Themes;
 
 namespace Datapoint.Terminal.Settings;
 
-// Settings › Appearance (product decision 44): the terminal theme, font and size, and whether the window follows the theme.
+// Settings › Appearance (product decisions 44 and 110): the window's theme, and the terminal's theme, font and size.
 public sealed partial class AppearanceViewModel : ObservableObject
 {
     private readonly SettingsViewModel _settings;
@@ -29,6 +29,9 @@ public sealed partial class AppearanceViewModel : ObservableObject
 
     public IReadOnlyList<string> Sizes { get; }
 
+    // In the order of WindowTheme's values.
+    public IReadOnlyList<string> WindowThemes { get; } = [Strings.WindowThemeSystem, Strings.WindowThemeLight, Strings.WindowThemeDark, Strings.WindowThemeTerminal];
+
     [ObservableProperty]
     public partial ThemeCard? SelectedTheme { get; set; }
 
@@ -39,7 +42,7 @@ public sealed partial class AppearanceViewModel : ObservableObject
     public partial int SelectedSize { get; set; }
 
     [ObservableProperty]
-    public partial bool MatchWindow { get; set; }
+    public partial int SelectedWindowTheme { get; set; }
 
     [ObservableProperty]
     public partial bool ReduceMotion { get; set; }
@@ -97,14 +100,14 @@ public sealed partial class AppearanceViewModel : ObservableObject
         _settings.SetAppearance(_settings.TerminalTheme, _settings.TerminalFont, value + 9);
     }
 
-    partial void OnMatchWindowChanged(bool value)
+    partial void OnSelectedWindowThemeChanged(int value)
     {
-        if (_isLoading)
+        if (_isLoading || !Enum.IsDefined((WindowTheme)value))
         {
             return;
         }
 
-        _settings.SetMatchWindowToTheme(value);
+        _settings.SetWindowTheme((WindowTheme)value);
     }
 
     partial void OnReduceMotionChanged(bool value)
@@ -141,7 +144,7 @@ public sealed partial class AppearanceViewModel : ObservableObject
         SelectedTheme = chosen;
         SelectedFont = _settings.TerminalFont is { } font && Fonts.Contains(font, StringComparer.OrdinalIgnoreCase) ? font : Strings.AppearanceFontDefault;
         SelectedSize = Math.Clamp((int)Math.Round(_settings.TerminalFontSize, MidpointRounding.AwayFromZero) - 9, 0, Sizes.Count - 1);
-        MatchWindow = _settings.MatchWindowToTheme;
+        SelectedWindowTheme = (int)_settings.WindowTheme;
         ReduceMotion = _settings.ReduceMotion;
         _isLoading = false;
     }

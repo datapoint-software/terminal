@@ -67,6 +67,33 @@ public sealed class SettingsPagesTests : IDisposable
     }
 
     [AvaloniaFact]
+    public void Chooses_the_window_theme_apart_from_the_terminal_theme()
+    {
+        var settings = Create();
+        var window = Show(settings, page: 1);
+        var choice = window.FindControl<AppearancePage>("AppearancePage")!.GetLogicalDescendants().OfType<ListBox>()
+            .Single(item => string.Equals(Avalonia.Automation.AutomationProperties.GetName(item), Datapoint.Terminal.Resources.Strings.AppearanceWindowThemeName, StringComparison.Ordinal));
+
+        choice.SelectedIndex = (int)WindowTheme.Light;
+
+        Assert.Equal(WindowTheme.Light, settings.WindowTheme);
+        var saved = new SettingsStore(Path.Combine(_folder, "settings.json")).Load();
+        Assert.Equal(WindowTheme.Light, saved.WindowTheme);
+        Assert.False(saved.MatchWindowToTheme);
+    }
+
+    [Theory]
+    [InlineData(true, WindowTheme.Terminal)]
+    [InlineData(false, WindowTheme.System)]
+    public void Starts_the_window_theme_from_whether_the_window_matched_the_terminal(bool matched, WindowTheme expected)
+    {
+        var store = new SettingsStore(Path.Combine(_folder, "settings.json"));
+        var settings = new SettingsViewModel(store, new AppSettings { MatchWindowToTheme = matched }, new ProviderKeys(new MemoryCredentialStore(), _ => null), (_, _) => new ListChatClient(new ChatResponse(new ChatMessage(ChatRole.Assistant, "OK"))));
+
+        Assert.Equal(expected, settings.WindowTheme);
+    }
+
+    [AvaloniaFact]
     public void Chooses_the_search_service_and_keeps_its_key_in_the_credential_store()
     {
         var settings = Create();
