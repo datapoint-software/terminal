@@ -1,5 +1,7 @@
 using System.ComponentModel;
+using Datapoint.Terminal.Agent;
 using Datapoint.Terminal.Chat;
+using Datapoint.Terminal.Resources;
 using Datapoint.Terminal.Shell.Attention;
 
 namespace Datapoint.Terminal.Shell;
@@ -10,6 +12,12 @@ public sealed partial class MainWindow
     // system for attention, so a question asked in the background isn't missed.
     private void OnChatPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        if (string.Equals(e.PropertyName, nameof(ChatViewModel.IsWorking), StringComparison.Ordinal))
+        {
+            NotifyIfFinished();
+            return;
+        }
+
         if (!string.Equals(e.PropertyName, nameof(ChatViewModel.NeedsUser), StringComparison.Ordinal))
         {
             return;
@@ -22,5 +30,30 @@ public sealed partial class MainWindow
         }
 
         WindowAttention.Request(this);
+        Notify(_chat.Status == AgentStatus.WaitingForApproval ? Strings.NotifyApproval : Strings.NotifyQuestion);
+    }
+
+    private bool _wasWorking;
+
+    private void NotifyIfFinished()
+    {
+        var finished = _wasWorking && !_chat.IsWorking && !_chat.NeedsUser && _chat.Status == AgentStatus.Idle;
+        _wasWorking = _chat.IsWorking;
+        if (!finished || IsActive)
+        {
+            return;
+        }
+
+        Notify(Strings.NotifyFinished);
+    }
+
+    private void Notify(string message)
+    {
+        if (!_settings.Notifications)
+        {
+            return;
+        }
+
+        Notifications.DesktopNotifications.Show(Project.Name, message);
     }
 }

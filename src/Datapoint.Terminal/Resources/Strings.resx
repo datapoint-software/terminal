@@ -905,4 +905,16 @@ git rm -r --cached .terminal</value>
   <data name="MenuFontDefault" xml:space="preserve">
     <value>Default</value>
   </data>
+  <data name="NotifyFinished" xml:space="preserve">
+    <value>The agent finished.</value>
+  </data>
+  <data name="NotifyApproval" xml:space="preserve">
+    <value>The agent is waiting for your approval.</value>
+  </data>
+  <data name="NotifyQuestion" xml:space="preserve">
+    <value>The agent has a question for you.</value>
+  </data>
+  <data name="MenuNotifications" xml:space="preserve">
+    <value>Notify When the Agent Finishes or Waits</value>
+  </data>
 </root>

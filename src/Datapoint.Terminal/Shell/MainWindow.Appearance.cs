@@ -71,6 +71,16 @@ public sealed partial class MainWindow
         _fontMenu = new NativeMenu();
         _fontMenu.Opening += (_, _) => FillFontMenu();
         view.Add(new NativeMenuItem(Strings.MenuFont) { Menu = _fontMenu });
+        view.Add(new NativeMenuItemSeparator());
+        var notifications = Item(Strings.MenuNotifications, null, () => { });
+        notifications.ToggleType = MenuItemToggleType.CheckBox;
+        notifications.IsChecked = _settings.Notifications;
+        notifications.Click += (_, _) =>
+        {
+            _settings.SetNotifications(!_settings.Notifications);
+            notifications.IsChecked = _settings.Notifications;
+        };
+        view.Add(notifications);
     }
 
     // Listed when the menu opens, so fonts installed meanwhile show up.

@@ -38,6 +38,9 @@ public sealed record AppSettings
     // Where new windows put the chat pane; each window can move its own.
     public Shell.ChatSide ChatSide { get; init; } = Shell.ChatSide.Right;
 
+    // Desktop notifications when the agent finishes or needs the user in a background window.
+    public bool Notifications { get; init; } = true;
+
     public Shell.TerminalTheme TerminalTheme { get; init; } = Shell.TerminalTheme.Dark;
 
     // Null uses the default list of monospace fonts.

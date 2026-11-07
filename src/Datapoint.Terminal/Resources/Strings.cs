@@ -600,6 +600,14 @@ public static class Strings
 
     public static string MenuFontDefault => Get(nameof(MenuFontDefault));
 
+    public static string NotifyFinished => Get(nameof(NotifyFinished));
+
+    public static string NotifyApproval => Get(nameof(NotifyApproval));
+
+    public static string NotifyQuestion => Get(nameof(NotifyQuestion));
+
+    public static string MenuNotifications => Get(nameof(MenuNotifications));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

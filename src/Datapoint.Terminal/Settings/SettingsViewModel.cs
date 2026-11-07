@@ -42,6 +42,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         NotSecrets = settings.NotSecrets;
         HistoryDays = settings.HistoryDays;
         ChatSide = settings.ChatSide;
+        Notifications = settings.Notifications;
         TerminalTheme = settings.TerminalTheme;
         TerminalFont = settings.TerminalFont;
         TerminalFontSize = settings.TerminalFontSize;
@@ -80,6 +81,14 @@ public sealed partial class SettingsViewModel : ObservableObject
     public Shell.ChatSide ChatSide { get; private set; }
 
     public Shell.TerminalTheme TerminalTheme { get; private set; }
+
+    public bool Notifications { get; private set; }
+
+    public void SetNotifications(bool enabled)
+    {
+        Notifications = enabled;
+        SaveProjectData();
+    }
 
     public string? TerminalFont { get; private set; }
 
@@ -127,6 +136,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         NotSecrets = NotSecrets,
         HistoryDays = HistoryDays,
         ChatSide = ChatSide,
+        Notifications = Notifications,
         TerminalTheme = TerminalTheme,
         TerminalFont = TerminalFont,
         TerminalFontSize = TerminalFontSize,
