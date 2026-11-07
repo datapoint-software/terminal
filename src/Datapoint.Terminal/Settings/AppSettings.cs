@@ -55,6 +55,14 @@ public sealed record AppSettings
 
     public double TerminalFontSize { get; set; } = 14;
 
+    // Themes the user imported or made; when one is chosen, it's used instead of TerminalTheme.
+    public IReadOnlyList<Themes.ColorTheme> Themes { get; init => field = value ?? []; } = [];
+
+    public string? CustomThemeId { get; init; }
+
+    // The window's own colours follow the terminal theme's background and text.
+    public bool MatchWindowToTheme { get; init; }
+
     // How long conversation history is kept, in days; null keeps it forever (product decision 52).
     public int? HistoryDays { get; init; }
 

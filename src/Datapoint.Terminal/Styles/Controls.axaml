@@ -52,6 +52,12 @@
     <Setter Property="Background" Value="{DynamicResource FillBrush}" />
     <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
   </Style>
+  <Style Selector="Button.plain.danger">
+    <Setter Property="Foreground" Value="{DynamicResource DangerBrush}" />
+  </Style>
+  <Style Selector="Button.plain.danger:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Foreground" Value="{DynamicResource DangerBrush}" />
+  </Style>
   <Style Selector="Button.plain:disabled /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="Transparent" />
   </Style>

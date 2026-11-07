@@ -85,11 +85,12 @@ public sealed class ProjectWindows
     {
         if (_settingsWindow is not null)
         {
+            _settingsWindow.History = Active;
             _settingsWindow.Activate();
             return;
         }
 
-        _settingsWindow = new SettingsWindow { DataContext = Settings };
+        _settingsWindow = new SettingsWindow { DataContext = Settings, History = Active };
         _settingsWindow.Closed += (_, _) => _settingsWindow = null;
         if (Active is { } owner)
         {

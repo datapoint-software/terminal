@@ -47,6 +47,9 @@ public sealed partial class SettingsViewModel : ObservableObject
         SpendingLimit = settings.SpendingLimit;
         TerminalTheme = settings.TerminalTheme;
         TerminalFont = settings.TerminalFont;
+        Themes = settings.Themes;
+        CustomThemeId = settings.Themes.Any(theme => string.Equals(theme.Id, settings.CustomThemeId, StringComparison.Ordinal)) ? settings.CustomThemeId : null;
+        MatchWindowToTheme = settings.MatchWindowToTheme;
         TerminalFontSize = settings.TerminalFontSize is >= 8 and <= 40 ? settings.TerminalFontSize : 14;
         SelectedProviderId = settings.SelectedProvider?.Id;
         foreach (var account in settings.Providers)
@@ -114,6 +117,55 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     public event EventHandler? AppearanceChanged;
 
+    public IReadOnlyList<Themes.ColorTheme> Themes { get; private set; }
+
+    public string? CustomThemeId { get; private set; }
+
+    public bool MatchWindowToTheme { get; private set; }
+
+    // The colours terminals use now: a chosen custom theme, or the built-in light or dark one.
+    public Themes.ColorTheme ActiveTheme(bool systemIsDark) =>
+        Themes.FirstOrDefault(theme => string.Equals(theme.Id, CustomThemeId, StringComparison.Ordinal))
+        ?? (Shell.TerminalThemes.IsDark(TerminalTheme, systemIsDark) ? Datapoint.Terminal.Themes.BuiltInThemes.Dark : Datapoint.Terminal.Themes.BuiltInThemes.Light);
+
+    public void UseTheme(Shell.TerminalTheme theme)
+    {
+        CustomThemeId = null;
+        SetAppearance(theme, TerminalFont, TerminalFontSize);
+    }
+
+    public void UseCustomTheme(string id)
+    {
+        CustomThemeId = Themes.Any(theme => string.Equals(theme.Id, id, StringComparison.Ordinal)) ? id : null;
+        SetAppearance(TerminalTheme, TerminalFont, TerminalFontSize);
+    }
+
+    // Adds the theme, or replaces the one with its id, and uses it.
+    public void SaveTheme(Themes.ColorTheme theme)
+    {
+        ArgumentNullException.ThrowIfNull(theme);
+        var index = Themes.ToList().FindIndex(item => string.Equals(item.Id, theme.Id, StringComparison.Ordinal));
+        Themes = index < 0 ? [.. Themes, theme] : [.. Themes.Take(index), theme, .. Themes.Skip(index + 1)];
+        UseCustomTheme(theme.Id);
+    }
+
+    public void RemoveTheme(string id)
+    {
+        Themes = [.. Themes.Where(theme => !string.Equals(theme.Id, id, StringComparison.Ordinal))];
+        if (string.Equals(CustomThemeId, id, StringComparison.Ordinal))
+        {
+            CustomThemeId = null;
+        }
+
+        SetAppearance(TerminalTheme, TerminalFont, TerminalFontSize);
+    }
+
+    public void SetMatchWindowToTheme(bool match)
+    {
+        MatchWindowToTheme = match;
+        SetAppearance(TerminalTheme, TerminalFont, TerminalFontSize);
+    }
+
     public void SetAppearance(Shell.TerminalTheme theme, string? font, double size)
     {
         TerminalTheme = theme;
@@ -160,6 +212,9 @@ public sealed partial class SettingsViewModel : ObservableObject
         TerminalTheme = TerminalTheme,
         TerminalFont = TerminalFont,
         TerminalFontSize = TerminalFontSize,
+        Themes = Themes,
+        CustomThemeId = CustomThemeId,
+        MatchWindowToTheme = MatchWindowToTheme,
     };
 
     public IReadOnlyList<ProjectConnection>? ConfirmedFor(string folder) =>

@@ -15,6 +15,10 @@ public interface IHistoryAccess
 
     IReadOnlyList<string> Connections();
 
+    IReadOnlyList<ConnectionUsage> Usage();
+
+    string ProjectName { get; }
+
     // Null clears everything.
     void Clear(string? connection);
 

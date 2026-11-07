@@ -5,12 +5,15 @@
         x:Class="Datapoint.Terminal.Settings.SettingsWindow"
         x:DataType="settings:SettingsViewModel"
         Title="{x:Static res:Strings.SettingsTitle}"
-        Width="780" Height="560" MinWidth="620" MinHeight="420"
+        Width="780" Height="620" MinWidth="620" MinHeight="460"
         WindowStartupLocation="CenterOwner"
         Background="{DynamicResource GroupedBackgroundBrush}">
   <Window.Resources>
     <StreamGeometry x:Key="PlusGlyph">M7.25,2.5 L8.75,2.5 L8.75,7.25 L13.5,7.25 L13.5,8.75 L8.75,8.75 L8.75,13.5 L7.25,13.5 L7.25,8.75 L2.5,8.75 L2.5,7.25 L7.25,7.25 Z</StreamGeometry>
     <StreamGeometry x:Key="MinusGlyph">M2.5,7.25 L13.5,7.25 L13.5,8.75 L2.5,8.75 Z</StreamGeometry>
+    <StreamGeometry x:Key="ProvidersGlyph">M10,2.5 A7.5,7.5 0 1,0 10.01,2.5 Z M10,4 A6,6 0 1,1 9.99,4 Z M9.25,6.5 L10.75,6.5 L10.75,9.25 L13.5,9.25 L13.5,10.75 L10.75,10.75 L10.75,13.5 L9.25,13.5 L9.25,10.75 L6.5,10.75 L6.5,9.25 L9.25,9.25 Z</StreamGeometry>
+    <StreamGeometry x:Key="AppearanceGlyph">M10,2.5 A7.5,7.5 0 1,0 10.01,2.5 Z M10,4 L10,16 A6,6 0 0,1 10,4 Z</StreamGeometry>
+    <StreamGeometry x:Key="HistoryGlyph">M10,2.5 A7.5,7.5 0 1,0 10.01,2.5 Z M10,4 A6,6 0 1,1 9.99,4 Z M9.25,6 L10.75,6 L10.75,9.6 L13.2,11.1 L12.45,12.4 L9.25,10.4 Z</StreamGeometry>
     <StreamGeometry x:Key="CheckGlyph">M2.5,8.5 L3.6,7.4 L6.3,10.1 L12.4,4 L13.5,5.1 L6.3,12.3 Z</StreamGeometry>
   </Window.Resources>
 
@@ -47,6 +50,36 @@
       <Setter Property="Fill" Value="{DynamicResource SeparatorBrush}" />
       <Setter Property="Margin" Value="14,0,0,0" />
     </Style>
+    <!-- The pages, as a macOS settings window shows them: icons with names along the top. -->
+    <Style Selector="ListBox.toolbar">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="ItemsPanel">
+        <ItemsPanelTemplate>
+          <StackPanel Orientation="Horizontal" Spacing="4" />
+        </ItemsPanelTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="ListBox.toolbar ListBoxItem">
+      <Setter Property="Width" Value="84" />
+      <Setter Property="Padding" Value="0,6" />
+      <Setter Property="CornerRadius" Value="7" />
+      <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
+    </Style>
+    <Style Selector="ListBox.toolbar ListBoxItem /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="CornerRadius" Value="7" />
+    </Style>
+    <Style Selector="ListBox.toolbar ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource FillBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource LabelBrush}" />
+    </Style>
+    <Style Selector="ListBox.toolbar ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource FillBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
+    </Style>
+    <Style Selector="ListBox.toolbar ListBoxItem:selected:focus /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource FillHoverBrush}" />
+    </Style>
     <Style Selector="ListBox.sidebar">
       <Setter Property="Background" Value="Transparent" />
     </Style>
@@ -69,7 +102,37 @@
     </Style>
   </Window.Styles>
 
-  <Grid ColumnDefinitions="230,1,*">
+  <DockPanel>
+  <Border DockPanel.Dock="Top" Background="{DynamicResource PaneBrush}" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1" Padding="0,8">
+    <ListBox x:Name="Pages" Classes="toolbar" SelectedIndex="0" AutomationProperties.Name="{x:Static res:Strings.SettingsTitle}">
+      <ListBoxItem AutomationProperties.Name="{x:Static res:Strings.SettingsPageProviders}">
+        <StackPanel Spacing="3">
+          <PathIcon Data="{StaticResource ProvidersGlyph}" Width="20" Height="20" />
+          <TextBlock Text="{x:Static res:Strings.SettingsPageProviders}" FontSize="{StaticResource CaptionSize}" HorizontalAlignment="Center" />
+        </StackPanel>
+      </ListBoxItem>
+      <ListBoxItem AutomationProperties.Name="{x:Static res:Strings.SettingsPageAppearance}">
+        <StackPanel Spacing="3">
+          <PathIcon Data="{StaticResource AppearanceGlyph}" Width="20" Height="20" />
+          <TextBlock Text="{x:Static res:Strings.SettingsPageAppearance}" FontSize="{StaticResource CaptionSize}" HorizontalAlignment="Center" />
+        </StackPanel>
+      </ListBoxItem>
+      <ListBoxItem AutomationProperties.Name="{x:Static res:Strings.SettingsPageHistory}">
+        <StackPanel Spacing="3">
+          <PathIcon Data="{StaticResource HistoryGlyph}" Width="20" Height="20" />
+          <TextBlock Text="{x:Static res:Strings.SettingsPageHistory}" FontSize="{StaticResource CaptionSize}" HorizontalAlignment="Center" />
+        </StackPanel>
+      </ListBoxItem>
+    </ListBox>
+  </Border>
+  <Panel>
+  <ScrollViewer x:Name="AppearanceScroller" IsVisible="False">
+    <settings:AppearancePage x:Name="AppearancePage" Margin="28,22" MaxWidth="560" />
+  </ScrollViewer>
+  <ScrollViewer x:Name="HistoryScroller" IsVisible="False">
+    <settings:HistoryPage x:Name="HistoryPage" Margin="28,22" MaxWidth="560" />
+  </ScrollViewer>
+  <Grid x:Name="ProvidersPage" ColumnDefinitions="230,1,*">
     <!-- Sidebar: the providers, with add and remove at the bottom. -->
     <DockPanel Background="{DynamicResource PaneBrush}">
       <TextBlock DockPanel.Dock="Top" Classes="secondary" FontWeight="SemiBold" Margin="18,16,0,8" Text="{x:Static res:Strings.SettingsProviders}" />
@@ -224,4 +287,6 @@
       </StackPanel>
     </ScrollViewer>
   </Grid>
+  </Panel>
+  </DockPanel>
 </Window>

@@ -144,6 +144,10 @@ public sealed partial class MainWindow : IHistoryAccess
 
     IReadOnlyList<string> IHistoryAccess.Connections() => WithHistory(store => store.Connections(), []);
 
+    IReadOnlyList<ConnectionUsage> IHistoryAccess.Usage() => WithHistory(store => store.Usage(), []);
+
+    string IHistoryAccess.ProjectName => Project.Name;
+
     // The current conversation ends with it, so what comes next starts a new one.
     void IHistoryAccess.Clear(string? connection) => WithHistory(
         store =>

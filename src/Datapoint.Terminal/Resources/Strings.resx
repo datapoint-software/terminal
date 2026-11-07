@@ -1514,4 +1514,130 @@ git rm -r --cached .terminal</value>
   <data name="HistoryShowConversation" xml:space="preserve">
     <value>Show</value>
   </data>
+  <data name="SettingsPageProviders" xml:space="preserve">
+    <value>Providers</value>
+  </data>
+  <data name="SettingsPageAppearance" xml:space="preserve">
+    <value>Appearance</value>
+  </data>
+  <data name="SettingsPageHistory" xml:space="preserve">
+    <value>History</value>
+  </data>
+  <data name="AppearanceThemeHeading" xml:space="preserve">
+    <value>Terminal theme</value>
+  </data>
+  <data name="ThemeDefault" xml:space="preserve">
+    <value>Default</value>
+  </data>
+  <data name="ThemeFollowsSystem" xml:space="preserve">
+    <value>follows the system</value>
+  </data>
+  <data name="ThemeImported" xml:space="preserve">
+    <value>imported</value>
+  </data>
+  <data name="ThemeCustom" xml:space="preserve">
+    <value>custom</value>
+  </data>
+  <data name="ThemeImport" xml:space="preserve">
+    <value>Import…</value>
+  </data>
+  <data name="ThemeEditColors" xml:space="preserve">
+    <value>Edit Colors…</value>
+  </data>
+  <data name="ThemeRemove" xml:space="preserve">
+    <value>Remove Theme</value>
+  </data>
+  <data name="ThemeImportHint" xml:space="preserve">
+    <value>Import reads iTerm2, Windows Terminal, Ghostty and kitty themes. Edit Colors shows the 16 colours, text, background, cursor and selection, with a live preview.</value>
+  </data>
+  <data name="AppearanceFont" xml:space="preserve">
+    <value>Font</value>
+  </data>
+  <data name="AppearanceTextSize" xml:space="preserve">
+    <value>Text size</value>
+  </data>
+  <data name="AppearanceFontDefault" xml:space="preserve">
+    <value>Default</value>
+  </data>
+  <data name="AppearanceTextSizeValue" xml:space="preserve">
+    <value>{0} pt</value>
+  </data>
+  <data name="AppearanceMatchWindow" xml:space="preserve">
+    <value>Match the window to the terminal theme</value>
+  </data>
+  <data name="AppearanceMatchWindowHint" xml:space="preserve">
+    <value>The sidebar, tabs and chat take the theme's background and text colours.</value>
+  </data>
+  <data name="ThemeImportTitle" xml:space="preserve">
+    <value>Import a Theme</value>
+  </data>
+  <data name="ThemeImportFailed" xml:space="preserve">
+    <value>Couldn't import {0}: {1}.</value>
+  </data>
+  <data name="ThemeCardName" xml:space="preserve">
+    <value>{0} theme</value>
+  </data>
+  <data name="ThemeEditorTitle" xml:space="preserve">
+    <value>Edit Colors</value>
+  </data>
+  <data name="ThemeEditorName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="ThemeEditorCopyName" xml:space="preserve">
+    <value>{0} (edited)</value>
+  </data>
+  <data name="ThemeEditorSave" xml:space="preserve">
+    <value>Save Theme</value>
+  </data>
+  <data name="ThemeEditorInvalid" xml:space="preserve">
+    <value>Each colour is six hexadecimal digits, such as #1E1E1E.</value>
+  </data>
+  <data name="ThemeColorText" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="ThemeColorBackground" xml:space="preserve">
+    <value>Background</value>
+  </data>
+  <data name="ThemeColorCursor" xml:space="preserve">
+    <value>Cursor</value>
+  </data>
+  <data name="ThemeColorSelection" xml:space="preserve">
+    <value>Selection</value>
+  </data>
+  <data name="ThemeColorNames" xml:space="preserve">
+    <value>Black,Red,Green,Yellow,Blue,Magenta,Cyan,White,Bright black,Bright red,Bright green,Bright yellow,Bright blue,Bright magenta,Bright cyan,Bright white</value>
+  </data>
+  <data name="HistoryKeepFor" xml:space="preserve">
+    <value>Keep history for</value>
+  </data>
+  <data name="HistoryKeepHint" xml:space="preserve">
+    <value>Conversations and terminal output, kept in each project's .terminal folder. Older history is deleted when the project opens.</value>
+  </data>
+  <data name="HistoryInProject" xml:space="preserve">
+    <value>In {0}</value>
+  </data>
+  <data name="HistoryUsage" xml:space="preserve">
+    <value>{0} conversations · {1}</value>
+  </data>
+  <data name="HistoryClearRow" xml:space="preserve">
+    <value>Clear…</value>
+  </data>
+  <data name="HistoryClearRowName" xml:space="preserve">
+    <value>Clear the history of {0}</value>
+  </data>
+  <data name="HistoryClearHint" xml:space="preserve">
+    <value>Clearing deletes a connection's conversations, recordings and saved output. It can't be undone.</value>
+  </data>
+  <data name="HistoryNoProject" xml:space="preserve">
+    <value>Open a project to see and clear its history here.</value>
+  </data>
+  <data name="HistoryNothingKept" xml:space="preserve">
+    <value>Nothing is kept for this project's connections yet.</value>
+  </data>
+  <data name="HistoryClearOneTitle" xml:space="preserve">
+    <value>Clear the history of {0}?</value>
+  </data>
+  <data name="HistoryClearOneMessage" xml:space="preserve">
+    <value>This deletes the commands the agent ran on {0}, their output, and its saved terminal output. It can't be undone.</value>
+  </data>
 </root>

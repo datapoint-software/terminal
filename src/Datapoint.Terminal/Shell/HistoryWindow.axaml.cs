@@ -11,7 +11,7 @@ namespace Datapoint.Terminal.Shell;
 // Product decision 52: earlier conversations, read-only, with search, the retention setting and clearing.
 public sealed partial class HistoryWindow : Window
 {
-    private static readonly int?[] s_retention = [null, 30, 90, 365];
+    internal static readonly int?[] s_retention = [null, 30, 90, 365];
 
     private readonly IHistoryAccess _access;
     private readonly DispatcherTimer _searchDelay = new() { Interval = TimeSpan.FromMilliseconds(300) };
@@ -44,7 +44,7 @@ public sealed partial class HistoryWindow : Window
         _isLoading = false;
     }
 
-    private static string RetentionLabel(int? days) => days switch
+    internal static string RetentionLabel(int? days) => days switch
     {
         null => Strings.HistoryKeepForever,
         365 => Strings.HistoryKeepYear,

@@ -1,0 +1,103 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:settings="clr-namespace:Datapoint.Terminal.Settings"
+             xmlns:res="clr-namespace:Datapoint.Terminal.Resources"
+             x:Class="Datapoint.Terminal.Settings.AppearancePage"
+             x:DataType="settings:AppearanceViewModel">
+  <UserControl.Styles>
+    <Style Selector="ListBox.themes ListBoxItem">
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Margin" Value="0,0,10,10" />
+      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="BorderThickness" Value="2" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+      <Setter Property="Width" Value="166" />
+    </Style>
+    <Style Selector="ListBox.themes ListBoxItem /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="CornerRadius" Value="10" />
+    </Style>
+    <Style Selector="ListBox.themes ListBoxItem:selected">
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+    </Style>
+    <Style Selector="ListBox.themes ListBoxItem:focus-visible">
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentTextBrush}" />
+    </Style>
+    <Style Selector="TextBlock.preview">
+      <Setter Property="FontFamily" Value="{DynamicResource MonoFont}" />
+      <Setter Property="FontSize" Value="11" />
+    </Style>
+  </UserControl.Styles>
+
+  <StackPanel>
+    <TextBlock Classes="heading" Text="{x:Static res:Strings.AppearanceThemeHeading}" />
+    <ListBox x:Name="ThemeList" Classes="themes" Background="Transparent" ItemsSource="{Binding Themes}" SelectedItem="{Binding SelectedTheme}"
+             AutomationProperties.Name="{x:Static res:Strings.AppearanceThemeHeading}">
+      <ListBox.ItemsPanel>
+        <ItemsPanelTemplate>
+          <WrapPanel />
+        </ItemsPanelTemplate>
+      </ListBox.ItemsPanel>
+      <ListBox.ItemTemplate>
+        <DataTemplate x:DataType="settings:ThemeCard">
+          <Border CornerRadius="8" ClipToBounds="True" Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0.5"
+                  AutomationProperties.Name="{Binding AccessibleName}">
+            <Border.ContextMenu>
+              <ContextMenu IsVisible="{Binding IsCustom}">
+                <MenuItem Header="{x:Static res:Strings.ThemeRemove}" Click="OnRemoveClicked" />
+              </ContextMenu>
+            </Border.ContextMenu>
+            <StackPanel>
+              <Border Background="{Binding Background}" Padding="10,8" Height="56">
+                <StackPanel>
+                  <StackPanel Orientation="Horizontal">
+                    <TextBlock Classes="preview" Text="~/app" Foreground="{Binding Prompt}" />
+                    <TextBlock Classes="preview" Text=" $ ls" Foreground="{Binding Foreground}" />
+                  </StackPanel>
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Classes="preview" Text="src" Foreground="{Binding Folder}" />
+                    <TextBlock Classes="preview" Text="deploy.sh" Foreground="{Binding File}" />
+                    <TextBlock Classes="preview" Text="README" Foreground="{Binding Foreground}" />
+                  </StackPanel>
+                </StackPanel>
+              </Border>
+              <StackPanel Orientation="Horizontal" Spacing="6" Margin="10,6">
+                <TextBlock Text="{Binding Name}" FontSize="12" TextTrimming="CharacterEllipsis" MaxWidth="120" />
+                <TextBlock Text="{Binding Note}" Classes="secondary" IsVisible="{Binding HasNote}" VerticalAlignment="Center" />
+              </StackPanel>
+            </StackPanel>
+          </Border>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+    <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,2,0,0">
+      <Button x:Name="ImportButton" Content="{x:Static res:Strings.ThemeImport}" />
+      <Button x:Name="EditButton" Content="{x:Static res:Strings.ThemeEditColors}" />
+    </StackPanel>
+    <TextBlock Classes="secondary" Text="{x:Static res:Strings.ThemeImportHint}" Margin="4,6,4,0" />
+    <TextBlock x:Name="ImportStatus" Classes="secondary danger" Margin="4,4,4,0" IsVisible="False" AutomationProperties.LiveSetting="Polite" />
+
+    <Border Classes="group" Margin="0,18,0,18">
+      <StackPanel>
+        <Grid Classes="row" ColumnDefinitions="*,Auto">
+          <TextBlock Text="{x:Static res:Strings.AppearanceFont}" />
+          <ComboBox Grid.Column="1" MinWidth="180" ItemsSource="{Binding Fonts}" SelectedItem="{Binding SelectedFont}"
+                    AutomationProperties.Name="{x:Static res:Strings.AppearanceFont}" />
+        </Grid>
+        <Rectangle Classes="hairline" />
+        <Grid Classes="row" ColumnDefinitions="*,Auto">
+          <TextBlock Text="{x:Static res:Strings.AppearanceTextSize}" />
+          <ComboBox Grid.Column="1" MinWidth="180" ItemsSource="{Binding Sizes}" SelectedIndex="{Binding SelectedSize}"
+                    AutomationProperties.Name="{x:Static res:Strings.AppearanceTextSize}" />
+        </Grid>
+        <Rectangle Classes="hairline" />
+        <Grid Classes="row" ColumnDefinitions="*,Auto">
+          <TextBlock Text="{x:Static res:Strings.AppearanceMatchWindow}" TextWrapping="Wrap" />
+          <ToggleSwitch Grid.Column="1" IsChecked="{Binding MatchWindow}" OnContent="{x:Null}" OffContent="{x:Null}"
+                        AutomationProperties.Name="{x:Static res:Strings.AppearanceMatchWindow}" />
+        </Grid>
+      </StackPanel>
+    </Border>
+    <TextBlock Classes="secondary" Text="{x:Static res:Strings.AppearanceMatchWindowHint}" Margin="4,-12,4,0" />
+  </StackPanel>
+</UserControl>

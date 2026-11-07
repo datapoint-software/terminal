@@ -14,6 +14,8 @@ public sealed partial class MainWindow
 
     private void ApplyAppearance()
     {
+        var followsSystem = _settings.CustomThemeId is null && _settings.TerminalTheme == TerminalTheme.System;
+        Themes.WindowColors.Apply(_settings.MatchWindowToTheme ? ActiveTheme : null, followsSystem);
         foreach (var tab in _tabs)
         {
             ApplyAppearance(tab);
@@ -21,23 +23,30 @@ public sealed partial class MainWindow
 
         foreach (var (theme, item) in _themeItems)
         {
-            item.IsChecked = theme == _settings.TerminalTheme;
+            item.IsChecked = _settings.CustomThemeId is null && theme == _settings.TerminalTheme;
         }
     }
+
+    // Read from the system, not the window, since matching the window to the theme changes the window's own variant.
+    private Themes.ColorTheme ActiveTheme => _settings.ActiveTheme(Themes.WindowColors.IsSystemDark);
 
     private void ApplyAppearance(TerminalTab tab) => ApplyAppearance(tab.View, tab.Connection?.Terminal);
 
     // Also for the recordings player, so a recording looks like the terminal it came from.
     private void ApplyAppearance(Controls.TerminalView view, Emulator.Terminal? terminal)
     {
-        var isDark = TerminalThemes.IsDark(_settings.TerminalTheme, ActualThemeVariant == ThemeVariant.Dark);
+        var theme = ActiveTheme;
         if (terminal is not null)
         {
             lock (terminal.SyncRoot)
             {
-                TerminalThemes.Apply(terminal.Palette, isDark);
+                TerminalThemes.Apply(terminal.Palette, theme);
             }
         }
+
+        view.SelectionBrush = theme.Selection is { } selection
+            ? new SolidColorBrush(Color.FromArgb(0xAA, (byte)(selection >> 16), (byte)(selection >> 8), (byte)selection))
+            : new SolidColorBrush(Color.FromArgb(0x66, 0x3A, 0x8D, 0xFF));
 
         view.FontSize = _settings.TerminalFontSize;
         if (_settings.TerminalFont is { } font)
@@ -63,7 +72,7 @@ public sealed partial class MainWindow
         var themes = new NativeMenu();
         foreach (var (theme, label) in new[] { (TerminalTheme.System, Strings.MenuThemeSystem), (TerminalTheme.Dark, Strings.MenuThemeDark), (TerminalTheme.Light, Strings.MenuThemeLight) })
         {
-            var item = Item(label, null, () => SetAppearance(theme: theme));
+            var item = Item(label, null, () => _settings.UseTheme(theme));
             item.ToggleType = MenuItemToggleType.Radio;
             item.IsChecked = theme == _settings.TerminalTheme;
             _themeItems[theme] = item;

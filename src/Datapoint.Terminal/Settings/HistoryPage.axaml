@@ -1,0 +1,20 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:res="clr-namespace:Datapoint.Terminal.Resources"
+             x:Class="Datapoint.Terminal.Settings.HistoryPage">
+  <StackPanel>
+    <Border Classes="group">
+      <Grid Classes="row" ColumnDefinitions="*,Auto">
+        <TextBlock Text="{x:Static res:Strings.HistoryKeepFor}" />
+        <ComboBox x:Name="RetentionBox" Grid.Column="1" MinWidth="150" AutomationProperties.Name="{x:Static res:Strings.HistoryKeepFor}" />
+      </Grid>
+    </Border>
+    <TextBlock Classes="secondary" Text="{x:Static res:Strings.HistoryKeepHint}" Margin="4,-12,4,18" />
+    <TextBlock x:Name="ProjectHeading" Classes="heading" />
+    <Border x:Name="ConnectionsGroup" Classes="group">
+      <StackPanel x:Name="Connections" />
+    </Border>
+    <TextBlock x:Name="ClearHint" Classes="secondary" Text="{x:Static res:Strings.HistoryClearHint}" Margin="4,-12,4,0" />
+    <TextBlock x:Name="Status" Classes="secondary" Margin="4,8,4,0" AutomationProperties.LiveSetting="Polite" />
+  </StackPanel>
+</UserControl>

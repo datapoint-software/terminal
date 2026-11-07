@@ -1006,6 +1006,90 @@ public static class Strings
 
     public static string HistoryShowConversation => Get(nameof(HistoryShowConversation));
 
+    public static string SettingsPageProviders => Get(nameof(SettingsPageProviders));
+
+    public static string SettingsPageAppearance => Get(nameof(SettingsPageAppearance));
+
+    public static string SettingsPageHistory => Get(nameof(SettingsPageHistory));
+
+    public static string AppearanceThemeHeading => Get(nameof(AppearanceThemeHeading));
+
+    public static string ThemeDefault => Get(nameof(ThemeDefault));
+
+    public static string ThemeFollowsSystem => Get(nameof(ThemeFollowsSystem));
+
+    public static string ThemeImported => Get(nameof(ThemeImported));
+
+    public static string ThemeCustom => Get(nameof(ThemeCustom));
+
+    public static string ThemeImport => Get(nameof(ThemeImport));
+
+    public static string ThemeEditColors => Get(nameof(ThemeEditColors));
+
+    public static string ThemeRemove => Get(nameof(ThemeRemove));
+
+    public static string ThemeImportHint => Get(nameof(ThemeImportHint));
+
+    public static string AppearanceFont => Get(nameof(AppearanceFont));
+
+    public static string AppearanceTextSize => Get(nameof(AppearanceTextSize));
+
+    public static string AppearanceFontDefault => Get(nameof(AppearanceFontDefault));
+
+    public static string AppearanceTextSizeValue => Get(nameof(AppearanceTextSizeValue));
+
+    public static string AppearanceMatchWindow => Get(nameof(AppearanceMatchWindow));
+
+    public static string AppearanceMatchWindowHint => Get(nameof(AppearanceMatchWindowHint));
+
+    public static string ThemeImportTitle => Get(nameof(ThemeImportTitle));
+
+    public static string ThemeImportFailed => Get(nameof(ThemeImportFailed));
+
+    public static string ThemeCardName => Get(nameof(ThemeCardName));
+
+    public static string ThemeEditorTitle => Get(nameof(ThemeEditorTitle));
+
+    public static string ThemeEditorName => Get(nameof(ThemeEditorName));
+
+    public static string ThemeEditorCopyName => Get(nameof(ThemeEditorCopyName));
+
+    public static string ThemeEditorSave => Get(nameof(ThemeEditorSave));
+
+    public static string ThemeEditorInvalid => Get(nameof(ThemeEditorInvalid));
+
+    public static string ThemeColorText => Get(nameof(ThemeColorText));
+
+    public static string ThemeColorBackground => Get(nameof(ThemeColorBackground));
+
+    public static string ThemeColorCursor => Get(nameof(ThemeColorCursor));
+
+    public static string ThemeColorSelection => Get(nameof(ThemeColorSelection));
+
+    public static string ThemeColorNames => Get(nameof(ThemeColorNames));
+
+    public static string HistoryKeepFor => Get(nameof(HistoryKeepFor));
+
+    public static string HistoryKeepHint => Get(nameof(HistoryKeepHint));
+
+    public static string HistoryInProject => Get(nameof(HistoryInProject));
+
+    public static string HistoryUsage => Get(nameof(HistoryUsage));
+
+    public static string HistoryClearRow => Get(nameof(HistoryClearRow));
+
+    public static string HistoryClearRowName => Get(nameof(HistoryClearRowName));
+
+    public static string HistoryClearHint => Get(nameof(HistoryClearHint));
+
+    public static string HistoryNoProject => Get(nameof(HistoryNoProject));
+
+    public static string HistoryNothingKept => Get(nameof(HistoryNothingKept));
+
+    public static string HistoryClearOneTitle => Get(nameof(HistoryClearOneTitle));
+
+    public static string HistoryClearOneMessage => Get(nameof(HistoryClearOneMessage));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

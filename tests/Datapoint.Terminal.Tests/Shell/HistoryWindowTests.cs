@@ -37,32 +37,4 @@ public sealed class HistoryWindowTests
 
         Assert.Equal("No conversations yet. Conversations with the agent in this project are kept here.", window.FindControl<TextBlock>("Status")!.Text);
     }
-
-    private sealed class FakeHistory : IHistoryAccess
-    {
-        public bool IsEmpty { get; init; }
-
-        public int? RetentionDays { get; private set; } = 90;
-
-        public IReadOnlyList<ConversationSummary> Conversations() => IsEmpty
-            ? []
-            : [new ConversationSummary(2, s_time, "Why is web1 slow since this morning?", 3), new ConversationSummary(1, s_time.AddDays(-1), "Renew the certificate on web1", 8)];
-
-        public IReadOnlyList<HistoryEntry> Conversation(long id) =>
-        [
-            new HistoryEntry(id, s_time, HistoryEntryKind.User, "Why is web1 slow since this morning?"),
-            new HistoryEntry(id, s_time.AddSeconds(5), HistoryEntryKind.Command, "uptime", "web1", " 09:30:05 up 12 days, load average: 7.90, 6.12, 4.01", 0, "web1"),
-            new HistoryEntry(id, s_time.AddSeconds(9), HistoryEntryKind.Agent, "The load average is high. Something started using the CPU around 8:00."),
-        ];
-
-        public IReadOnlyList<HistoryEntry> Search(string words) => [];
-
-        public IReadOnlyList<string> Connections() => ["web1"];
-
-        public void Clear(string? connection)
-        {
-        }
-
-        public void SetRetentionDays(int? days) => RetentionDays = days;
-    }
 }

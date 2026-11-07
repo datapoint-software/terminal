@@ -192,6 +192,31 @@ public sealed class HistoryStore : IDisposable
         }
     }
 
+    // How much is kept for each connection: the conversations that ran commands on it, and the characters stored for it.
+    public IReadOnlyList<ConnectionUsage> Usage()
+    {
+        lock (_lock)
+        {
+            using var command = Command(
+                """
+                SELECT connection, sum(conversations), sum(characters) FROM (
+                    SELECT connection, count(DISTINCT conversation) AS conversations, sum(length(text) + coalesce(length(detail), 0)) AS characters
+                    FROM entries WHERE connection IS NOT NULL GROUP BY connection
+                    UNION ALL
+                    SELECT connection, 0, sum(length(text)) FROM scrollback GROUP BY connection)
+                GROUP BY connection ORDER BY connection COLLATE NOCASE
+                """);
+            var usage = new List<ConnectionUsage>();
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                usage.Add(new ConnectionUsage(reader.GetString(0), reader.GetInt32(1), reader.GetInt64(2)));
+            }
+
+            return usage;
+        }
+    }
+
     public IReadOnlyList<string> Connections()
     {
         lock (_lock)
