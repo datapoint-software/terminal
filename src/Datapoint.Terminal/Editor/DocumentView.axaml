@@ -142,7 +142,7 @@
         <StackPanel x:Name="Page" MaxWidth="680" Margin="40,32,40,0">
           <!-- A host's documentation starts with the host: where it is and whether a terminal is open on it. -->
           <DockPanel IsVisible="{Binding HasHost}" Margin="0,0,0,20">
-            <Button DockPanel.Dock="Right" Classes="plain" Content="{x:Static res:Strings.DocumentOpenTerminal}" Command="{Binding Host.OpenTerminalCommand, FallbackValue={x:Null}}" VerticalAlignment="Center" />
+            <Button DockPanel.Dock="Right" Classes="primary" Content="{x:Static res:Strings.DocumentOpenTerminal}" Command="{Binding Host.OpenTerminalCommand, FallbackValue={x:Null}}" VerticalAlignment="Center" />
             <WrapPanel ItemSpacing="8" LineSpacing="6" VerticalAlignment="Center">
               <Border IsVisible="{Binding Host.HasEnvironment, FallbackValue=False}" Classes="environment" Classes.production="{Binding Host.IsProduction, FallbackValue=False}"
                       CornerRadius="4" Padding="6,1" VerticalAlignment="Center">
