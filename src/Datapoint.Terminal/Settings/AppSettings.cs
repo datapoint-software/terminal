@@ -35,6 +35,9 @@ public sealed record AppSettings
     // SHA-256 fingerprints of values the user marked as not secret, never the values themselves.
     public IReadOnlyList<string> NotSecrets { get; init => field = value ?? []; } = [];
 
+    // How long conversation history is kept, in days; null keeps it forever (product decision 52).
+    public int? HistoryDays { get; init; }
+
     [JsonIgnore]
     public ProviderAccount? SelectedProvider =>
         Providers.FirstOrDefault(provider => string.Equals(provider.Id, SelectedProviderId, StringComparison.Ordinal)) ?? (Providers.Count > 0 ? Providers[0] : null);

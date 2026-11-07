@@ -40,6 +40,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         ConfirmedConnections = settings.ConfirmedConnections;
         WarnedSyncFolders = settings.WarnedSyncFolders;
         NotSecrets = settings.NotSecrets;
+        HistoryDays = settings.HistoryDays;
         SelectedProviderId = settings.SelectedProvider?.Id;
         foreach (var account in settings.Providers)
         {
@@ -70,6 +71,8 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     public IReadOnlyList<string> NotSecrets { get; private set; }
 
+    public int? HistoryDays { get; private set; }
+
     public IReadOnlyList<KindOption> Kinds { get; }
 
     public ObservableCollection<ProviderViewModel> Providers { get; } = [];
@@ -99,6 +102,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         ConfirmedConnections = ConfirmedConnections,
         WarnedSyncFolders = WarnedSyncFolders,
         NotSecrets = NotSecrets,
+        HistoryDays = HistoryDays,
     };
 
     public IReadOnlyList<ProjectConnection>? ConfirmedFor(string folder) =>
@@ -133,6 +137,12 @@ public sealed partial class SettingsViewModel : ObservableObject
     public void MarkNotSecret(IEnumerable<string> values)
     {
         NotSecrets = [.. NotSecrets.Union(values.Select(SecretRedactor.Fingerprint), StringComparer.Ordinal)];
+        SaveProjectData();
+    }
+
+    public void SetHistoryDays(int? days)
+    {
+        HistoryDays = days;
         SaveProjectData();
     }
 

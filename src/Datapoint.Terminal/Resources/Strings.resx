@@ -701,4 +701,85 @@ git rm -r --cached .terminal</value>
   <data name="HostDocsOpen" xml:space="preserve">
     <value>Open documentation</value>
   </data>
+  <data name="HistoryTitle" xml:space="preserve">
+    <value>History</value>
+  </data>
+  <data name="HistorySearch" xml:space="preserve">
+    <value>Search conversations and commands</value>
+  </data>
+  <data name="HistoryKeep" xml:space="preserve">
+    <value>Keep history:</value>
+  </data>
+  <data name="HistoryKeepForever" xml:space="preserve">
+    <value>Forever</value>
+  </data>
+  <data name="HistoryKeepYear" xml:space="preserve">
+    <value>For a year</value>
+  </data>
+  <data name="HistoryKeepDays" xml:space="preserve">
+    <value>For {0} days</value>
+  </data>
+  <data name="HistoryClear" xml:space="preserve">
+    <value>Clear History…</value>
+  </data>
+  <data name="HistoryList" xml:space="preserve">
+    <value>Conversations</value>
+  </data>
+  <data name="HistoryEntries" xml:space="preserve">
+    <value>{0} entries</value>
+  </data>
+  <data name="HistoryEmpty" xml:space="preserve">
+    <value>No conversations yet. Conversations with the agent in this project are kept here.</value>
+  </data>
+  <data name="HistoryNoMatches" xml:space="preserve">
+    <value>Nothing matches. Every word must appear.</value>
+  </data>
+  <data name="HistoryYou" xml:space="preserve">
+    <value>You</value>
+  </data>
+  <data name="HistoryAgent" xml:space="preserve">
+    <value>Agent</value>
+  </data>
+  <data name="HistoryCommand" xml:space="preserve">
+    <value>Command in {0}</value>
+  </data>
+  <data name="HistoryCommandExit" xml:space="preserve">
+    <value>Command in {0}, exit code {1}</value>
+  </data>
+  <data name="HistoryNotice" xml:space="preserve">
+    <value>Notice</value>
+  </data>
+  <data name="HistoryShortenTitle" xml:space="preserve">
+    <value>Delete older history?</value>
+  </data>
+  <data name="HistoryShortenMessage" xml:space="preserve">
+    <value>Keeping history {0} deletes everything older right away, and from now on as it ages. This can't be undone.</value>
+  </data>
+  <data name="HistoryShortenConfirm" xml:space="preserve">
+    <value>Delete Older History</value>
+  </data>
+  <data name="HistoryClearTitle" xml:space="preserve">
+    <value>Clear history?</value>
+  </data>
+  <data name="HistoryClearMessage" xml:space="preserve">
+    <value>Clearing a connection deletes the commands the agent ran there and their output; the rest of each conversation stays. Clearing everything deletes all of this project's history. This can't be undone.</value>
+  </data>
+  <data name="HistoryClearConnection" xml:space="preserve">
+    <value>Clear {0}</value>
+  </data>
+  <data name="HistoryClearAll" xml:space="preserve">
+    <value>Clear Everything</value>
+  </data>
+  <data name="HistoryClearedAll" xml:space="preserve">
+    <value>All history was cleared.</value>
+  </data>
+  <data name="HistoryClearedConnection" xml:space="preserve">
+    <value>History for {0} was cleared.</value>
+  </data>
+  <data name="HistoryProblem" xml:space="preserve">
+    <value>The history couldn't be read or changed: {0}</value>
+  </data>
+  <data name="MenuShowHistory" xml:space="preserve">
+    <value>Show History</value>
+  </data>
 </root>

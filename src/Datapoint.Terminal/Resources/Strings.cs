@@ -464,6 +464,60 @@ public static class Strings
 
     public static string HostDocsOpen => Get(nameof(HostDocsOpen));
 
+    public static string HistoryTitle => Get(nameof(HistoryTitle));
+
+    public static string HistorySearch => Get(nameof(HistorySearch));
+
+    public static string HistoryKeep => Get(nameof(HistoryKeep));
+
+    public static string HistoryKeepForever => Get(nameof(HistoryKeepForever));
+
+    public static string HistoryKeepYear => Get(nameof(HistoryKeepYear));
+
+    public static string HistoryKeepDays => Get(nameof(HistoryKeepDays));
+
+    public static string HistoryClear => Get(nameof(HistoryClear));
+
+    public static string HistoryList => Get(nameof(HistoryList));
+
+    public static string HistoryEntries => Get(nameof(HistoryEntries));
+
+    public static string HistoryEmpty => Get(nameof(HistoryEmpty));
+
+    public static string HistoryNoMatches => Get(nameof(HistoryNoMatches));
+
+    public static string HistoryYou => Get(nameof(HistoryYou));
+
+    public static string HistoryAgent => Get(nameof(HistoryAgent));
+
+    public static string HistoryCommand => Get(nameof(HistoryCommand));
+
+    public static string HistoryCommandExit => Get(nameof(HistoryCommandExit));
+
+    public static string HistoryNotice => Get(nameof(HistoryNotice));
+
+    public static string HistoryShortenTitle => Get(nameof(HistoryShortenTitle));
+
+    public static string HistoryShortenMessage => Get(nameof(HistoryShortenMessage));
+
+    public static string HistoryShortenConfirm => Get(nameof(HistoryShortenConfirm));
+
+    public static string HistoryClearTitle => Get(nameof(HistoryClearTitle));
+
+    public static string HistoryClearMessage => Get(nameof(HistoryClearMessage));
+
+    public static string HistoryClearConnection => Get(nameof(HistoryClearConnection));
+
+    public static string HistoryClearAll => Get(nameof(HistoryClearAll));
+
+    public static string HistoryClearedAll => Get(nameof(HistoryClearedAll));
+
+    public static string HistoryClearedConnection => Get(nameof(HistoryClearedConnection));
+
+    public static string HistoryProblem => Get(nameof(HistoryProblem));
+
+    public static string MenuShowHistory => Get(nameof(MenuShowHistory));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

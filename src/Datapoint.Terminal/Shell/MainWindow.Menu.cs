@@ -30,6 +30,9 @@ public sealed partial class MainWindow
             file.Add(Item(Strings.MenuProjectTrust, null, () => _ = ReviewTrustAsync(always: true)));
         }
 
+        var history = Item(Strings.MenuShowHistory, Shortcut(Key.Y), ShowHistory);
+        history.IsEnabled = !Project.IsReadOnly;
+        file.Add(history);
         AddMemoryItems(file);
         file.Add(new NativeMenuItemSeparator());
         if (!IsMac)
