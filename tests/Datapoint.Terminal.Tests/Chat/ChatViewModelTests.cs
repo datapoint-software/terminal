@@ -31,6 +31,8 @@ public sealed class ChatViewModelTests
         agent.AddTerminal(new AgentTerminal("Local", new InstantTerminal(), ApprovalMode.Ask));
         chat.Attach(agent, "privacy notice");
         chat.Draft = "How much disk is left?";
+        var sent = new List<string>();
+        chat.MessageSent = sent.Add;
 
         chat.SendCommand.Execute(null);
         await WaitUntilAsync(() => chat.Approval is not null);
@@ -43,6 +45,7 @@ public sealed class ChatViewModelTests
         Assert.Equal("df -h", chat.Items[2].Text);
         Assert.Equal("Local · Check the disk · Exit code 0", chat.Items[2].Detail);
         Assert.Equal("Plenty of space.", chat.Items[3].Text);
+        Assert.Equal(["How much disk is left?"], sent, StringComparer.Ordinal);
         Assert.Null(chat.Approval);
         Assert.Equal(string.Empty, chat.Draft);
     }

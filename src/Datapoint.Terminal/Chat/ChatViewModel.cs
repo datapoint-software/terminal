@@ -74,6 +74,11 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
 
     public Action? SettingsRequested { get; set; }
 
+    // For the project's history: each message the user sends, and the conversation being cleared.
+    public Action<string>? MessageSent { get; set; }
+
+    public Action? Cleared { get; set; }
+
     public bool IsWorking => Status is AgentStatus.Thinking or AgentStatus.RunningCommand;
 
     public bool NeedsUser => Status is AgentStatus.WaitingForApproval or AgentStatus.WaitingForUser;
@@ -212,6 +217,7 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
         Draft = string.Empty;
         Items.Add(new ChatItemViewModel(ChatItemKind.User, message));
         Status = AgentStatus.Thinking;
+        MessageSent?.Invoke(message);
         _ = _agent!.SendAsync(message);
     }
 
@@ -230,6 +236,7 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
     {
         _agent!.ClearConversation();
         Items.Clear();
+        Cleared?.Invoke();
     }
 
     private bool CanSend() => HasAgent && !IsBusy && !string.IsNullOrWhiteSpace(Draft);

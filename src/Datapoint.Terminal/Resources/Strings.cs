@@ -422,6 +422,8 @@ public static class Strings
 
     public static string NoticeFilesSkipped => Get(nameof(NoticeFilesSkipped));
 
+    public static string NoticeHistoryUnavailable => Get(nameof(NoticeHistoryUnavailable));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

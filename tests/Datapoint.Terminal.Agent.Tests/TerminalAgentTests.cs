@@ -53,6 +53,7 @@ public sealed class TerminalAgentTests
         Assert.Contains("Exit code: 0", seen, StringComparison.Ordinal);
         Assert.Contains("<terminal_output>\nran uptime\n</terminal_output>", seen, StringComparison.Ordinal);
         Assert.Contains(_events, e => e.Kind == AgentEventKind.Reply && string.Equals(e.Text, "Up 3 days.", StringComparison.Ordinal));
+        Assert.Contains(_events, e => e.Kind == AgentEventKind.CommandFinished && string.Equals(e.Output, "ran uptime", StringComparison.Ordinal) && e.ExitCode == 0);
         Assert.Equal(AgentStatus.Idle, agent.Status);
     }
 

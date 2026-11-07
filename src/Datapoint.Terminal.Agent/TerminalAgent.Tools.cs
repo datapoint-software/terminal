@@ -261,7 +261,7 @@ public sealed partial class TerminalAgent
             terminal.RunningCommandLine = null;
         }
 
-        Raise(new AgentEventArgs(AgentEventKind.CommandFinished, isFinished ? "Finished" : "Still running") { Command = command, ExitCode = exitCode, Terminal = terminal.Name });
+        Raise(new AgentEventArgs(AgentEventKind.CommandFinished, isFinished ? "Finished" : "Still running") { Command = command, ExitCode = exitCode, Terminal = terminal.Name, Output = output });
         SetStatus(AgentStatus.Thinking);
         var status = (isFinished, exitCode) switch
         {

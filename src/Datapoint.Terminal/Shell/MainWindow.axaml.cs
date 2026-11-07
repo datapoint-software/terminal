@@ -3,6 +3,7 @@ using Avalonia.Input;
 using Avalonia.Threading;
 using Datapoint.Terminal.Agent;
 using Datapoint.Terminal.Agent.Projects;
+using Datapoint.Terminal.Agent.Projects.History;
 using Datapoint.Terminal.Agent.Providers;
 using Datapoint.Terminal.Agent.Safety;
 using Datapoint.Terminal.Chat;
@@ -36,6 +37,8 @@ public sealed partial class MainWindow : Window
         _settings.Changed += OnSettingsChanged;
         _settings.ProjectsChanged += OnProjectsChanged;
         _chat.SettingsRequested = windows.OpenSettings;
+        _chat.MessageSent = message => Record(HistoryEntryKind.User, message);
+        _chat.Cleared = EndConversation;
         _chat.ModelChosen = choice => _settings.Choose(choice.ProviderId, choice.Model);
         Chat.DataContext = _chat;
         _chat.PropertyChanged += OnChatPropertyChanged;
@@ -139,6 +142,7 @@ public sealed partial class MainWindow : Window
             {
                 _agent = new TerminalAgent(client, _chat, _redactor) { InstructionsSource = LoadInstructionsAsync };
                 _agent.EventRaised += OnAgentEvent;
+                _agent.EventRaised += OnHistoryEvent;
                 foreach (var tab in _tabs.Where(tab => tab.AgentTerminal is not null))
                 {
                     _agent.AddTerminal(tab.AgentTerminal!);
@@ -205,6 +209,7 @@ public sealed partial class MainWindow : Window
         _settings.ProjectsChanged -= OnProjectsChanged;
         _agent?.Dispose();
         _chat.Dispose();
+        CloseHistory();
         foreach (var tab in _tabs.ToList())
         {
             await DisposeTabAsync(tab).ConfigureAwait(true);

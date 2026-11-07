@@ -638,4 +638,7 @@ git rm -r --cached .terminal</value>
   <data name="NoticeFilesSkipped" xml:space="preserve">
     <value>Not sent to the AI provider, as you chose: {0}</value>
   </data>
+  <data name="NoticeHistoryUnavailable" xml:space="preserve">
+    <value>This conversation isn't being kept in the project's history, which couldn't be written: {0}</value>
+  </data>
 </root>
