@@ -15,7 +15,7 @@ A terminal you can delegate to without losing sight of it. You describe what you
   ```
   my-project/
     TERMINAL.md          the user's instructions (optional; AGENTS.md also works)
-    .terminalignore      files the application never reads or sends (optional, in any folder)
+    .terminalignore      files never sent to the AI provider (optional, in any folder)
     .terminal.json       shared settings: connections, environment labels, default approval modes and models
     hosts/web-1.md       documentation, one file per connection
     runbooks/            saved procedures
@@ -151,6 +151,8 @@ Decisions in the order they were taken, with the reason. Newest last. A decision
 | 95 | 2026-11-07 | `.terminalignore` lists files the application never reads or sends, such as instruction files. In the terminal, the agent is told which files are listed and not to read them, and a command that names one asks first in every mode, Auto included; what a command prints is protected only by secret detection. Refines 92. | Terminal output can't be traced reliably to a file, so "never sent" could only be promised for what the application reads itself; the user is told plainly where the guarantee ends, and approval keeps them in control of the rest. |
 | 96 | 2026-11-07 | Questions are one list of choices, picked by click or number key, with "Something else…" for an answer in the user's own words; answered questions stay in the conversation. | One action per answer, keyboard-friendly, and the record shows what was decided and why. |
 | 97 | 2026-11-07 | A message sent while the agent waits on any card cancels that card and becomes the new goal, in the same conversation. | The user can change course without answering first or stopping the agent, and nothing they didn't approve runs. |
+| 98 | 2026-11-07 | A sidebar lists the project's hosts and files; Markdown opens in a native rich editor that keeps the file's Markdown exactly, without a toolbar. The agent's sections aren't set apart in it. Editing files on servers comes later. | Host documentation is where users keep their own notes about each machine, so it should be one click from the host and pleasant to write in; a native editor avoids a browser engine, and exact round-trips keep the agent's markers and the user's formatting intact. |
+| 99 | 2026-11-07 | The application may show and open files listed in `.terminalignore` for the user to read and edit, but never sends them to the provider. Refines 95. | Hiding the user's own files from the user protects nothing; the promise that matters is that they don't reach the provider. |
 
 ## Features
 
@@ -160,6 +162,13 @@ Features agreed while brainstorming, beyond the core concepts above. All of them
 
 - Split panes, scrollback search, themes, fonts and the keyboard shortcuts users expect from their current terminal.
 - Desktop notifications when the agent finishes a long task or is waiting for the user.
+
+### Project files and hosts
+
+- **Sidebar:** a sidebar on the left of the project window lists the project's hosts, then its files. Hosts are the project's connections; hosts from the user's SSH configuration that aren't in the project fold into one line, each with Add. Files are the project folder as a tree, with `.terminal/` hidden and every other file shown, dotfiles included, quieter. Selecting a host, or its file in `hosts/`, opens its documentation.
+- **Host documentation editor:** Markdown files open in a rich editor, edited as the rendered document, so the user can add their own notes about each host. Formatting comes from Markdown typed as you go, the usual shortcuts, a menu on the selected text and a Format menu in the menu bar; there's no toolbar. A host's document shows its environment, address and open terminals above it, with Open terminal. The editor keeps the file's Markdown exactly as written, including the hidden markers around the agent's sections; those sections look like the rest of the document, and edits in them may be replaced at the agent's next update. Changes save as you type. When the agent updates an open document, it reloads if the user has no unsaved changes; otherwise a bar lets them keep theirs or take the agent's.
+- **Other files:** plain text files open in a basic editor; anything else opens in the system's default application. Files listed in `.terminalignore` show in the tree and the user can open them, but they're never sent to the provider.
+- **Later:** editing files on the servers themselves, which needs an editor for any text or configuration file with syntax highlighting for the common formats.
 
 ### Safety on real servers
 
