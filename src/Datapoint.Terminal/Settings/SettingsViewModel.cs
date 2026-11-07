@@ -36,6 +36,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         OpenProjects = settings.OpenProjects;
         TrustedProjects = settings.TrustedProjects;
         DeclinedGitIgnore = settings.DeclinedGitIgnore;
+        ConfirmedConnections = settings.ConfirmedConnections;
         SelectedProviderId = settings.SelectedProvider?.Id;
         foreach (var account in settings.Providers)
         {
@@ -59,6 +60,8 @@ public sealed partial class SettingsViewModel : ObservableObject
     public IReadOnlyList<ProjectTrustRecord> TrustedProjects { get; private set; }
 
     public IReadOnlyList<string> DeclinedGitIgnore { get; private set; }
+
+    public IReadOnlyList<ConfirmedConnections> ConfirmedConnections { get; private set; }
 
     public IReadOnlyList<KindOption> Kinds { get; }
 
@@ -86,7 +89,18 @@ public sealed partial class SettingsViewModel : ObservableObject
         OpenProjects = OpenProjects,
         TrustedProjects = TrustedProjects,
         DeclinedGitIgnore = DeclinedGitIgnore,
+        ConfirmedConnections = ConfirmedConnections,
     };
+
+    public IReadOnlyList<ProjectConnection>? ConfirmedFor(string folder) =>
+        ConfirmedConnections.FirstOrDefault(record => ProjectFolders.AreSame(record.Folder, folder))?.Connections;
+
+    public void SetConfirmed(string folder, IReadOnlyList<ProjectConnection> connections)
+    {
+        var record = new ConfirmedConnections { Folder = folder, Connections = connections };
+        ConfirmedConnections = [.. ConfirmedConnections.Where(item => !ProjectFolders.AreSame(item.Folder, folder)), record];
+        SaveProjectData();
+    }
 
     public bool HasDeclinedGitIgnore(string folder) => DeclinedGitIgnore.Any(item => ProjectFolders.AreSame(item, folder));
 

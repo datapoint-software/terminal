@@ -27,6 +27,8 @@ public sealed record AppSettings
     // Projects whose owner chose not to add .terminal/ to .gitignore, so they aren't asked again.
     public IReadOnlyList<string> DeclinedGitIgnore { get; init => field = value ?? []; } = [];
 
+    public IReadOnlyList<ConfirmedConnections> ConfirmedConnections { get; init => field = value ?? []; } = [];
+
     [JsonIgnore]
     public ProviderAccount? SelectedProvider =>
         Providers.FirstOrDefault(provider => string.Equals(provider.Id, SelectedProviderId, StringComparison.Ordinal)) ?? (Providers.Count > 0 ? Providers[0] : null);

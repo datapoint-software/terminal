@@ -512,4 +512,34 @@ git rm -r --cached .terminal</value>
   <data name="NoticeGitTracked" xml:space="preserve">
     <value>Some of this project's .terminal folder is committed to Git, although it's ignored now. To stop tracking it, run git rm -r --cached .terminal in the project's folder, then commit.</value>
   </data>
+  <data name="ReviewTitle" xml:space="preserve">
+    <value>Review connection changes</value>
+  </data>
+  <data name="ReviewMessage" xml:space="preserve">
+    <value>.terminal.json in {0} was changed outside Datapoint Terminal, e.g. by a git pull or a teammate. These changes make connections less strict or point them somewhere else, so they wait for you. Until you accept them, the connections keep the settings you last confirmed.</value>
+  </data>
+  <data name="ReviewKeep" xml:space="preserve">
+    <value>Keep Confirmed Settings</value>
+  </data>
+  <data name="ReviewAccept" xml:space="preserve">
+    <value>Accept Changes</value>
+  </data>
+  <data name="ReviewNewConnection" xml:space="preserve">
+    <value>{0}: new connection to {1}</value>
+  </data>
+  <data name="ReviewChange" xml:space="preserve">
+    <value>{0}: {1} {2} → {3}</value>
+  </data>
+  <data name="ReviewNone" xml:space="preserve">
+    <value>none</value>
+  </data>
+  <data name="ReviewDefault" xml:space="preserve">
+    <value>default</value>
+  </data>
+  <data name="NoticeConnectionsStricter" xml:space="preserve">
+    <value>Applied changes to {0} from .terminal.json, since they only make things stricter.</value>
+  </data>
+  <data name="NoticeConnectionsHeld" xml:space="preserve">
+    <value>Changes to connections in .terminal.json are waiting for your review; the connections keep the settings you confirmed. They're shown again when you next open the project.</value>
+  </data>
 </root>

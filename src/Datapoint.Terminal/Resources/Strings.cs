@@ -338,6 +338,26 @@ public static class Strings
 
     public static string NoticeGitTracked => Get(nameof(NoticeGitTracked));
 
+    public static string ReviewTitle => Get(nameof(ReviewTitle));
+
+    public static string ReviewMessage => Get(nameof(ReviewMessage));
+
+    public static string ReviewKeep => Get(nameof(ReviewKeep));
+
+    public static string ReviewAccept => Get(nameof(ReviewAccept));
+
+    public static string ReviewNewConnection => Get(nameof(ReviewNewConnection));
+
+    public static string ReviewChange => Get(nameof(ReviewChange));
+
+    public static string ReviewNone => Get(nameof(ReviewNone));
+
+    public static string ReviewDefault => Get(nameof(ReviewDefault));
+
+    public static string NoticeConnectionsStricter => Get(nameof(NoticeConnectionsStricter));
+
+    public static string NoticeConnectionsHeld => Get(nameof(NoticeConnectionsHeld));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

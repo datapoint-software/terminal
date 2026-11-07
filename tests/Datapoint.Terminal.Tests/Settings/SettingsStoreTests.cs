@@ -43,6 +43,17 @@ public sealed class SettingsStoreTests : IDisposable
     }
 
     [Fact]
+    public void Keeps_confirmed_connections()
+    {
+        var web = new ProjectConnection { Name = "web", SshHost = "web1", Environment = "production", ApprovalMode = ApprovalMode.Ask };
+        new SettingsStore(FilePath).Save(new AppSettings { ConfirmedConnections = [new ConfirmedConnections { Folder = "/work/site", Connections = [web] }] });
+
+        var loaded = Assert.Single(new SettingsStore(FilePath).Load().ConfirmedConnections);
+
+        Assert.Equal(web, Assert.Single(loaded.Connections));
+    }
+
+    [Fact]
     public void Writes_a_file_only_the_user_can_read()
     {
         if (OperatingSystem.IsWindows())

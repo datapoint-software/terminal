@@ -59,14 +59,27 @@ public sealed class Project : IDisposable
         try
         {
             CreatePrivateFolder(personal);
-            var settings = ReadSettings(Path.Combine(normalized, ProjectFolders.SettingsFile));
-            var problems = settings.Connections.Select(connection => connection.Problem()).OfType<string>().Select(problem => $"{ProjectFolders.SettingsFile}: {problem} It was left out.").ToList();
-            settings = settings with { Connections = [.. settings.Connections.Where(connection => connection.Problem() is null)] };
+            var (settings, problems) = ReadValidSettings(Path.Combine(normalized, ProjectFolders.SettingsFile));
             return new Project(normalized, settings, TryLock(personal), isDefault, isNew) { Problems = problems };
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {
             throw new ProjectException($"The project in {normalized} couldn't be opened: {exception.Message}", exception);
+        }
+    }
+
+    // Reads .terminal.json again, e.g. after a git pull; returns its problems, and keeps the old settings if it can't be read.
+    public IReadOnlyList<string> ReloadSettings()
+    {
+        try
+        {
+            var (settings, problems) = ReadValidSettings(SettingsPath);
+            Settings = settings;
+            return problems;
+        }
+        catch (Exception exception) when (exception is ProjectException or IOException or UnauthorizedAccessException)
+        {
+            return [exception.Message];
         }
     }
 
@@ -107,6 +120,13 @@ public sealed class Project : IDisposable
         }
 
         Directory.CreateDirectory(path, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
+    }
+
+    private static (ProjectSettings Settings, IReadOnlyList<string> Problems) ReadValidSettings(string path)
+    {
+        var settings = ReadSettings(path);
+        var problems = settings.Connections.Select(connection => connection.Problem()).OfType<string>().Select(problem => $"{ProjectFolders.SettingsFile}: {problem} It was left out.").ToList();
+        return (settings with { Connections = [.. settings.Connections.Where(connection => connection.Problem() is null)] }, problems);
     }
 
     private static ProjectSettings ReadSettings(string path)

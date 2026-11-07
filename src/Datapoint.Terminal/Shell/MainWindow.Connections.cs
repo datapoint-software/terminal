@@ -7,11 +7,14 @@ namespace Datapoint.Terminal.Shell;
 
 public sealed partial class MainWindow
 {
-    private void OnNewTabClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void OnNewTabClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => _ = ShowNewTabMenuAsync();
+
+    private async Task ShowNewTabMenuAsync()
     {
+        await ReviewConnectionsAsync(reload: true).ConfigureAwait(true);
         var menu = new MenuFlyout { Placement = PlacementMode.BottomEdgeAlignedRight };
         menu.Items.Add(MenuItem(Strings.NewTabLocal, () => _ = OpenLocalTabAsync()));
-        var connections = Project.Settings.Connections;
+        var connections = Connections;
         if (connections.Count > 0)
         {
             menu.Items.Add(new Separator());
@@ -23,7 +26,7 @@ public sealed partial class MainWindow
         }
 
         menu.Items.Add(new Separator());
-        menu.Items.Add(SshHostsMenu(connections));
+        menu.Items.Add(SshHostsMenu(Project.Settings.Connections));
         menu.ShowAt(NewTabButton);
     }
 
@@ -92,6 +95,7 @@ public sealed partial class MainWindow
         try
         {
             Project.SaveSettings(Project.Settings with { Connections = [.. Project.Settings.Connections, connection] }, _redactor);
+            Confirm([.. Connections, connection]);
             _chat.AddNotice(Strings.Format(Strings.NoticeHostAdded, connection.Name));
         }
         catch (Exception exception) when (exception is ProjectException or IOException or UnauthorizedAccessException)

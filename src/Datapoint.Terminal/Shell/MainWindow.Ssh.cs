@@ -86,5 +86,5 @@ public sealed partial class MainWindow
     // Production connections ask before every command unless the project says otherwise (product decision 72).
     private ApprovalMode DefaultModeFor(ProjectConnection connection) =>
         connection.ApprovalMode
-        ?? (connection.Environment?.StartsWith("prod", StringComparison.OrdinalIgnoreCase) == true ? ApprovalMode.Ask : _settings.Current.DefaultApprovalMode);
+        ?? (connection.IsProduction ? ApprovalMode.Ask : _settings.Current.DefaultApprovalMode);
 }
