@@ -552,6 +552,22 @@ public static class Strings
 
     public static string PendingOutputCut => Get(nameof(PendingOutputCut));
 
+    public static string MenuView => Get(nameof(MenuView));
+
+    public static string MenuHideChat => Get(nameof(MenuHideChat));
+
+    public static string MenuShowChat => Get(nameof(MenuShowChat));
+
+    public static string MenuChatRight => Get(nameof(MenuChatRight));
+
+    public static string MenuChatLeft => Get(nameof(MenuChatLeft));
+
+    public static string MenuChatBottom => Get(nameof(MenuChatBottom));
+
+    public static string MenuChatTop => Get(nameof(MenuChatTop));
+
+    public static string MenuChatSideDefault => Get(nameof(MenuChatSideDefault));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

@@ -22,4 +22,6 @@ public sealed partial class ChatView : UserControl
             _isAtEnd = Scroller.Offset.Y + Scroller.Viewport.Height >= Scroller.Extent.Height - 4;
         };
     }
+
+    public void FocusInput() => DraftBox.Focus();
 }

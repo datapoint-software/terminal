@@ -63,9 +63,11 @@
       <Setter Property="Height" Value="10" />
     </Style>
   </Window.Styles>
-  <Grid ColumnDefinitions="*,1,380" RowDefinitions="Auto,*">
-    <NativeMenuBar Grid.ColumnSpan="3" />
-    <DockPanel Grid.Row="1">
+  <Grid RowDefinitions="Auto,*">
+    <NativeMenuBar />
+    <!-- The chat pane's side and size are set in code (MainWindow.Layout.cs). -->
+    <Grid x:Name="Body" Grid.Row="1" ColumnDefinitions="*,1,380">
+    <DockPanel x:Name="TerminalArea">
       <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
         <DockPanel>
           <Button x:Name="NewTabButton" DockPanel.Dock="Right" Classes="icon" Margin="0,0,6,0" VerticalAlignment="Center" Click="OnNewTabClicked"
@@ -98,8 +100,9 @@
       <Panel x:Name="TerminalHost" />
     </DockPanel>
     <!-- A hairline separator, with a wider invisible handle for dragging. -->
-    <Rectangle Grid.Row="1" Grid.Column="1" Fill="{DynamicResource SeparatorBrush}" />
-    <GridSplitter Grid.Row="1" Grid.Column="1" ResizeDirection="Columns" Margin="-3,0" ZIndex="1" />
-    <chat:ChatView x:Name="Chat" Grid.Row="1" Grid.Column="2" AutomationProperties.AutomationId="Chat" />
+    <Rectangle x:Name="ChatSeparator" Grid.Column="1" Fill="{DynamicResource SeparatorBrush}" />
+    <GridSplitter x:Name="ChatSplitter" Grid.Column="1" ResizeDirection="Columns" Margin="-3,0" ZIndex="1" />
+    <chat:ChatView x:Name="Chat" Grid.Column="2" AutomationProperties.AutomationId="Chat" />
+    </Grid>
   </Grid>
 </Window>

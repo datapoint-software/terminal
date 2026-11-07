@@ -833,4 +833,28 @@ git rm -r --cached .terminal</value>
   <data name="PendingOutputCut" xml:space="preserve">
     <value>Long output is cut to its start and end.</value>
   </data>
+  <data name="MenuView" xml:space="preserve">
+    <value>View</value>
+  </data>
+  <data name="MenuHideChat" xml:space="preserve">
+    <value>Hide Chat</value>
+  </data>
+  <data name="MenuShowChat" xml:space="preserve">
+    <value>Show Chat</value>
+  </data>
+  <data name="MenuChatRight" xml:space="preserve">
+    <value>Chat on the Right</value>
+  </data>
+  <data name="MenuChatLeft" xml:space="preserve">
+    <value>Chat on the Left</value>
+  </data>
+  <data name="MenuChatBottom" xml:space="preserve">
+    <value>Chat at the Bottom</value>
+  </data>
+  <data name="MenuChatTop" xml:space="preserve">
+    <value>Chat at the Top</value>
+  </data>
+  <data name="MenuChatSideDefault" xml:space="preserve">
+    <value>Use This Side for New Windows</value>
+  </data>
 </root>

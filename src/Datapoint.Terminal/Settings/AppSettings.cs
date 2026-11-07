@@ -35,6 +35,9 @@ public sealed record AppSettings
     // SHA-256 fingerprints of values the user marked as not secret, never the values themselves.
     public IReadOnlyList<string> NotSecrets { get; init => field = value ?? []; } = [];
 
+    // Where new windows put the chat pane; each window can move its own.
+    public Shell.ChatSide ChatSide { get; init; } = Shell.ChatSide.Right;
+
     // How long conversation history is kept, in days; null keeps it forever (product decision 52).
     public int? HistoryDays { get; init; }
 
