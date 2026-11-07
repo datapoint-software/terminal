@@ -20,6 +20,8 @@
 
   <!-- Heights: a row in a list or the tab strip, a button, and a text field. -->
   <x:Double x:Key="RowHeight">28</x:Double>
+  <!-- The sidebar's and the chat's headers, side by side, so their titles and bottom lines meet. -->
+  <x:Double x:Key="PaneHeaderHeight">64</x:Double>
   <x:Double x:Key="ButtonHeight">26</x:Double>
   <x:Double x:Key="FieldHeight">30</x:Double>
 

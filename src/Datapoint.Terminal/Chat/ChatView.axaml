@@ -346,14 +346,15 @@
 
   <DockPanel>
     <!-- Header: what the agent is doing, announced to screen readers as it changes. -->
-    <Border DockPanel.Dock="Top" Padding="16,12,10,10" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
+    <Border DockPanel.Dock="Top" Height="{StaticResource PaneHeaderHeight}" Padding="16,0,10,0" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
       <Grid ColumnDefinitions="*,Auto">
-        <StackPanel Spacing="2">
+        <StackPanel Spacing="2" VerticalAlignment="Center">
           <TextBlock Classes="title" Text="{x:Static res:Strings.ChatTitle}" />
           <StackPanel Orientation="Horizontal" Spacing="6">
             <Ellipse Classes="status" Classes.working="{Binding IsWorking}" Classes.waiting="{Binding NeedsUser}"
                      Classes.stopped="{Binding IsInterrupted}" VerticalAlignment="Center" />
-            <TextBlock Classes="secondary" Text="{Binding StatusText}" TextWrapping="Wrap"
+            <!-- One line, so the header keeps the sidebar's height; the whole status is in the tooltip. -->
+            <TextBlock Classes="secondary" Text="{Binding StatusText}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding StatusText}"
                        AutomationProperties.LiveSetting="Polite" />
           </StackPanel>
         </StackPanel>

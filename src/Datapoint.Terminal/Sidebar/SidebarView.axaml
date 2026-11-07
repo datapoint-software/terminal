@@ -31,20 +31,19 @@
 
   <DockPanel Background="{DynamicResource PaneBrush}">
     <!-- The workspace switcher: the workspace in this window, and a menu of the others. -->
-    <StackPanel DockPanel.Dock="Top">
-      <Button x:Name="SwitcherButton" Classes="row" Padding="8,6" CornerRadius="{StaticResource BlockRadius}" Margin="8,10,8,8" AutomationProperties.Name="{Binding WorkspaceAccessibleName}"
-              ToolTip.Tip="{Binding WorkspaceFolder}">
+    <Border DockPanel.Dock="Top" Height="{StaticResource PaneHeaderHeight}" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
+      <Button x:Name="SwitcherButton" Classes="row" Padding="8,6" CornerRadius="{StaticResource BlockRadius}" Margin="8,0" VerticalAlignment="Center"
+              AutomationProperties.Name="{Binding WorkspaceAccessibleName}" ToolTip.Tip="{Binding WorkspaceFolder}">
         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
           <c:Avatar Text="{Binding WorkspaceInitials}" />
-          <StackPanel Grid.Column="1" VerticalAlignment="Center">
+          <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
             <TextBlock Text="{Binding WorkspaceName}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
             <TextBlock Classes="secondary" Text="{Binding WorkspaceDetail}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
           </StackPanel>
           <Path Grid.Column="2" Classes="glyph" Data="{StaticResource UpDownGlyph}" />
         </Grid>
       </Button>
-      <Rectangle Height="1" Fill="{DynamicResource SeparatorBrush}" />
-    </StackPanel>
+    </Border>
 
     <StackPanel DockPanel.Dock="Bottom">
       <Rectangle Height="1" Fill="{DynamicResource SeparatorBrush}" />
