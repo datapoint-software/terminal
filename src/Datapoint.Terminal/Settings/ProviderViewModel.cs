@@ -35,15 +35,48 @@ public sealed partial class ProviderViewModel : ObservableObject
 
     public string Id { get; }
 
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsCompatible), nameof(NeedsKey), nameof(ModelSuggestions), nameof(Privacy))]
-    public partial KindOption Kind { get; set; }
+    // A list or box whose items or text go away, as when Settings closes or shows another provider, sets its value to null
+    // through the binding; the provider keeps its kind and model, which every save needs.
+    public KindOption Kind
+    {
+        get;
+        set
+        {
+            var old = field;
+            if (value is null || !SetProperty(ref field, value))
+            {
+                return;
+            }
+
+            OnPropertyChanged(nameof(IsCompatible));
+            OnPropertyChanged(nameof(NeedsKey));
+            OnPropertyChanged(nameof(ModelSuggestions));
+            OnPropertyChanged(nameof(Privacy));
+            if (old is null)
+            {
+                return;
+            }
+
+            OnKindChanged(old, value);
+        }
+    } = null!;
 
     [ObservableProperty]
     public partial string Name { get; set; }
 
-    [ObservableProperty]
-    public partial string Model { get; set; }
+    public string Model
+    {
+        get;
+        set
+        {
+            if (value is null || !SetProperty(ref field, value))
+            {
+                return;
+            }
+
+            Changed();
+        }
+    } = string.Empty;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(Privacy))]
@@ -142,7 +175,7 @@ public sealed partial class ProviderViewModel : ObservableObject
 
     internal void NotifyActiveChanged() => OnPropertyChanged(nameof(IsActive));
 
-    partial void OnKindChanged(KindOption oldValue, KindOption newValue)
+    private void OnKindChanged(KindOption oldValue, KindOption newValue)
     {
         if (!_isLoaded)
         {
@@ -165,8 +198,6 @@ public sealed partial class ProviderViewModel : ObservableObject
     }
 
     partial void OnNameChanged(string value) => Changed();
-
-    partial void OnModelChanged(string value) => Changed();
 
     partial void OnEndpointChanged(string value) => Changed();
 

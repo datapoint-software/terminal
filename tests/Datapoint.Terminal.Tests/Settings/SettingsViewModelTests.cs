@@ -34,6 +34,23 @@ public sealed class SettingsViewModelTests : IDisposable
         Assert.True(changes > 0);
     }
 
+    // Settings closing or showing another provider clears its controls through their bindings; saving must still work.
+    [Fact]
+    public void Keeps_the_kind_and_model_when_a_binding_clears_them()
+    {
+        var settings = Create();
+        settings.AddCommand.Execute(null);
+        var provider = settings.Providers[0];
+
+        provider.Kind = null!;
+        provider.Model = null!;
+        settings.SetHistoryDays(30);
+
+        Assert.Equal(ProviderKind.Anthropic, provider.Kind.Kind);
+        Assert.Equal("claude-opus-5-5", provider.Model);
+        Assert.Equal("claude-opus-5-5", Assert.Single(Store.Load().Providers).Model);
+    }
+
     [Fact]
     public void Changing_the_kind_follows_with_defaults_but_keeps_the_users_choices()
     {
