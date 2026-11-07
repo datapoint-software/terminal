@@ -39,6 +39,9 @@ public sealed partial class TerminalTab : ObservableObject
     // The SSH connection of a tab logged in to a host, for file transfer; null for local tabs and containers.
     public Sessions.Ssh.SshClient? Client { get; set; }
 
+    // The SSH connection this tab's terminal runs over, which a split of it shares rather than logging in again.
+    public Sessions.Ssh.SharedSshClient? SharedClient { get; set; }
+
     // Ports forwarded for this tab's connection, stopped with it.
     public ICollection<IAsyncDisposable> Forwards { get; } = [];
 

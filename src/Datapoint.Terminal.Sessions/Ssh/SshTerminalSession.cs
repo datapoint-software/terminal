@@ -9,20 +9,22 @@ public sealed class SshTerminalSession : ITerminalSession
     private static readonly TimeSpan s_bootstrapTimeout = TimeSpan.FromSeconds(10);
 
     private readonly SshChannel _channel;
-    private readonly SshClient? _ownedClient;
+    private readonly SshClient _client;
+    private readonly IAsyncDisposable? _owner;
     private ReadOnlyMemory<byte> _pending;
 
-    private SshTerminalSession(SshChannel channel, SshClient? ownedClient, string? nonce = null, ReadOnlyMemory<byte> pending = default)
+    private SshTerminalSession(SshChannel channel, SshClient client, IAsyncDisposable? owner, string? nonce = null, ReadOnlyMemory<byte> pending = default)
     {
         _channel = channel;
-        _ownedClient = ownedClient;
+        _client = client;
+        _owner = owner;
         _pending = pending;
         ShellIntegrationNonce = nonce;
         Exited = WaitForExitAsync(channel);
     }
 
-    // The connection, when the session owns it, for commands and file access beside the terminal.
-    public SshClient? Client => _ownedClient;
+    // The connection, for commands and file access beside the terminal.
+    public SshClient Client => _client;
 
     public string? ShellIntegrationNonce { get; }
 
@@ -32,10 +34,36 @@ public sealed class SshTerminalSession : ITerminalSession
     // With a command, e.g. to open a shell in a container on the host, the session runs it in place of the login shell.
     // With shell integration, the login shell is started with the scripts if it's one they support (see RemoteShellIntegration);
     // if anything goes wrong on the way, the session is an ordinary login shell.
+    // The session closes the client with it when it owns it, or gives back its use of a shared one.
     public static async Task<SshTerminalSession> StartAsync(SshClient client, string terminalType, int columns, int rows, CancellationToken cancellationToken, bool ownsClient = false, string? command = null, bool shellIntegration = false)
     {
         ArgumentNullException.ThrowIfNull(client);
-        if (command is null && shellIntegration && await TryStartIntegratedAsync(client, terminalType, columns, rows, ownsClient, cancellationToken).ConfigureAwait(false) is { } integrated)
+        return await StartAsync(client, ownsClient ? client : null, terminalType, columns, rows, command, shellIntegration, cancellationToken).ConfigureAwait(false);
+    }
+
+    // Null when the shared connection has already closed.
+    public static async Task<SshTerminalSession?> StartAsync(SharedSshClient shared, string terminalType, int columns, int rows, string? command, bool shellIntegration, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(shared);
+        if (shared.TryUse() is not { } use)
+        {
+            return null;
+        }
+
+        try
+        {
+            return await StartAsync(shared.Client, use, terminalType, columns, rows, command, shellIntegration, cancellationToken).ConfigureAwait(false);
+        }
+        catch
+        {
+            await use.DisposeAsync().ConfigureAwait(false);
+            throw;
+        }
+    }
+
+    private static async Task<SshTerminalSession> StartAsync(SshClient client, IAsyncDisposable? owner, string terminalType, int columns, int rows, string? command, bool shellIntegration, CancellationToken cancellationToken)
+    {
+        if (command is null && shellIntegration && await TryStartIntegratedAsync(client, owner, terminalType, columns, rows, cancellationToken).ConfigureAwait(false) is { } integrated)
         {
             return integrated;
         }
@@ -45,7 +73,7 @@ public sealed class SshTerminalSession : ITerminalSession
         {
             await channel.RequestPtyAsync(terminalType, columns, rows, cancellationToken).ConfigureAwait(false);
             await (command is null ? channel.StartShellAsync(cancellationToken) : channel.ExecuteAsync(command, cancellationToken)).ConfigureAwait(false);
-            return new SshTerminalSession(channel, ownsClient ? client : null);
+            return new SshTerminalSession(channel, client, owner);
         }
         catch
         {
@@ -55,7 +83,7 @@ public sealed class SshTerminalSession : ITerminalSession
         }
     }
 
-    private static async Task<SshTerminalSession?> TryStartIntegratedAsync(SshClient client, string terminalType, int columns, int rows, bool ownsClient, CancellationToken cancellationToken)
+    private static async Task<SshTerminalSession?> TryStartIntegratedAsync(SshClient client, IAsyncDisposable? owner, string terminalType, int columns, int rows, CancellationToken cancellationToken)
     {
         var channel = await client.OpenSessionAsync(cancellationToken).ConfigureAwait(false);
         try
@@ -82,7 +110,7 @@ public sealed class SshTerminalSession : ITerminalSession
                     await channel.WriteAsync(RemoteShellIntegration.Payload(nonce), cancellationToken).ConfigureAwait(false);
                 }
 
-                return new SshTerminalSession(channel, ownsClient ? client : null, nonce, shown);
+                return new SshTerminalSession(channel, client, owner, nonce, shown);
             }
         }
         catch (SshChannelException)
@@ -142,9 +170,9 @@ public sealed class SshTerminalSession : ITerminalSession
         }
 
         _channel.Dispose();
-        if (_ownedClient is not null)
+        if (_owner is not null)
         {
-            await _ownedClient.DisposeAsync().ConfigureAwait(false);
+            await _owner.DisposeAsync().ConfigureAwait(false);
         }
     }
 

@@ -247,6 +247,30 @@ public sealed class OpenSshInteropTests(OpenSshServer server) : IClassFixture<Op
     }
 
     [Fact]
+    public async Task Shares_one_connection_between_terminals_until_the_last_closes()
+    {
+        server.SkipIfUnavailable();
+        var client = await OpenSshServer.ConnectWithPasswordAsync(server.Options());
+        var shared = new SharedSshClient(client);
+        var first = (await SshTerminalSession.StartAsync(shared, "xterm-256color", 80, 24, command: null, shellIntegration: false, Token))!;
+        var second = (await SshTerminalSession.StartAsync(shared, "xterm-256color", 80, 24, command: null, shellIntegration: false, Token))!;
+
+        await first.DisposeAsync();
+        Assert.False(shared.IsClosed);
+        await second.WriteAsync("echo still-$((6*7))\n"u8.ToArray(), Token);
+        var output = new StringBuilder();
+        var buffer = new byte[256];
+        while (!output.ToString().Contains("still-42", StringComparison.Ordinal))
+        {
+            output.Append(Encoding.UTF8.GetString(buffer, 0, await second.ReadAsync(buffer, Token)));
+        }
+
+        await second.DisposeAsync();
+        Assert.True(shared.IsClosed);
+        Assert.Null(await SshTerminalSession.StartAsync(shared, "xterm-256color", 80, 24, command: null, shellIntegration: false, Token));
+    }
+
+    [Fact]
     public async Task Runs_a_command_in_place_of_the_login_shell()
     {
         server.SkipIfUnavailable();

@@ -64,7 +64,8 @@ public sealed partial class MainWindow
         tab.View.Focus();
     }
 
-    // A pane to the same place: another local shell, or the same connection logged into again.
+    // A pane to the same place: another local shell, or another terminal on the same SSH connection (logged into again only
+    // if that has closed).
     private async Task<TerminalTab?> OpenLikeAsync(TerminalTab tab)
     {
         if (!tab.IsRemote)
@@ -79,7 +80,8 @@ public sealed partial class MainWindow
             return null;
         }
 
-        return await OpenConnectionAsync(connection, select: false).ConfigureAwait(true);
+        return await OpenOnSameConnectionAsync(tab, connection).ConfigureAwait(true)
+            ?? await OpenConnectionAsync(connection, select: false).ConfigureAwait(true);
     }
 
     // Clicking into a pane, or moving focus there, makes it the selected tab, so the chat and the find bar follow it.
