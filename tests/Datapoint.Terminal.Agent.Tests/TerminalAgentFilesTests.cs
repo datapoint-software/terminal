@@ -39,7 +39,8 @@ public sealed class TerminalAgentFilesTests
     {
         var script = steps.Select((step, index) => index == 0 ? step : Record(step)).Append(Record(_ => Text("Done."))).ToArray();
         using var agent = new TerminalAgent(new ScriptedChatClient(script), _user, new SecretRedactor()) { Clock = new FixedClock(new DateTimeOffset(2026, 11, 7, 15, 30, 12, TimeSpan.Zero)) };
-        agent.AddTerminal(new AgentTerminal("web1", _terminal, mode) { Files = _files });
+        agent.Mode = mode;
+        agent.AddTerminal(new AgentTerminal("web1", _terminal) { Files = _files });
         agent.EventRaised += (_, e) => _events.Add(e);
         await agent.SendAsync("Turn on TLS", Token);
     }
@@ -134,11 +135,11 @@ public sealed class TerminalAgentFilesTests
     }
 
     [Fact]
-    public async Task Follows_the_plan_in_Auto()
+    public async Task Follows_the_plan_in_Plan_mode()
     {
-        await RunAsync(ApprovalMode.Auto, Edit());
+        await RunAsync(ApprovalMode.Plan, Edit());
 
-        Assert.StartsWith("Not changed: in Auto mode, show your plan", _results[0], StringComparison.Ordinal);
+        Assert.StartsWith("Not changed: in Plan mode, show your plan", _results[0], StringComparison.Ordinal);
         Assert.Empty(_user.Proposals);
     }
 

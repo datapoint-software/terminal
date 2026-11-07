@@ -28,7 +28,8 @@ public sealed class TerminalAgentTests
     {
         var options = new AgentOptions { CommandTimeout = commandTimeout ?? TimeSpan.FromSeconds(60) };
         var agent = new TerminalAgent(client, _user, new SecretRedactor(), options);
-        _local = new AgentTerminal("Local", _terminal, mode);
+        agent.Mode = mode;
+        _local = new AgentTerminal("Local", _terminal);
         agent.AddTerminal(_local);
         agent.EventRaised += (_, e) =>
         {
@@ -99,7 +100,7 @@ public sealed class TerminalAgentTests
     }
 
     [Fact]
-    public async Task Still_asks_about_trust_in_auto_mode_and_auto_ends_with_the_task()
+    public async Task Still_asks_about_trust_in_plan_mode_and_the_plan_ends_with_the_task()
     {
         var client = new ScriptedChatClient(
             _ => Call("propose_plan", Arguments(("summary", "Clean up"), ("steps", s_cleanUp), ("rollback", "Rebuild."))),
@@ -108,18 +109,18 @@ public sealed class TerminalAgentTests
             _ => Text("Done."),
             RunCommand("rm x"),
             _ => Text("Done."));
-        using var agent = Create(client);
-        _local.Mode = ApprovalMode.Auto;
+        using var agent = Create(client, ApprovalMode.Plan);
 
         await agent.SendAsync("Clean up", Token);
 
         Assert.Equal([ProposalKind.Plan, ProposalKind.RunCommand], _user.Proposals.Select(proposal => proposal.Kind));
         Assert.Equal("ssh-keygen -R example.com", _user.Proposals[1].Command);
-        Assert.Equal(ApprovalMode.Ask, _local.Mode);
+        Assert.Equal(ApprovalMode.Plan, agent.Mode);
 
         await agent.SendAsync("And x", Token);
 
-        Assert.Equal("rm x", _user.Proposals[^1].Command);
+        Assert.Equal(2, _user.Proposals.Count);
+        Assert.DoesNotContain("rm x", _terminal.Typed, StringComparer.Ordinal);
     }
 
     [Fact]
@@ -324,7 +325,7 @@ public sealed class TerminalAgentTests
     {
         var steps = Enumerable.Repeat(RunCommand("ls"), 10).ToArray();
         var agent = new TerminalAgent(new ScriptedChatClient(steps), _user, new SecretRedactor(), new AgentOptions { MaxStepsPerTask = 3 });
-        agent.AddTerminal(new AgentTerminal("Local", _terminal, ApprovalMode.Ask));
+        agent.AddTerminal(new AgentTerminal("Local", _terminal));
         using (agent)
         {
             await agent.SendAsync("Loop", Token);
@@ -339,7 +340,7 @@ public sealed class TerminalAgentTests
         var other = new FakeTerminal();
         var client = new ScriptedChatClient(_ => Call("run_command", Arguments(("terminal", "web"), ("command", "uptime"), ("purpose", "to check"))), _ => Text("Done."));
         using var agent = Create(client);
-        agent.AddTerminal(new AgentTerminal("web", other, ApprovalMode.Ask, "production"));
+        agent.AddTerminal(new AgentTerminal("web", other, "production"));
 
         await agent.SendAsync("Check the web server", Token);
 
@@ -357,7 +358,7 @@ public sealed class TerminalAgentTests
         string? seen = null;
         var client = new ScriptedChatClient(RunCommand("uptime"), messages => { seen = LastToolResult(messages); return Text("Which one?"); });
         using var agent = Create(client);
-        agent.AddTerminal(new AgentTerminal("web", new FakeTerminal(), ApprovalMode.Ask));
+        agent.AddTerminal(new AgentTerminal("web", new FakeTerminal()));
 
         await agent.SendAsync("Check uptime", Token);
 
@@ -372,7 +373,7 @@ public sealed class TerminalAgentTests
         IReadOnlyList<ChatMessage>? seen = null;
         var client = new ScriptedChatClient(messages => { seen = messages; return Text("Hi."); });
         using var agent = Create(client);
-        agent.AddTerminal(new AgentTerminal("web", new FakeTerminal(), ApprovalMode.Ask, "production"));
+        agent.AddTerminal(new AgentTerminal("web", new FakeTerminal(), "production"));
 
         await agent.SendAsync("Hello", Token);
 
@@ -380,21 +381,33 @@ public sealed class TerminalAgentTests
     }
 
     [Fact]
-    public async Task Follows_each_terminals_own_approval_mode()
+    public async Task Uses_one_mode_for_every_terminal()
     {
         var other = new FakeTerminal();
         var client = new ScriptedChatClient(
-            _ => Call("run_command", Arguments(("terminal", "dev"), ("command", "touch a"), ("purpose", "to check"))),
+            _ => Call("run_command", Arguments(("terminal", "prod"), ("command", "touch a"), ("purpose", "to check"))),
             _ => Call("run_command", Arguments(("terminal", "Local"), ("command", "touch b"), ("purpose", "to check")), "call-2"),
             _ => Text("Done."));
-        using var agent = Create(client);
-        var dev = new AgentTerminal("dev", other, ApprovalMode.Ask) { Mode = ApprovalMode.Auto };
-        agent.AddTerminal(dev);
+        using var agent = Create(client, ApprovalMode.IgnorePermissions);
+        agent.AddTerminal(new AgentTerminal("prod", other, "production"));
 
         await agent.SendAsync("Touch files", Token);
 
-        Assert.Equal("touch b", Assert.Single(_user.Proposals).Command);
-        Assert.Equal(ApprovalMode.Ask, dev.Mode);
+        Assert.Empty(_user.Proposals);
+        Assert.Equal(["touch a"], other.Typed);
+        Assert.Equal(["touch b"], _terminal.Typed);
+    }
+
+    [Fact]
+    public async Task Ignoring_permissions_ends_with_the_conversation()
+    {
+        using var agent = Create(new ScriptedChatClient(_ => Text("Done.")), ApprovalMode.Plan);
+        agent.Mode = ApprovalMode.IgnorePermissions;
+
+        Assert.Equal(ApprovalMode.Plan, agent.LastingMode);
+        agent.ClearConversation();
+
+        Assert.Equal(ApprovalMode.Plan, agent.Mode);
     }
 
     [Fact]
@@ -407,7 +420,7 @@ public sealed class TerminalAgentTests
         _terminal.FinishesCommands = false;
         _terminal.Run = _ => ("[sudo] password for user:", null);
         using var agent = Create(client, commandTimeout: TimeSpan.FromMilliseconds(300));
-        var other = new AgentTerminal("web", new FakeTerminal(), ApprovalMode.Ask);
+        var other = new AgentTerminal("web", new FakeTerminal());
         agent.AddTerminal(other);
         agent.EventRaised += (_, e) =>
         {
@@ -489,10 +502,10 @@ public sealed class TerminalAgentTests
     }
 
     [Fact]
-    public async Task Asks_in_Auto_mode_before_a_command_that_names_an_ignored_file()
+    public async Task Asks_in_Plan_mode_mode_before_a_command_that_names_an_ignored_file()
     {
         var client = new ScriptedChatClient(RunCommand("cat .env"), _ => Text("Done."));
-        using var agent = Create(client, ApprovalMode.Auto);
+        using var agent = Create(client, ApprovalMode.Plan);
         agent.IgnoredFileCheck = (_, command) => command.Contains(".env", StringComparison.Ordinal) ? "/srv/app/.env" : null;
 
         await agent.SendAsync("Show the settings", Token);

@@ -25,7 +25,8 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
         [
             new(ApprovalMode.Ask, Strings.ModeAsk, Strings.ModeAskHelp),
             new(ApprovalMode.AskForRisky, Strings.ModeAskForRisky, Strings.ModeAskForRiskyHelp),
-            new(ApprovalMode.Auto, Strings.ModeAuto, Strings.ModeAutoHelp),
+            new(ApprovalMode.Plan, Strings.ModePlan, Strings.ModePlanHelp),
+            new(ApprovalMode.IgnorePermissions, Strings.ModeIgnorePermissions, Strings.ModeIgnorePermissionsHelp),
         ];
         SelectedMode = Modes[0];
         StatusText = Strings.StatusNoProvider;
@@ -104,6 +105,8 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
         ArgumentNullException.ThrowIfNull(agent);
         _agent = agent;
         _agent.EventRaised += OnAgentEvent;
+        _agent.ModeChanged += OnAgentModeChanged;
+        ShowCurrentMode();
         Status = AgentStatus.Idle;
         StatusText = Strings.StatusIdle;
         IsConnected = true;
@@ -201,18 +204,7 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
 
     public void ShowTerminal(AgentTerminal? terminal)
     {
-        if (CurrentTerminal is not null)
-        {
-            CurrentTerminal.ModeChanged -= OnTerminalModeChanged;
-        }
-
         CurrentTerminal = terminal;
-        if (terminal is not null)
-        {
-            terminal.ModeChanged += OnTerminalModeChanged;
-        }
-
-        ShowCurrentMode();
         OnPropertyChanged(nameof(CurrentTerminal));
     }
 
@@ -243,6 +235,7 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
         }
 
         _agent.EventRaised -= OnAgentEvent;
+        _agent.ModeChanged -= OnAgentModeChanged;
     }
 
     partial void OnStatusChanged(AgentStatus value)
@@ -266,46 +259,46 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
     [RelayCommand]
     private void OpenSettings() => SettingsRequested?.Invoke();
 
-    // Product decision 78: Auto on a production terminal is confirmed first; until then the picker shows the mode in force.
-    public Func<AgentTerminal, Task<bool>>? ConfirmAuto { get; set; }
+    // Product decision 107: Ignore permissions is confirmed each time; until then the picker shows the mode in force.
+    public Func<Task<bool>>? ConfirmIgnorePermissions { get; set; }
 
     partial void OnSelectedModeChanged(ModeOption value)
     {
-        if (CurrentTerminal is not { } terminal || terminal.Mode == value.Mode)
+        if (_agent is not { } agent || agent.Mode == value.Mode)
         {
             return;
         }
 
-        if (value.Mode != ApprovalMode.Auto || !EnvironmentLabels.IsProduction(terminal.Environment) || ConfirmAuto is not { } confirm)
+        if (value.Mode != ApprovalMode.IgnorePermissions || ConfirmIgnorePermissions is not { } confirm)
         {
-            terminal.Mode = value.Mode;
+            agent.Mode = value.Mode;
             return;
         }
 
         _ui.Post(ShowCurrentMode);
-        _ = ConfirmAutoAsync(terminal, confirm);
+        _ = ConfirmIgnoreAsync(agent, confirm);
     }
 
-    private static async Task ConfirmAutoAsync(AgentTerminal terminal, Func<AgentTerminal, Task<bool>> confirm)
+    private static async Task ConfirmIgnoreAsync(TerminalAgent agent, Func<Task<bool>> confirm)
     {
-        if (!await confirm(terminal).ConfigureAwait(true))
+        if (!await confirm().ConfigureAwait(true))
         {
             return;
         }
 
-        terminal.Mode = ApprovalMode.Auto;
+        agent.Mode = ApprovalMode.IgnorePermissions;
     }
 
-    private void OnTerminalModeChanged(object? sender, EventArgs e) => _ui.Post(ShowCurrentMode);
+    private void OnAgentModeChanged(object? sender, EventArgs e) => _ui.Post(ShowCurrentMode);
 
     private void ShowCurrentMode()
     {
-        if (CurrentTerminal is not { } terminal || SelectedMode.Mode == terminal.Mode)
+        if (_agent is not { } agent || SelectedMode.Mode == agent.Mode)
         {
             return;
         }
 
-        SelectedMode = Modes.First(option => option.Mode == terminal.Mode);
+        SelectedMode = Modes.First(option => option.Mode == agent.Mode);
     }
 
     [RelayCommand(CanExecute = nameof(CanSend))]

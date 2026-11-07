@@ -17,7 +17,9 @@ public sealed record AppSettings
 
     public string? SelectedProviderId { get; init; }
 
-    public ApprovalMode DefaultApprovalMode { get; set; } = ApprovalMode.Ask;
+    // The approval mode each workspace last used (product decision 107); one without starts in Ask. Replaces
+    // defaultApprovalMode, which is no longer read.
+    public IReadOnlyList<WorkspaceMode> WorkspaceModes { get; init => field = value ?? []; } = [];
 
     public IReadOnlyList<string> RecentWorkspaces { get; init => field = value ?? []; } = [];
 

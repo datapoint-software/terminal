@@ -31,7 +31,7 @@ public sealed partial class MainWindow
             return;
         }
 
-        var review = ConnectionReview.Compare(current, confirmed, _settings.Current.DefaultApprovalMode);
+        var review = ConnectionReview.Compare(current, confirmed);
         ReportStricter(confirmed, review.Effective);
         if (review.Held.Count == 0)
         {
@@ -101,14 +101,5 @@ public sealed partial class MainWindow
         return text.ToString().TrimEnd();
     }
 
-    private static string Value(ConnectionChange change, bool proposed = false)
-    {
-        var value = proposed ? change.Proposed : change.Confirmed;
-        if (value is not null)
-        {
-            return value;
-        }
-
-        return string.Equals(change.Setting, ConnectionReview.ApprovalSetting, StringComparison.Ordinal) ? Strings.ReviewDefault : Strings.ReviewNone;
-    }
+    private static string Value(ConnectionChange change, bool proposed = false) => (proposed ? change.Proposed : change.Confirmed) ?? Strings.ReviewNone;
 }

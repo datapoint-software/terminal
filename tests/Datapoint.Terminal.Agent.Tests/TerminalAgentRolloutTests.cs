@@ -21,9 +21,9 @@ public sealed class TerminalAgentRolloutTests
     private TerminalAgent Create(params Func<IReadOnlyList<ChatMessage>, ChatResponse>[] steps)
     {
         var agent = new TerminalAgent(new ScriptedChatClient(steps), _user, new SecretRedactor());
-        agent.AddTerminal(new AgentTerminal("web1", _web1, ApprovalMode.Ask, "staging"));
-        agent.AddTerminal(new AgentTerminal("web2", _web2, ApprovalMode.Ask, "staging"));
-        agent.AddTerminal(new AgentTerminal("db1", _db1, ApprovalMode.Ask, "production"));
+        agent.AddTerminal(new AgentTerminal("web1", _web1, "staging"));
+        agent.AddTerminal(new AgentTerminal("web2", _web2, "staging"));
+        agent.AddTerminal(new AgentTerminal("db1", _db1, "production"));
         agent.EventRaised += (_, e) => _events.Add(e);
         return agent;
     }

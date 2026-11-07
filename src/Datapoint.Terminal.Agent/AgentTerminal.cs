@@ -2,26 +2,21 @@ namespace Datapoint.Terminal.Agent;
 
 public sealed class AgentTerminal
 {
-    private volatile int _mode;
     private volatile bool _isAwaitingInput;
 
-    public AgentTerminal(string name, IAgentTerminal terminal, ApprovalMode defaultMode, string? environment = null)
+    public AgentTerminal(string name, IAgentTerminal terminal, string? environment = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         ArgumentNullException.ThrowIfNull(terminal);
         Name = name;
         Terminal = terminal;
-        DefaultMode = defaultMode;
         Environment = environment;
-        _mode = (int)defaultMode;
         terminal.LinesMoved += (_, e) =>
         {
             SeenUpTo = e.Map.Map(SeenUpTo);
             RunningCommandLine = RunningCommandLine is { } running ? e.Map.Map(running) : null;
         };
     }
-
-    public event EventHandler? ModeChanged;
 
     public string Name { get; }
 
@@ -38,8 +33,6 @@ public sealed class AgentTerminal
     // The connection the terminal was opened for, which history is kept under.
     public string? Connection { get; init; }
 
-    public ApprovalMode DefaultMode { get; }
-
     // Exact file access on the terminal's machine, beside the terminal; null where it isn't available, e.g. on Windows for now.
     public Files.IHostFiles? Files { get; init; }
 
@@ -52,21 +45,6 @@ public sealed class AgentTerminal
     {
         get => Interlocked.Read(ref _seenUpTo);
         set => Interlocked.Exchange(ref _seenUpTo, value);
-    }
-
-    public ApprovalMode Mode
-    {
-        get => (ApprovalMode)_mode;
-        set
-        {
-            if (_mode == (int)value)
-            {
-                return;
-            }
-
-            _mode = (int)value;
-            ModeChanged?.Invoke(this, EventArgs.Empty);
-        }
     }
 
     public bool IsAwaitingInput

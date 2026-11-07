@@ -39,8 +39,8 @@
   <data name="ModeAskForRisky" xml:space="preserve">
     <value>Ask if risky</value>
   </data>
-  <data name="ModeAuto" xml:space="preserve">
-    <value>Auto</value>
+  <data name="ModePlan" xml:space="preserve">
+    <value>Plan</value>
   </data>
   <data name="StatusIdle" xml:space="preserve">
     <value>Idle</value>
@@ -106,13 +106,13 @@
     <value>The AI provider couldn't be set up: {0}</value>
   </data>
   <data name="ModeAskHelp" xml:space="preserve">
-    <value>Every command waits for your approval.</value>
+    <value>Every command waits for your approval, in every terminal.</value>
   </data>
   <data name="ModeAskForRiskyHelp" xml:space="preserve">
-    <value>Commands that only read run on their own; anything that may change the system waits for your approval.</value>
+    <value>Commands that only read run on their own; anything that may change a system waits for your approval.</value>
   </data>
-  <data name="ModeAutoHelp" xml:space="preserve">
-    <value>Commands run without asking, except those that change SSH trust. Lasts until the task ends.</value>
+  <data name="ModePlanHelp" xml:space="preserve">
+    <value>Commands that only read run on their own. Before changing anything, the agent shows a plan for your approval; its steps then run without asking, and anything else asks.</value>
   </data>
   <data name="SettingsTitle" xml:space="preserve">
     <value>Settings</value>
@@ -504,9 +504,6 @@ Fingerprint: {2}</value>
   <data name="ReviewNone" xml:space="preserve">
     <value>none</value>
   </data>
-  <data name="ReviewDefault" xml:space="preserve">
-    <value>default</value>
-  </data>
   <data name="NoticeConnectionsStricter" xml:space="preserve">
     <value>Applied changes to {0} from workspace.json, since they only make things stricter.</value>
   </data>
@@ -764,15 +761,6 @@ Fingerprint: {2}</value>
   </data>
   <data name="SwitchConfirm" xml:space="preserve">
     <value>Switch</value>
-  </data>
-  <data name="AutoProductionTitle" xml:space="preserve">
-    <value>Use Auto in {0}?</value>
-  </data>
-  <data name="AutoProductionMessage" xml:space="preserve">
-    <value>This terminal is labelled {0}. In Auto the agent runs commands there without asking, until the current task ends.</value>
-  </data>
-  <data name="AutoProductionConfirm" xml:space="preserve">
-    <value>Use Auto</value>
   </data>
   <data name="PendingOutput" xml:space="preserve">
     <value>Your next message also sends new output from {0}.</value>
@@ -2344,7 +2332,7 @@ Fingerprint: {2}</value>
     <value>Can send data to another machine, and holds text from your terminals: “{0}”. Check it isn't carrying something out.</value>
   </data>
   <data name="ApprovalRiskAfterWeb" xml:space="preserve">
-    <value>Can send data to another machine. The agent has read web content in this conversation, which could try to make it send your data out, so this asks even in Auto.</value>
+    <value>Can send data to another machine. The agent has read web content in this conversation, which could try to make it send your data out, so this asks even in Plan mode.</value>
   </data>
   <data name="WebComposedAddress" xml:space="preserve">
     <value>The agent wrote this address itself: it isn't from a search result, a page it read or your message.</value>
@@ -2357,5 +2345,20 @@ Fingerprint: {2}</value>
   </data>
   <data name="WebInjectionWarning" xml:space="preserve">
     <value>This contains text addressed to an AI model: “{0}”. The agent was told not to follow it.</value>
+  </data>
+  <data name="ModeIgnorePermissions" xml:space="preserve">
+    <value>Ignore permissions</value>
+  </data>
+  <data name="ModeIgnorePermissionsHelp" xml:space="preserve">
+    <value>Commands run in every terminal without asking, including production. Web searches and page reads still ask. Ends with the conversation or when the app closes.</value>
+  </data>
+  <data name="IgnorePermissionsTitle" xml:space="preserve">
+    <value>Ignore permissions?</value>
+  </data>
+  <data name="IgnorePermissionsMessage" xml:space="preserve">
+    <value>The agent will run any command in every terminal of this project without asking, production included, until this conversation ends or the app closes. Text it reads in a terminal, a file or on the web could steer it into running something harmful, and you'd only see it as it happens. You can still stop it at any time.</value>
+  </data>
+  <data name="IgnorePermissionsConfirm" xml:space="preserve">
+    <value>Ignore permissions</value>
   </data>
 </root>

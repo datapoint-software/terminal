@@ -117,7 +117,7 @@ public sealed partial class MainWindow : Window, ITerminalOpener
         _chat.MessageSent = message => Record(HistoryEntryKind.User, message);
         _chat.Cleared = EndConversation;
         _chat.ModelChosen = choice => _ = ChooseModelAsync(choice);
-        _chat.ConfirmAuto = ConfirmAutoAsync;
+        _chat.ConfirmIgnorePermissions = ConfirmIgnorePermissionsAsync;
         _chat.WebAlwaysAllowed += (_, _) => _settings.SetAlwaysAllowWeb(true);
     }
 
@@ -179,6 +179,8 @@ public sealed partial class MainWindow : Window, ITerminalOpener
                     Skills = CreateSkills(),
                     HistorySearch = SearchHistory,
                 };
+                _agent.Mode = _settings.ModeFor(Workspace.Folder);
+                _agent.ModeChanged += OnAgentModeChanged;
                 _agent.EventRaised += OnMemoryEvent;
                 _agent.OutputLimit = OutputLimits.For(provider.ContextWindow, provider.OutputLimit);
                 _agent.EventRaised += OnAgentEvent;

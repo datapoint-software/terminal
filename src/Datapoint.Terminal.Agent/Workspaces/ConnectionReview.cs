@@ -6,12 +6,11 @@ public sealed record ConnectionReview(IReadOnlyList<WorkspaceConnection> Effecti
 {
     public const string NewConnection = "connection";
     public const string EnvironmentSetting = "environment";
-    public const string ApprovalSetting = "approval mode";
     public const string AddressSetting = "address";
     public const string LabelsSetting = "labels";
 
     // The effective list is also the new confirmed record: stricter changes and removals are accepted as they are.
-    public static ConnectionReview Compare(IReadOnlyList<WorkspaceConnection> current, IReadOnlyList<WorkspaceConnection> confirmed, ApprovalMode defaultMode)
+    public static ConnectionReview Compare(IReadOnlyList<WorkspaceConnection> current, IReadOnlyList<WorkspaceConnection> confirmed)
     {
         ArgumentNullException.ThrowIfNull(current);
         ArgumentNullException.ThrowIfNull(confirmed);
@@ -26,20 +25,19 @@ public sealed record ConnectionReview(IReadOnlyList<WorkspaceConnection> Effecti
                 continue;
             }
 
-            effective.Add(Merge(connection, previous, defaultMode, held));
+            effective.Add(Merge(connection, previous, held));
         }
 
         return new ConnectionReview(effective, held);
     }
 
-    // Whether two records agree on everything this review guards: the environment, the labels, the approval mode and the address.
+    // Whether two records agree on everything this review guards: the environment, the labels and the address.
     public static bool IsSameGuarded(WorkspaceConnection first, WorkspaceConnection second)
     {
         ArgumentNullException.ThrowIfNull(first);
         ArgumentNullException.ThrowIfNull(second);
         return string.Equals(first.Environment, second.Environment, StringComparison.Ordinal)
             && string.Equals(LabelList(first), LabelList(second), StringComparison.Ordinal)
-            && first.ApprovalMode == second.ApprovalMode
             && string.Equals(Address(first), Address(second), StringComparison.Ordinal);
     }
 
@@ -60,7 +58,7 @@ public sealed record ConnectionReview(IReadOnlyList<WorkspaceConnection> Effecti
         return user + connection.Host + port + container;
     }
 
-    private static WorkspaceConnection Merge(WorkspaceConnection connection, WorkspaceConnection previous, ApprovalMode defaultMode, List<ConnectionChange> held)
+    private static WorkspaceConnection Merge(WorkspaceConnection connection, WorkspaceConnection previous, List<ConnectionChange> held)
     {
         var merged = connection;
         if (!string.Equals(connection.Environment, previous.Environment, StringComparison.Ordinal) && !(connection.IsProduction && !previous.IsProduction))
@@ -75,12 +73,6 @@ public sealed record ConnectionReview(IReadOnlyList<WorkspaceConnection> Effecti
         {
             held.Add(new ConnectionChange(connection.Name, LabelsSetting, LabelList(previous), LabelList(connection)));
             merged = merged with { Labels = Normalized([.. (connection.Labels ?? []).Where(previous.HasLabel)]) };
-        }
-
-        if (Strictness(merged, defaultMode) < Strictness(previous, defaultMode))
-        {
-            held.Add(new ConnectionChange(connection.Name, ApprovalSetting, Mode(previous), Mode(merged)));
-            merged = merged with { ApprovalMode = previous.ApprovalMode };
         }
 
         if (!string.Equals(Address(connection), Address(previous), StringComparison.Ordinal))
@@ -100,17 +92,4 @@ public sealed record ConnectionReview(IReadOnlyList<WorkspaceConnection> Effecti
     }
 
     private static IReadOnlyList<string>? Normalized(IReadOnlyList<string> labels) => labels.Count == 0 ? null : labels;
-
-    // A connection without its own mode takes the application's default, or Ask when it's labeled production.
-    private static ApprovalMode ModeOf(WorkspaceConnection connection, ApprovalMode defaultMode) =>
-        connection.ApprovalMode ?? (connection.IsProduction ? ApprovalMode.Ask : defaultMode);
-
-    private static int Strictness(WorkspaceConnection connection, ApprovalMode defaultMode) => ModeOf(connection, defaultMode) switch
-    {
-        ApprovalMode.Ask => 2,
-        ApprovalMode.AskForRisky => 1,
-        _ => 0,
-    };
-
-    private static string? Mode(WorkspaceConnection connection) => connection.ApprovalMode?.ToString();
 }

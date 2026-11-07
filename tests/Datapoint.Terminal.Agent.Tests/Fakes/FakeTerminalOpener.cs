@@ -27,7 +27,7 @@ internal sealed class FakeTerminalOpener(IReadOnlyList<AgentConnection> connecti
 
         Opened.Add(connection);
         var match = connections.First(item => string.Equals(item.Name, connection, StringComparison.Ordinal));
-        Agent!.AddTerminal(new AgentTerminal(connection, NewTerminal(connection), match.Mode, match.Environment) { Connection = connection });
+        Agent!.AddTerminal(new AgentTerminal(connection, NewTerminal(connection), match.Environment) { Connection = connection });
         return Task.FromResult<string?>(connection);
     }
 

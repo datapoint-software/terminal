@@ -5,7 +5,7 @@ using Microsoft.Extensions.AI;
 namespace Datapoint.Terminal.Agent;
 
 // Product decisions 45 and 82: before changing a system the agent shows its plan, and once the plan is approved, a step it
-// doesn't include stops for the user, even in Auto. The plan lasts for the task.
+// doesn't include stops for the user, even in Plan mode (not when the user ignores permissions). The plan lasts for the task.
 public sealed partial class TerminalAgent
 {
     public const int MaxPlanSteps = 30;
@@ -19,7 +19,7 @@ public sealed partial class TerminalAgent
         new ToolFunction(
             "propose_plan",
             "Shows the user your plan for a task that changes a system, for approval: the steps in order, each with the command "
-            + "you intend to run, and how to roll back. Required before changing anything in a terminal in Auto mode. Once it's "
+            + "you intend to run, and how to roll back. Required before changing anything in Plan mode. Once it's "
             + "approved, give the step's number as plan_step when you run each command; anything the plan doesn't include asks "
             + "the user first. Propose a new plan if the work changes.",
             """
@@ -89,8 +89,8 @@ public sealed partial class TerminalAgent
 
         if (_plan is null)
         {
-            return terminal.Mode == ApprovalMode.Auto
-                ? new PlanCheck("in Auto mode, show your plan with propose_plan before changing anything.", IsOutside: false, Step: null)
+            return Mode == ApprovalMode.Plan
+                ? new PlanCheck("in Plan mode, show your plan with propose_plan before changing anything.", IsOutside: false, Step: null)
                 : PlanCheck.None;
         }
 

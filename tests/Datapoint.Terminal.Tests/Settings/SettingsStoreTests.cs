@@ -20,12 +20,12 @@ public sealed class SettingsStoreTests : IDisposable
         Assert.Empty(store.Load().Providers);
 
         var provider = new ProviderAccount { Id = "a1", Kind = ProviderKind.OpenAICompatible, Name = "Ollama", Model = "llama", Endpoint = "http://localhost:11434/v1", IsLocal = true };
-        store.Save(new AppSettings { Providers = [provider], SelectedProviderId = "a1", DefaultApprovalMode = ApprovalMode.AskForRisky });
+        store.Save(new AppSettings { Providers = [provider], SelectedProviderId = "a1", WorkspaceModes = [new WorkspaceMode { Folder = "/work/site", Mode = ApprovalMode.Plan }] });
         var loaded = new SettingsStore(FilePath).Load();
 
         Assert.Equal(provider, Assert.Single(loaded.Providers));
         Assert.Equal(provider, loaded.SelectedProvider);
-        Assert.Equal(ApprovalMode.AskForRisky, loaded.DefaultApprovalMode);
+        Assert.Equal(ApprovalMode.Plan, Assert.Single(loaded.WorkspaceModes).Mode);
         Assert.Contains("\"openAICompatible\"", File.ReadAllText(FilePath), StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("\"selectedProvider\"", File.ReadAllText(FilePath), StringComparison.Ordinal);
     }
@@ -44,7 +44,25 @@ public sealed class SettingsStoreTests : IDisposable
         Assert.Equal(14, loaded.TerminalFontSize);
         Assert.True(loaded.Notifications);
         Assert.True(loaded.RecordSessions);
-        Assert.Equal(ApprovalMode.Ask, loaded.DefaultApprovalMode);
+        Assert.Empty(loaded.WorkspaceModes);
+    }
+
+    // Files from before decision 107 hold modes per connection and a default; they're no longer read, and a mode this version
+    // doesn't know, or Ignore permissions, which is never meant to be kept, reads as Ask.
+    [Fact]
+    public void Reads_older_and_unknown_modes_safely()
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(FilePath)!);
+        File.WriteAllText(FilePath, """
+            { "version": 1, "defaultApprovalMode": "Auto",
+              "confirmedConnections": [ { "folder": "/a", "connections": [ { "name": "web", "host": "web1", "approvalMode": "Auto" } ] } ],
+              "workspaceModes": [ { "folder": "/a", "mode": "Auto" }, { "folder": "/b", "mode": "IgnorePermissions" }, { "folder": "/c", "mode": "askForRisky" } ] }
+            """);
+
+        var loaded = new SettingsStore(FilePath).Load();
+
+        Assert.Equal([ApprovalMode.Ask, ApprovalMode.Ask, ApprovalMode.AskForRisky], loaded.WorkspaceModes.Select(item => item.Mode));
+        Assert.Equal("web", Assert.Single(Assert.Single(loaded.ConfirmedConnections).Connections).Name);
     }
 
     [Fact]
@@ -62,7 +80,7 @@ public sealed class SettingsStoreTests : IDisposable
     [Fact]
     public void Keeps_confirmed_connections()
     {
-        var web = new WorkspaceConnection { Name = "web", SshHost = "web1", Environment = "production", ApprovalMode = ApprovalMode.Ask };
+        var web = new WorkspaceConnection { Name = "web", SshHost = "web1", Environment = "production" };
         new SettingsStore(FilePath).Save(new AppSettings { ConfirmedConnections = [new ConfirmedConnections { Folder = "/work/site", Connections = [web] }] });
 
         var loaded = Assert.Single(new SettingsStore(FilePath).Load().ConfirmedConnections);

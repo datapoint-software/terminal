@@ -89,7 +89,7 @@ public sealed class WorkspaceTests : IDisposable
     public void Keeps_saved_settings_without_empty_fields()
     {
         Directory.CreateDirectory(Folder);
-        var settings = new WorkspaceSettings { Connections = [new WorkspaceConnection { Name = "web-1", SshHost = "web-1", Environment = "production", ApprovalMode = ApprovalMode.Ask }] };
+        var settings = new WorkspaceSettings { Connections = [new WorkspaceConnection { Name = "web-1", SshHost = "web-1", Environment = "production" }] };
         using (var workspace = Workspace.Open(Folder, _home, create: false, personalRoot: Data))
         {
             workspace.SaveSettings(settings, new SecretRedactor());

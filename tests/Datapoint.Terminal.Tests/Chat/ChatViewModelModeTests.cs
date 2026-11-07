@@ -1,57 +1,86 @@
 using Datapoint.Terminal.Agent;
+using Datapoint.Terminal.Agent.Safety;
 using Datapoint.Terminal.Chat;
+using Microsoft.Extensions.AI;
 
 namespace Datapoint.Terminal.Tests.Chat;
 
-public sealed class ChatViewModelModeTests
+public sealed class ChatViewModelModeTests : IDisposable
 {
-    private static (ChatViewModel Chat, AgentTerminal Terminal) Create(string? environment, bool confirms, List<string> asked)
+    private readonly ChatViewModel _chat = new(new ImmediateUiThread());
+    private readonly TerminalAgent _agent;
+    private int _asked;
+
+    public ChatViewModelModeTests()
     {
-        var chat = new ChatViewModel(new ImmediateUiThread())
-        {
-            ConfirmAuto = terminal => { asked.Add(terminal.Name); return Task.FromResult(confirms); },
-        };
-        var terminal = new AgentTerminal("web1", new InstantTerminal(), ApprovalMode.Ask, environment);
-        chat.ShowTerminal(terminal);
-        return (chat, terminal);
+        _agent = new TerminalAgent(new ListChatClient(new ChatResponse(new ChatMessage(ChatRole.Assistant, "OK."))), _chat, new SecretRedactor());
+        _agent.AddTerminal(new AgentTerminal("Local", new InstantTerminal()));
+        _agent.AddTerminal(new AgentTerminal("web1", new InstantTerminal(), "production"));
+        _chat.Attach(_agent, "privacy notice");
+    }
+
+    public void Dispose()
+    {
+        _chat.Dispose();
+        _agent.Dispose();
+    }
+
+    private void Choose(ApprovalMode mode) => _chat.SelectedMode = _chat.Modes.Single(option => option.Mode == mode);
+
+    private void Confirms(bool answer) => _chat.ConfirmIgnorePermissions = () =>
+    {
+        _asked++;
+        return Task.FromResult(answer);
+    };
+
+    [Fact]
+    public void Offers_the_four_modes_in_order() =>
+        Assert.Equal([ApprovalMode.Ask, ApprovalMode.AskForRisky, ApprovalMode.Plan, ApprovalMode.IgnorePermissions], _chat.Modes.Select(option => option.Mode));
+
+    [Fact]
+    public void Sets_one_mode_for_the_agent_without_asking_even_with_production_open()
+    {
+        Confirms(false);
+
+        Choose(ApprovalMode.Plan);
+
+        Assert.Equal(ApprovalMode.Plan, _agent.Mode);
+        Assert.Equal(0, _asked);
     }
 
     [Fact]
-    public void Confirms_Auto_on_a_production_terminal()
+    public void Confirms_ignoring_permissions()
     {
-        var asked = new List<string>();
-        var (chat, terminal) = Create("production", confirms: true, asked);
-        using var _ = chat;
+        Confirms(true);
 
-        chat.SelectedMode = chat.Modes.Single(option => option.Mode == ApprovalMode.Auto);
+        Choose(ApprovalMode.IgnorePermissions);
 
-        Assert.Equal(["web1"], asked, StringComparer.Ordinal);
-        Assert.Equal(ApprovalMode.Auto, terminal.Mode);
+        Assert.Equal(1, _asked);
+        Assert.Equal(ApprovalMode.IgnorePermissions, _agent.Mode);
+        Assert.Equal(ApprovalMode.IgnorePermissions, _chat.SelectedMode.Mode);
     }
 
     [Fact]
-    public void Keeps_the_mode_when_Auto_is_not_confirmed()
+    public void Keeps_the_mode_when_ignoring_permissions_is_not_confirmed()
     {
-        var asked = new List<string>();
-        var (chat, terminal) = Create("prod-eu", confirms: false, asked);
-        using var _ = chat;
+        Confirms(false);
+        Choose(ApprovalMode.AskForRisky);
 
-        chat.SelectedMode = chat.Modes.Single(option => option.Mode == ApprovalMode.Auto);
+        Choose(ApprovalMode.IgnorePermissions);
 
-        Assert.Equal(ApprovalMode.Ask, terminal.Mode);
-        Assert.Equal(ApprovalMode.Ask, chat.SelectedMode.Mode);
+        Assert.Equal(ApprovalMode.AskForRisky, _agent.Mode);
+        Assert.Equal(ApprovalMode.AskForRisky, _chat.SelectedMode.Mode);
     }
 
     [Fact]
-    public void Does_not_ask_elsewhere()
+    public void Shows_the_mode_the_agent_falls_back_to_when_the_conversation_is_cleared()
     {
-        var asked = new List<string>();
-        var (chat, terminal) = Create("staging", confirms: false, asked);
-        using var _ = chat;
+        Confirms(true);
+        Choose(ApprovalMode.Plan);
+        Choose(ApprovalMode.IgnorePermissions);
 
-        chat.SelectedMode = chat.Modes.Single(option => option.Mode == ApprovalMode.Auto);
+        _agent.ClearConversation();
 
-        Assert.Empty(asked);
-        Assert.Equal(ApprovalMode.Auto, terminal.Mode);
+        Assert.Equal(ApprovalMode.Plan, _chat.SelectedMode.Mode);
     }
 }

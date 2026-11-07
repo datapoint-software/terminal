@@ -8,7 +8,8 @@ namespace Datapoint.Terminal.Agent;
 // - addresses it didn't write itself (search results, links on pages it read, the user's own): they can't hold anything from
 //   the terminals, so only these are read without asking when the user allows the web always;
 // - what the terminals showed, so an address or network command holding that text asks first and says why;
-// - whether web text is in the conversation, after which every network command asks first, even in Auto.
+// - whether web text is in the conversation, after which every network command asks first, even in Plan mode.
+// Ignoring permissions turns off the questions about commands, never the ones about the web.
 public sealed partial class TerminalAgent
 {
     private static readonly HashSet<string> s_untracked = new(StringComparer.Ordinal) { "search_web", "read_page", "ask_user", "propose_plan" };

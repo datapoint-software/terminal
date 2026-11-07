@@ -44,8 +44,8 @@ public sealed class TerminalAgentSkillsTests : IDisposable
         var client = new ScriptedChatClient([.. steps]);
         var opener = new FakeTerminalOpener(
         [
-            new AgentConnection("web1", "production", ApprovalMode.Ask) { Labels = ["web"] },
-            new AgentConnection("db1", "production", ApprovalMode.Ask) { Labels = ["db"] },
+            new AgentConnection("web1", "production") { Labels = ["web"] },
+            new AgentConnection("db1", "production") { Labels = ["db"] },
         ]);
         using var agent = new TerminalAgent(client, new FakeUser(), new SecretRedactor())
         {
@@ -53,7 +53,8 @@ public sealed class TerminalAgentSkillsTests : IDisposable
             TerminalOpener = opener,
         };
         opener.Agent = agent;
-        agent.AddTerminal(new AgentTerminal("web1", new FakeTerminal(), ApprovalMode.AskForRisky));
+        agent.Mode = ApprovalMode.AskForRisky;
+        agent.AddTerminal(new AgentTerminal("web1", new FakeTerminal()));
         await agent.SendAsync("Patch the web servers", Token);
         return (results, client);
     }

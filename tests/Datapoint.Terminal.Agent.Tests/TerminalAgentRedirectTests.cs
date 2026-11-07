@@ -21,7 +21,7 @@ public sealed class TerminalAgentRedirectTests
     private TerminalAgent Create(ScriptedChatClient client)
     {
         var agent = new TerminalAgent(client, _user, new SecretRedactor());
-        agent.AddTerminal(new AgentTerminal("Local", _terminal, ApprovalMode.Ask));
+        agent.AddTerminal(new AgentTerminal("Local", _terminal));
         return agent;
     }
 

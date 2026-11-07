@@ -12,7 +12,7 @@ public sealed record CommandProposal(string Command, string Purpose, CommandRisk
     // A session opened inside the terminal, e.g. "ssh session to web1", where the command will actually run.
     public string? Session { get; init; }
 
-    // A file listed in .terminalignore that the command names, which is why it asks even in Auto.
+    // A file listed in .terminalignore that the command names, which is why it asks in every mode.
     public string? IgnoredFile { get; init; }
 
     // The approved plan's step the agent says this carries out, or IsOutsidePlan when there's a plan and this isn't in it.
@@ -20,7 +20,7 @@ public sealed record CommandProposal(string Command, string Purpose, CommandRisk
 
     public bool IsOutsidePlan { get; init; }
 
-    // Why a command that can send data to another machine asks even in Auto: web text is in the conversation, or the
+    // Why a command that can send data to another machine asks even in Plan mode: web text is in the conversation, or the
     // command holds text from the terminals (TerminalText).
     public bool IsAfterWeb { get; init; }
 

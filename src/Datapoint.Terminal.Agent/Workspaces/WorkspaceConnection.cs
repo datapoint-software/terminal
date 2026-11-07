@@ -19,8 +19,6 @@ public sealed record WorkspaceConnection
     // Free-form labels, e.g. "web" or "debian", which skills use to choose the hosts they run on.
     public IReadOnlyList<string>? Labels { get; init; }
 
-    public ApprovalMode? ApprovalMode { get; init; }
-
     public string? Model { get; init; }
 
     // A container on the connection's host, or on the local machine when it names no host.

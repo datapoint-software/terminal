@@ -85,7 +85,7 @@ public sealed partial class TerminalAgent
         return (before, after, problem);
     }
 
-    // Null to go ahead; otherwise what to tell the model. Edits ask as changes do, and in Auto follow the plan.
+    // Null to go ahead; otherwise what to tell the model. Edits ask as changes do, and in Plan mode follow the plan.
     private async Task<string?> ApproveEditAsync(PreparedEdit edit, string diff, string purpose, int? step, CancellationToken cancellationToken)
     {
         var plan = CheckPlan(edit.Terminal, CommandRisk.Changes, step);
@@ -94,7 +94,7 @@ public sealed partial class TerminalAgent
             return "Not changed: " + plan.Problem;
         }
 
-        if (edit.Terminal.Mode == ApprovalMode.Auto && !plan.IsOutside)
+        if (Mode == ApprovalMode.IgnorePermissions || (Mode == ApprovalMode.Plan && !plan.IsOutside))
         {
             return null;
         }

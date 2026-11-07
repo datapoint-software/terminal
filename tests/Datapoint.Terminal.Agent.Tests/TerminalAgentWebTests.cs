@@ -29,7 +29,7 @@ public sealed class TerminalAgentWebTests
     private static Func<IReadOnlyList<ChatMessage>, ChatResponse> Planned(string command, int step) =>
         Tool("run_command", ("terminal", "Local"), ("command", command), ("purpose", "Check"), ("plan_step", step));
 
-    // Network commands change nothing locally but are no longer read-only, so in Auto they run only as steps of a plan.
+    // Network commands change nothing locally but are no longer read-only, so in Plan mode they run only as steps of a plan.
     private static Func<IReadOnlyList<ChatMessage>, ChatResponse> Plan(params string[] commands) =>
         Tool("propose_plan", ("terminal", "Local"), ("summary", "Check the service"), ("steps", commands.Select(command => command + ": check").ToArray()), ("rollback", "None."));
 
@@ -54,7 +54,8 @@ public sealed class TerminalAgentWebTests
         {
             PageReader = new WebPageReader((_, _) => Task.FromResult(Array.Empty<IPAddress>()), new FakeHandler(this)),
         };
-        agent.AddTerminal(new AgentTerminal("Local", _terminal, ApprovalMode.Auto));
+        agent.Mode = ApprovalMode.Plan;
+        agent.AddTerminal(new AgentTerminal("Local", _terminal));
         setUp?.Invoke(agent);
         await agent.SendAsync(_message, Token);
         return results;
@@ -206,7 +207,7 @@ public sealed class TerminalAgentWebTests
     }
 
     [Fact]
-    public async Task Asks_before_network_commands_once_web_text_is_in_the_conversation_even_in_auto()
+    public async Task Asks_before_network_commands_once_web_text_is_in_the_conversation_even_in_plan_mode()
     {
         await RunAsync(
             null,
@@ -223,7 +224,7 @@ public sealed class TerminalAgentWebTests
     }
 
     [Fact]
-    public async Task Asks_before_a_network_command_carrying_terminal_text_even_in_auto()
+    public async Task Asks_before_a_network_command_carrying_terminal_text_even_in_plan_mode()
     {
         _terminal.Run = command => command.StartsWith("cat", StringComparison.Ordinal) ? ("primary database: customers-eu-replica-07", 0) : ("ok", 0);
 

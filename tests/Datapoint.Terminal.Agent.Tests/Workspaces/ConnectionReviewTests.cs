@@ -6,8 +6,7 @@ public sealed class ConnectionReviewTests
 {
     private static readonly WorkspaceConnection s_web = new() { Name = "web", SshHost = "web1", Environment = "production" };
 
-    private static ConnectionReview Compare(WorkspaceConnection current, ApprovalMode defaultMode = ApprovalMode.Auto) =>
-        ConnectionReview.Compare([current], [s_web], defaultMode);
+    private static ConnectionReview Compare(WorkspaceConnection current) => ConnectionReview.Compare([current], [s_web]);
 
     [Fact]
     public void Accepts_an_unchanged_connection() =>
@@ -28,7 +27,7 @@ public sealed class ConnectionReviewTests
     {
         var confirmed = s_web with { Labels = ["web", "debian"] };
 
-        var review = ConnectionReview.Compare([confirmed with { Labels = ["web", "debian", "db"] }], [confirmed], ApprovalMode.Auto);
+        var review = ConnectionReview.Compare([confirmed with { Labels = ["web", "debian", "db"] }], [confirmed]);
 
         var change = Assert.Single(review.Held);
         Assert.Equal((ConnectionReview.LabelsSetting, "web, debian", "web, debian, db"), (change.Setting, change.Confirmed, change.Proposed));
@@ -40,7 +39,7 @@ public sealed class ConnectionReviewTests
     {
         var confirmed = s_web with { Labels = ["web", "debian"] };
 
-        var review = ConnectionReview.Compare([confirmed with { Labels = ["WEB"] }], [confirmed], ApprovalMode.Auto);
+        var review = ConnectionReview.Compare([confirmed with { Labels = ["WEB"] }], [confirmed]);
 
         Assert.Empty(review.Held);
         Assert.Equal(["WEB"], Assert.Single(review.Effective).Labels!);
@@ -74,33 +73,10 @@ public sealed class ConnectionReviewTests
     {
         var staging = s_web with { Environment = "staging" };
 
-        var review = ConnectionReview.Compare([s_web], [staging], ApprovalMode.Auto);
+        var review = ConnectionReview.Compare([s_web], [staging]);
 
         Assert.Empty(review.Held);
         Assert.Equal(s_web, Assert.Single(review.Effective));
-    }
-
-    [Fact]
-    public void Holds_a_looser_approval_mode_and_keeps_the_confirmed_one()
-    {
-        var review = Compare(s_web with { ApprovalMode = ApprovalMode.Auto });
-
-        Assert.Equal(ConnectionReview.ApprovalSetting, Assert.Single(review.Held).Setting);
-        // The confirmed record has no mode of its own, so the production label's default, Ask, applies again.
-        var effective = Assert.Single(review.Effective);
-        Assert.Null(effective.ApprovalMode);
-        Assert.True(effective.IsProduction);
-    }
-
-    [Fact]
-    public void Applies_a_stricter_approval_mode_on_its_own()
-    {
-        var dev = new WorkspaceConnection { Name = "dev", Host = "10.0.0.9", ApprovalMode = ApprovalMode.Auto };
-
-        var review = ConnectionReview.Compare([dev with { ApprovalMode = ApprovalMode.AskForRisky }], [dev], ApprovalMode.Auto);
-
-        Assert.Empty(review.Held);
-        Assert.Equal(ApprovalMode.AskForRisky, Assert.Single(review.Effective).ApprovalMode);
     }
 
     [Theory]
@@ -120,7 +96,7 @@ public sealed class ConnectionReviewTests
     {
         var added = new WorkspaceConnection { Name = "db", Host = "10.0.0.7", User = "admin" };
 
-        var review = ConnectionReview.Compare([added], [s_web], ApprovalMode.Ask);
+        var review = ConnectionReview.Compare([added], [s_web]);
 
         Assert.Empty(review.Effective);
         Assert.Equal(new ConnectionChange("db", ConnectionReview.NewConnection, null, "admin@10.0.0.7"), Assert.Single(review.Held));

@@ -44,7 +44,7 @@ public sealed partial class TerminalAgent
             return $"Not opened: there's no connection called \"{name}\". Use one of the connections listed in the user's message.";
         }
 
-        if (connection.Mode == ApprovalMode.Ask)
+        if (Mode == ApprovalMode.Ask)
         {
             SetStatus(AgentStatus.WaitingForApproval);
             var proposal = new CommandProposal(connection.Name, purpose, CommandRisk.Changes, connection.Name, connection.Environment) { Kind = ProposalKind.OpenTerminal };

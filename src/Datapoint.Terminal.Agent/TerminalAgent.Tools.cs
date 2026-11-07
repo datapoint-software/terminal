@@ -215,7 +215,7 @@ public sealed partial class TerminalAgent
         var risk = CommandClassifier.Classify(command);
         var ignored = IgnoredFileCheck?.Invoke(terminal, command);
         var outgoing = OutgoingCheck(command);
-        var needsApproval = ignored is not null || plan.IsOutside || outgoing.Asks || NeedsApproval(terminal.Mode, risk);
+        var needsApproval = ignored is not null || (Mode != ApprovalMode.IgnorePermissions && (plan.IsOutside || outgoing.Asks || NeedsApproval(Mode, risk)));
         if (!needsApproval)
         {
             return CommandApproval.Approve(command);
@@ -258,7 +258,8 @@ public sealed partial class TerminalAgent
 
     private static bool NeedsApproval(ApprovalMode mode, CommandRisk risk) => mode switch
     {
-        ApprovalMode.Auto => risk == CommandRisk.AlwaysAsk,
+        ApprovalMode.IgnorePermissions => false,
+        ApprovalMode.Plan => risk == CommandRisk.AlwaysAsk,
         ApprovalMode.AskForRisky => risk != CommandRisk.ReadOnly,
         _ => true,
     };

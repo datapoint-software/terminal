@@ -89,7 +89,7 @@ public sealed partial class MainWindow
 
         // File access and transfer go to the host, not into a container on it, so a container's files are changed through its shell.
         var onHost = connection.Container is null;
-        Attach(tab, Connect(tab, session), connection.Environment, DefaultModeFor(connection), select, onHost ? new SshHostFiles(client) : null, connection.Container?.Describe());
+        Attach(tab, Connect(tab, session), connection.Environment, select, onHost ? new SshHostFiles(client) : null, connection.Container?.Describe());
         tab.Client = onHost ? client : null;
         tab.SharedClient = shared;
         if (host is not null)
@@ -204,9 +204,4 @@ public sealed partial class MainWindow
         hop.Get("ProxyJump") is { } nested && !string.Equals(nested, "none", StringComparison.OrdinalIgnoreCase)
             ? $"ProxyJump in your SSH configuration for the jump host {hop.Alias} isn't supported yet; list every hop in the target's ProxyJump instead."
             : null;
-
-    // Production connections ask before every command unless the workspace says otherwise (product decision 72).
-    private ApprovalMode DefaultModeFor(WorkspaceConnection connection) =>
-        connection.ApprovalMode
-        ?? (connection.IsProduction ? ApprovalMode.Ask : _settings.Current.DefaultApprovalMode);
 }

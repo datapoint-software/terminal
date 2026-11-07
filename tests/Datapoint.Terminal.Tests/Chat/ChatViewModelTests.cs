@@ -28,7 +28,7 @@ public sealed class ChatViewModelTests
     {
         using var chat = new ChatViewModel(new ImmediateUiThread());
         using var agent = new TerminalAgent(new ListChatClient(Call("df -h"), new ChatResponse(new ChatMessage(ChatRole.Assistant, "Plenty of space."))), chat, new SecretRedactor());
-        agent.AddTerminal(new AgentTerminal("Local", new InstantTerminal(), ApprovalMode.Ask));
+        agent.AddTerminal(new AgentTerminal("Local", new InstantTerminal()));
         chat.Attach(agent, "privacy notice");
         chat.Draft = "How much disk is left?";
         var sent = new List<string>();
@@ -146,7 +146,7 @@ public sealed class ChatViewModelTests
             ChatRole.Assistant,
             [new FunctionCallContent("call-1", "ask_user", new Dictionary<string, object?>(StringComparer.Ordinal) { ["question"] = "Which environment?" })]));
         using var agent = new TerminalAgent(new ListChatClient(ask, new ChatResponse(new ChatMessage(ChatRole.Assistant, "Here are the logs."))), chat, new SecretRedactor());
-        agent.AddTerminal(new AgentTerminal("Local", new InstantTerminal(), ApprovalMode.Ask));
+        agent.AddTerminal(new AgentTerminal("Local", new InstantTerminal()));
         chat.Attach(agent, "privacy notice");
         var sent = new List<string>();
         chat.MessageSent = sent.Add;
@@ -169,34 +169,6 @@ public sealed class ChatViewModelTests
     }
 
     [Fact]
-    public void Changes_the_mode_of_the_terminal_on_show()
-    {
-        using var chat = new ChatViewModel(new ImmediateUiThread());
-        var first = new AgentTerminal("Local", new InstantTerminal(), ApprovalMode.Ask);
-        var second = new AgentTerminal("Local 2", new InstantTerminal(), ApprovalMode.Ask);
-        chat.ShowTerminal(first);
-
-        chat.SelectedMode = chat.Modes.Single(option => option.Mode == ApprovalMode.AskForRisky);
-        chat.ShowTerminal(second);
-
-        Assert.Equal(ApprovalMode.AskForRisky, first.Mode);
-        Assert.Equal(ApprovalMode.Ask, second.Mode);
-        Assert.Equal(ApprovalMode.Ask, chat.SelectedMode.Mode);
-    }
-
-    [Fact]
-    public void Shows_a_terminals_mode_when_it_falls_back_after_a_task()
-    {
-        using var chat = new ChatViewModel(new ImmediateUiThread());
-        var terminal = new AgentTerminal("Local", new InstantTerminal(), ApprovalMode.Ask) { Mode = ApprovalMode.Auto };
-        chat.ShowTerminal(terminal);
-
-        terminal.Mode = ApprovalMode.Ask;
-
-        Assert.Equal(ApprovalMode.Ask, chat.SelectedMode.Mode);
-    }
-
-    [Fact]
     public void Cannot_send_without_a_provider()
     {
         using var chat = new ChatViewModel(new ImmediateUiThread());
@@ -211,7 +183,7 @@ public sealed class ChatViewModelTests
     {
         using var chat = new ChatViewModel(new ImmediateUiThread());
         using var agent = new TerminalAgent(new ListChatClient(new ChatResponse(new ChatMessage(ChatRole.Assistant, "A typo."))), chat, new SecretRedactor());
-        agent.AddTerminal(new AgentTerminal("Local", new InstantTerminal(), ApprovalMode.Ask));
+        agent.AddTerminal(new AgentTerminal("Local", new InstantTerminal()));
         chat.Attach(agent, "privacy notice");
         chat.Excerpt = new TerminalExcerpt("Local", "the selected text", "bash: gti: command not found");
         chat.Draft = "Explain this output.";

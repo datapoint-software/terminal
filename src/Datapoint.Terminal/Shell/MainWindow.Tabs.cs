@@ -29,7 +29,7 @@ public sealed partial class MainWindow
             var options = Workspace.IsDefault ? new LocalSessionOptions() : new LocalSessionOptions { WorkingDirectory = Workspace.Folder };
             var session = await LocalSession.StartAsync(options, CancellationToken.None).ConfigureAwait(true);
             var files = OperatingSystem.IsWindows() ? null : new LocalHostFiles(WorkspaceFolders.Home);
-            Attach(tab, Connect(tab, session), environment: null, _settings.Current.DefaultApprovalMode, select, files);
+            Attach(tab, Connect(tab, session), environment: null, select, files);
             return tab;
         }
         catch (Exception exception) when (exception is IOException or InvalidOperationException or PlatformNotSupportedException or System.ComponentModel.Win32Exception)
@@ -40,10 +40,10 @@ public sealed partial class MainWindow
     }
 
     // A tab the agent opened isn't selected: the agent never switches the tab the user is looking at.
-    private void Attach(TerminalTab tab, TerminalConnection connection, string? environment, ApprovalMode defaultMode, bool select = true, IHostFiles? files = null, string? place = null)
+    private void Attach(TerminalTab tab, TerminalConnection connection, string? environment, bool select = true, IHostFiles? files = null, string? place = null)
     {
         tab.Connection = connection;
-        tab.AgentTerminal = new AgentTerminal(tab.Name, new ConnectionTerminal(connection), defaultMode, environment)
+        tab.AgentTerminal = new AgentTerminal(tab.Name, new ConnectionTerminal(connection), environment)
         {
             IsRemote = tab.IsRemote,
             Connection = tab.ConnectionName,

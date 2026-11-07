@@ -158,6 +158,7 @@ public sealed partial class TerminalAgent : IDisposable
 
             _history.RemoveRange(1, _history.Count - 1);
             ForgetWebGuard();
+            EndIgnoringPermissions();
             StopRollout();
             EndRun();
         }
@@ -349,7 +350,7 @@ public sealed partial class TerminalAgent : IDisposable
         _history.Add(results);
     }
 
-    // Auto and an approved plan last for one task; then each terminal falls back to its default.
+    // An approved plan lasts for one task.
     private void EndTask()
     {
         MarkAllSeen();
@@ -359,7 +360,6 @@ public sealed partial class TerminalAgent : IDisposable
         foreach (var terminal in Terminals)
         {
             terminal.IsAwaitingInput = false;
-            terminal.Mode = terminal.Mode == ApprovalMode.Auto ? terminal.DefaultMode : terminal.Mode;
         }
     }
 

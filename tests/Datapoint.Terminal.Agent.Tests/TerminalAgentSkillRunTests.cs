@@ -15,11 +15,11 @@ public sealed class TerminalAgentSkillRunTests : IDisposable
     private readonly FakeUser _user = new();
     private readonly FakeTerminalOpener _opener = new(
     [
-        new AgentConnection("Local", null, ApprovalMode.Ask) { IsLocalShell = true },
-        new AgentConnection("web1", "production", ApprovalMode.Ask) { Labels = ["web"] },
-        new AgentConnection("web2", "production", ApprovalMode.Ask) { Labels = ["web"] },
-        new AgentConnection("web3", "production", ApprovalMode.Ask) { Labels = ["web"] },
-        new AgentConnection("db1", "production", ApprovalMode.Ask) { Labels = ["db"] },
+        new AgentConnection("Local", null) { IsLocalShell = true },
+        new AgentConnection("web1", "production") { Labels = ["web"] },
+        new AgentConnection("web2", "production") { Labels = ["web"] },
+        new AgentConnection("web3", "production") { Labels = ["web"] },
+        new AgentConnection("db1", "production") { Labels = ["db"] },
     ]);
 
     private readonly Dictionary<string, FakeTerminal> _terminals = new(StringComparer.Ordinal);
@@ -72,10 +72,11 @@ public sealed class TerminalAgentSkillRunTests : IDisposable
                 _events.Add(e);
             }
         };
+        agent.Mode = ApprovalMode.AskForRisky;
         foreach (var host in new[] { "web1", "web2" })
         {
             _terminals[host] = new FakeTerminal();
-            agent.AddTerminal(new AgentTerminal(host, _terminals[host], ApprovalMode.AskForRisky, "production") { Connection = host });
+            agent.AddTerminal(new AgentTerminal(host, _terminals[host], "production") { Connection = host });
         }
 
         return agent;

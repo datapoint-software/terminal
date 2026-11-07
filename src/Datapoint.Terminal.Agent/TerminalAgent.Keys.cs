@@ -27,8 +27,8 @@ public sealed partial class TerminalAgent
             SendKeysAsync),
     ];
 
-    // Keys are harder to review than a command, so they're proposed in Ask and Ask-for-risky modes alike; Auto asks only when the
-    // text they type looks like a command that always needs the user.
+    // Keys are harder to review than a command, so they're proposed in Ask and Ask-for-risky modes alike; Plan asks only when the
+    // text they type looks like a command that always needs the user, and Ignore permissions never asks.
     private async Task<string> SendKeysAsync(AIFunctionArguments arguments, CancellationToken cancellationToken)
     {
         var keys = ToolArguments.GetString(arguments, "keys") ?? string.Empty;
@@ -73,7 +73,7 @@ public sealed partial class TerminalAgent
         AgentTerminal terminal, string keys, IReadOnlyList<string> parts, string purpose, CancellationToken cancellationToken)
     {
         var risk = TypesAlwaysAskCommand(parts) ? CommandRisk.AlwaysAsk : CommandRisk.Changes;
-        if (terminal.Mode == ApprovalMode.Auto && risk != CommandRisk.AlwaysAsk)
+        if (Mode == ApprovalMode.IgnorePermissions || (Mode == ApprovalMode.Plan && risk != CommandRisk.AlwaysAsk))
         {
             return (keys, parts, null);
         }

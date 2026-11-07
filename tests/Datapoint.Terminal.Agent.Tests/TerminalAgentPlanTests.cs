@@ -38,7 +38,8 @@ public sealed class TerminalAgentPlanTests
     {
         var script = steps.Select((step, index) => index == 0 ? step : Record(step)).Append(Record(_ => Text("Done."))).ToArray();
         var agent = new TerminalAgent(new ScriptedChatClient(script), _user, new SecretRedactor());
-        agent.AddTerminal(new AgentTerminal("web1", _terminal, mode, "production"));
+        agent.Mode = mode;
+        agent.AddTerminal(new AgentTerminal("web1", _terminal, "production"));
         agent.EventRaised += (_, e) => _events.Add(e);
         await agent.SendAsync("Install nginx", Token);
         return agent;
@@ -101,19 +102,19 @@ public sealed class TerminalAgentPlanTests
     }
 
     [Fact]
-    public async Task Refuses_changes_in_Auto_without_a_plan()
+    public async Task Refuses_changes_in_Plan_mode_without_a_plan()
     {
-        using var agent = await RunAsync(ApprovalMode.Auto, Run("sudo apt-get install -y nginx"), Run("uptime"));
+        using var agent = await RunAsync(ApprovalMode.Plan, Run("sudo apt-get install -y nginx"), Run("uptime"));
 
-        Assert.Equal("Not run: in Auto mode, show your plan with propose_plan before changing anything.", _results[0]);
+        Assert.Equal("Not run: in Plan mode, show your plan with propose_plan before changing anything.", _results[0]);
         Assert.Equal(["uptime"], _terminal.Typed);
         Assert.Empty(_user.Proposals);
     }
 
     [Fact]
-    public async Task Runs_planned_steps_in_Auto_without_asking_again()
+    public async Task Runs_planned_steps_in_Plan_mode_without_asking_again()
     {
-        using var agent = await RunAsync(ApprovalMode.Auto, Plan(), Run("sudo apt-get install -y nginx", step: 1));
+        using var agent = await RunAsync(ApprovalMode.Plan, Plan(), Run("sudo apt-get install -y nginx", step: 1));
 
         Assert.Equal(ProposalKind.Plan, Assert.Single(_user.Proposals).Kind);
         Assert.Equal(["sudo apt-get install -y nginx"], _terminal.Typed);
@@ -122,9 +123,9 @@ public sealed class TerminalAgentPlanTests
     [Theory]
     [InlineData(null)]
     [InlineData(3)]
-    public async Task Asks_in_Auto_before_a_step_outside_the_plan(int? step)
+    public async Task Asks_in_Plan_mode_before_a_step_outside_the_plan(int? step)
     {
-        using var agent = await RunAsync(ApprovalMode.Auto, Plan(), Run("sudo rm -rf /var/www/html", step));
+        using var agent = await RunAsync(ApprovalMode.Plan, Plan(), Run("sudo rm -rf /var/www/html", step));
 
         var proposal = _user.Proposals[^1];
         Assert.Equal((ProposalKind.RunCommand, true, (int?)null), (proposal.Kind, proposal.IsOutsidePlan, proposal.PlanStep));
@@ -143,10 +144,10 @@ public sealed class TerminalAgentPlanTests
     {
         _user.Decide = proposal => CommandApproval.Reject(proposal.Command, "Use the distribution's package, not a PPA.");
 
-        using var agent = await RunAsync(ApprovalMode.Auto, Plan(), Run("sudo apt-get install -y nginx", step: 1));
+        using var agent = await RunAsync(ApprovalMode.Plan, Plan(), Run("sudo apt-get install -y nginx", step: 1));
 
         Assert.Equal("Not approved. The user said: Use the distribution's package, not a PPA.", _results[0]);
-        Assert.StartsWith("Not run: in Auto mode", _results[1], StringComparison.Ordinal);
+        Assert.StartsWith("Not run: in Plan mode", _results[1], StringComparison.Ordinal);
     }
 
     [Fact]

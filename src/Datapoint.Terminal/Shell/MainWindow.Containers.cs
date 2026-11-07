@@ -18,7 +18,7 @@ public sealed partial class MainWindow
         try
         {
             var session = await LocalSession.StartAsync(ContainerOptions(container), CancellationToken.None).ConfigureAwait(true);
-            Attach(tab, Connect(tab, session), connection.Environment, DefaultModeFor(connection), select, files: null, container.Describe());
+            Attach(tab, Connect(tab, session), connection.Environment, select, files: null, container.Describe());
             return tab;
         }
         catch (Exception exception) when (exception is IOException or InvalidOperationException or PlatformNotSupportedException or System.ComponentModel.Win32Exception)

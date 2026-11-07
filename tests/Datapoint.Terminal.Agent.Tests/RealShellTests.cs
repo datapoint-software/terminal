@@ -52,7 +52,7 @@ public sealed class RealShellTests : IDisposable
             messages => { results.Add(LastToolResult(messages)); return Call("run_command", new Dictionary<string, object?>(StringComparer.Ordinal) { ["command"] = "ls /nonexistent-folder", ["purpose"] = "test" }, "call-2"); },
             messages => { results.Add(LastToolResult(messages)); return Text("Done."); });
         using var agent = new TerminalAgent(client, new FakeUser(), new SecretRedactor(), new AgentOptions { CommandTimeout = TimeSpan.FromSeconds(10) });
-        agent.AddTerminal(new AgentTerminal("Local", new ConnectionTerminal(connection), ApprovalMode.Ask));
+        agent.AddTerminal(new AgentTerminal("Local", new ConnectionTerminal(connection)));
 
         await agent.SendAsync("Try it", Token);
 
@@ -82,7 +82,7 @@ public sealed class RealShellTests : IDisposable
             messages => { results.Add(LastToolResult(messages)); return Text("Done."); });
         using var agent = new TerminalAgent(client, new FakeUser(), new SecretRedactor(), new AgentOptions { CommandTimeout = TimeSpan.FromSeconds(10) });
         var terminal = new ConnectionTerminal(connection);
-        agent.AddTerminal(new AgentTerminal("Local", terminal, ApprovalMode.Ask));
+        agent.AddTerminal(new AgentTerminal("Local", terminal));
 
         Assert.Equal("nested shell", terminal.GetState().Session);
         await agent.SendAsync("Try it", Token);
@@ -101,7 +101,7 @@ public sealed class RealShellTests : IDisposable
             messages => { results.Add(LastToolResult(messages)); return Call("wait_for_command", new Dictionary<string, object?>(StringComparer.Ordinal), "call-2"); },
             messages => { results.Add(LastToolResult(messages)); return Text("Done."); });
         using var agent = new TerminalAgent(client, new FakeUser(), new SecretRedactor(), new AgentOptions { CommandTimeout = TimeSpan.FromMilliseconds(700) });
-        agent.AddTerminal(new AgentTerminal("Local", new ConnectionTerminal(connection), ApprovalMode.Ask));
+        agent.AddTerminal(new AgentTerminal("Local", new ConnectionTerminal(connection)));
 
         await agent.SendAsync("Try it", Token);
 

@@ -14,7 +14,6 @@ public sealed partial class SettingsViewModel : ObservableObject
 {
     private readonly SettingsStore _store;
     private readonly Func<ProviderAccount, string?, IChatClient> _createClient;
-    private ApprovalMode _defaultApprovalMode;
     private bool _isLoading = true;
 
     public SettingsViewModel(SettingsStore store, AppSettings settings, ProviderKeys keys, Func<ProviderAccount, string?, IChatClient> createClient)
@@ -33,7 +32,7 @@ public sealed partial class SettingsViewModel : ObservableObject
             new(ProviderKind.OpenAI, Strings.ProviderKindOpenAI),
             new(ProviderKind.OpenAICompatible, Strings.ProviderKindCompatible),
         ];
-        _defaultApprovalMode = settings.DefaultApprovalMode;
+        WorkspaceModes = settings.WorkspaceModes;
         RecentWorkspaces = settings.RecentWorkspaces;
         OpenWorkspaces = settings.OpenWorkspaces;
         TrustedWorkspaces = settings.TrustedWorkspaces;
@@ -77,6 +76,8 @@ public sealed partial class SettingsViewModel : ObservableObject
     public IReadOnlyList<WorkspaceTrustRecord> TrustedWorkspaces { get; private set; }
 
     public IReadOnlyList<ConfirmedConnections> ConfirmedConnections { get; private set; }
+
+    public IReadOnlyList<WorkspaceMode> WorkspaceModes { get; private set; }
 
     public IReadOnlyList<string> NotSecrets { get; private set; }
 
@@ -230,7 +231,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     {
         Providers = [.. Providers.Select(provider => provider.ToAccount())],
         SelectedProviderId = SelectedProviderId,
-        DefaultApprovalMode = _defaultApprovalMode,
+        WorkspaceModes = WorkspaceModes,
         RecentWorkspaces = RecentWorkspaces,
         OpenWorkspaces = OpenWorkspaces,
         TrustedWorkspaces = TrustedWorkspaces,
@@ -255,6 +256,21 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     public IReadOnlyList<WorkspaceConnection>? ConfirmedFor(string folder) =>
         ConfirmedConnections.FirstOrDefault(record => WorkspaceFolders.AreSame(record.Folder, folder))?.Connections;
+
+    public ApprovalMode ModeFor(string folder) =>
+        WorkspaceModes.FirstOrDefault(record => WorkspaceFolders.AreSame(record.Folder, folder))?.Mode ?? ApprovalMode.Ask;
+
+    // Ignore permissions is never kept; the agent passes the mode before it instead.
+    public void SetMode(string folder, ApprovalMode mode)
+    {
+        if (mode == ApprovalMode.IgnorePermissions || ModeFor(folder) == mode)
+        {
+            return;
+        }
+
+        WorkspaceModes = [.. WorkspaceModes.Where(item => !WorkspaceFolders.AreSame(item.Folder, folder)), new WorkspaceMode { Folder = folder, Mode = mode }];
+        SaveWorkspaceData();
+    }
 
     public void SetConfirmed(string folder, IReadOnlyList<WorkspaceConnection> connections)
     {

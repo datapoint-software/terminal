@@ -7,19 +7,6 @@ namespace Datapoint.Terminal.Shell;
 // Product decision 55: a switch that sends the conversation somewhere new, or into a smaller context window, is confirmed first.
 public sealed partial class MainWindow
 {
-    private async Task<bool> ConfirmAutoAsync(Agent.AgentTerminal terminal)
-    {
-        var answer = await ChoiceWindow.AskAsync(
-            this,
-            Strings.Format(Strings.AutoProductionTitle, terminal.Name),
-            Strings.Format(Strings.AutoProductionMessage, terminal.Environment),
-            details: null,
-            hasDefault: false,
-            Strings.Cancel,
-            Strings.AutoProductionConfirm).ConfigureAwait(true);
-        return answer == 1;
-    }
-
     private async Task ChooseModelAsync(ModelChoice choice)
     {
         var target = _settings.Current.Providers.FirstOrDefault(item => string.Equals(item.Id, choice.ProviderId, StringComparison.Ordinal));

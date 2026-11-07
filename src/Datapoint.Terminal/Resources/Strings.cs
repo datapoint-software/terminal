@@ -26,7 +26,7 @@ public static class Strings
 
     public static string ModeAskForRisky => Get(nameof(ModeAskForRisky));
 
-    public static string ModeAuto => Get(nameof(ModeAuto));
+    public static string ModePlan => Get(nameof(ModePlan));
 
     public static string StatusIdle => Get(nameof(StatusIdle));
 
@@ -74,7 +74,7 @@ public static class Strings
 
     public static string ModeAskForRiskyHelp => Get(nameof(ModeAskForRiskyHelp));
 
-    public static string ModeAutoHelp => Get(nameof(ModeAutoHelp));
+    public static string ModePlanHelp => Get(nameof(ModePlanHelp));
 
     public static string SettingsTitle => Get(nameof(SettingsTitle));
 
@@ -334,8 +334,6 @@ public static class Strings
 
     public static string ReviewNone => Get(nameof(ReviewNone));
 
-    public static string ReviewDefault => Get(nameof(ReviewDefault));
-
     public static string NoticeConnectionsStricter => Get(nameof(NoticeConnectionsStricter));
 
     public static string NoticeConnectionsHeld => Get(nameof(NoticeConnectionsHeld));
@@ -507,12 +505,6 @@ public static class Strings
     public static string SwitchSmallerContext => Get(nameof(SwitchSmallerContext));
 
     public static string SwitchConfirm => Get(nameof(SwitchConfirm));
-
-    public static string AutoProductionTitle => Get(nameof(AutoProductionTitle));
-
-    public static string AutoProductionMessage => Get(nameof(AutoProductionMessage));
-
-    public static string AutoProductionConfirm => Get(nameof(AutoProductionConfirm));
 
     public static string PendingOutput => Get(nameof(PendingOutput));
 
@@ -1569,6 +1561,16 @@ public static class Strings
     public static string WebHoldsTerminalText => Get(nameof(WebHoldsTerminalText));
 
     public static string WebInjectionWarning => Get(nameof(WebInjectionWarning));
+
+    public static string ModeIgnorePermissions => Get(nameof(ModeIgnorePermissions));
+
+    public static string ModeIgnorePermissionsHelp => Get(nameof(ModeIgnorePermissionsHelp));
+
+    public static string IgnorePermissionsTitle => Get(nameof(IgnorePermissionsTitle));
+
+    public static string IgnorePermissionsMessage => Get(nameof(IgnorePermissionsMessage));
+
+    public static string IgnorePermissionsConfirm => Get(nameof(IgnorePermissionsConfirm));
 
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 

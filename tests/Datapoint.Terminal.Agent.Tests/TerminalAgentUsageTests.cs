@@ -23,7 +23,7 @@ public sealed class TerminalAgentUsageTests
             _ => WithUsage(Call("read_screen", new Dictionary<string, object?>(StringComparer.Ordinal) { ["terminal"] = "web1" }), 1000, 50),
             _ => WithUsage(Text("All quiet."), 1200, 20));
         using var agent = new TerminalAgent(client, new FakeUser(), new SecretRedactor());
-        agent.AddTerminal(new AgentTerminal("web1", new FakeTerminal(), ApprovalMode.Ask));
+        agent.AddTerminal(new AgentTerminal("web1", new FakeTerminal()));
         agent.Usage.Price = new TokenPrice(2m, 10m);
 
         await agent.SendAsync("Anything wrong on web1?", Token);
@@ -40,7 +40,7 @@ public sealed class TerminalAgentUsageTests
             _ => WithUsage(Call("read_screen", new Dictionary<string, object?>(StringComparer.Ordinal) { ["terminal"] = "web1" }), 1_000_000, 0),
             _ => Text("Never asked."));
         using var agent = new TerminalAgent(client, new FakeUser(), new SecretRedactor());
-        agent.AddTerminal(new AgentTerminal("web1", new FakeTerminal(), ApprovalMode.Ask));
+        agent.AddTerminal(new AgentTerminal("web1", new FakeTerminal()));
         agent.Usage.Price = new TokenPrice(3m, 15m);
         agent.Usage.Budget = 1m;
         var notices = new List<string>();

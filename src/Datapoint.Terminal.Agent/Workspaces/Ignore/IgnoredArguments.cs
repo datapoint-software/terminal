@@ -2,7 +2,7 @@ using System.Text;
 
 namespace Datapoint.Terminal.Agent.Workspaces.Ignore;
 
-// Finds a file listed in .terminalignore among a command's words, so the command asks first even in Auto. It's a best guess:
+// Finds a file listed in .terminalignore among a command's words, so the command asks first in every mode. It's a best guess:
 // words are split roughly as a shell would, paths are taken relative to the terminal's folder, and a glob in a path's last
 // part is matched against the files there. A file reached any other way (a variable, a script, `grep -r` over a folder) isn't
 // found, which is why the user still sees and approves what runs.

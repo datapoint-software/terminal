@@ -34,7 +34,7 @@ public sealed class TerminalAgentWatchTests
 
         var client = new ScriptedChatClient(_ => Call("watch_terminal", arguments), messages => { result = LastToolResult(messages); return Text("OK."); });
         using var agent = new TerminalAgent(client, new FakeUser(), new SecretRedactor()) { Clock = clock ?? new SteppingClock(TimeSpan.Zero) };
-        agent.AddTerminal(new AgentTerminal("deploy", _terminal, ApprovalMode.Ask));
+        agent.AddTerminal(new AgentTerminal("deploy", _terminal));
         agent.EventRaised += (_, e) => _events.Add(e);
         var sending = agent.SendAsync("Tell me when it's rolled out", Token);
         if (meanwhile is not null)

@@ -19,7 +19,8 @@ public sealed class TerminalAgentKeysTests
             _ => Call("send_keys", new Dictionary<string, object?>(StringComparer.Ordinal) { ["keys"] = keys, ["purpose"] = "save and quit" }),
             messages => { seen = LastToolResult(messages); return Text("OK."); });
         using var agent = new TerminalAgent(client, _user, new SecretRedactor());
-        agent.AddTerminal(new AgentTerminal("web1", _terminal, mode));
+        agent.Mode = mode;
+        agent.AddTerminal(new AgentTerminal("web1", _terminal));
         await agent.SendAsync("Save the file", Token);
         return seen;
     }
@@ -36,18 +37,18 @@ public sealed class TerminalAgentKeysTests
     }
 
     [Fact]
-    public async Task Sends_without_asking_in_Auto()
+    public async Task Sends_without_asking_in_Plan_mode()
     {
-        await SendAsync("q", ApprovalMode.Auto);
+        await SendAsync("q", ApprovalMode.Plan);
 
         Assert.Empty(_user.Proposals);
         Assert.Equal(["q"], _terminal.Keys, StringComparer.Ordinal);
     }
 
     [Fact]
-    public async Task Asks_in_Auto_when_the_keys_type_a_command_that_always_asks()
+    public async Task Asks_in_Plan_mode_when_the_keys_type_a_command_that_always_asks()
     {
-        await SendAsync("<Esc>:!ssh-keygen -R web1<Enter>", ApprovalMode.Auto);
+        await SendAsync("<Esc>:!ssh-keygen -R web1<Enter>", ApprovalMode.Plan);
 
         Assert.Equal(CommandRisk.AlwaysAsk, Assert.Single(_user.Proposals).Risk);
     }
@@ -58,7 +59,7 @@ public sealed class TerminalAgentKeysTests
         _terminal.IsAlternateScreen = false;
         _terminal.IsAtPrompt = true;
 
-        var result = await SendAsync("rm -rf ~<Enter>", ApprovalMode.Auto);
+        var result = await SendAsync("rm -rf ~<Enter>", ApprovalMode.Plan);
 
         Assert.Equal("Not sent: the terminal is at a shell prompt. Use run_command to run commands.", result);
         Assert.Empty(_terminal.Keys);

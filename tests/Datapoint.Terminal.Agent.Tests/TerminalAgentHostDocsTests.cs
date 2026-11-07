@@ -39,7 +39,8 @@ public sealed class TerminalAgentHostDocsTests : IDisposable
             HostDocs = new HostDocsFolder(_folder, path => _ignored.Contains(path), canWrite),
             Clock = new FixedClock(new DateTimeOffset(2026, 11, 7, 12, 0, 0, TimeSpan.Zero)),
         };
-        agent.AddTerminal(new AgentTerminal("web1", new FakeTerminal(), ApprovalMode.AskForRisky));
+        agent.Mode = ApprovalMode.AskForRisky;
+        agent.AddTerminal(new AgentTerminal("web1", new FakeTerminal()));
         agent.EventRaised += (_, e) => _events.Add(e);
         await agent.SendAsync("Install nginx on web1", Token);
         return (results, client);
