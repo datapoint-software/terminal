@@ -424,6 +424,18 @@ public static class Strings
 
     public static string NoticeHistoryUnavailable => Get(nameof(NoticeHistoryUnavailable));
 
+    public static string ApprovalHeadingOpen => Get(nameof(ApprovalHeadingOpen));
+
+    public static string ApprovalRiskOpen => Get(nameof(ApprovalRiskOpen));
+
+    public static string ApprovalOpen => Get(nameof(ApprovalOpen));
+
+    public static string ApprovalForConnection => Get(nameof(ApprovalForConnection));
+
+    public static string ApprovalForConnectionEnvironment => Get(nameof(ApprovalForConnectionEnvironment));
+
+    public static string NoticeAgentConnectionGone => Get(nameof(NoticeAgentConnectionGone));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

@@ -165,14 +165,14 @@
             <TextBlock Classes="title" Text="{Binding Heading}" TextWrapping="Wrap" />
             <TextBlock Text="{Binding Purpose}" TextWrapping="Wrap" />
           </StackPanel>
-          <TextBox Classes="code" Text="{Binding Command}" TextWrapping="Wrap" Background="{DynamicResource CodeBrush}"
+          <TextBox Classes="code" Text="{Binding Command}" IsReadOnly="{Binding IsCommandReadOnly}" TextWrapping="Wrap" Background="{DynamicResource CodeBrush}"
                    AutomationProperties.Name="{x:Static res:Strings.ApprovalCommandLabel}" />
           <TextBlock Classes="secondary" Text="{Binding RiskText}" TextWrapping="Wrap" />
           <TextBox Text="{Binding Feedback}" PlaceholderText="{x:Static res:Strings.ApprovalFeedbackPlaceholder}" TextWrapping="Wrap"
                    AutomationProperties.Name="{x:Static res:Strings.ApprovalFeedbackPlaceholder}" />
           <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
             <Button Content="{x:Static res:Strings.ApprovalDecline}" Command="{Binding DeclineCommand}" />
-            <Button Classes="primary" Content="{x:Static res:Strings.ApprovalRun}" Command="{Binding RunCommand}" />
+            <Button Classes="primary" Content="{Binding RunLabel}" Command="{Binding RunCommand}" />
           </StackPanel>
         </StackPanel>
       </Border>

@@ -16,7 +16,7 @@ namespace Datapoint.Terminal.Shell;
 
 public sealed partial class MainWindow
 {
-    private async Task OpenConnectionAsync(ProjectConnection connection)
+    private async Task<TerminalTab?> OpenConnectionAsync(ProjectConnection connection, bool select = true)
     {
         var host = SshConfig.Load().Resolve(connection.SshHost ?? connection.Host!);
         foreach (var problem in host.Problems)
@@ -27,7 +27,7 @@ public sealed partial class MainWindow
         if (SshLoginPlan.Unsupported(host) is { } unsupported)
         {
             _chat.AddNotice(unsupported);
-            return;
+            return null;
         }
 
         _chat.AddNotice(Strings.Format(Strings.NoticeConnecting, connection.Name));
@@ -36,12 +36,14 @@ public sealed partial class MainWindow
             var session = await LogInAsync(connection, host).ConfigureAwait(true);
             var view = new TerminalView { Padding = new Thickness(12, 10), IsVisible = false };
             var tab = new TerminalTab(NextTabName(connection.Name), view, RequestClose) { IsRemote = true };
-            Attach(tab, new TerminalConnection(session, 80, 24), connection.Environment, DefaultModeFor(connection));
+            Attach(tab, new TerminalConnection(session, 80, 24), connection.Environment, DefaultModeFor(connection), select);
+            return tab;
         }
         catch (Exception exception) when (exception is SshAuthenticationException or SshDisconnectedException or SshProtocolException or SshChannelException
             or SocketException or IOException or TimeoutException or OperationCanceledException)
         {
             _chat.AddNotice(Strings.Format(Strings.NoticeConnectFailed, connection.Name, exception.Message));
+            return null;
         }
     }
 

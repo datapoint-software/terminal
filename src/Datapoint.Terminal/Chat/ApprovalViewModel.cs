@@ -17,10 +17,22 @@ public sealed partial class ApprovalViewModel : ObservableObject
         Purpose = proposal.Purpose;
         Risk = proposal.Risk;
         Command = proposal.Command;
-        TerminalText = proposal.Environment is null
-            ? Strings.Format(Strings.ApprovalInTerminal, proposal.Terminal)
-            : Strings.Format(Strings.ApprovalInTerminalEnvironment, proposal.Terminal, proposal.Environment);
+        Kind = proposal.Kind;
+        TerminalText = (proposal.Kind, proposal.Environment) switch
+        {
+            (ProposalKind.OpenTerminal, null) => Strings.Format(Strings.ApprovalForConnection, proposal.Terminal),
+            (ProposalKind.OpenTerminal, { } environment) => Strings.Format(Strings.ApprovalForConnectionEnvironment, proposal.Terminal, environment),
+            (_, null) => Strings.Format(Strings.ApprovalInTerminal, proposal.Terminal),
+            (_, { } environment) => Strings.Format(Strings.ApprovalInTerminalEnvironment, proposal.Terminal, environment),
+        };
     }
+
+    public ProposalKind Kind { get; }
+
+    // Opening a terminal names a connection, which isn't the user's to edit; they can decline and say which one instead.
+    public bool IsCommandReadOnly => Kind == ProposalKind.OpenTerminal;
+
+    public string RunLabel => Kind == ProposalKind.OpenTerminal ? Strings.ApprovalOpen : Strings.ApprovalRun;
 
     public string TerminalText { get; }
 
@@ -28,9 +40,11 @@ public sealed partial class ApprovalViewModel : ObservableObject
 
     public CommandRisk Risk { get; }
 
-    public string Heading => Risk == CommandRisk.AlwaysAsk ? Strings.ApprovalHeadingTrust : Strings.ApprovalHeading;
+    public string Heading => Kind == ProposalKind.OpenTerminal
+        ? Strings.ApprovalHeadingOpen
+        : Risk == CommandRisk.AlwaysAsk ? Strings.ApprovalHeadingTrust : Strings.ApprovalHeading;
 
-    public string RiskText => Risk switch
+    public string RiskText => Kind == ProposalKind.OpenTerminal ? Strings.ApprovalRiskOpen : Risk switch
     {
         CommandRisk.ReadOnly => Strings.ApprovalRiskReadOnly,
         CommandRisk.AlwaysAsk => Strings.ApprovalRiskAlwaysAsk,

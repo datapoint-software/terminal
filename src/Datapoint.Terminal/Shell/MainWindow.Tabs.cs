@@ -18,7 +18,7 @@ public sealed partial class MainWindow
 
     private TerminalTab? SelectedTab => Tabs.SelectedItem as TerminalTab;
 
-    private async Task OpenLocalTabAsync()
+    private async Task<TerminalTab?> OpenLocalTabAsync(bool select = true)
     {
         var view = new TerminalView { Padding = new Thickness(12, 10), IsVisible = false };
         var tab = new TerminalTab(NextTabName(Strings.TabLocal), view, RequestClose);
@@ -26,15 +26,18 @@ public sealed partial class MainWindow
         {
             var options = Project.IsDefault ? new LocalSessionOptions() : new LocalSessionOptions { WorkingDirectory = Project.Folder };
             var session = await LocalSession.StartAsync(options, CancellationToken.None).ConfigureAwait(true);
-            Attach(tab, new TerminalConnection(session, 80, 24), environment: null, _settings.Current.DefaultApprovalMode);
+            Attach(tab, new TerminalConnection(session, 80, 24), environment: null, _settings.Current.DefaultApprovalMode, select);
+            return tab;
         }
         catch (Exception exception) when (exception is IOException or InvalidOperationException or PlatformNotSupportedException or System.ComponentModel.Win32Exception)
         {
             _chat.AddNotice(Strings.Format(Strings.NoticeShellFailed, exception.Message));
+            return null;
         }
     }
 
-    private void Attach(TerminalTab tab, TerminalConnection connection, string? environment, ApprovalMode defaultMode)
+    // A tab the agent opened isn't selected: the agent never switches the tab the user is looking at.
+    private void Attach(TerminalTab tab, TerminalConnection connection, string? environment, ApprovalMode defaultMode, bool select = true)
     {
         tab.Connection = connection;
         tab.AgentTerminal = new AgentTerminal(tab.Name, new ConnectionTerminal(connection), defaultMode, environment);
@@ -55,6 +58,11 @@ public sealed partial class MainWindow
         TerminalHost.Children.Add(tab.View);
         _tabs.Add(tab);
         _agent?.AddTerminal(tab.AgentTerminal);
+        if (!select && _tabs.Count > 1)
+        {
+            return;
+        }
+
         Tabs.SelectedItem = tab;
     }
 

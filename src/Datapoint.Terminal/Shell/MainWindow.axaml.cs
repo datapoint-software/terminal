@@ -15,7 +15,7 @@ using Microsoft.Extensions.AI;
 namespace Datapoint.Terminal.Shell;
 
 [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1001", Justification = "A window's lifetime ends with Closed, where they are disposed.")]
-public sealed partial class MainWindow : Window
+public sealed partial class MainWindow : Window, ITerminalOpener
 {
     private readonly ChatViewModel _chat = new(new AvaloniaUiThread());
     private readonly SecretRedactor _redactor = new();
@@ -140,7 +140,7 @@ public sealed partial class MainWindow : Window
             _clientSignature = signature;
             if (_agent is null)
             {
-                _agent = new TerminalAgent(client, _chat, _redactor) { InstructionsSource = LoadInstructionsAsync };
+                _agent = new TerminalAgent(client, _chat, _redactor) { InstructionsSource = LoadInstructionsAsync, TerminalOpener = this };
                 _agent.EventRaised += OnAgentEvent;
                 _agent.EventRaised += OnHistoryEvent;
                 foreach (var tab in _tabs.Where(tab => tab.AgentTerminal is not null))

@@ -298,10 +298,16 @@ public sealed partial class TerminalAgent : IDisposable
     private string DescribeTerminals()
     {
         var terminals = Terminals;
-        return terminals.Count == 0
+        var open = terminals.Count == 0
             ? "[No terminals are open.]\n"
-            : "[Open terminals: " + string.Join(", ", terminals.Select(item => $"\"{item.Name}\"" + (item.Environment is null ? string.Empty : $" ({item.Environment})"))) + "]\n";
+            : "[Open terminals: " + string.Join(", ", terminals.Select(item => Named(item.Name, item.Environment))) + "]\n";
+        var connections = TerminalOpener?.Connections ?? [];
+        return connections.Count == 0
+            ? open
+            : open + "[Connections open_terminal can open: " + string.Join(", ", connections.Select(item => Named(item.Name, item.Environment))) + "]\n";
     }
+
+    private static string Named(string name, string? environment) => $"\"{name}\"" + (environment is null ? string.Empty : $" ({environment})");
 
     private void SetStatus(AgentStatus status, AgentTerminal? terminal = null)
     {

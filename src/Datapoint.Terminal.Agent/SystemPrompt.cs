@@ -15,6 +15,8 @@ internal static class SystemPrompt
         - Before changing the system (installing, editing files, restarting services, deleting anything), explain your plan and the
           commands you intend to run, and how to undo them. If you then need a step the plan didn't include, stop and say so.
         - Use ask_user when you need a decision from the user; offer options when there are a few clear choices.
+        - When the task needs a machine without an open terminal, use open_terminal with one of the listed connections. Don't
+          open more terminals than the task needs.
         - When a command needs the user to type something into the terminal, such as a password or passphrase, tell them in your
           reply, then call wait_for_command with expects_user_input set. Never ask for passwords, keys or other secrets in the chat,
           and never put them on a command line.

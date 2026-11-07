@@ -641,4 +641,22 @@ git rm -r --cached .terminal</value>
   <data name="NoticeHistoryUnavailable" xml:space="preserve">
     <value>This conversation isn't being kept in the project's history, which couldn't be written: {0}</value>
   </data>
+  <data name="ApprovalHeadingOpen" xml:space="preserve">
+    <value>The agent wants to open a terminal</value>
+  </data>
+  <data name="ApprovalRiskOpen" xml:space="preserve">
+    <value>Opens a new tab for this connection, logging in as you would. No command runs until you approve one.</value>
+  </data>
+  <data name="ApprovalOpen" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="ApprovalForConnection" xml:space="preserve">
+    <value>For {0}</value>
+  </data>
+  <data name="ApprovalForConnectionEnvironment" xml:space="preserve">
+    <value>For {0} · {1}</value>
+  </data>
+  <data name="NoticeAgentConnectionGone" xml:space="preserve">
+    <value>The agent asked for a terminal on {0}, which the project no longer lists.</value>
+  </data>
 </root>
