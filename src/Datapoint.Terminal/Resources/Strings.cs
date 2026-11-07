@@ -968,6 +968,24 @@ public static class Strings
 
     public static string NoticeRemoteNoIntegration => Get(nameof(NoticeRemoteNoIntegration));
 
+    public static string ProjectHostKeyTitle => Get(nameof(ProjectHostKeyTitle));
+
+    public static string ProjectHostKeyMessage => Get(nameof(ProjectHostKeyMessage));
+
+    public static string ProjectHostKeyDetails => Get(nameof(ProjectHostKeyDetails));
+
+    public static string ProjectHostKeyArchive => Get(nameof(ProjectHostKeyArchive));
+
+    public static string ProjectHostKeyReview => Get(nameof(ProjectHostKeyReview));
+
+    public static string ProjectHostKeyKeep => Get(nameof(ProjectHostKeyKeep));
+
+    public static string NoticeProjectHostKeyChanged => Get(nameof(NoticeProjectHostKeyChanged));
+
+    public static string NoticeHostDocsArchived => Get(nameof(NoticeHostDocsArchived));
+
+    public static string NoticeHostDocsArchiveFailed => Get(nameof(NoticeHostDocsArchiveFailed));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

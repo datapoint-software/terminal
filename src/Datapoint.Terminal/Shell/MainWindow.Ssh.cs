@@ -136,7 +136,7 @@ public sealed partial class MainWindow
         var prompts = new SshLoginPrompts(this, name, _redactor, _chat.AddNotice);
         var knownHosts = new KnownHostsFile([.. host.UserKnownHostsFiles, .. host.GlobalKnownHostsFiles]);
         var verifier = new KnownHostsVerifier(knownHosts, prompts, name, host.Get("HostKeyAlias"), isStrict: host.IsYes("StrictHostKeyChecking"));
-        var options = new SshConnectionOptions { Host = address, Port = port, UserName = user, HostKeyVerifier = verifier };
+        var options = new SshConnectionOptions { Host = address, Port = port, UserName = user, HostKeyVerifier = ForProject(verifier, name) };
         var client = await ConnectAsync(options, via).ConfigureAwait(true);
         var (keys, notes) = await SshLoginPlan.FindKeysAsync(host, ProjectFolders.Home, CancellationToken.None).ConfigureAwait(true);
         try

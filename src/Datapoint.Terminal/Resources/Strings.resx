@@ -1457,4 +1457,31 @@ git rm -r --cached .terminal</value>
   <data name="NoticeRemoteNoIntegration" xml:space="preserve">
     <value>{0}'s login shell isn't bash, zsh or fish, so the app judges when commands finish from their output.</value>
   </data>
+  <data name="ProjectHostKeyTitle" xml:space="preserve">
+    <value>{0} has a different host key</value>
+  </data>
+  <data name="ProjectHostKeyMessage" xml:space="preserve">
+    <value>Your known_hosts accepts the key {1} sent, but it isn't the one this project last saw for {0}. The machine may have been rebuilt or replaced, so this project's documentation for {0} may no longer be right.</value>
+  </data>
+  <data name="ProjectHostKeyDetails" xml:space="preserve">
+    <value>Last seen: {0}\nNow: {1}</value>
+  </data>
+  <data name="ProjectHostKeyArchive" xml:space="preserve">
+    <value>Set Documentation Aside</value>
+  </data>
+  <data name="ProjectHostKeyReview" xml:space="preserve">
+    <value>Review Documentation</value>
+  </data>
+  <data name="ProjectHostKeyKeep" xml:space="preserve">
+    <value>Keep Documentation</value>
+  </data>
+  <data name="NoticeProjectHostKeyChanged" xml:space="preserve">
+    <value>{0} has a different host key from the one this project last saw. Your known_hosts accepts it, and there's no documentation for {0} to review.</value>
+  </data>
+  <data name="NoticeHostDocsArchived" xml:space="preserve">
+    <value>Moved the documentation for {0} to {1}, since the machine may have been replaced.</value>
+  </data>
+  <data name="NoticeHostDocsArchiveFailed" xml:space="preserve">
+    <value>Couldn't move the documentation for {0}: {1}</value>
+  </data>
 </root>
