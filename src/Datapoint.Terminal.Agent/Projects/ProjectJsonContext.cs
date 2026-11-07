@@ -9,4 +9,5 @@ namespace Datapoint.Terminal.Agent.Projects;
     DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
 [JsonSerializable(typeof(ProjectSettings))]
 [JsonSerializable(typeof(Dictionary<string, string>))]
+[JsonSerializable(typeof(Dictionary<string, InstructionSnapshot>))]
 internal sealed partial class ProjectJsonContext : JsonSerializerContext;

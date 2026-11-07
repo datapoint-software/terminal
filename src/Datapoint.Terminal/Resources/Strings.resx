@@ -659,4 +659,7 @@ git rm -r --cached .terminal</value>
   <data name="NoticeAgentConnectionGone" xml:space="preserve">
     <value>The agent asked for a terminal on {0}, which the project no longer lists.</value>
   </data>
+  <data name="NoticeInstructionsSecretChanged" xml:space="preserve">
+    <value>{0} changed since the agent last read it, only in values that look like secrets. Those values aren't kept, so the change can't be shown; open the file to check it.</value>
+  </data>
 </root>

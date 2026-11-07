@@ -102,7 +102,7 @@ public sealed partial class MainWindow
         List<string> paths = [.. global is null ? [] : new[] { global }, .. ProjectInstructionFiles(global)];
         var ignored = paths.Where(path => TerminalIgnore.IsIgnored(path, Project.Folder, ProjectFolders.Home)).ToList();
         var files = InstructionFiles.Read([.. paths.Except(ignored, ProjectFolders.Comparer)]);
-        var changes = _windows.InstructionSnapshots.Update(files);
+        var changes = _windows.InstructionSnapshots.Update(files, _redactor);
         var (reviewed, skipped) = await ReviewSecretsAsync(files, cancellationToken).ConfigureAwait(false);
         var trust = _trust;
         var isTrusted = (InstructionFile file) => Project.IsDefault
@@ -159,6 +159,12 @@ public sealed partial class MainWindow
         foreach (var change in changes)
         {
             var shown = ProjectFolders.Display(change.Path);
+            if (change.IsOnlySecrets)
+            {
+                _chat.AddNotice(Strings.Format(Strings.NoticeInstructionsSecretChanged, shown));
+                continue;
+            }
+
             _chat.AddNotice(Strings.Format(Strings.NoticeInstructionsChanged, shown), Strings.ShowChanges, () => _ = ChoiceWindow.AskAsync(
                 this,
                 Strings.Format(Strings.InstructionChangesTitle, shown),
