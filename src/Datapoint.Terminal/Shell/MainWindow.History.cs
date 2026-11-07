@@ -59,6 +59,33 @@ public sealed partial class MainWindow
         }
     }
 
+    // Read-only windows don't open the store, since opening it can upgrade its format. The file isn't created just to search it.
+    private IReadOnlyList<HistoryEntry> SearchHistory(string words, int limit)
+    {
+        if (Project.IsReadOnly)
+        {
+            return [];
+        }
+
+        lock (_historyLock)
+        {
+            if (_isHistoryUnavailable || (_history is null && !File.Exists(Path.Combine(Project.PersonalPath, HistoryStore.FileName))))
+            {
+                return [];
+            }
+
+            try
+            {
+                _history ??= HistoryStore.Open(Project.PersonalPath, _redactor);
+                return _history.Search(words, limit);
+            }
+            catch (Exception exception) when (exception is SqliteException or HistoryException)
+            {
+                throw new InvalidOperationException(exception.Message, exception);
+            }
+        }
+    }
+
     private void EndConversation()
     {
         lock (_historyLock)

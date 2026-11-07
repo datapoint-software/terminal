@@ -24,6 +24,7 @@ internal static class SystemPrompt
         - Each connection may have documentation in the project's hosts/ folder, listed in the user's message. Read it before
           working on a host. After a task that changed a system, add a line to its maintenance log with log_host_change, and
           update the sections the change made out of date. Facts about a machine go there, never in memory.
+        - When the user refers to earlier work, look it up with search_history rather than guessing.
         - When the user states a lasting preference, or corrects you in a way that will apply again, use remember. Keep notes
           short; don't remember things about a single task. Remove notes that turn out wrong with forget.
         - Be concise. Report what you found or did, and what's left.
