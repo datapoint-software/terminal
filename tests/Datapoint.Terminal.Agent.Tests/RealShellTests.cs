@@ -63,6 +63,34 @@ public sealed class RealShellTests : IDisposable
         Assert.Contains(connection.Terminal.Commands, command => command.Source == Emulator.ShellIntegration.CommandSource.Agent && string.Equals(command.CommandLine, "ls /nonexistent-folder", StringComparison.Ordinal));
     }
 
+    // The user started another shell, as with ssh: the outer shell reports it as a running command, yet the agent types into it.
+    [Fact]
+    public async Task Types_into_a_session_the_user_opened_in_the_terminal()
+    {
+        await using var connection = await StartBashAsync();
+        // A plain prompt: the test exports PS1, which would otherwise carry this shell's prompt marks into the inner one.
+        connection.Send("PS1='$ ' sh\r"u8.ToArray());
+        for (var attempt = 0; attempt < 100 && connection.Terminal.CurrentCommand is not { IsRunning: true }; attempt++)
+        {
+            await Task.Delay(20, Token);
+        }
+
+        await Task.Delay(300, Token);
+        var results = new List<string>();
+        var client = new ScriptedChatClient(
+            _ => Call("run_command", new Dictionary<string, object?>(StringComparer.Ordinal) { ["command"] = "echo inside-$((20+22))", ["purpose"] = "test" }),
+            messages => { results.Add(LastToolResult(messages)); return Text("Done."); });
+        using var agent = new TerminalAgent(client, new FakeUser(), new SecretRedactor(), new AgentOptions { CommandTimeout = TimeSpan.FromSeconds(10) });
+        var terminal = new ConnectionTerminal(connection);
+        agent.AddTerminal(new AgentTerminal("Local", terminal, ApprovalMode.Ask));
+
+        Assert.Equal("nested shell", terminal.GetState().Session);
+        await agent.SendAsync("Try it", Token);
+
+        Assert.Contains("inside-42", results[0], StringComparison.Ordinal);
+        Assert.DoesNotContain("still running", results[0], StringComparison.Ordinal);
+    }
+
     [Fact]
     public async Task Reports_a_long_command_as_still_running_and_waits_for_it()
     {

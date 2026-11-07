@@ -157,7 +157,9 @@ public sealed partial class TerminalAgent
 
         var state = terminal.Terminal.GetState();
         var text = new StringBuilder();
-        text.Append(state.HasShellIntegration ? (state.IsAtPrompt ? "At a prompt" : "A command is running") : "The shell doesn't report prompts")
+        text.Append(state.Session is { } session
+                ? $"In a session started in this terminal ({session}): commands go to it, and its prompts and exit codes aren't reported"
+                : state.HasShellIntegration ? (state.IsAtPrompt ? "At a prompt" : "A command is running") : "The shell doesn't report prompts")
             .Append(state.IsAlternateScreen ? "; a full-screen program is open" : string.Empty)
             .Append(state.WorkingDirectory is null ? string.Empty : "; working folder: " + state.WorkingDirectory)
             .Append(".\n");

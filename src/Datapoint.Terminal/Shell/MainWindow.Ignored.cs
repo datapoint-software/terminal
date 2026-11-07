@@ -10,12 +10,13 @@ public sealed partial class MainWindow
     // describes files on this machine, not on the hosts it connects to.
     private string? FindIgnoredFile(AgentTerminal terminal, string command)
     {
-        if (terminal.IsRemote)
+        var state = terminal.Terminal.GetState();
+        if (terminal.IsRemote || state.Session is not null)
         {
             return null;
         }
 
-        var folder = terminal.Terminal.GetState().WorkingDirectory is { Length: > 0 } reported && Path.IsPathFullyQualified(reported)
+        var folder = state.WorkingDirectory is { Length: > 0 } reported && Path.IsPathFullyQualified(reported)
             ? reported
             : Project.Folder;
         return IgnoredArguments.Find(command, folder, ProjectFolders.Home, path => TerminalIgnore.IsIgnored(path, Project.Folder, ProjectFolders.Home));

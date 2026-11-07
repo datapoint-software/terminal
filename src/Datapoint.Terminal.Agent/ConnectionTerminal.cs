@@ -29,6 +29,14 @@ public sealed class ConnectionTerminal : IAgentTerminal
         lock (Emulator.SyncRoot)
         {
             var current = Emulator.CurrentCommand;
+            var nextLine = Emulator.Primary.FirstVisibleLine + Emulator.Cursor.Row;
+
+            // Inside ssh or another session the shell's reports describe the outer shell, so they're set aside.
+            if (NestedIn(current) is { } session)
+            {
+                return new TerminalState(HasShellIntegration: false, IsAtPrompt: false, string.Empty, Emulator.IsAlternateScreen, WorkingDirectory: null, nextLine) { Session = session };
+            }
+
             var pending = current is { InputLine: { } inputLine, OutputLine: null } ? ReadPendingInput(inputLine, current.InputColumn) : string.Empty;
             return new TerminalState(
                 HasShellIntegration: current is not null,
@@ -36,7 +44,7 @@ public sealed class ConnectionTerminal : IAgentTerminal
                 pending,
                 Emulator.IsAlternateScreen,
                 Emulator.WorkingDirectory,
-                Emulator.Primary.FirstVisibleLine + Emulator.Cursor.Row);
+                nextLine);
         }
     }
 
@@ -70,7 +78,18 @@ public sealed class ConnectionTerminal : IAgentTerminal
 
     public void TypeCommand(string text)
     {
-        Emulator.MarkNextCommandSource(CommandSource.Agent);
+        // Inside a nested session the outer shell sees no new command, so marking one would label the user's next one.
+        bool isNested;
+        lock (Emulator.SyncRoot)
+        {
+            isNested = NestedIn(Emulator.CurrentCommand) is not null;
+        }
+
+        if (!isNested)
+        {
+            Emulator.MarkNextCommandSource(CommandSource.Agent);
+        }
+
         _connection.Send(Encoding.UTF8.GetBytes(text + "\r"));
     }
 
@@ -86,6 +105,8 @@ public sealed class ConnectionTerminal : IAgentTerminal
     }
 
     public void Interrupt() => _connection.Send([0x03]);
+
+    private static string? NestedIn(CommandRecord? current) => current is { IsRunning: true } ? NestedSession.Describe(current.CommandLine) : null;
 
     private CommandRecord? FindCommand(long outputLine)
     {
