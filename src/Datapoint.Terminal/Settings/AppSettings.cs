@@ -4,19 +4,20 @@ using Datapoint.Terminal.Agent.Projects;
 
 namespace Datapoint.Terminal.Settings;
 
-// Secrets are never saved here.
+// Secrets are never saved here. Settings with a default other than zero or false are settable: the JSON source generator
+// gives every init-only property a value, so one missing from a file an older version wrote would lose its default.
 public sealed record AppSettings
 {
     public const int CurrentVersion = 1;
 
     // Raised when a newer version of the application changes the format, so older versions don't overwrite it.
-    public int Version { get; init; } = CurrentVersion;
+    public int Version { get; set; } = CurrentVersion;
 
     public IReadOnlyList<ProviderAccount> Providers { get; init => field = value ?? []; } = [];
 
     public string? SelectedProviderId { get; init; }
 
-    public ApprovalMode DefaultApprovalMode { get; init; } = ApprovalMode.Ask;
+    public ApprovalMode DefaultApprovalMode { get; set; } = ApprovalMode.Ask;
 
     public IReadOnlyList<string> RecentProjects { get; init => field = value ?? []; } = [];
 
@@ -36,23 +37,23 @@ public sealed record AppSettings
     public IReadOnlyList<string> NotSecrets { get; init => field = value ?? []; } = [];
 
     // Where new windows put the chat pane; each window can move its own.
-    public Shell.ChatSide ChatSide { get; init; } = Shell.ChatSide.Right;
+    public Shell.ChatSide ChatSide { get; set; } = Shell.ChatSide.Right;
 
     // Desktop notifications when the agent finishes or needs the user in a background window.
-    public bool Notifications { get; init; } = true;
+    public bool Notifications { get; set; } = true;
 
     // Session recordings in each project's .terminal/recordings, kept as long as its history (product decision 45).
-    public bool RecordSessions { get; init; } = true;
+    public bool RecordSessions { get; set; } = true;
 
     // In US dollars per window session; null for no limit.
     public decimal? SpendingLimit { get; init; }
 
-    public Shell.TerminalTheme TerminalTheme { get; init; } = Shell.TerminalTheme.Dark;
+    public Shell.TerminalTheme TerminalTheme { get; set; } = Shell.TerminalTheme.Dark;
 
     // Null uses the default list of monospace fonts.
     public string? TerminalFont { get; init; }
 
-    public double TerminalFontSize { get; init; } = 14;
+    public double TerminalFontSize { get; set; } = 14;
 
     // How long conversation history is kept, in days; null keeps it forever (product decision 52).
     public int? HistoryDays { get; init; }

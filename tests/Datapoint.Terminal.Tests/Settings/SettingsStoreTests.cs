@@ -30,6 +30,22 @@ public sealed class SettingsStoreTests : IDisposable
         Assert.DoesNotContain("\"selectedProvider\"", File.ReadAllText(FilePath), StringComparison.Ordinal);
     }
 
+    // A file written by an older version lacks the settings added since; they must take their defaults, not zero or false.
+    [Fact]
+    public void Gives_settings_missing_from_the_file_their_defaults()
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(FilePath)!);
+        File.WriteAllText(FilePath, """{ "version": 1, "chatSide": "Left" }""");
+
+        var loaded = new SettingsStore(FilePath).Load();
+
+        Assert.Equal(Datapoint.Terminal.Shell.ChatSide.Left, loaded.ChatSide);
+        Assert.Equal(14, loaded.TerminalFontSize);
+        Assert.True(loaded.Notifications);
+        Assert.True(loaded.RecordSessions);
+        Assert.Equal(ApprovalMode.Ask, loaded.DefaultApprovalMode);
+    }
+
     [Fact]
     public void Keeps_trust_decisions_with_the_files_they_covered()
     {

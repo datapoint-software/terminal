@@ -47,7 +47,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         SpendingLimit = settings.SpendingLimit;
         TerminalTheme = settings.TerminalTheme;
         TerminalFont = settings.TerminalFont;
-        TerminalFontSize = settings.TerminalFontSize;
+        TerminalFontSize = settings.TerminalFontSize is >= 8 and <= 40 ? settings.TerminalFontSize : 14;
         SelectedProviderId = settings.SelectedProvider?.Id;
         foreach (var account in settings.Providers)
         {
