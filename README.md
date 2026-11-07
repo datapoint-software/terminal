@@ -15,9 +15,10 @@ This project is in early design. Nothing is built yet.
 - **Prompt injection.** Terminal output, files, remote hosts and web pages can hold text written to steer the agent. The application treats it as data, asks before risky commands and before each web request, flags text addressed to an AI, and asks before anything could carry what the terminals showed to another machine (product decision 106). These checks can't catch everything:
   - data the agent encodes (e.g. base64 or hex) before putting it in an address or a command isn't recognized as coming from the terminals;
   - network access from inside other programs (e.g. `python -c`, `node -e`) isn't recognized as a network command, though such commands still count as changes;
-  - the check for text addressed to an AI finds only the common phrasings.
+  - the check for text addressed to an AI finds only the common phrasings;
+  - with Ignore permissions, nothing a command does is checked before it runs, in any terminal, production included (product decision 107).
 
-  In Auto, or with the web allowed always, review what the agent does after it has read web content.
+  In Plan mode, with Ignore permissions, or with the web allowed always, review what the agent does after it has read web content.
 
 ## License
 
