@@ -24,6 +24,33 @@ public sealed class ConnectionReviewTests
     }
 
     [Fact]
+    public void Holds_a_new_label_and_keeps_the_confirmed_ones()
+    {
+        var confirmed = s_web with { Labels = ["web", "debian"] };
+
+        var review = ConnectionReview.Compare([confirmed with { Labels = ["web", "debian", "db"] }], [confirmed], ApprovalMode.Auto);
+
+        var change = Assert.Single(review.Held);
+        Assert.Equal((ConnectionReview.LabelsSetting, "web, debian", "web, debian, db"), (change.Setting, change.Confirmed, change.Proposed));
+        Assert.Equal(["web", "debian"], Assert.Single(review.Effective).Labels!);
+    }
+
+    [Fact]
+    public void Accepts_a_removed_label()
+    {
+        var confirmed = s_web with { Labels = ["web", "debian"] };
+
+        var review = ConnectionReview.Compare([confirmed with { Labels = ["WEB"] }], [confirmed], ApprovalMode.Auto);
+
+        Assert.Empty(review.Held);
+        Assert.Equal(["WEB"], Assert.Single(review.Effective).Labels!);
+    }
+
+    [Fact]
+    public void Counts_labels_among_the_guarded_settings() =>
+        Assert.False(ConnectionReview.IsSameGuarded(s_web, s_web with { Labels = ["web"] }));
+
+    [Fact]
     public void Holds_new_forwarded_ports_as_a_changed_address()
     {
         var review = Compare(s_web with { Forwards = ["5432 db:5432"] });

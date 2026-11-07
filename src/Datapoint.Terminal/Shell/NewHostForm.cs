@@ -20,6 +20,29 @@ public sealed class NewHostForm(IReadOnlyCollection<WorkspaceConnection> existin
 
     public int EnvironmentIndex { get; set; }
 
+    // Comma-separated, as typed.
+    public string Labels { get; set; } = string.Empty;
+
+    // The labels other hosts in the workspace already have, most used first, so the same label is spelled the same way.
+    public IReadOnlyList<string> UsedLabels { get; } = [.. existing
+        .SelectMany(connection => connection.Labels ?? [])
+        .GroupBy(label => label, StringComparer.OrdinalIgnoreCase)
+        .OrderByDescending(group => group.Count())
+        .ThenBy(group => group.Key, StringComparer.OrdinalIgnoreCase)
+        .Select(group => group.First())];
+
+    // Adds a suggested label to what's typed, unless it's already there.
+    public void AddLabel(string label)
+    {
+        var labels = SplitLabels(Labels);
+        if (labels.Contains(label, StringComparer.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        Labels = string.Join(", ", [.. labels, label]);
+    }
+
     public bool IsProduction => Agent.EnvironmentLabels.IsProduction(Environments.ElementAtOrDefault(EnvironmentIndex));
 
     // An alias from the SSH config: SSH already knows its address, user and port, so only the name is filled in.
@@ -50,6 +73,12 @@ public sealed class NewHostForm(IReadOnlyCollection<WorkspaceConnection> existin
             return (null, Strings.NewHostPortProblem);
         }
 
+        var labels = SplitLabels(Labels);
+        if (LabelsProblem(labels) is { } labelsProblem)
+        {
+            return (null, labelsProblem);
+        }
+
         var connection = new WorkspaceConnection
         {
             Name = name,
@@ -58,6 +87,7 @@ public sealed class NewHostForm(IReadOnlyCollection<WorkspaceConnection> existin
             User = User.Trim() is { Length: > 0 } user ? user : null,
             Port = port,
             Environment = Environments.ElementAtOrDefault(EnvironmentIndex),
+            Labels = labels.Count == 0 ? null : labels,
         };
         return connection.Problem() is { } wrong ? (null, wrong) : (connection, null);
     }
@@ -66,6 +96,9 @@ public sealed class NewHostForm(IReadOnlyCollection<WorkspaceConnection> existin
         !WorkspaceConnection.IsPlainLabel(name) ? Strings.NewHostNameProblem
         : existing.Any(connection => string.Equals(connection.Name, name, StringComparison.OrdinalIgnoreCase)) ? Strings.Format(Strings.NewHostNameTaken, name)
         : null;
+
+    private static string? LabelsProblem(List<string> labels) =>
+        labels.Count > WorkspaceConnection.MostLabels || labels.Any(label => !WorkspaceConnection.IsPlainLabel(label)) ? Strings.NewHostLabelsProblem : null;
 
     private static string? AddressProblem(string? alias, string address) => alias is null && !IsHostName(address) ? Strings.NewHostAddressProblem : null;
 
@@ -88,6 +121,14 @@ public sealed class NewHostForm(IReadOnlyCollection<WorkspaceConnection> existin
         port = number;
         return true;
     }
+
+    // A label written the way another host has it takes that spelling.
+    private List<string> SplitLabels(string text) =>
+    [
+        .. text.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+            .Select(label => UsedLabels.FirstOrDefault(used => string.Equals(used, label, StringComparison.OrdinalIgnoreCase)) ?? label)
+            .Distinct(StringComparer.OrdinalIgnoreCase),
+    ];
 
     private bool IsAlias(string text) => sshAliases.Contains(text, StringComparer.OrdinalIgnoreCase);
 

@@ -77,10 +77,19 @@
           <ListBox x:Name="EnvironmentList" Grid.Column="1" Classes="segmented" SelectedIndex="0"
                    AutomationProperties.Name="{x:Static res:Strings.NewHostEnvironment}" />
         </Grid>
+        <Rectangle Classes="hairline" />
+        <Grid Classes="row" ColumnDefinitions="104,*">
+          <TextBlock Text="{x:Static res:Strings.NewHostLabels}" />
+          <TextBox x:Name="LabelsBox" Grid.Column="1" MaxLength="400" PlaceholderText="{x:Static res:Strings.NewHostLabelsHint}"
+                   AutomationProperties.Name="{x:Static res:Strings.NewHostLabels}" />
+        </Grid>
       </StackPanel>
     </Border>
     <TextBlock x:Name="ProductionNote" Classes="secondary" Margin="4,6,4,0" IsVisible="False"
                Text="{x:Static res:Strings.NewHostProductionNote}" />
+    <WrapPanel x:Name="LabelPanel" Margin="4,10,0,0" ItemSpacing="6" LineSpacing="6" IsVisible="False">
+      <TextBlock Classes="secondary" FontSize="12" Margin="0,0,4,0" VerticalAlignment="Center" Text="{x:Static res:Strings.NewHostLabelsUsed}" />
+    </WrapPanel>
     <WrapPanel x:Name="AliasPanel" Margin="4,10,0,0" ItemSpacing="6" LineSpacing="6" IsVisible="False">
       <TextBlock Classes="secondary" FontSize="12" Margin="0,0,4,0" VerticalAlignment="Center" Text="{x:Static res:Strings.NewHostFromConfig}" />
     </WrapPanel>

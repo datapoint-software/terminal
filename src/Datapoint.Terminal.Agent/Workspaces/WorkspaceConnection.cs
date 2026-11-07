@@ -2,6 +2,8 @@ namespace Datapoint.Terminal.Agent.Workspaces;
 
 public sealed record WorkspaceConnection
 {
+    public const int MostLabels = 20;
+
     public required string Name { get; init; }
 
     public string? SshHost { get; init; }
@@ -13,6 +15,9 @@ public sealed record WorkspaceConnection
     public int? Port { get; init; }
 
     public string? Environment { get; init; }
+
+    // Free-form labels, e.g. "web" or "debian", which skills use to choose the hosts they run on.
+    public IReadOnlyList<string>? Labels { get; init; }
 
     public ApprovalMode? ApprovalMode { get; init; }
 
@@ -43,7 +48,16 @@ public sealed record WorkspaceConnection
         !IsPlainLabel(Name) ? "a connection's name must be up to 40 letters, digits, spaces, dots, dashes, underscores or @."
         : Environment is not null && !IsPlainLabel(Environment) ? $"the environment label of {Name} must be up to 40 letters, digits, spaces, dots, dashes, underscores or @."
         : SshHost is not null && !IsPlainLabel(SshHost) ? $"the SSH host of {Name} isn't a plain host name."
-        : PlaceProblem();
+        : LabelsProblem() ?? PlaceProblem();
+
+    // Labels are compared without regard to case, as skills name them.
+    public bool HasLabel(string label) => Labels?.Contains(label, StringComparer.OrdinalIgnoreCase) == true;
+
+    private string? LabelsProblem() =>
+        Labels is not { Count: > 0 } ? null
+        : Labels.Count > MostLabels ? $"{Name} has more than {MostLabels} labels."
+        : Labels.FirstOrDefault(label => !IsPlainLabel(label)) is { } wrong ? $"the label \"{wrong}\" of {Name} must be up to 40 letters, digits, spaces, dots, dashes, underscores or @."
+        : null;
 
     private string? PlaceProblem() =>
         IsLocal && Container is null ? $"{Name} names neither an SSH host, a host nor a container."

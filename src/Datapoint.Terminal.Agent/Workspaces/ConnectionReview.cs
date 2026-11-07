@@ -8,6 +8,7 @@ public sealed record ConnectionReview(IReadOnlyList<WorkspaceConnection> Effecti
     public const string EnvironmentSetting = "environment";
     public const string ApprovalSetting = "approval mode";
     public const string AddressSetting = "address";
+    public const string LabelsSetting = "labels";
 
     // The effective list is also the new confirmed record: stricter changes and removals are accepted as they are.
     public static ConnectionReview Compare(IReadOnlyList<WorkspaceConnection> current, IReadOnlyList<WorkspaceConnection> confirmed, ApprovalMode defaultMode)
@@ -31,12 +32,13 @@ public sealed record ConnectionReview(IReadOnlyList<WorkspaceConnection> Effecti
         return new ConnectionReview(effective, held);
     }
 
-    // Whether two records agree on everything this review guards: the label, the approval mode and the address.
+    // Whether two records agree on everything this review guards: the environment, the labels, the approval mode and the address.
     public static bool IsSameGuarded(WorkspaceConnection first, WorkspaceConnection second)
     {
         ArgumentNullException.ThrowIfNull(first);
         ArgumentNullException.ThrowIfNull(second);
         return string.Equals(first.Environment, second.Environment, StringComparison.Ordinal)
+            && string.Equals(LabelList(first), LabelList(second), StringComparison.Ordinal)
             && first.ApprovalMode == second.ApprovalMode
             && string.Equals(Address(first), Address(second), StringComparison.Ordinal);
     }
@@ -67,6 +69,14 @@ public sealed record ConnectionReview(IReadOnlyList<WorkspaceConnection> Effecti
             merged = merged with { Environment = previous.Environment };
         }
 
+        // A new label can bring a host into a skill's rollout, so it waits; a removed one only takes it out.
+        var added = (connection.Labels ?? []).Where(label => !previous.HasLabel(label)).ToList();
+        if (added.Count > 0)
+        {
+            held.Add(new ConnectionChange(connection.Name, LabelsSetting, LabelList(previous), LabelList(connection)));
+            merged = merged with { Labels = Normalized([.. (connection.Labels ?? []).Where(previous.HasLabel)]) };
+        }
+
         if (Strictness(merged, defaultMode) < Strictness(previous, defaultMode))
         {
             held.Add(new ConnectionChange(connection.Name, ApprovalSetting, Mode(previous), Mode(merged)));
@@ -81,6 +91,15 @@ public sealed record ConnectionReview(IReadOnlyList<WorkspaceConnection> Effecti
 
         return merged;
     }
+
+    // Null when there are none, so a record without labels and one with an empty list read the same.
+    public static string? LabelList(WorkspaceConnection connection)
+    {
+        ArgumentNullException.ThrowIfNull(connection);
+        return connection.Labels is { Count: > 0 } labels ? string.Join(", ", labels) : null;
+    }
+
+    private static IReadOnlyList<string>? Normalized(IReadOnlyList<string> labels) => labels.Count == 0 ? null : labels;
 
     // A connection without its own mode takes the application's default, or Ask when it's labeled production.
     private static ApprovalMode ModeOf(WorkspaceConnection connection, ApprovalMode defaultMode) =>

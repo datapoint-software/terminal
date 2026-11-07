@@ -1815,4 +1815,19 @@ Fingerprint: {2}</value>
   <data name="HostFileUnsavedReason" xml:space="preserve">
     <value>changes not saved</value>
   </data>
+  <data name="NewHostLabels" xml:space="preserve">
+    <value>Labels</value>
+  </data>
+  <data name="NewHostLabelsHint" xml:space="preserve">
+    <value>web, debian</value>
+  </data>
+  <data name="NewHostLabelsProblem" xml:space="preserve">
+    <value>Labels are separated by commas, up to 20, each up to 40 letters, digits, spaces, dots, dashes, underscores or @.</value>
+  </data>
+  <data name="NewHostLabelsUsed" xml:space="preserve">
+    <value>Used in this workspace</value>
+  </data>
+  <data name="NewHostLabelsItem" xml:space="preserve">
+    <value>Add the label {0}</value>
+  </data>
 </root>

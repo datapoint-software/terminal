@@ -357,7 +357,7 @@ public sealed partial class TerminalAgent : IDisposable
         var connections = TerminalOpener?.Connections ?? [];
         var openable = connections.Count == 0
             ? string.Empty
-            : "[Connections open_terminal can open: " + string.Join(", ", connections.Select(item => Named(item.Name, item.Environment, item.Place))) + "]\n";
+            : "[Connections open_terminal can open: " + string.Join(", ", connections.Select(item => Named(item.Name, item.Environment, item.Place) + Labeled(item.Labels))) + "]\n";
         return open + openable + DescribeHostDocs() + DescribeRunbooks();
     }
 
@@ -367,6 +367,8 @@ public sealed partial class TerminalAgent : IDisposable
 
     private static string Named(string name, string? environment, string? place = null) =>
         $"\"{name}\"" + (place is null ? string.Empty : $" [{place}]") + (environment is null ? string.Empty : $" ({environment})");
+
+    private static string Labeled(IReadOnlyList<string> labels) => labels.Count == 0 ? string.Empty : " {labels: " + string.Join(", ", labels) + "}";
 
     private void SetStatus(AgentStatus status, AgentTerminal? terminal = null)
     {

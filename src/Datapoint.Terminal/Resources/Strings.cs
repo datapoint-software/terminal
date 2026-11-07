@@ -1208,6 +1208,16 @@ public static class Strings
 
     public static string HostFileUnsavedReason => Get(nameof(HostFileUnsavedReason));
 
+    public static string NewHostLabels => Get(nameof(NewHostLabels));
+
+    public static string NewHostLabelsHint => Get(nameof(NewHostLabelsHint));
+
+    public static string NewHostLabelsProblem => Get(nameof(NewHostLabelsProblem));
+
+    public static string NewHostLabelsUsed => Get(nameof(NewHostLabelsUsed));
+
+    public static string NewHostLabelsItem => Get(nameof(NewHostLabelsItem));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

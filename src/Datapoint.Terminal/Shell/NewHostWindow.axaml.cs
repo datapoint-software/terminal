@@ -10,6 +10,7 @@ namespace Datapoint.Terminal.Shell;
 public sealed partial class NewHostWindow : Window
 {
     private const int MostAliases = 12;
+    private const int MostLabels = 16;
 
     private readonly NewHostForm _form;
 
@@ -41,6 +42,15 @@ public sealed partial class NewHostWindow : Window
         }
 
         AliasPanel.IsVisible = aliases.Count > 0;
+        foreach (var label in form.UsedLabels.Take(MostLabels))
+        {
+            var chip = new Button { Content = label, Classes = { "chip" } };
+            AutomationProperties.SetName(chip, Strings.Format(Strings.NewHostLabelsItem, label));
+            chip.Click += (_, _) => AddLabel(label);
+            LabelPanel.Children.Add(chip);
+        }
+
+        LabelPanel.IsVisible = form.UsedLabels.Count > 0;
         AddButton.Click += (_, _) => Add();
         CancelButton.Click += (_, _) => Close(null);
         KeyDown += (_, e) =>
@@ -72,6 +82,15 @@ public sealed partial class NewHostWindow : Window
         AddressBox.Focus();
     }
 
+    private void AddLabel(string label)
+    {
+        Read();
+        _form.AddLabel(label);
+        LabelsBox.Text = _form.Labels;
+        LabelsBox.CaretIndex = LabelsBox.Text.Length;
+        LabelsBox.Focus();
+    }
+
     private void Add()
     {
         Read();
@@ -93,5 +112,6 @@ public sealed partial class NewHostWindow : Window
         _form.User = UserBox.Text ?? string.Empty;
         _form.Port = PortBox.Text ?? string.Empty;
         _form.EnvironmentIndex = Math.Max(EnvironmentList.SelectedIndex, 0);
+        _form.Labels = LabelsBox.Text ?? string.Empty;
     }
 }
