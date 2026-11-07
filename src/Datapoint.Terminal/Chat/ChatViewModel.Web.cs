@@ -67,6 +67,30 @@ public sealed partial class ChatViewModel
         WebAlwaysAllowed?.Invoke(this, EventArgs.Empty);
     }
 
+    // What the agent searched for or read, with each page as a link; the view shows each link's address beside it.
+    private static ChatItemViewModel WebItem(AgentEventArgs e)
+    {
+        var isSearch = e.WebKind == WebAccessKind.Search;
+        var title = isSearch
+            ? Strings.Format(Strings.WebSearched, e.Text)
+            : Strings.Format(Strings.WebReadPage, e.Sources.Count > 0 ? e.Sources[0].Title : e.Text);
+        if (isSearch && e.Service is { } service)
+        {
+            title = Strings.Format(Strings.CommandInTerminal, title, service);
+        }
+
+        var detail = e.Problem is { } problem
+            ? EscapeMarkdown(problem)
+            : e.Sources.Count == 0 ? Strings.WebNoResults : string.Join('\n', e.Sources.Select(source => "- " + Link(source)));
+        return new ChatItemViewModel(ChatItemKind.Web, title) { Detail = detail };
+    }
+
+    private static string Link(WebSearchResult source)
+    {
+        var address = source.Address.AbsoluteUri.Replace("(", "%28", StringComparison.Ordinal).Replace(")", "%29", StringComparison.Ordinal);
+        return $"[{EscapeMarkdown(source.Title)}]({address})";
+    }
+
     // The purpose is the model's words: shown as text, so it can't dress itself up as a link or a heading.
     private static string EscapeMarkdown(string text)
     {

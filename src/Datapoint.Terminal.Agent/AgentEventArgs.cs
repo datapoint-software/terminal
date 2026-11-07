@@ -30,4 +30,14 @@ public sealed class AgentEventArgs(AgentEventKind kind, string text) : EventArgs
 
     // The file a memory or host documentation change was written to.
     public string? Path { get; init; }
+
+    public Web.WebAccessKind? WebKind { get; init; }
+
+    public IReadOnlyList<Web.WebSearchResult> Sources { get; init; } = [];
+
+    // Why a search or page read failed; null when it worked.
+    public string? Problem { get; init; }
+
+    // Who ran a search.
+    public string? Service { get; init; }
 }

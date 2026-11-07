@@ -1514,6 +1514,50 @@ public static class Strings
 
     public static string WebAllowAlwaysDescription => Get(nameof(WebAllowAlwaysDescription));
 
+    public static string SettingsPageWeb => Get(nameof(SettingsPageWeb));
+
+    public static string WebAlwaysAllow => Get(nameof(WebAlwaysAllow));
+
+    public static string WebAlwaysAllowHint => Get(nameof(WebAlwaysAllowHint));
+
+    public static string WebSearchWith => Get(nameof(WebSearchWith));
+
+    public static string WebServiceProvider => Get(nameof(WebServiceProvider));
+
+    public static string WebServiceBrave => Get(nameof(WebServiceBrave));
+
+    public static string WebServiceTavily => Get(nameof(WebServiceTavily));
+
+    public static string WebServiceSearxng => Get(nameof(WebServiceSearxng));
+
+    public static string WebServiceOff => Get(nameof(WebServiceOff));
+
+    public static string WebKey => Get(nameof(WebKey));
+
+    public static string WebServer => Get(nameof(WebServer));
+
+    public static string WebServerPlaceholder => Get(nameof(WebServerPlaceholder));
+
+    public static string WebServerInvalid => Get(nameof(WebServerInvalid));
+
+    public static string WebHintProvider => Get(nameof(WebHintProvider));
+
+    public static string WebHintBrave => Get(nameof(WebHintBrave));
+
+    public static string WebHintTavily => Get(nameof(WebHintTavily));
+
+    public static string WebHintSearxng => Get(nameof(WebHintSearxng));
+
+    public static string WebHintOff => Get(nameof(WebHintOff));
+
+    public static string WebReadHint => Get(nameof(WebReadHint));
+
+    public static string WebSearched => Get(nameof(WebSearched));
+
+    public static string WebReadPage => Get(nameof(WebReadPage));
+
+    public static string WebNoResults => Get(nameof(WebNoResults));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

@@ -24,4 +24,7 @@ public enum AgentEventKind
 
     // A skill's rollout started or moved on; Rollout holds where it is.
     RolloutChanged,
+
+    // A web search or page read finished: Text is the query or address, WebKind which it was, Sources what it found.
+    WebUsed,
 }

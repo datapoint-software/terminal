@@ -64,6 +64,11 @@ public sealed record AppSettings
     // The agent searches the web and reads pages without asking each time (product decision 105).
     public bool AlwaysAllowWeb { get; init; }
 
+    public WebSearchService WebSearch { get; init; } = WebSearchService.Provider;
+
+    // The SearXNG server's address, when that's the search service.
+    public string? SearxngServer { get; init; }
+
     // How long conversation history is kept, in days; null keeps it forever (product decision 52).
     public int? HistoryDays { get; init; }
 

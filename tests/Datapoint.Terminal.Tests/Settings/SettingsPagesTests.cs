@@ -67,6 +67,46 @@ public sealed class SettingsPagesTests : IDisposable
     }
 
     [AvaloniaFact]
+    public void Chooses_the_search_service_and_keeps_its_key_in_the_credential_store()
+    {
+        var settings = Create();
+        var window = Show(settings, page: SettingsWindow.MemoryPageIndex + 1);
+        var model = (WebViewModel)window.FindControl<WebPage>("WebPage")!.DataContext!;
+
+        model.SelectedService = 1;
+        model.KeyDraft = "brave-key";
+        model.SaveKeyCommand.Execute(null);
+        model.AlwaysAllow = true;
+        Dispatcher.UIThread.RunJobs();
+        window.CaptureRenderedFrame()?.Save("rendered/settings-web.png", new PngBitmapEncoderOptions());
+
+        var saved = new SettingsStore(Path.Combine(_folder, "settings.json")).Load();
+        Assert.Equal(WebSearchService.Brave, saved.WebSearch);
+        Assert.True(saved.AlwaysAllowWeb);
+        Assert.Equal("brave-key", settings.WebKeys.Read(WebSearchService.Brave));
+        Assert.DoesNotContain("brave-key", File.ReadAllText(Path.Combine(_folder, "settings.json")), StringComparison.Ordinal);
+        Assert.True(model.HasSavedKey);
+    }
+
+    [AvaloniaFact]
+    public void Refuses_a_searxng_server_that_is_not_a_web_address()
+    {
+        var settings = Create();
+        var model = new WebViewModel(settings) { SelectedService = 3 };
+
+        model.Server = "searx.lan";
+        model.SaveServerCommand.Execute(null);
+        Assert.NotEmpty(model.ServerStatus);
+        Assert.Null(settings.SearxngServer);
+        model.Server = "http://searx.lan:8080";
+        model.SaveServerCommand.Execute(null);
+
+        Assert.Empty(model.ServerStatus);
+        Assert.Equal("http://searx.lan:8080", settings.SearxngServer);
+        Assert.Equal(WebSearchService.Searxng, settings.WebSearch);
+    }
+
+    [AvaloniaFact]
     public void Shows_what_each_connection_keeps_in_the_workspace()
     {
         var window = Show(Create(), page: 2);

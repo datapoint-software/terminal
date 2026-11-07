@@ -204,6 +204,7 @@ public sealed partial class MainWindow : Window, ITerminalOpener
             }
 
             _provider = provider;
+            _client = client;
             ApplyWebSettings();
         }
         catch (ArgumentException exception)

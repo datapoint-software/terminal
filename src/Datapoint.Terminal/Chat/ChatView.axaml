@@ -611,6 +611,11 @@
               <ContentControl Content="{Binding Rollout}" Margin="0,6" IsVisible="{Binding Rollout.IsInConversation, FallbackValue=False}" />
               <!-- A question the agent asked, kept quiet once answered; the answer follows as the user's message. -->
               <SelectableTextBlock Classes="secondary" Text="{Binding Text}" TextWrapping="Wrap" Margin="0,8,0,0" IsVisible="{Binding IsAsked}" />
+              <!-- A web search or page read: what it was, then the pages, which ask before opening. -->
+              <StackPanel Margin="0,6" Spacing="2" IsVisible="{Binding IsWeb}">
+                <SelectableTextBlock Classes="secondary" FontWeight="SemiBold" Text="{Binding Text}" TextWrapping="Wrap" />
+                <md:MarkdownView Text="{Binding Detail}" />
+              </StackPanel>
               <StackPanel Margin="12,6" Spacing="4" IsVisible="{Binding IsNotice}">
                 <SelectableTextBlock Classes="secondary" Text="{Binding Text}" TextWrapping="Wrap" TextAlignment="Center" />
                 <Button Content="{Binding ActionLabel}" Command="{Binding ActionCommand}" IsVisible="{Binding HasAction}"

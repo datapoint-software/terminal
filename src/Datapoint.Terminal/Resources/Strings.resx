@@ -2274,4 +2274,70 @@ Fingerprint: {2}</value>
   <data name="WebAllowAlwaysDescription" xml:space="preserve">
     <value>Every search and page read from now on, without asking. You can take it back in Settings.</value>
   </data>
+  <data name="SettingsPageWeb" xml:space="preserve">
+    <value>Web</value>
+  </data>
+  <data name="WebAlwaysAllow" xml:space="preserve">
+    <value>Use the web without asking</value>
+  </data>
+  <data name="WebAlwaysAllowHint" xml:space="preserve">
+    <value>When this is off, the agent asks before each search and each page it reads. Choosing Allow always in the chat turns it on.</value>
+  </data>
+  <data name="WebSearchWith" xml:space="preserve">
+    <value>Search with</value>
+  </data>
+  <data name="WebServiceProvider" xml:space="preserve">
+    <value>The model provider's search</value>
+  </data>
+  <data name="WebServiceBrave" xml:space="preserve">
+    <value>Brave Search</value>
+  </data>
+  <data name="WebServiceTavily" xml:space="preserve">
+    <value>Tavily</value>
+  </data>
+  <data name="WebServiceSearxng" xml:space="preserve">
+    <value>SearXNG</value>
+  </data>
+  <data name="WebServiceOff" xml:space="preserve">
+    <value>No search</value>
+  </data>
+  <data name="WebKey" xml:space="preserve">
+    <value>API key</value>
+  </data>
+  <data name="WebServer" xml:space="preserve">
+    <value>Server</value>
+  </data>
+  <data name="WebServerPlaceholder" xml:space="preserve">
+    <value>https://searx.example.org</value>
+  </data>
+  <data name="WebServerInvalid" xml:space="preserve">
+    <value>Give the server's full address, starting with https:// or http://.</value>
+  </data>
+  <data name="WebHintProvider" xml:space="preserve">
+    <value>Anthropic and OpenAI run the search themselves, in a request that holds only the query, and bill it with your usage. Models on an OpenAI-compatible server have no search of their own: with them, choose a search service, or the agent can only read pages whose address it knows.</value>
+  </data>
+  <data name="WebHintBrave" xml:space="preserve">
+    <value>Queries go to Brave Search with your key. Get one at api-dashboard.search.brave.com.</value>
+  </data>
+  <data name="WebHintTavily" xml:space="preserve">
+    <value>Queries go to Tavily with your key. Get one at app.tavily.com.</value>
+  </data>
+  <data name="WebHintSearxng" xml:space="preserve">
+    <value>Queries go to your SearXNG server, which must have its JSON format turned on.</value>
+  </data>
+  <data name="WebHintOff" xml:space="preserve">
+    <value>The agent can't search, and can only read pages whose address it knows.</value>
+  </data>
+  <data name="WebReadHint" xml:space="preserve">
+    <value>Pages are read by this computer: public addresses only, never this machine or your local network, and without cookies or passwords. What the agent reads is sent to your model provider with the conversation.</value>
+  </data>
+  <data name="WebSearched" xml:space="preserve">
+    <value>Searched the web for “{0}”</value>
+  </data>
+  <data name="WebReadPage" xml:space="preserve">
+    <value>Read {0}</value>
+  </data>
+  <data name="WebNoResults" xml:space="preserve">
+    <value>No results.</value>
+  </data>
 </root>

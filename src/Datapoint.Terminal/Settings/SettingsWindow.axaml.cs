@@ -9,7 +9,12 @@ public sealed partial class SettingsWindow : Window
     {
         InitializeComponent();
         Pages.SelectionChanged += (_, _) => ShowPage();
-        DataContextChanged += (_, _) => AppearancePage.DataContext = DataContext is SettingsViewModel settings ? new AppearanceViewModel(settings) : null;
+        DataContextChanged += (_, _) =>
+        {
+            var settings = DataContext as SettingsViewModel;
+            AppearancePage.DataContext = settings is null ? null : new AppearanceViewModel(settings);
+            WebPage.DataContext = settings is null ? null : new WebViewModel(settings);
+        };
     }
 
     // The workspace whose history the History page shows: the window Settings was opened from.
@@ -37,6 +42,7 @@ public sealed partial class SettingsWindow : Window
         AppearanceScroller.IsVisible = Pages.SelectedIndex == 1;
         HistoryScroller.IsVisible = Pages.SelectedIndex == 2;
         MemoryScroller.IsVisible = Pages.SelectedIndex == MemoryPageIndex;
+        WebScroller.IsVisible = Pages.SelectedIndex == MemoryPageIndex + 1;
         if (!MemoryScroller.IsVisible)
         {
             return;

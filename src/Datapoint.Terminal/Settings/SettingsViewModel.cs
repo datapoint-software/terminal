@@ -26,6 +26,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         _store = store;
         _createClient = createClient;
         Keys = keys;
+        WebKeys = new WebSearchKeys(keys.Store, Environment.GetEnvironmentVariable);
         Kinds =
         [
             new(ProviderKind.Anthropic, Strings.ProviderKindAnthropic),
@@ -50,6 +51,8 @@ public sealed partial class SettingsViewModel : ObservableObject
         MatchWindowToTheme = settings.MatchWindowToTheme;
         ReduceMotion = settings.ReduceMotion;
         AlwaysAllowWeb = settings.AlwaysAllowWeb;
+        WebSearch = settings.WebSearch;
+        SearxngServer = settings.SearxngServer;
         TerminalFontSize = settings.TerminalFontSize is >= 8 and <= 40 ? settings.TerminalFontSize : 14;
         SelectedProviderId = settings.SelectedProvider?.Id;
         foreach (var account in settings.Providers)
@@ -122,6 +125,19 @@ public sealed partial class SettingsViewModel : ObservableObject
     public bool ReduceMotion { get; private set; }
 
     public bool AlwaysAllowWeb { get; private set; }
+
+    public WebSearchService WebSearch { get; private set; }
+
+    public string? SearxngServer { get; private set; }
+
+    public WebSearchKeys WebKeys { get; }
+
+    public void SetWebSearch(WebSearchService service, string? searxngServer)
+    {
+        WebSearch = service;
+        SearxngServer = string.IsNullOrWhiteSpace(searxngServer) ? null : searxngServer.Trim();
+        Save();
+    }
 
     // Every window's agent follows it, so allowing or taking it back applies everywhere at once.
     public void SetAlwaysAllowWeb(bool allow)
@@ -233,6 +249,8 @@ public sealed partial class SettingsViewModel : ObservableObject
         MatchWindowToTheme = MatchWindowToTheme,
         ReduceMotion = ReduceMotion,
         AlwaysAllowWeb = AlwaysAllowWeb,
+        WebSearch = WebSearch,
+        SearxngServer = SearxngServer,
     };
 
     public IReadOnlyList<WorkspaceConnection>? ConfirmedFor(string folder) =>

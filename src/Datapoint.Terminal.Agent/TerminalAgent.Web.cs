@@ -104,6 +104,7 @@ public sealed partial class TerminalAgent
         }
 
         var results = await search.SearchAsync(query, cancellationToken).ConfigureAwait(false);
+        Raise(new AgentEventArgs(AgentEventKind.WebUsed, query) { WebKind = WebAccessKind.Search, Sources = results.Results, Problem = results.Problem, Service = search.Name });
         if (results.Usage is { } usage)
         {
             Usage.Record(_usageTerminal, usage);
@@ -131,6 +132,12 @@ public sealed partial class TerminalAgent
             }
 
             page = await PageReader.ReadAsync(address, cancellationToken).ConfigureAwait(false);
+            Raise(new AgentEventArgs(AgentEventKind.WebUsed, address.AbsoluteUri)
+            {
+                WebKind = WebAccessKind.ReadPage,
+                Sources = page.Problem is null ? [new WebSearchResult(page.Title ?? page.Address.Host, page.Address, Snippet: null)] : [],
+                Problem = page.Problem,
+            });
             lock (_webSync)
             {
                 _lastPage = page;

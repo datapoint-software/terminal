@@ -461,6 +461,10 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
             case AgentEventKind.UsageChanged:
                 RefreshUsage();
                 break;
+            case AgentEventKind.WebUsed:
+                _streaming = null;
+                Items.Add(WebItem(e));
+                break;
         }
     }
 

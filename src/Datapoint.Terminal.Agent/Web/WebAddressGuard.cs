@@ -97,7 +97,7 @@ public static class WebAddressGuard
             : null;
     }
 
-    internal static bool IsWebScheme(string scheme) =>
+    public static bool IsWebScheme(string scheme) =>
         string.Equals(scheme, Uri.UriSchemeHttps, StringComparison.Ordinal) || string.Equals(scheme, Uri.UriSchemeHttp, StringComparison.Ordinal);
 
     // Loopback, link-local, unique-local, multicast and NAT64 all fall outside 2000::/3; 6to4 carries an IPv4 address.
