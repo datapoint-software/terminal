@@ -19,6 +19,8 @@ public sealed partial class ApprovalViewModel : ObservableObject
         Risk = proposal.Risk;
         Command = proposal.Command;
         Kind = proposal.Kind;
+        PlanSteps = proposal.Plan is { } plan ? PlanStepViewModel.For(plan) : [];
+        Rollback = string.IsNullOrWhiteSpace(proposal.Plan?.Rollback) ? null : proposal.Plan.Rollback;
         IgnoredFile = proposal.IgnoredFile;
         AlsoApprovesText = proposal.AlsoApproves.Count == 0 ? null : Strings.Format(Strings.ApprovalAlsoApproves, string.Join(", ", proposal.AlsoApproves));
         PlanText = proposal.IsOutsidePlan ? Strings.ApprovalOutsidePlan
@@ -35,6 +37,17 @@ public sealed partial class ApprovalViewModel : ObservableObject
     }
 
     public ProposalKind Kind { get; }
+
+    // A plan shows its steps and rollback; the command box is for everything else.
+    public bool IsPlan => PlanSteps.Count > 0;
+
+    public bool ShowsCommand => !IsPlan;
+
+    public IReadOnlyList<PlanStepViewModel> PlanSteps { get; }
+
+    public string? Rollback { get; }
+
+    public bool HasRollback => Rollback is not null;
 
     public string? IgnoredFile { get; }
 

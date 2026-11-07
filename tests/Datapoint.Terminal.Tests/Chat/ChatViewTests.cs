@@ -106,4 +106,54 @@ public sealed class ChatViewTests
         Assert.Equal(3, options.Count);
         Assert.Single(options, button => button.Classes.Contains("recommended"));
     }
+
+    [AvaloniaFact]
+    public void Shows_a_plans_steps_warnings_and_rollback()
+    {
+        using var chat = new ChatViewModel(new ImmediateUiThread());
+        var plan = new AgentPlan(
+            "Drain swarm-a, install the 6 updates, reboot into the new kernel, then make the node active again.",
+            [
+                new AgentPlanStep("docker node ls", "Check the other nodes are healthy and how many managers there are. Stops and asks if draining would leave too few."),
+                new AgentPlanStep("docker node update --availability drain $(docker info -f '{{.Swarm.NodeID}}')", "Move this node's tasks to other nodes"),
+                new AgentPlanStep("DEBIAN_FRONTEND=noninteractive apt-get -y --with-new-pkgs upgrade", "Install all updates, including the held-back kernel"),
+                new AgentPlanStep("reboot", "Start the new kernel", "Ends the SSH session"),
+                new AgentPlanStep("docker node update --availability active $(docker info -f '{{.Swarm.NodeID}}')", "Let the node take work again"),
+            ],
+            "Run `docker node update --availability active` to bring the node back, and reinstall the previous packages from `/var/cache/apt/archives`.");
+        _ = chat.RequestApprovalAsync(new CommandProposal(plan.Text, plan.Summary, CommandRisk.Changes, "Local") { Kind = ProposalKind.Plan, Plan = plan }, CancellationToken.None);
+        var window = new Window { Width = 420, Height = 900, Content = new ChatView { DataContext = chat } };
+        window.Show();
+
+        Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+        using var frame = window.CaptureRenderedFrame();
+        Directory.CreateDirectory("rendered");
+        frame?.Save("rendered/chat-plan.png", new PngBitmapEncoderOptions());
+
+        var reboot = chat.Approval!.PlanSteps[3];
+        Assert.Equal(["Ends the SSH session"], reboot.Warnings);
+        var run = window.GetVisualDescendants().OfType<Button>().Single(button => Equals(button.Content, chat.Approval.RunLabel));
+        Assert.InRange(run.TranslatePoint(new Point(0, run.Bounds.Height), window)!.Value.Y, 0, window.Height);
+    }
+
+    [AvaloniaFact]
+    public void Ticks_off_an_approved_plans_steps()
+    {
+        using var chat = new ChatViewModel(new ImmediateUiThread());
+        var plan = new AgentPlan("Update", [new AgentPlanStep("apt-get update", "Refresh the package lists"), new AgentPlanStep("apt-get -y upgrade", "Install the updates"), new AgentPlanStep("sudo reboot", "Start the new kernel")], "None.");
+
+        chat.Show(new AgentEventArgs(AgentEventKind.PlanApproved, "Update the server") { Plan = plan });
+        chat.Show(new AgentEventArgs(AgentEventKind.CommandFinished, "Finished") { PlanStep = 1, StepState = PlanStepState.Succeeded });
+        chat.Show(new AgentEventArgs(AgentEventKind.CommandFinished, "Finished") { PlanStep = 2, StepState = PlanStepState.Failed });
+        chat.Show(new AgentEventArgs(AgentEventKind.CommandStarted, "Start the new kernel") { PlanStep = 3, StepState = PlanStepState.Running, Command = "sudo reboot" });
+        var window = new Window { Width = 420, Height = 500, Content = new ChatView { DataContext = chat } };
+        window.Show();
+        Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+        using var frame = window.CaptureRenderedFrame();
+        frame?.Save("rendered/chat-plan-progress.png", new PngBitmapEncoderOptions());
+
+        var item = Assert.Single(chat.Items, item => item.IsPlan);
+        Assert.Equal([PlanStepState.Succeeded, PlanStepState.Failed, PlanStepState.Running], item.Steps.Select(step => step.State));
+        Assert.Equal("Step 2, failed: Install the updates", item.Steps[1].AccessibleName);
+    }
 }

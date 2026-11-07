@@ -22,6 +22,11 @@ public sealed partial class ChatItemViewModel(ChatItemKind kind, string text) : 
 
     public bool IsNotice => Kind == ChatItemKind.Notice;
 
+    public bool IsPlan => Kind == ChatItemKind.Plan;
+
+    // For an approved plan, its steps, ticked off as the agent carries them out.
+    public IReadOnlyList<PlanStepViewModel> Steps { get; init; } = [];
+
     [ObservableProperty]
     public partial string Text { get; set; } = text;
 

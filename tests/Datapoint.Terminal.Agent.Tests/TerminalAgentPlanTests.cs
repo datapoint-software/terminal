@@ -45,7 +45,7 @@ public sealed class TerminalAgentPlanTests
     }
 
     [Fact]
-    public async Task Shows_the_plan_for_approval_and_notes_it_once_approved()
+    public async Task Shows_the_plan_for_approval_and_reports_it_once_approved()
     {
         using var agent = await RunAsync(ApprovalMode.Ask, Plan());
 
@@ -55,8 +55,49 @@ public sealed class TerminalAgentPlanTests
             "1. sudo apt-get install -y nginx: install it\n2. sudo systemctl enable --now nginx: start it\n\nTo roll back: sudo apt-get remove nginx",
             proposal.Command);
         Assert.StartsWith("Approved.", _results[0], StringComparison.Ordinal);
-        Assert.Contains(_events, e => e.Kind == AgentEventKind.Notice && e.Text.StartsWith("Plan approved: Install nginx", StringComparison.Ordinal));
+        var approved = Assert.Single(_events, e => e.Kind == AgentEventKind.PlanApproved);
+        Assert.Equal(("Install nginx", "web1", 2), (approved.Text, approved.Terminal, approved.Plan!.Steps.Count));
         Assert.Null(agent.Plan);
+    }
+
+    [Fact]
+    public async Task Reads_each_steps_command_purpose_and_warning()
+    {
+        using var steps = System.Text.Json.JsonDocument.Parse("""
+            [{"command":"sudo reboot","purpose":"Start the new kernel","warning":"Ends the SSH session"},
+             {"command":" uname -r ","purpose":""},
+             "uptime"]
+            """);
+        using var agent = await RunAsync(ApprovalMode.Ask, _ => Call("propose_plan", Arguments(("summary", "Update"), ("steps", steps.RootElement.Clone()), ("rollback", "None."))));
+
+        Assert.Equal(
+            [new AgentPlanStep("sudo reboot", "Start the new kernel", "Ends the SSH session"), new AgentPlanStep("uname -r", string.Empty), new AgentPlanStep("uptime", string.Empty)],
+            _user.Proposals.Single().Plan!.Steps);
+    }
+
+    [Fact]
+    public async Task Refuses_a_step_without_a_command()
+    {
+        using var steps = System.Text.Json.JsonDocument.Parse("""[{"purpose":"Think about it"}]""");
+        using var agent = await RunAsync(ApprovalMode.Ask, _ => Call("propose_plan", Arguments(("summary", "Update"), ("steps", steps.RootElement.Clone()), ("rollback", ""))));
+
+        Assert.Equal("Not proposed: give every step the command you'll run.", _results[0]);
+        Assert.Empty(_user.Proposals);
+    }
+
+    [Theory]
+    [InlineData(0, PlanStepState.Succeeded)]
+    [InlineData(2, PlanStepState.Failed)]
+    public async Task Reports_which_step_runs_and_how_it_went(int exitCode, PlanStepState expected)
+    {
+        _terminal.Run = command => ("output", exitCode);
+
+        using var agent = await RunAsync(ApprovalMode.Ask, Plan(), Run("sudo systemctl enable --now nginx", step: 2));
+
+        var started = Assert.Single(_events, e => e.Kind == AgentEventKind.CommandStarted);
+        var finished = Assert.Single(_events, e => e.Kind == AgentEventKind.CommandFinished);
+        Assert.Equal((2, PlanStepState.Running), (started.PlanStep, started.StepState));
+        Assert.Equal((2, expected), (finished.PlanStep, finished.StepState));
     }
 
     [Fact]

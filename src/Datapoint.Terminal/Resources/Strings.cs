@@ -800,6 +800,30 @@ public static class Strings
 
     public static string QuestionRecommended => Get(nameof(QuestionRecommended));
 
+    public static string PlanHazardEndsConnection => Get(nameof(PlanHazardEndsConnection));
+
+    public static string PlanHazardErasesDisk => Get(nameof(PlanHazardErasesDisk));
+
+    public static string PlanHazardDeletesRecursively => Get(nameof(PlanHazardDeletesRecursively));
+
+    public static string PlanHazardChangesTrust => Get(nameof(PlanHazardChangesTrust));
+
+    public static string PlanRollbackTitle => Get(nameof(PlanRollbackTitle));
+
+    public static string PlanChecklistTitle => Get(nameof(PlanChecklistTitle));
+
+    public static string PlanStepPending => Get(nameof(PlanStepPending));
+
+    public static string PlanStepRunning => Get(nameof(PlanStepRunning));
+
+    public static string PlanStepSucceeded => Get(nameof(PlanStepSucceeded));
+
+    public static string PlanStepFailed => Get(nameof(PlanStepFailed));
+
+    public static string PlanStepFinished => Get(nameof(PlanStepFinished));
+
+    public static string PlanStepAccessible => Get(nameof(PlanStepAccessible));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

@@ -27,7 +27,8 @@ public sealed partial class TerminalAgent
         }
 
         Raise(new AgentEventArgs(AgentEventKind.Notice, $"Changing {edit.Path} on {edit.Terminal.Name}:\n{diff}") { Terminal = edit.Terminal.Name });
-        return await ApplyEditAsync(edit, purpose, cancellationToken).ConfigureAwait(false);
+        var step = CheckPlan(edit.Terminal, CommandRisk.Changes, PlanStep(arguments)).Step;
+        return await ApplyEditAsync(edit, purpose, step, cancellationToken).ConfigureAwait(false);
     }
 
     // Reads the file and works out the new text, or says why not, before anything is asked.
@@ -113,7 +114,7 @@ public sealed partial class TerminalAgent
     }
 
     // The file is read again first, so a change made while the user was deciding isn't overwritten.
-    private async Task<string> ApplyEditAsync(PreparedEdit edit, string purpose, CancellationToken cancellationToken)
+    private async Task<string> ApplyEditAsync(PreparedEdit edit, string purpose, int? planStep, CancellationToken cancellationToken)
     {
         var (now, problem) = await TryReadFileAsync(edit.Terminal, edit.Path, cancellationToken).ConfigureAwait(false);
         if (now is null || now.Exists != edit.File.Exists || !now.Content.AsSpan().SequenceEqual(edit.File.Content))
@@ -143,6 +144,6 @@ public sealed partial class TerminalAgent
 
         var undo = FileEditCommand.Undo(edit.Path, backup, useSudo);
         var saved = backup is null ? $"Creates {edit.Path}." : $"Backup: {backup}.";
-        return $"{saved} To undo: {undo}\n" + await TypeAndWaitAsync(edit.Terminal, command, purpose, cancellationToken).ConfigureAwait(false);
+        return $"{saved} To undo: {undo}\n" + await TypeAndWaitAsync(edit.Terminal, command, purpose, planStep, cancellationToken).ConfigureAwait(false);
     }
 }

@@ -128,6 +128,30 @@
       <Setter Property="FontWeight" Value="SemiBold" />
     </Style>
 
+    <!-- Plans: a warning glyph in the waiting colour beside text in the label colour, so the warning keeps its contrast. -->
+    <Style Selector="TextBlock.warning-glyph">
+      <Setter Property="Foreground" Value="{DynamicResource WaitingBrush}" />
+    </Style>
+    <Style Selector="Border.plan">
+      <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="Padding" Value="12,10" />
+      <Setter Property="Margin" Value="0,6" />
+    </Style>
+    <Style Selector="TextBlock.step">
+      <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
+    </Style>
+    <Style Selector="TextBlock.step.running">
+      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+    </Style>
+    <Style Selector="TextBlock.step.succeeded">
+      <Setter Property="Foreground" Value="{DynamicResource SyntaxAddedBrush}" />
+    </Style>
+    <Style Selector="TextBlock.step.failed">
+      <Setter Property="Foreground" Value="{DynamicResource DangerBrush}" />
+    </Style>
+
     <Style Selector="Border.card">
       <Setter Property="Background" Value="{DynamicResource CardBrush}" />
       <Setter Property="CornerRadius" Value="10" />
@@ -192,9 +216,47 @@
             <TextBlock Classes="title" Text="{Binding Heading}" TextWrapping="Wrap" />
             <TextBlock Text="{Binding Purpose}" TextWrapping="Wrap" />
           </StackPanel>
-          <!-- Capped, so a long plan or diff scrolls inside the box and Run and Decline stay in view. -->
+          <!-- A plan: each step says what it does, flags anything risky, then shows the exact command. Capped, so a long plan
+               scrolls inside the box while the rollback, Approve and Decline stay in view. -->
+          <ScrollViewer MaxHeight="320" VerticalScrollBarVisibility="Auto" IsVisible="{Binding IsPlan}">
+            <ItemsControl ItemsSource="{Binding PlanSteps}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <StackPanel Spacing="10" />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="chat:PlanStepViewModel">
+                  <Grid ColumnDefinitions="22,*" Margin="0,0,8,0">
+                    <TextBlock Classes="secondary" Text="{Binding NumberText}" FontWeight="SemiBold" Margin="0,1,0,0" />
+                    <StackPanel Grid.Column="1" Spacing="2">
+                      <TextBlock Text="{Binding Purpose}" TextWrapping="Wrap" IsVisible="{Binding HasPurpose}" />
+                      <ItemsControl ItemsSource="{Binding Warnings}" IsVisible="{Binding HasWarnings}">
+                        <ItemsControl.ItemTemplate>
+                          <DataTemplate x:DataType="x:String">
+                            <StackPanel Orientation="Horizontal" Spacing="5">
+                              <TextBlock Classes="warning-glyph" Text="⚠" />
+                              <TextBlock Text="{Binding}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                            </StackPanel>
+                          </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                      </ItemsControl>
+                      <Border Classes="code">
+                        <SelectableTextBlock Classes="mono" Text="{Binding Command}" TextWrapping="Wrap" />
+                      </Border>
+                    </StackPanel>
+                  </Grid>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </ScrollViewer>
+          <StackPanel Spacing="2" IsVisible="{Binding HasRollback}">
+            <TextBlock Text="{x:Static res:Strings.PlanRollbackTitle}" FontWeight="SemiBold" />
+            <md:MarkdownView Text="{Binding Rollback}" />
+          </StackPanel>
+          <!-- Capped, so a long diff scrolls inside the box and Run and Decline stay in view. -->
           <TextBox x:Name="ApprovalCommand" Classes="code" Text="{Binding Command}" IsReadOnly="{Binding IsCommandReadOnly}" TextWrapping="Wrap" Background="{DynamicResource CodeBrush}"
-                   MaxHeight="280" ScrollViewer.VerticalScrollBarVisibility="Auto"
+                   MaxHeight="280" ScrollViewer.VerticalScrollBarVisibility="Auto" IsVisible="{Binding ShowsCommand}"
                    AutomationProperties.Name="{x:Static res:Strings.ApprovalCommandLabel}" />
           <TextBlock Text="{Binding PlanText}" IsVisible="{Binding HasPlanText}" FontWeight="SemiBold" TextWrapping="Wrap" />
           <TextBlock Classes="secondary" Text="{Binding RiskText}" TextWrapping="Wrap" />
@@ -341,6 +403,37 @@
                 <StackPanel Spacing="4">
                   <SelectableTextBlock Classes="mono" Text="{Binding Text}" TextWrapping="Wrap" />
                   <TextBlock Classes="secondary" Text="{Binding Detail}" TextWrapping="Wrap" />
+                </StackPanel>
+              </Border>
+              <!-- An approved plan, ticked off as the agent carries out each step. -->
+              <Border Classes="plan" IsVisible="{Binding IsPlan}">
+                <StackPanel Spacing="6">
+                  <StackPanel Spacing="1">
+                    <TextBlock Classes="secondary" Text="{x:Static res:Strings.PlanChecklistTitle}" FontWeight="SemiBold" />
+                    <SelectableTextBlock Text="{Binding Text}" TextWrapping="Wrap" />
+                  </StackPanel>
+                  <ItemsControl ItemsSource="{Binding Steps}">
+                    <ItemsControl.ItemsPanel>
+                      <ItemsPanelTemplate>
+                        <StackPanel Spacing="4" />
+                      </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate x:DataType="chat:PlanStepViewModel">
+                        <Grid ColumnDefinitions="20,*" Focusable="True" AutomationProperties.Name="{Binding AccessibleName}">
+                          <TextBlock Classes="step" Classes.running="{Binding IsRunning}" Classes.succeeded="{Binding IsSucceeded}"
+                                     Classes.failed="{Binding IsFailed}" Text="{Binding Glyph}" />
+                          <StackPanel Grid.Column="1">
+                            <TextBlock TextWrapping="Wrap">
+                              <Run Text="{Binding NumberText}" /><Run Text=". " /><Run Text="{Binding Title}" />
+                            </TextBlock>
+                            <TextBlock Classes="secondary" FontFamily="{StaticResource MonoFont}" Text="{Binding Command}"
+                                       TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Command}" IsVisible="{Binding HasPurpose}" />
+                          </StackPanel>
+                        </Grid>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
                 </StackPanel>
               </Border>
               <StackPanel Margin="12,6" Spacing="4" IsVisible="{Binding IsNotice}">

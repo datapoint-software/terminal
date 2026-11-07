@@ -15,6 +15,7 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
     private TerminalAgent? _agent;
     private ChatItemViewModel? _streaming;
     private ChatItemViewModel? _command;
+    private ChatItemViewModel? _plan;
     private bool _isSettingModels;
 
     public ChatViewModel(IUiThread ui)
@@ -326,6 +327,7 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
     {
         _agent!.ClearConversation();
         Items.Clear();
+        _plan = null;
         Cleared?.Invoke();
     }
 
@@ -371,7 +373,7 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
 
     private void OnAgentEvent(object? sender, AgentEventArgs e) => _ui.Post(() => Show(e));
 
-    private void Show(AgentEventArgs e)
+    internal void Show(AgentEventArgs e)
     {
         switch (e.Kind)
         {
@@ -381,16 +383,12 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
             case AgentEventKind.Reply:
                 FinishReply(e.Text);
                 break;
-            case AgentEventKind.CommandStarted:
-                _command = new ChatItemViewModel(ChatItemKind.Command, e.Command ?? string.Empty)
-                {
-                    Terminal = e.Terminal,
-                    Detail = e.Terminal is null ? e.Text : Strings.Format(Strings.CommandInTerminal, e.Terminal, e.Text),
-                };
-                Items.Add(_command);
+            case AgentEventKind.PlanApproved:
+                ShowPlan(e);
                 break;
-            case AgentEventKind.CommandFinished:
-                FinishCommand(e);
+            case AgentEventKind.CommandStarted or AgentEventKind.CommandFinished:
+                MarkPlanStep(e);
+                ShowCommand(e);
                 break;
             case AgentEventKind.Notice:
                 _streaming = null;
@@ -403,6 +401,39 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
                 RefreshUsage();
                 break;
         }
+    }
+
+    private void ShowCommand(AgentEventArgs e)
+    {
+        if (e.Kind == AgentEventKind.CommandFinished)
+        {
+            FinishCommand(e);
+            return;
+        }
+
+        _command = new ChatItemViewModel(ChatItemKind.Command, e.Command ?? string.Empty)
+        {
+            Terminal = e.Terminal,
+            Detail = e.Terminal is null ? e.Text : Strings.Format(Strings.CommandInTerminal, e.Terminal, e.Text),
+        };
+        Items.Add(_command);
+    }
+
+    private void ShowPlan(AgentEventArgs e)
+    {
+        _streaming = null;
+        _plan = new ChatItemViewModel(ChatItemKind.Plan, e.Text) { Terminal = e.Terminal, Steps = e.Plan is { } plan ? PlanStepViewModel.For(plan) : [] };
+        Items.Add(_plan);
+    }
+
+    private void MarkPlanStep(AgentEventArgs e)
+    {
+        if (_plan is null || e.PlanStep is not { } number || number < 1 || number > _plan.Steps.Count)
+        {
+            return;
+        }
+
+        _plan.Steps[number - 1].State = e.StepState;
     }
 
     private void AppendDelta(string text)

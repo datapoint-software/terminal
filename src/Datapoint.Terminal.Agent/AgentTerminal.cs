@@ -72,4 +72,6 @@ public sealed class AgentTerminal
     public string Label => Environment is null ? Name : $"{Name} ({Environment})";
 
     internal long? RunningCommandLine { get; set; }
+
+    internal int? RunningPlanStep { get; set; }
 }

@@ -6,6 +6,9 @@ public sealed record CommandProposal(string Command, string Purpose, CommandRisk
 {
     public ProposalKind Kind { get; init; } = ProposalKind.RunCommand;
 
+    // For a plan, its steps and rollback; Command then holds the same plan as text.
+    public AgentPlan? Plan { get; init; }
+
     // A file listed in .terminalignore that the command names, which is why it asks even in Auto.
     public string? IgnoredFile { get; init; }
 

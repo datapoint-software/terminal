@@ -26,8 +26,12 @@ public sealed partial class TerminalAgent
             {"type":"object","properties":{
               "terminal":{"type":"string","description":"The terminal the plan is for, as listed in the user's message."},
               "summary":{"type":"string","description":"What the plan achieves, in one sentence."},
-              "steps":{"type":"array","items":{"type":"string"},"description":"Each step: the command, then why, e.g. \"sudo systemctl restart nginx: load the new configuration\"."},
-              "rollback":{"type":"string","description":"How to undo the changes if something goes wrong."}},
+              "steps":{"type":"array","description":"The steps in order.","items":{"type":"object","properties":{
+                "command":{"type":"string","description":"The exact command you'll run, e.g. \"sudo systemctl restart nginx\"."},
+                "purpose":{"type":"string","description":"What the step does, in a short plain sentence, e.g. \"Load the new configuration\". Add when you'll stop and ask."},
+                "warning":{"type":"string","description":"Only for a step that's risky or hard to undo: what could go wrong, in a few words, e.g. \"Ends the SSH session\"."}},
+               "required":["command","purpose"]}},
+              "rollback":{"type":"string","description":"How to undo the changes if something goes wrong, in short Markdown."}},
              "required":["summary","steps","rollback"]}
             """,
             ProposePlanAsync),
@@ -43,7 +47,7 @@ public sealed partial class TerminalAgent
         var summary = plan.Summary;
         var terminal = FindTerminal(arguments, out _);
         SetStatus(AgentStatus.WaitingForApproval, terminal);
-        var proposal = new CommandProposal(plan.Text, summary, CommandRisk.Changes, terminal?.Name ?? string.Empty, terminal?.Environment) { Kind = ProposalKind.Plan };
+        var proposal = new CommandProposal(plan.Text, summary, CommandRisk.Changes, terminal?.Name ?? string.Empty, terminal?.Environment) { Kind = ProposalKind.Plan, Plan = plan };
         var approval = await _user.RequestApprovalAsync(proposal, cancellationToken).ConfigureAwait(false);
         SetStatus(AgentStatus.Thinking);
         if (!approval.Approved)
@@ -52,16 +56,17 @@ public sealed partial class TerminalAgent
         }
 
         _plan = plan;
-        Raise(new AgentEventArgs(AgentEventKind.Notice, "Plan approved: " + summary + "\n" + plan.Text));
+        Raise(new AgentEventArgs(AgentEventKind.PlanApproved, summary) { Plan = plan, Terminal = terminal?.Name });
         return "Approved. Give the step's number as plan_step when you run each command.";
     }
 
     private static AgentPlan? ReadPlan(AIFunctionArguments arguments, out string problem)
     {
         var summary = (ToolArguments.GetString(arguments, "summary") ?? string.Empty).Trim();
-        var steps = ToolArguments.GetStrings(arguments, "steps").Select(step => step.Trim()).Where(step => step.Length > 0).ToList();
+        var steps = PlanSteps.Parse(arguments);
         var rollback = (ToolArguments.GetString(arguments, "rollback") ?? string.Empty).Trim();
         problem = summary.Length == 0 || steps.Count == 0 ? "Not proposed: give a summary and at least one step."
+            : steps.Any(step => step.Command.Length == 0) ? "Not proposed: give every step the command you'll run."
             : steps.Count > MaxPlanSteps ? $"Not proposed: a plan has at most {MaxPlanSteps} steps. Split the task."
             : string.Empty;
         return problem.Length == 0 ? new AgentPlan(summary, steps, rollback) : null;

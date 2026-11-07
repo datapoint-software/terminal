@@ -108,19 +108,28 @@ public sealed partial class TerminalAgent
         }
 
         var edited = string.Equals(command, proposed, StringComparison.Ordinal) ? string.Empty : $"The user edited the command to: {command}\n";
-        return edited + await TypeAndWaitAsync(terminal, command, purpose, cancellationToken).ConfigureAwait(false);
+        return edited + await TypeAndWaitAsync(terminal, command, purpose, plan.Step, cancellationToken).ConfigureAwait(false);
     }
+
+    private static PlanStepState StepState(bool isFinished, int? exitCode) => (isFinished, exitCode) switch
+    {
+        (false, _) => PlanStepState.Running,
+        (true, 0) => PlanStepState.Succeeded,
+        (true, null) => PlanStepState.Finished,
+        _ => PlanStepState.Failed,
+    };
 
     private static string? Check(AgentTerminal terminal, string? command) => CommandCheck.Problem(command) ?? TerminalProblem(terminal);
 
     private static string Declined(CommandApproval approval) =>
         "Not run: the user declined." + (string.IsNullOrWhiteSpace(approval.Feedback) ? string.Empty : " They said: " + approval.Feedback);
 
-    private async Task<string> TypeAndWaitAsync(AgentTerminal terminal, string command, string purpose, CancellationToken cancellationToken)
+    private async Task<string> TypeAndWaitAsync(AgentTerminal terminal, string command, string purpose, int? planStep, CancellationToken cancellationToken)
     {
         var start = terminal.Terminal.GetState().NextOutputLine;
         terminal.RunningCommandLine = start;
-        Raise(new AgentEventArgs(AgentEventKind.CommandStarted, purpose) { Command = command, Terminal = terminal.Name });
+        terminal.RunningPlanStep = planStep;
+        Raise(new AgentEventArgs(AgentEventKind.CommandStarted, purpose) { Command = command, Terminal = terminal.Name, PlanStep = planStep, StepState = PlanStepState.Running });
         SetStatus(AgentStatus.RunningCommand, terminal);
         using var signal = new OutputSignal(terminal.Terminal);
         terminal.Terminal.TypeCommand(command);
@@ -297,12 +306,23 @@ public sealed partial class TerminalAgent
 
     private string Finish(AgentTerminal terminal, string? command, string output, int? exitCode, bool isFinished)
     {
+        var step = terminal.RunningPlanStep;
         if (isFinished)
         {
             terminal.RunningCommandLine = null;
+            terminal.RunningPlanStep = null;
         }
 
-        Raise(new AgentEventArgs(AgentEventKind.CommandFinished, isFinished ? "Finished" : "Still running") { Command = command, ExitCode = exitCode, Terminal = terminal.Name, Connection = terminal.Connection, Output = output });
+        Raise(new AgentEventArgs(AgentEventKind.CommandFinished, isFinished ? "Finished" : "Still running")
+        {
+            Command = command,
+            ExitCode = exitCode,
+            Terminal = terminal.Name,
+            Connection = terminal.Connection,
+            Output = output,
+            PlanStep = step,
+            StepState = StepState(isFinished, exitCode),
+        });
         SetStatus(AgentStatus.Thinking);
         var status = (isFinished, exitCode) switch
         {

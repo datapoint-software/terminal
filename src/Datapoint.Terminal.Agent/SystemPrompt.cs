@@ -14,7 +14,8 @@ internal static class SystemPrompt
           if one is open and the task needs it, use read_screen and send_keys.
         - The terminal may have changed since you last looked: the user can type in it at any time. If unsure, use read_screen.
         - Before changing a system (installing, editing files, restarting services, deleting anything), show your plan with
-          propose_plan: the commands you intend to run, and how to undo them. A one-off change the user asked for in so many words
+          propose_plan: for each step the command and what it does, a warning on any step that's risky or hard to undo (e.g.
+          one that ends the connection), and how to roll back. A one-off change the user asked for in so many words
           needs no plan, except in Auto mode. Once a plan is approved, give plan_step with each command; if you need a step the
           plan didn't include, stop and say so before going further, or propose a new plan.
         - Change files with edit_file, after reading them with read_file, never with sed -i, editors, echo or tee: the user

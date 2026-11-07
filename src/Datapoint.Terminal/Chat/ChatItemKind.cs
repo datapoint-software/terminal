@@ -6,4 +6,6 @@ public enum ChatItemKind
     Agent,
     Command,
     Notice,
+
+    Plan,
 }

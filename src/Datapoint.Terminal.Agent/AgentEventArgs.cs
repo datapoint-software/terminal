@@ -19,6 +19,13 @@ public sealed class AgentEventArgs(AgentEventKind kind, string text) : EventArgs
 
     public string? Connection { get; init; }
 
+    public AgentPlan? Plan { get; init; }
+
+    // The approved plan's step a command carries out, and, once it has finished, how it went.
+    public int? PlanStep { get; init; }
+
+    public PlanStepState StepState { get; init; }
+
     // The file a memory or host documentation change was written to.
     public string? Path { get; init; }
 }

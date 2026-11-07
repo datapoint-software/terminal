@@ -162,7 +162,7 @@ Features agreed while brainstorming, beyond the core concepts above. All of them
 ### Safety on real servers
 
 - **Environment labels:** mark a connection profile as production, staging or development; production tabs are clearly colored and default to Ask.
-- **Plan before changing:** for a task that changes the system, the agent first shows its plan, the commands it intends to run and how to roll back. If it needs a step the approved plan doesn't include, it stops and says so before going further.
+- **Plan before changing:** for a task that changes the system, the agent first shows its plan: each step says what it does and the exact command, a step that's risky or hard to undo is flagged (by the agent, and by the application from the command itself, e.g. a reboot that ends the connection), and how to roll back is always in view. Once approved, the plan stays in the conversation as a checklist that marks each step running, done or failed. If the agent needs a step the approved plan doesn't include, it stops and says so before going further.
 - **Automatic backups:** before editing a configuration file, the agent keeps a copy, so any change can be undone.
 - **Edits as diffs:** the agent proposes file changes as a diff to approve, rather than editing through `sed` or an editor.
 - **Secret redaction:** output is checked for things that look like keys and tokens, which are masked before anything is sent to the provider.

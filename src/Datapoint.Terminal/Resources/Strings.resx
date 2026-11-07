@@ -945,7 +945,7 @@ git rm -r --cached .terminal</value>
     <value>Approve Plan</value>
   </data>
   <data name="ApprovalRiskPlan" xml:space="preserve">
-    <value>Approving lets the agent start. Commands still ask as the approval mode says; in Auto, the plan's steps run without asking again, and anything the plan doesn't include asks first. The plan lasts until the task ends.</value>
+    <value>Approving lets the agent start. Steps still ask as the approval mode says, except in Auto; anything outside the plan always asks. The plan ends with the task.</value>
   </data>
   <data name="ApprovalPlanAnyTerminal" xml:space="preserve">
     <value>For this task</value>
@@ -1204,5 +1204,41 @@ git rm -r --cached .terminal</value>
   </data>
   <data name="QuestionRecommended" xml:space="preserve">
     <value>Recommended</value>
+  </data>
+  <data name="PlanHazardEndsConnection" xml:space="preserve">
+    <value>Ends the connection</value>
+  </data>
+  <data name="PlanHazardErasesDisk" xml:space="preserve">
+    <value>Erases a disk</value>
+  </data>
+  <data name="PlanHazardDeletesRecursively" xml:space="preserve">
+    <value>Deletes files recursively</value>
+  </data>
+  <data name="PlanHazardChangesTrust" xml:space="preserve">
+    <value>Changes SSH keys or trust, so it asks again before it runs</value>
+  </data>
+  <data name="PlanRollbackTitle" xml:space="preserve">
+    <value>If something goes wrong</value>
+  </data>
+  <data name="PlanChecklistTitle" xml:space="preserve">
+    <value>Plan</value>
+  </data>
+  <data name="PlanStepPending" xml:space="preserve">
+    <value>not started</value>
+  </data>
+  <data name="PlanStepRunning" xml:space="preserve">
+    <value>running</value>
+  </data>
+  <data name="PlanStepSucceeded" xml:space="preserve">
+    <value>done</value>
+  </data>
+  <data name="PlanStepFailed" xml:space="preserve">
+    <value>failed</value>
+  </data>
+  <data name="PlanStepFinished" xml:space="preserve">
+    <value>finished, without an exit code</value>
+  </data>
+  <data name="PlanStepAccessible" xml:space="preserve">
+    <value>Step {0}, {1}: {2}</value>
   </data>
 </root>
