@@ -20,6 +20,8 @@ This project is in early design. Nothing is built yet.
 
   In Plan mode, with Ignore permissions, or with the web allowed always, review what the agent does after it has read web content.
 
+- **Looking without asking.** Once the user allows the agent to look at some hosts before planning (product decision 111), its read-only commands there run without asking until the task ends. They show in the terminal as they run, but what they print, file contents included, goes to the AI provider, masked only for the secrets the application recognizes. Which commands count as read-only is the application's own check, from the command's text; a command it misjudges runs without asking too.
+
 ## License
 
 Datapoint Terminal is free software, licensed under the [GNU Affero General Public License, version 3](LICENSE) (AGPL-3.0), with additional terms in [NOTICE](NOTICE):

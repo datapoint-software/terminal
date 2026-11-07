@@ -10,13 +10,17 @@ public sealed partial class PlanStepViewModel : ObservableObject
 {
     private static readonly string[] s_connectionWords = ["connection", "session", "reboot", "restart", "disconnect", "ssh"];
 
-    public PlanStepViewModel(int number, AgentPlanStep step)
+    public PlanStepViewModel(int number, AgentPlanStep step, IReadOnlyDictionary<string, string>? environments = null)
     {
         ArgumentNullException.ThrowIfNull(step);
         Number = number;
         Command = step.Command;
         Purpose = step.Purpose;
         Warnings = WarningsFor(step);
+        Hosts = HostChipViewModel.For(step.Terminals, environments ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
+        IsExample = step.IsExample;
+        IsReadOnly = CommandClassifier.Classify(step.Command) == CommandRisk.ReadOnly;
+        Title = step.Title is { Length: > 0 } title ? title : HasPurpose ? Purpose : Command;
     }
 
     public int Number { get; }
@@ -29,8 +33,42 @@ public sealed partial class PlanStepViewModel : ObservableObject
 
     public bool HasPurpose => Purpose.Length > 0;
 
-    // The checklist names a step by what it does, or by its command when the agent gave no purpose.
-    public string Title => HasPurpose ? Purpose : Command;
+    // The step's name, or what it does, or its command, whichever the agent gave first.
+    public string Title { get; }
+
+    // Why the step is needed, when the title doesn't already say it.
+    public bool HasWhy => HasPurpose && !string.Equals(Purpose, Title, StringComparison.Ordinal);
+
+    public IReadOnlyList<HostChipViewModel> Hosts { get; }
+
+    public bool HasHosts => Hosts.Count > 0;
+
+    // An example only illustrates the step; the agent may run something a little different, which the step's approval covers.
+    public bool IsExample { get; }
+
+    public string CodeLabel => IsExample ? Strings.PlanStepExample : Strings.PlanStepCommand;
+
+    public bool IsReadOnly { get; }
+
+    public string KindText => IsReadOnly ? Strings.PlanStepReadOnly : Strings.PlanStepChanges;
+
+    // Set on a revised plan: the step is new, or differs from the one in the plan before.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasChange))]
+    public partial string? ChangeText { get; set; }
+
+    public bool HasChange => ChangeText is not null;
+
+    // How many review comments name this step, shown beside it so the user sees where they've commented.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasComments), nameof(CommentCountText))]
+    public partial int CommentCount { get; set; }
+
+    public bool HasComments => CommentCount > 0;
+
+    public string CommentCountText => CommentCount == 1 ? Strings.PlanOneComment : Strings.Format(Strings.PlanComments, CommentCount);
+
+    public string CommentName => Strings.Format(Strings.PlanCommentOnStep, Number);
 
     public IReadOnlyList<string> Warnings { get; }
 
@@ -74,10 +112,10 @@ public sealed partial class PlanStepViewModel : ObservableObject
 
     public string AccessibleName => Strings.Format(Strings.PlanStepAccessible, Number, StateText, Title);
 
-    public static IReadOnlyList<PlanStepViewModel> For(AgentPlan plan)
+    public static IReadOnlyList<PlanStepViewModel> For(AgentPlan plan, IReadOnlyDictionary<string, string>? environments = null)
     {
         ArgumentNullException.ThrowIfNull(plan);
-        return [.. plan.Steps.Select((step, index) => new PlanStepViewModel(index + 1, step))];
+        return [.. plan.Steps.Select((step, index) => new PlanStepViewModel(index + 1, step, environments))];
     }
 
     // The agent's own warning first, then what the app finds in the command, so a risky step is flagged even when the agent

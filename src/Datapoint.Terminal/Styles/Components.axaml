@@ -1,7 +1,8 @@
 <!-- The application's own controls. Each has one theme here, so it looks the same in every view. -->
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:c="clr-namespace:Datapoint.Terminal.Components">
+                    xmlns:c="clr-namespace:Datapoint.Terminal.Components"
+                    xmlns:chat="clr-namespace:Datapoint.Terminal.Chat">
   <ControlTheme x:Key="{x:Type c:Badge}" TargetType="c:Badge">
     <Setter Property="Background" Value="{DynamicResource FillBrush}" />
     <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
@@ -63,4 +64,19 @@
       </ControlTemplate>
     </Setter>
   </ControlTheme>
+
+  <!-- A host named on a look request or a plan: its name as the terminal shows it, and its environment, red for production. -->
+  <DataTemplate x:Key="HostChip" x:DataType="chat:HostChipViewModel">
+    <Border Background="{DynamicResource FillBrush}" CornerRadius="{StaticResource SmallRadius}" Padding="6,1,3,1" Margin="0,0,4,4"
+            AutomationProperties.Name="{Binding AccessibleName}">
+      <StackPanel Orientation="Horizontal" Spacing="4">
+        <TextBlock Text="{Binding Name}" FontFamily="{StaticResource MonoFont}" FontSize="{StaticResource CaptionSize}" VerticalAlignment="Center" />
+        <c:Badge Text="{Binding Environment}" IsVisible="{Binding HasEnvironment}" Classes.danger="{Binding IsProduction}" />
+      </StackPanel>
+    </Border>
+  </DataTemplate>
+
+  <ItemsPanelTemplate x:Key="ChipsPanel">
+    <WrapPanel Orientation="Horizontal" />
+  </ItemsPanelTemplate>
 </ResourceDictionary>

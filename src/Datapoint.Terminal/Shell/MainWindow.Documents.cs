@@ -90,7 +90,7 @@ public sealed partial class MainWindow
     {
         var shown = ShownDocument;
         var hostFile = ShownHostFile;
-        DocumentHost.Content = (Control?)shown?.View ?? hostFile;
+        DocumentHost.Content = (Control?)shown?.View ?? (Control?)hostFile ?? (DocumentTabs.SelectedItem is Datapoint.Terminal.Chat.PlanReviewViewModel ? _planView : null);
         if (hostFile is not null)
         {
             Dispatcher.UIThread.Post(hostFile.FocusText, DispatcherPriority.Background);
@@ -157,6 +157,9 @@ public sealed partial class MainWindow
                 break;
             case ServerFileViewModel file:
                 CloseHostFile(file);
+                break;
+            case Datapoint.Terminal.Chat.PlanReviewViewModel plan:
+                ClosePlan(plan);
                 break;
             default:
                 CloseSelectedTab();
@@ -326,6 +329,7 @@ public sealed partial class MainWindow
     private string SectionOf(object? item) => item switch
     {
         ServerFileViewModel => Strings.DocumentsServerFiles,
+        Datapoint.Terminal.Chat.PlanReviewViewModel => Strings.DocumentsPlans,
         DocumentViewModel { Host: not null } => Strings.SidebarHosts,
         DocumentViewModel document when IsSkillFile(document.Path) => Strings.SidebarSkills,
         DocumentViewModel document when string.Equals(document.Path, InstructionsPath, StringComparison.Ordinal) => Strings.SidebarWorkspaceSection,

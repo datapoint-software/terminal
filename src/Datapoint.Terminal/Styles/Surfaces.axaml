@@ -102,4 +102,30 @@
     <Setter Property="StrokeJoin" Value="Round" />
     <Setter Property="VerticalAlignment" Value="Center" />
   </Style>
+  <!-- A step's number in a plan, in a hairline circle beside its first line. -->
+  <Style Selector="Border.number">
+    <Setter Property="Width" Value="20" />
+    <Setter Property="Height" Value="20" />
+    <Setter Property="CornerRadius" Value="10" />
+    <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="VerticalAlignment" Value="Top" />
+  </Style>
+  <Style Selector="Border.number TextBlock">
+    <Setter Property="FontSize" Value="{StaticResource CaptionSize}" />
+    <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
+    <Setter Property="HorizontalAlignment" Value="Center" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+  <Style Selector="Border.warning">
+    <Setter Property="Background" Value="{DynamicResource WarningFillBrush}" />
+    <Setter Property="CornerRadius" Value="{StaticResource SmallRadius}" />
+    <Setter Property="Padding" Value="6,1" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="Margin" Value="0,2,0,0" />
+  </Style>
+  <Style Selector="Border.warning TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource WarningTextBrush}" />
+    <Setter Property="FontSize" Value="{StaticResource CaptionSize}" />
+  </Style>
 </Styles>

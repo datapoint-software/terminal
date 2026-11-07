@@ -85,6 +85,9 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
 
     public Action? SettingsRequested { get; set; }
 
+    // A plan to review in the documents area: when the user asks to, or a revision of one they're already reviewing.
+    public Action<ApprovalViewModel, bool>? PlanShown { get; set; }
+
     // For the workspace's history: each message the user sends, and the conversation being cleared.
     public Action<string>? MessageSent { get; set; }
 
@@ -212,8 +215,17 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
 
     public Task<CommandApproval> RequestApprovalAsync(CommandProposal proposal, CancellationToken cancellationToken)
     {
-        var approval = new ApprovalViewModel(proposal);
-        _ui.Post(() => Approval = approval);
+        var approval = new ApprovalViewModel(proposal) { ReviewRequested = plan => PlanShown?.Invoke(plan, true) };
+        _ui.Post(() =>
+        {
+            Approval = approval;
+            if (!approval.IsPlan)
+            {
+                return;
+            }
+
+            PlanShown?.Invoke(approval, false);
+        });
         var registration = cancellationToken.Register(approval.Cancel);
         return FinishAsync(approval.Decision, registration, () => ReferenceEquals(Approval, approval), () => Approval = null);
     }

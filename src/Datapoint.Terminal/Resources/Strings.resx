@@ -2421,4 +2421,154 @@ Fingerprint: {2}</value>
   <data name="AppearanceWindowThemeName" xml:space="preserve">
     <value>Window theme</value>
   </data>
+  <data name="PlanStepExample" xml:space="preserve">
+    <value>Example</value>
+  </data>
+  <data name="PlanStepCommand" xml:space="preserve">
+    <value>Command</value>
+  </data>
+  <data name="PlanStepReadOnly" xml:space="preserve">
+    <value>Read-only</value>
+  </data>
+  <data name="PlanStepChanges" xml:space="preserve">
+    <value>Changes</value>
+  </data>
+  <data name="PlanOneComment" xml:space="preserve">
+    <value>1 comment</value>
+  </data>
+  <data name="PlanComments" xml:space="preserve">
+    <value>{0} comments</value>
+  </data>
+  <data name="PlanCommentOnStep" xml:space="preserve">
+    <value>Comment on step {0}</value>
+  </data>
+  <data name="PlanStepChanged" xml:space="preserve">
+    <value>Changed</value>
+  </data>
+  <data name="PlanStepNew" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="ApprovalLookScopeOne" xml:space="preserve">
+    <value>Read-only commands on this host will run without asking, for this task only. Anything that changes a system still asks. Every command shows in its terminal as it runs.</value>
+  </data>
+  <data name="ApprovalLookScope" xml:space="preserve">
+    <value>Read-only commands on these {0} hosts will run without asking, for this task only. Anything that changes a system still asks. Every command shows in its terminal as it runs.</value>
+  </data>
+  <data name="ApprovalLookWhere" xml:space="preserve">
+    <value>Before planning</value>
+  </data>
+  <data name="ApprovalLookAllow" xml:space="preserve">
+    <value>Allow looking</value>
+  </data>
+  <data name="ApprovalLookDecline" xml:space="preserve">
+    <value>Don't allow</value>
+  </data>
+  <data name="ApprovalHeadingLook" xml:space="preserve">
+    <value>May I look around first?</value>
+  </data>
+  <data name="ApprovalLookOpens" xml:space="preserve">
+    <value>Opens a connection</value>
+  </data>
+  <data name="PlanCommentStep" xml:space="preserve">
+    <value>Step {0}</value>
+  </data>
+  <data name="PlanCommentPlan" xml:space="preserve">
+    <value>The plan</value>
+  </data>
+  <data name="PlanCommentSent" xml:space="preserve">
+    <value>Sent</value>
+  </data>
+  <data name="PlanReview" xml:space="preserve">
+    <value>Review plan</value>
+  </data>
+  <data name="PlanDocumentName" xml:space="preserve">
+    <value>Plan</value>
+  </data>
+  <data name="PlanDocumentUnsent" xml:space="preserve">
+    <value>{0}, comments not sent</value>
+  </data>
+  <data name="PlanDocumentAccessible" xml:space="preserve">
+    <value>{0}, plan</value>
+  </data>
+  <data name="PlanNoCommentsToSend" xml:space="preserve">
+    <value>No comments yet. Select text in the plan to comment on it.</value>
+  </data>
+  <data name="PlanOneCommentToSend" xml:space="preserve">
+    <value>1 comment to send</value>
+  </data>
+  <data name="PlanCommentsToSend" xml:space="preserve">
+    <value>{0} comments to send</value>
+  </data>
+  <data name="PlanStatusWaiting" xml:space="preserve">
+    <value>Waiting for your review</value>
+  </data>
+  <data name="PlanStatusRevised" xml:space="preserve">
+    <value>Revised · waiting for your review</value>
+  </data>
+  <data name="PlanStatusApproved" xml:space="preserve">
+    <value>Approved</value>
+  </data>
+  <data name="PlanStatusSentBack" xml:space="preserve">
+    <value>Sent back with your comments</value>
+  </data>
+  <data name="PlanStatusDeclined" xml:space="preserve">
+    <value>Declined</value>
+  </data>
+  <data name="PlanStatusWithdrawn" xml:space="preserve">
+    <value>No longer waiting: the agent stopped</value>
+  </data>
+  <data name="PlanFeedbackIntro" xml:space="preserve">
+    <value>Please revise the plan with these comments and propose it again:</value>
+  </data>
+  <data name="PlanRevisedOne" xml:space="preserve">
+    <value>Changed since the last plan: step {0}.</value>
+  </data>
+  <data name="PlanRevisedMany" xml:space="preserve">
+    <value>Changed since the last plan: steps {0}.</value>
+  </data>
+  <data name="PlanSendComments" xml:space="preserve">
+    <value>Send comments</value>
+  </data>
+  <data name="PlanKeepReviewing" xml:space="preserve">
+    <value>Keep reviewing</value>
+  </data>
+  <data name="PlanApproveAnyway" xml:space="preserve">
+    <value>Approve anyway</value>
+  </data>
+  <data name="PlanApproveUnsent" xml:space="preserve">
+    <value>Your comments haven't been sent. Approving drops them.</value>
+  </data>
+  <data name="PlanCommentsTitle" xml:space="preserve">
+    <value>Comments</value>
+  </data>
+  <data name="PlanCommentsHint" xml:space="preserve">
+    <value>Select any text in the plan, then choose Comment, or press Ctrl+Alt+M (⌘⌥M on a Mac). Or use a step's Comment button.</value>
+  </data>
+  <data name="PlanCommentPlaceholder" xml:space="preserve">
+    <value>What should change?</value>
+  </data>
+  <data name="PlanCommentSave" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="PlanCommentEdit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="PlanCommentDelete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="PlanFindingsTitle" xml:space="preserve">
+    <value>What I found</value>
+  </data>
+  <data name="PlanStepOn" xml:space="preserve">
+    <value>On</value>
+  </data>
+  <data name="PlanComment" xml:space="preserve">
+    <value>Comment</value>
+  </data>
+  <data name="PlanCommentSelectionTip" xml:space="preserve">
+    <value>Comment on the selected text</value>
+  </data>
+  <data name="DocumentsPlans" xml:space="preserve">
+    <value>Plans</value>
+  </data>
 </root>

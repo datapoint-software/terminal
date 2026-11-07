@@ -1612,6 +1612,106 @@ public static class Strings
 
     public static string AppearanceWindowThemeName => Get(nameof(AppearanceWindowThemeName));
 
+    public static string PlanStepExample => Get(nameof(PlanStepExample));
+
+    public static string PlanStepCommand => Get(nameof(PlanStepCommand));
+
+    public static string PlanStepReadOnly => Get(nameof(PlanStepReadOnly));
+
+    public static string PlanStepChanges => Get(nameof(PlanStepChanges));
+
+    public static string PlanOneComment => Get(nameof(PlanOneComment));
+
+    public static string PlanComments => Get(nameof(PlanComments));
+
+    public static string PlanCommentOnStep => Get(nameof(PlanCommentOnStep));
+
+    public static string PlanStepChanged => Get(nameof(PlanStepChanged));
+
+    public static string PlanStepNew => Get(nameof(PlanStepNew));
+
+    public static string ApprovalLookScopeOne => Get(nameof(ApprovalLookScopeOne));
+
+    public static string ApprovalLookScope => Get(nameof(ApprovalLookScope));
+
+    public static string ApprovalLookWhere => Get(nameof(ApprovalLookWhere));
+
+    public static string ApprovalLookAllow => Get(nameof(ApprovalLookAllow));
+
+    public static string ApprovalLookDecline => Get(nameof(ApprovalLookDecline));
+
+    public static string ApprovalHeadingLook => Get(nameof(ApprovalHeadingLook));
+
+    public static string ApprovalLookOpens => Get(nameof(ApprovalLookOpens));
+
+    public static string PlanCommentStep => Get(nameof(PlanCommentStep));
+
+    public static string PlanCommentPlan => Get(nameof(PlanCommentPlan));
+
+    public static string PlanCommentSent => Get(nameof(PlanCommentSent));
+
+    public static string PlanReview => Get(nameof(PlanReview));
+
+    public static string PlanDocumentName => Get(nameof(PlanDocumentName));
+
+    public static string PlanDocumentUnsent => Get(nameof(PlanDocumentUnsent));
+
+    public static string PlanDocumentAccessible => Get(nameof(PlanDocumentAccessible));
+
+    public static string PlanNoCommentsToSend => Get(nameof(PlanNoCommentsToSend));
+
+    public static string PlanOneCommentToSend => Get(nameof(PlanOneCommentToSend));
+
+    public static string PlanCommentsToSend => Get(nameof(PlanCommentsToSend));
+
+    public static string PlanStatusWaiting => Get(nameof(PlanStatusWaiting));
+
+    public static string PlanStatusRevised => Get(nameof(PlanStatusRevised));
+
+    public static string PlanStatusApproved => Get(nameof(PlanStatusApproved));
+
+    public static string PlanStatusSentBack => Get(nameof(PlanStatusSentBack));
+
+    public static string PlanStatusDeclined => Get(nameof(PlanStatusDeclined));
+
+    public static string PlanStatusWithdrawn => Get(nameof(PlanStatusWithdrawn));
+
+    public static string PlanFeedbackIntro => Get(nameof(PlanFeedbackIntro));
+
+    public static string PlanRevisedOne => Get(nameof(PlanRevisedOne));
+
+    public static string PlanRevisedMany => Get(nameof(PlanRevisedMany));
+
+    public static string PlanSendComments => Get(nameof(PlanSendComments));
+
+    public static string PlanKeepReviewing => Get(nameof(PlanKeepReviewing));
+
+    public static string PlanApproveAnyway => Get(nameof(PlanApproveAnyway));
+
+    public static string PlanApproveUnsent => Get(nameof(PlanApproveUnsent));
+
+    public static string PlanCommentsTitle => Get(nameof(PlanCommentsTitle));
+
+    public static string PlanCommentsHint => Get(nameof(PlanCommentsHint));
+
+    public static string PlanCommentPlaceholder => Get(nameof(PlanCommentPlaceholder));
+
+    public static string PlanCommentSave => Get(nameof(PlanCommentSave));
+
+    public static string PlanCommentEdit => Get(nameof(PlanCommentEdit));
+
+    public static string PlanCommentDelete => Get(nameof(PlanCommentDelete));
+
+    public static string PlanFindingsTitle => Get(nameof(PlanFindingsTitle));
+
+    public static string PlanStepOn => Get(nameof(PlanStepOn));
+
+    public static string PlanComment => Get(nameof(PlanComment));
+
+    public static string PlanCommentSelectionTip => Get(nameof(PlanCommentSelectionTip));
+
+    public static string DocumentsPlans => Get(nameof(DocumentsPlans));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

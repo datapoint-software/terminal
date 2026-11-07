@@ -19,31 +19,22 @@ public sealed partial class ApprovalViewModel : ObservableObject
         Risk = proposal.Risk;
         Command = proposal.Command;
         Kind = proposal.Kind;
-        PlanSteps = proposal.Plan is { } plan ? PlanStepViewModel.For(plan) : [];
-        Rollback = string.IsNullOrWhiteSpace(proposal.Plan?.Rollback) ? null : proposal.Plan.Rollback;
+        PlanSteps = proposal.Plan is { } plan ? PlanStepViewModel.For(plan, proposal.Environments) : [];
+        PlanHosts = HostChipViewModel.For(PlanSteps.SelectMany(step => step.Hosts).Select(host => host.Name).Distinct(StringComparer.OrdinalIgnoreCase), proposal.Environments);
+        Findings = TextOrNull(proposal.Plan?.Findings);
+        IsRevision = proposal.PreviousPlan is not null;
+        MarkChanges(PlanSteps, proposal.PreviousPlan);
+        LookHosts = proposal.Look is { } look ? [.. look.Hosts.Select(host => new LookHostViewModel(host))] : [];
+        Rollback = TextOrNull(proposal.Plan?.Rollback);
         PlanTitle = proposal.Plan?.Title;
         StepCountText = StepCount(PlanSteps);
         IgnoredFile = proposal.IgnoredFile;
         CarriedText = proposal.TerminalText;
         IsAfterWeb = proposal.IsAfterWeb;
         AlsoApprovesText = proposal.AlsoApproves.Count == 0 ? null : Strings.Format(Strings.ApprovalAlsoApproves, string.Join(", ", proposal.AlsoApproves));
-        PlanText = proposal.IsOutsidePlan ? Strings.ApprovalOutsidePlan
-            : proposal.PlanStep is { } step ? Strings.Format(Strings.ApprovalPlanStep, step)
-            : null;
-        var where = (proposal.Kind, proposal.Environment) switch
-        {
-            (ProposalKind.Plan, _) when proposal.Terminal.Length == 0 => Strings.ApprovalPlanAnyTerminal,
-            (ProposalKind.Rollout, null) => Strings.Format(Strings.ApprovalRolloutHosts, proposal.Terminal),
-            (ProposalKind.Rollout, { } environment) => Strings.Format(Strings.ApprovalRolloutHostsEnvironment, proposal.Terminal, environment),
-            (ProposalKind.OpenTerminal, null) => Strings.Format(Strings.ApprovalForConnection, proposal.Terminal),
-            (ProposalKind.OpenTerminal, { } environment) => Strings.Format(Strings.ApprovalForConnectionEnvironment, proposal.Terminal, environment),
-            (_, null) => Strings.Format(Strings.ApprovalInTerminal, proposal.Terminal),
-            (_, { } environment) => Strings.Format(Strings.ApprovalInTerminalEnvironment, proposal.Terminal, environment),
-        };
-
-
+        PlanText = PlanTextOf(proposal);
         // Inside a session such as ssh, the command runs on that host, not the tab's own machine.
-        TerminalText = proposal.Session is { } session ? Strings.Format(Strings.CommandInTerminal, where, session) : where;
+        TerminalText = proposal.Session is { } session ? Strings.Format(Strings.CommandInTerminal, Where(proposal), session) : Where(proposal);
     }
 
     public ProposalKind Kind { get; }
@@ -51,11 +42,34 @@ public sealed partial class ApprovalViewModel : ObservableObject
     // A plan shows its steps and rollback; the command box is for everything else.
     public bool IsPlan => PlanSteps.Count > 0;
 
-    public bool ShowsCommand => !IsPlan;
+    public bool ShowsCommand => !IsPlan && !IsLook;
 
     public IReadOnlyList<PlanStepViewModel> PlanSteps { get; }
 
     public string? PlanTitle { get; }
+
+    // The plan's page is already about a plan, so its heading is the plan's own name.
+    public string DocumentHeading => PlanTitle ?? Strings.ApprovalHeadingPlan;
+
+    // Every host the plan's steps name, in order, for the summary at its top.
+    public IReadOnlyList<HostChipViewModel> PlanHosts { get; }
+
+    public bool HasPlanHosts => PlanHosts.Count > 0;
+
+    // What the agent learned while looking, in Markdown.
+    public string? Findings { get; }
+
+    public bool HasFindings => Findings is not null;
+
+    // A plan proposed again in the same task, after the user's comments or a decline.
+    public bool IsRevision { get; }
+
+    public bool IsLook => Kind == ProposalKind.Look;
+
+    public IReadOnlyList<LookHostViewModel> LookHosts { get; }
+
+    // What allowing the look lets the agent do, and for how long.
+    public string LookScopeText => LookHosts.Count == 1 ? Strings.ApprovalLookScopeOne : Strings.Format(Strings.ApprovalLookScope, LookHosts.Count);
 
     // How many steps, and how many need care, e.g. "5 steps · 1 ends the SSH session".
     public string StepCountText { get; }
@@ -72,7 +86,7 @@ public sealed partial class ApprovalViewModel : ObservableObject
     public bool IsAfterWeb { get; }
 
     // Opening a terminal names a connection, which isn't the user's to edit; they can decline and say which one instead.
-    public bool IsCommandReadOnly => Kind is ProposalKind.OpenTerminal or ProposalKind.Plan or ProposalKind.EditFile or ProposalKind.Rollout;
+    public bool IsCommandReadOnly => Kind is ProposalKind.OpenTerminal or ProposalKind.Plan or ProposalKind.EditFile or ProposalKind.Rollout or ProposalKind.Look;
 
     public string? PlanText { get; }
 
@@ -89,6 +103,7 @@ public sealed partial class ApprovalViewModel : ObservableObject
         ProposalKind.Plan => Strings.ApprovalApprovePlan,
         ProposalKind.EditFile => Strings.ApprovalApplyEdit,
         ProposalKind.Rollout => Strings.ApprovalStartRollout,
+        ProposalKind.Look => Strings.ApprovalLookAllow,
         _ => Strings.ApprovalRun,
     };
 
@@ -98,8 +113,11 @@ public sealed partial class ApprovalViewModel : ObservableObject
 
     public CommandRisk Risk { get; }
 
+    public string DeclineLabel => IsLook ? Strings.ApprovalLookDecline : Strings.ApprovalDecline;
+
     public string Heading => (Kind, IgnoredFile, Risk) switch
     {
+        (ProposalKind.Look, _, _) => Strings.ApprovalHeadingLook,
         (ProposalKind.OpenTerminal, _, _) => Strings.ApprovalHeadingOpen,
         (ProposalKind.SendKeys, _, _) => Strings.ApprovalHeadingKeys,
         (ProposalKind.Plan, _, _) => PlanTitle is { } title ? Strings.Format(Strings.ApprovalHeadingPlanNamed, title) : Strings.ApprovalHeadingPlan,
@@ -110,12 +128,21 @@ public sealed partial class ApprovalViewModel : ObservableObject
         _ => Strings.ApprovalHeading,
     };
 
-    public string RiskText => Kind == ProposalKind.OpenTerminal ? Strings.ApprovalRiskOpen
-        : Kind == ProposalKind.Plan ? Strings.ApprovalRiskPlan
-        : Kind == ProposalKind.EditFile ? Strings.ApprovalRiskEdit
-        : Kind == ProposalKind.Rollout ? Strings.ApprovalRiskRollout
-        : Kind == ProposalKind.SendKeys && Risk != CommandRisk.AlwaysAsk ? Strings.ApprovalRiskKeys
-        : IgnoredFile is not null ? Strings.Format(Strings.ApprovalRiskIgnored, WorkspaceFolders.Display(IgnoredFile))
+    public string RiskText => KindRiskText() ?? CommandRiskText();
+
+    // What approving this kind of request means, when that doesn't depend on the command.
+    private string? KindRiskText() => Kind switch
+    {
+        ProposalKind.Look => LookScopeText,
+        ProposalKind.OpenTerminal => Strings.ApprovalRiskOpen,
+        ProposalKind.Plan => Strings.ApprovalRiskPlan,
+        ProposalKind.EditFile => Strings.ApprovalRiskEdit,
+        ProposalKind.Rollout => Strings.ApprovalRiskRollout,
+        ProposalKind.SendKeys when Risk != CommandRisk.AlwaysAsk => Strings.ApprovalRiskKeys,
+        _ => null,
+    };
+
+    private string CommandRiskText() => IgnoredFile is not null ? Strings.Format(Strings.ApprovalRiskIgnored, WorkspaceFolders.Display(IgnoredFile))
         : CarriedText is not null ? Strings.Format(Strings.ApprovalRiskSendsTerminalText, CarriedText)
         : IsAfterWeb ? Strings.ApprovalRiskAfterWeb
         : Risk switch
@@ -140,6 +167,12 @@ public sealed partial class ApprovalViewModel : ObservableObject
     [RelayCommand(CanExecute = nameof(CanRun))]
     private void Run() => _decision.TrySetResult(CommandApproval.Approve(Command));
 
+    // Opens the plan as a page in the documents area, where the user can read it in full and comment on it.
+    public Action<ApprovalViewModel>? ReviewRequested { get; set; }
+
+    [RelayCommand]
+    private void Review() => ReviewRequested?.Invoke(this);
+
     [RelayCommand]
     private void Decline() => _decision.TrySetResult(CommandApproval.Reject(Command, string.IsNullOrWhiteSpace(Feedback) ? null : Feedback.Trim()));
 
@@ -154,6 +187,55 @@ public sealed partial class ApprovalViewModel : ObservableObject
             _ => Strings.Format(Strings.PlanStepCountWarnings, count, flagged.Count),
         };
     }
+
+    private static string? PlanTextOf(CommandProposal proposal) => proposal.IsOutsidePlan ? Strings.ApprovalOutsidePlan
+        : proposal.PlanStep is { } step ? Strings.Format(Strings.ApprovalPlanStep, step)
+        : null;
+
+    private static string? TextOrNull(string? text) => string.IsNullOrWhiteSpace(text) ? null : text;
+
+    private static string Where(CommandProposal proposal) => (proposal.Kind, proposal.Environment) switch
+    {
+        (ProposalKind.Look, _) => Strings.ApprovalLookWhere,
+        (ProposalKind.Plan, _) when proposal.Terminal.Length == 0 => Strings.ApprovalPlanAnyTerminal,
+        (ProposalKind.Rollout, null) => Strings.Format(Strings.ApprovalRolloutHosts, proposal.Terminal),
+        (ProposalKind.Rollout, { } environment) => Strings.Format(Strings.ApprovalRolloutHostsEnvironment, proposal.Terminal, environment),
+        (ProposalKind.OpenTerminal, null) => Strings.Format(Strings.ApprovalForConnection, proposal.Terminal),
+        (ProposalKind.OpenTerminal, { } environment) => Strings.Format(Strings.ApprovalForConnectionEnvironment, proposal.Terminal, environment),
+        (_, null) => Strings.Format(Strings.ApprovalInTerminal, proposal.Terminal),
+        (_, { } environment) => Strings.Format(Strings.ApprovalInTerminalEnvironment, proposal.Terminal, environment),
+    };
+
+    // Steps compare by their content, so a step that only moved keeps no mark; a step whose title matches one before it is
+    // changed, and any other is new.
+    private static void MarkChanges(IReadOnlyList<PlanStepViewModel> steps, AgentPlan? previous)
+    {
+        if (previous is null)
+        {
+            return;
+        }
+
+        foreach (var step in steps)
+        {
+            step.ChangeText = ChangeOf(step, previous);
+        }
+    }
+
+    private static string? ChangeOf(PlanStepViewModel step, AgentPlan previous)
+    {
+        var same = previous.Steps.Select((before, index) => new PlanStepViewModel(index + 1, before)).ToList();
+        if (same.Any(before => IsSame(before, step)))
+        {
+            return null;
+        }
+
+        return same.Any(before => string.Equals(before.Title, step.Title, StringComparison.OrdinalIgnoreCase)) ? Strings.PlanStepChanged : Strings.PlanStepNew;
+    }
+
+    private static bool IsSame(PlanStepViewModel before, PlanStepViewModel after) =>
+        string.Equals(before.Command, after.Command, StringComparison.Ordinal) && string.Equals(before.Purpose, after.Purpose, StringComparison.Ordinal)
+        && string.Equals(before.Title, after.Title, StringComparison.Ordinal) && before.IsExample == after.IsExample
+        && before.Hosts.Select(host => host.Name).SequenceEqual(after.Hosts.Select(host => host.Name), StringComparer.OrdinalIgnoreCase);
 
     private static string LowerFirst(string text) =>
         text.Length > 1 && char.IsUpper(text[0]) && !char.IsUpper(text[1]) ? char.ToLower(text[0], System.Globalization.CultureInfo.CurrentCulture) + text[1..] : text;

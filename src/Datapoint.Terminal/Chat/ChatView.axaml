@@ -302,32 +302,6 @@
       <Setter Property="IsVisible" Value="True" />
       <Setter Property="Stroke" Value="{DynamicResource DangerBrush}" />
     </Style>
-    <!-- A step's number in the approval card, in a hairline circle beside its first line. -->
-    <Style Selector="Border.number">
-      <Setter Property="Width" Value="20" />
-      <Setter Property="Height" Value="20" />
-      <Setter Property="CornerRadius" Value="10" />
-      <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
-      <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="VerticalAlignment" Value="Top" />
-    </Style>
-    <Style Selector="Border.number TextBlock">
-      <Setter Property="FontSize" Value="{StaticResource CaptionSize}" />
-      <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
-      <Setter Property="HorizontalAlignment" Value="Center" />
-      <Setter Property="VerticalAlignment" Value="Center" />
-    </Style>
-    <Style Selector="Border.warning">
-      <Setter Property="Background" Value="{DynamicResource WarningFillBrush}" />
-      <Setter Property="CornerRadius" Value="{StaticResource SmallRadius}" />
-      <Setter Property="Padding" Value="6,1" />
-      <Setter Property="HorizontalAlignment" Value="Left" />
-      <Setter Property="Margin" Value="0,2,0,0" />
-    </Style>
-    <Style Selector="Border.warning TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource WarningTextBrush}" />
-      <Setter Property="FontSize" Value="{StaticResource CaptionSize}" />
-    </Style>
     <Style Selector="TextBlock.step-title.pending">
       <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
     </Style>
@@ -401,45 +375,30 @@
             <TextBlock Classes="title" Text="{Binding Heading}" TextWrapping="Wrap" />
             <TextBlock Text="{Binding Purpose}" TextWrapping="Wrap" />
           </StackPanel>
-          <TextBlock Classes="secondary" Text="{Binding StepCountText}" IsVisible="{Binding IsPlan}" />
-          <!-- A plan: each step says what it does, flags anything risky, then shows the exact command. Capped, so a long plan
-               scrolls inside the box while the rollback, Approve and Decline stay in view. -->
-          <ScrollViewer MaxHeight="320" VerticalScrollBarVisibility="Auto" IsVisible="{Binding IsPlan}">
-            <ItemsControl ItemsSource="{Binding PlanSteps}" Margin="0,0,8,0">
-              <ItemsControl.ItemTemplate>
-                <DataTemplate x:DataType="chat:PlanStepViewModel">
-                  <Border BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,1,0,0" Padding="0,8">
-                    <Grid ColumnDefinitions="20,*" ColumnSpacing="10">
-                      <Border Classes="number">
-                        <TextBlock Text="{Binding NumberText}" />
-                      </Border>
-                      <StackPanel Grid.Column="1" Spacing="2">
-                        <TextBlock Text="{Binding Purpose}" TextWrapping="Wrap" IsVisible="{Binding HasPurpose}" />
-                        <ItemsControl ItemsSource="{Binding Warnings}" IsVisible="{Binding HasWarnings}">
-                          <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="x:String">
-                              <Border Classes="warning">
-                                <TextBlock Text="{Binding StringFormat=⚠ {0}}" TextWrapping="Wrap" />
-                              </Border>
-                            </DataTemplate>
-                          </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                        <Border Classes="code">
-                          <SelectableTextBlock Classes="mono" Text="{Binding Command}" TextWrapping="Wrap" />
-                        </Border>
-                      </StackPanel>
-                    </Grid>
-                  </Border>
-                </DataTemplate>
-              </ItemsControl.ItemTemplate>
-            </ItemsControl>
-          </ScrollViewer>
-          <Border Classes="code" IsVisible="{Binding HasRollback}">
-            <StackPanel Spacing="2">
-              <TextBlock Text="{x:Static res:Strings.PlanRollbackTitle}" FontWeight="SemiBold" />
-              <md:MarkdownView Text="{Binding Rollback}" />
-            </StackPanel>
-          </Border>
+          <!-- A request to look: each host, and what the agent will look for there and why. -->
+          <ItemsControl ItemsSource="{Binding LookHosts}" IsVisible="{Binding IsLook}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="chat:LookHostViewModel">
+                <Border BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,1,0,0" Padding="0,8,0,4">
+                  <StackPanel Spacing="2">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                      <ContentControl Content="{Binding Chip}" ContentTemplate="{StaticResource HostChip}" />
+                      <TextBlock Classes="secondary" FontSize="{StaticResource CaptionSize}" Text="{x:Static res:Strings.ApprovalLookOpens}" IsVisible="{Binding OpensConnection}"
+                                 VerticalAlignment="Top" Margin="0,2,0,0" />
+                    </StackPanel>
+                    <SelectableTextBlock Text="{Binding Reason}" TextWrapping="Wrap" />
+                  </StackPanel>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          <!-- A plan: its hosts and how many steps need care here; the steps themselves are reviewed in the documents area. -->
+          <StackPanel Spacing="6" IsVisible="{Binding IsPlan}">
+            <ItemsControl ItemsSource="{Binding PlanHosts}" IsVisible="{Binding HasPlanHosts}"
+                          ItemTemplate="{StaticResource HostChip}" ItemsPanel="{StaticResource ChipsPanel}" />
+            <TextBlock Classes="secondary" Text="{Binding StepCountText}" TextWrapping="Wrap" />
+            <Button Content="{x:Static res:Strings.PlanReview}" Command="{Binding ReviewCommand}" HorizontalAlignment="Left" />
+          </StackPanel>
           <!-- Capped, so a long diff scrolls inside the box and Run and Decline stay in view. -->
           <TextBox x:Name="ApprovalCommand" Classes="code" Text="{Binding Command}" IsReadOnly="{Binding IsCommandReadOnly}" TextWrapping="Wrap" Background="{DynamicResource CodeBrush}"
                    MaxHeight="280" ScrollViewer.VerticalScrollBarVisibility="Auto" IsVisible="{Binding ShowsCommand}"
@@ -450,7 +409,7 @@
           <TextBox Text="{Binding Feedback}" PlaceholderText="{x:Static res:Strings.ApprovalFeedbackPlaceholder}" TextWrapping="Wrap"
                    AutomationProperties.Name="{x:Static res:Strings.ApprovalFeedbackPlaceholder}" />
           <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
-            <Button Content="{x:Static res:Strings.ApprovalDecline}" Command="{Binding DeclineCommand}" />
+            <Button Content="{Binding DeclineLabel}" Command="{Binding DeclineCommand}" />
             <Button Classes="primary" Content="{Binding RunLabel}" Command="{Binding RunCommand}" />
           </StackPanel>
         </StackPanel>

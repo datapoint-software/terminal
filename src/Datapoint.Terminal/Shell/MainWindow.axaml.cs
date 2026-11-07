@@ -114,6 +114,7 @@ public sealed partial class MainWindow : Window, ITerminalOpener
     private void WireChat(WorkspaceWindows windows)
     {
         _chat.SettingsRequested = windows.OpenSettings;
+        _chat.PlanShown = ShowPlan;
         _chat.MessageSent = message => Record(HistoryEntryKind.User, message);
         _chat.Cleared = EndConversation;
         _chat.ModelChosen = choice => _ = ChooseModelAsync(choice);
