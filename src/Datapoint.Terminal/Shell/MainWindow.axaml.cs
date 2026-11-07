@@ -74,6 +74,7 @@ public sealed partial class MainWindow : Window
         await ReviewTrustAsync(always: false).ConfigureAwait(true);
         await ReviewConnectionsAsync(reload: false).ConfigureAwait(true);
         await OfferGitIgnoreAsync().ConfigureAwait(true);
+        WarnAboutSyncFolder();
         await OpenLocalTabAsync().ConfigureAwait(true);
     }
 

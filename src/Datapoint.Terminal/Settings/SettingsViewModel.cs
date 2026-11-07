@@ -37,6 +37,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         TrustedProjects = settings.TrustedProjects;
         DeclinedGitIgnore = settings.DeclinedGitIgnore;
         ConfirmedConnections = settings.ConfirmedConnections;
+        WarnedSyncFolders = settings.WarnedSyncFolders;
         SelectedProviderId = settings.SelectedProvider?.Id;
         foreach (var account in settings.Providers)
         {
@@ -62,6 +63,8 @@ public sealed partial class SettingsViewModel : ObservableObject
     public IReadOnlyList<string> DeclinedGitIgnore { get; private set; }
 
     public IReadOnlyList<ConfirmedConnections> ConfirmedConnections { get; private set; }
+
+    public IReadOnlyList<string> WarnedSyncFolders { get; private set; }
 
     public IReadOnlyList<KindOption> Kinds { get; }
 
@@ -90,6 +93,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         TrustedProjects = TrustedProjects,
         DeclinedGitIgnore = DeclinedGitIgnore,
         ConfirmedConnections = ConfirmedConnections,
+        WarnedSyncFolders = WarnedSyncFolders,
     };
 
     public IReadOnlyList<ProjectConnection>? ConfirmedFor(string folder) =>
@@ -107,6 +111,14 @@ public sealed partial class SettingsViewModel : ObservableObject
     public void DeclineGitIgnore(string folder)
     {
         DeclinedGitIgnore = [.. DeclinedGitIgnore.Where(item => !ProjectFolders.AreSame(item, folder)), folder];
+        SaveProjectData();
+    }
+
+    public bool HasWarnedSyncFolder(string folder) => WarnedSyncFolders.Any(item => ProjectFolders.AreSame(item, folder));
+
+    public void WarnedSyncFolder(string folder)
+    {
+        WarnedSyncFolders = [.. WarnedSyncFolders.Where(item => !ProjectFolders.AreSame(item, folder)), folder];
         SaveProjectData();
     }
 

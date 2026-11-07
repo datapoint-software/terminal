@@ -29,6 +29,9 @@ public sealed record AppSettings
 
     public IReadOnlyList<ConfirmedConnections> ConfirmedConnections { get; init => field = value ?? []; } = [];
 
+    // Projects already warned that they're inside a sync service's folder, so the warning is shown once.
+    public IReadOnlyList<string> WarnedSyncFolders { get; init => field = value ?? []; } = [];
+
     [JsonIgnore]
     public ProviderAccount? SelectedProvider =>
         Providers.FirstOrDefault(provider => string.Equals(provider.Id, SelectedProviderId, StringComparison.Ordinal)) ?? (Providers.Count > 0 ? Providers[0] : null);
