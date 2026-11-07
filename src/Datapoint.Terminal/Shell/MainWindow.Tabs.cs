@@ -71,6 +71,7 @@ public sealed partial class MainWindow
         tab.View.Terminal = connection.Terminal;
         TerminalHost.Children.Add(tab.View);
         _tabs.Add(tab);
+        NoTerminals.IsVisible = false;
         _agent?.AddTerminal(tab.AgentTerminal);
         if (!select && _tabs.Count > 1)
         {
@@ -159,6 +160,18 @@ public sealed partial class MainWindow
         CloseTab(tab);
     }
 
+    // Focus goes to its button, so the keyboard isn't left on a closed terminal, unless a document is in front.
+    private void ShowNoTerminals()
+    {
+        NoTerminals.IsVisible = true;
+        if (DocumentHost.IsVisible)
+        {
+            return;
+        }
+
+        OpenTerminalButton.Focus();
+    }
+
     private void CloseTab(TerminalTab tab)
     {
         var index = _tabs.IndexOf(tab);
@@ -174,8 +187,7 @@ public sealed partial class MainWindow
         _ = DisposeTabAsync(tab);
         if (_tabs.Count == 0)
         {
-            _isCloseConfirmed = true;
-            Close();
+            ShowNoTerminals();
             return;
         }
 

@@ -2229,4 +2229,13 @@ Fingerprint: {2}</value>
   <data name="SidebarDefaultWorkspaceDetail" xml:space="preserve">
     <value>Always here</value>
   </data>
+  <data name="NoTerminalsTitle" xml:space="preserve">
+    <value>No terminals open</value>
+  </data>
+  <data name="NoTerminalsMessage" xml:space="preserve">
+    <value>Open a terminal on this computer or connect to a host. The agent works in the terminals you open.</value>
+  </data>
+  <data name="NoTerminalsOpen" xml:space="preserve">
+    <value>Open a Terminal…</value>
+  </data>
 </root>

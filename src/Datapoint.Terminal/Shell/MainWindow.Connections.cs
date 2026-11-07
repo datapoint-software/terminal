@@ -7,12 +7,14 @@ namespace Datapoint.Terminal.Shell;
 
 public sealed partial class MainWindow
 {
-    private void OnNewTabClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => _ = ShowNewTabMenuAsync();
+    private void OnNewTabClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => _ = ShowNewTabMenuAsync(NewTabButton, PlacementMode.BottomEdgeAlignedRight);
 
-    private async Task ShowNewTabMenuAsync()
+    private void OnOpenTerminalClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => _ = ShowNewTabMenuAsync(OpenTerminalButton, PlacementMode.Bottom);
+
+    private async Task ShowNewTabMenuAsync(Control anchor, PlacementMode placement)
     {
         await ReviewConnectionsAsync(reload: true).ConfigureAwait(true);
-        var menu = new MenuFlyout { Placement = PlacementMode.BottomEdgeAlignedRight };
+        var menu = new MenuFlyout { Placement = placement };
         menu.Items.Add(MenuItem(Strings.NewTabLocal, () => _ = OpenLocalTabAsync()));
         var connections = Connections;
         if (connections.Count > 0)
@@ -32,7 +34,7 @@ public sealed partial class MainWindow
             menu.Items.Add(MenuItem(Strings.NewHostMenu, () => _ = NewHostAsync()));
         }
 
-        menu.ShowAt(NewTabButton);
+        menu.ShowAt(anchor);
     }
 
     private MenuItem SshHostsMenu(IReadOnlyList<WorkspaceConnection> connections)

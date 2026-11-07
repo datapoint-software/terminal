@@ -164,6 +164,13 @@
       </Border>
       <Panel>
         <Grid x:Name="TerminalHost" />
+        <!-- With every terminal closed, the window stays: its sidebar, documents and chat are the workspace's. -->
+        <StackPanel x:Name="NoTerminals" IsVisible="False" Spacing="6" MaxWidth="320" HorizontalAlignment="Center" VerticalAlignment="Center">
+          <TextBlock Classes="title" Text="{x:Static res:Strings.NoTerminalsTitle}" HorizontalAlignment="Center" />
+          <TextBlock Classes="secondary" Text="{x:Static res:Strings.NoTerminalsMessage}" TextWrapping="Wrap" TextAlignment="Center" />
+          <Button x:Name="OpenTerminalButton" Classes="primary" Content="{x:Static res:Strings.NoTerminalsOpen}" HorizontalAlignment="Center"
+                  Margin="0,8,0,0" Click="OnOpenTerminalClicked" />
+        </StackPanel>
         <!-- A document in front of the terminals, which keep running and keep their size behind it. -->
         <ContentControl x:Name="DocumentHost" IsVisible="False" />
       </Panel>

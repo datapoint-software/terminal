@@ -1484,6 +1484,12 @@ public static class Strings
 
     public static string SidebarDefaultWorkspaceDetail => Get(nameof(SidebarDefaultWorkspaceDetail));
 
+    public static string NoTerminalsTitle => Get(nameof(NoTerminalsTitle));
+
+    public static string NoTerminalsMessage => Get(nameof(NoTerminalsMessage));
+
+    public static string NoTerminalsOpen => Get(nameof(NoTerminalsOpen));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;
