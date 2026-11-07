@@ -100,6 +100,12 @@ public sealed partial class TerminalAgent
             return "file access beside the terminal isn't available for this terminal yet; use run_command.";
         }
 
+        // File access reaches the tab's own machine, not the one a session inside it is logged in to.
+        if (terminal.Terminal.GetState().Session is { } session)
+        {
+            return $"the terminal is in a {session} started inside it, and file access would reach this tab's own machine instead. Use run_command to read the file, and ask the user how to change it, or suggest opening the host as a connection.";
+        }
+
         if (ShellText.PathProblem(path) is { } pathProblem)
         {
             return pathProblem;

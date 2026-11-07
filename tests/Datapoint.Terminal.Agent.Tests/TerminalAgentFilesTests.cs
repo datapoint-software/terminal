@@ -61,6 +61,19 @@ public sealed class TerminalAgentFilesTests
         Assert.Empty(_terminal.Typed);
     }
 
+    // ssh run in a local tab: file access would reach this computer, while typed commands reach the server.
+    [Fact]
+    public async Task Refuses_file_access_inside_a_session_opened_in_the_terminal()
+    {
+        _terminal.Session = "ssh session";
+
+        await RunAsync(ApprovalMode.Ask, Tool("read_file", """{"terminal":"web1","path":"/etc/nginx/nginx.conf"}"""), Edit());
+
+        Assert.All(_results.Take(2), result => Assert.Contains("ssh session", result, StringComparison.Ordinal));
+        Assert.Empty(_terminal.Typed);
+        Assert.Empty(_user.Proposals);
+    }
+
     [Fact]
     public async Task Proposes_the_diff_then_backs_up_and_writes_in_the_terminal()
     {

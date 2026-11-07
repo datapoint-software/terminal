@@ -25,7 +25,9 @@ internal sealed class FakeTerminal : IAgentTerminal
 
     public Func<string, (string Output, int? ExitCode)> Run { get; set; } = command => ($"ran {command}", 0);
 
-    public TerminalState GetState() => new(HasShellIntegration: true, IsAtPrompt, PendingInput, IsAlternateScreen, "/home/user", _line);
+    public string? Session { get; set; }
+
+    public TerminalState GetState() => new(HasShellIntegration: true, IsAtPrompt, PendingInput, IsAlternateScreen, "/home/user", _line) { Session = Session };
 
     public CommandResult? GetCommand(long outputLine) => _commands.GetValueOrDefault(outputLine);
 
