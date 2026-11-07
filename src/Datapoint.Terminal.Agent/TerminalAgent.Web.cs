@@ -104,6 +104,12 @@ public sealed partial class TerminalAgent
         }
 
         var results = await search.SearchAsync(query, cancellationToken).ConfigureAwait(false);
+        if (results.Usage is { } usage)
+        {
+            Usage.Record(_usageTerminal, usage);
+            Raise(new AgentEventArgs(AgentEventKind.UsageChanged, string.Empty));
+        }
+
         return results.Problem is { } problem ? "Not searched: " + problem : FormatResults(query, results);
     }
 
