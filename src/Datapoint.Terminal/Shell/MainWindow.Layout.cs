@@ -4,62 +4,76 @@ using Datapoint.Terminal.Resources;
 
 namespace Datapoint.Terminal.Shell;
 
-// Product decisions 17 and 71: the chat pane docks to any side, set for the application and changeable per window, and a
-// shortcut hides and shows it.
+// Product decision 104: the chat fills the window and the terminals dock beside it, on a side set for the application and
+// changeable per window. A shortcut hides and shows them, and they come back whenever the agent is about to act in them.
 public sealed partial class MainWindow
 {
-    private const double DefaultChatWidth = 380;
-    private const double DefaultChatHeight = 300;
+    // About 80 columns at the default text size, which full-screen programs expect.
+    private const double DefaultTerminalWidth = 640;
+    private const double DefaultTerminalHeight = 300;
 
-    private ChatSide _chatSide;
-    private bool _isChatHidden;
-    private double _chatWidth = DefaultChatWidth;
-    private double _chatHeight = DefaultChatHeight;
+    private TerminalSide _terminalSide;
+    private bool _areTerminalsHidden;
+    private double _terminalWidth = DefaultTerminalWidth;
+    private double _terminalHeight = DefaultTerminalHeight;
 
-    private static bool IsBeside(ChatSide side) => ChatLayout.IsBeside(side);
+    private static bool IsBeside(TerminalSide side) => DockLayout.IsBeside(side);
 
-    private void PlaceChat(ChatSide side)
+    private void PlaceTerminals(TerminalSide side)
     {
-        RememberChatSize();
-        _chatSide = side;
-        LayOutChat();
+        RememberTerminalSize();
+        _terminalSide = side;
+        LayOutPanes();
     }
 
-    private void ToggleChat()
+    private void ToggleTerminals()
     {
-        RememberChatSize();
-        _isChatHidden = !_isChatHidden;
-        LayOutChat();
-        if (_isChatHidden)
+        RememberTerminalSize();
+        _areTerminalsHidden = !_areTerminalsHidden;
+        LayOutPanes();
+        if (_areTerminalsHidden)
         {
-            SelectedTab?.View.Focus();
+            Chat.FocusInput();
             return;
         }
 
-        Chat.FocusInput();
+        SelectedTab?.View.Focus();
+    }
+
+    // The user sees everything the agent types, so hidden terminals come back when it asks to run a command or runs one.
+    // Focus stays where it is.
+    private void ShowTerminalsForAgent()
+    {
+        if (!_areTerminalsHidden)
+        {
+            return;
+        }
+
+        _areTerminalsHidden = false;
+        LayOutPanes();
     }
 
     // The size the user dragged the pane to is kept per direction, so moving it between sides doesn't lose it.
-    private void RememberChatSize()
+    private void RememberTerminalSize()
     {
-        if (_isChatHidden || Chat.Bounds.Width <= 0)
+        if (_areTerminalsHidden || TerminalArea.Bounds.Width <= 0)
         {
             return;
         }
 
-        if (IsBeside(_chatSide))
+        if (IsBeside(_terminalSide))
         {
-            _chatWidth = Chat.Bounds.Width;
+            _terminalWidth = TerminalArea.Bounds.Width;
             return;
         }
 
-        _chatHeight = Chat.Bounds.Height;
+        _terminalHeight = TerminalArea.Bounds.Height;
     }
 
-    private void LayOutChat()
+    private void LayOutPanes()
     {
-        new ChatLayout(Body, Chat, TerminalArea, ChatSeparator, ChatSplitter).Apply(_chatSide, _isChatHidden, _chatWidth, _chatHeight);
-        UpdateChatMenu();
+        new DockLayout(Body, Chat, TerminalArea, ChatSeparator, ChatSplitter).Apply(_terminalSide, _areTerminalsHidden, _terminalWidth, _terminalHeight);
+        UpdateLayoutMenu();
     }
 
     // The agent's commands lead to their step in the chat; the user's own failed ones offer the agent's help.
@@ -80,53 +94,47 @@ public sealed partial class MainWindow
             return false;
         }
 
-        if (_isChatHidden)
-        {
-            ToggleChat();
-        }
-
         Chat.Reveal(item);
         return true;
     }
 
-    private readonly Dictionary<ChatSide, NativeMenuItem> _sideItems = [];
-    private NativeMenuItem? _toggleChatItem;
+    private readonly Dictionary<TerminalSide, NativeMenuItem> _sideItems = [];
+    private NativeMenuItem? _toggleTerminalsItem;
 
     private NativeMenu BuildViewMenu()
     {
         var view = new NativeMenu();
-        _toggleChatItem = Item(Strings.MenuHideChat, Shortcut(Key.J), ToggleChat);
-        view.Add(_toggleChatItem);
+        _toggleTerminalsItem = Item(Strings.MenuHideTerminals, Shortcut(Key.J), ToggleTerminals);
+        view.Add(_toggleTerminalsItem);
         view.Add(SidebarMenuItem());
         view.Add(ShowMarkdownMenuItem());
         view.Add(new NativeMenuItemSeparator());
         foreach (var (side, label) in new[]
         {
-            (ChatSide.Right, Strings.MenuChatRight),
-            (ChatSide.Left, Strings.MenuChatLeft),
-            (ChatSide.Bottom, Strings.MenuChatBottom),
-            (ChatSide.Top, Strings.MenuChatTop),
+            (TerminalSide.Right, Strings.MenuTerminalsRight),
+            (TerminalSide.Left, Strings.MenuTerminalsLeft),
+            (TerminalSide.Bottom, Strings.MenuTerminalsBottom),
         })
         {
-            var item = Item(label, null, () => PlaceChat(side));
+            var item = Item(label, null, () => PlaceTerminals(side));
             item.ToggleType = MenuItemToggleType.Radio;
             _sideItems[side] = item;
             view.Add(item);
         }
 
         view.Add(new NativeMenuItemSeparator());
-        view.Add(Item(Strings.MenuChatSideDefault, null, () => _settings.SetChatSide(_chatSide)));
+        view.Add(Item(Strings.MenuTerminalsSideDefault, null, () => _settings.SetTerminalSide(_terminalSide)));
         view.Add(new NativeMenuItemSeparator());
         AddAppearanceItems(view);
         return view;
     }
 
-    private void UpdateChatMenu()
+    private void UpdateLayoutMenu()
     {
-        _toggleChatItem?.Header = _isChatHidden ? Strings.MenuShowChat : Strings.MenuHideChat;
+        _toggleTerminalsItem?.Header = _areTerminalsHidden ? Strings.MenuShowTerminals : Strings.MenuHideTerminals;
         foreach (var (side, item) in _sideItems)
         {
-            item.IsChecked = side == _chatSide;
+            item.IsChecked = side == _terminalSide;
         }
     }
 }

@@ -65,11 +65,11 @@ public sealed partial class MainWindow : Window, ITerminalOpener
         }
 
         UpdateTitle();
-        _chatSide = _settings.ChatSide;
+        _terminalSide = _settings.TerminalSide;
         SetUpFind();
         SetUpSidebar();
         NativeMenu.SetMenu(this, BuildMenu());
-        LayOutChat();
+        LayOutPanes();
         AddHandler(KeyDownEvent, OnShortcutKeyDown, Avalonia.Interactivity.RoutingStrategies.Tunnel);
         Opened += (_, _) => _ = OnOpenedAsync();
         _pendingOutputTimer.Tick += (_, _) => _chat.RefreshPendingOutput();

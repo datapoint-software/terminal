@@ -53,11 +53,6 @@ public sealed partial class MainWindow
 
     private void DraftInChat(string text)
     {
-        if (_isChatHidden)
-        {
-            ToggleChat();
-        }
-
         _chat.Draft = text;
         Chat.FocusInput();
     }

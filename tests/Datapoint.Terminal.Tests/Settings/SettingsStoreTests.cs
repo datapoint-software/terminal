@@ -39,7 +39,8 @@ public sealed class SettingsStoreTests : IDisposable
 
         var loaded = new SettingsStore(FilePath).Load();
 
-        Assert.Equal(Datapoint.Terminal.Shell.ChatSide.Left, loaded.ChatSide);
+        // chatSide placed the chat, which is now the main pane; the terminals take their own default side.
+        Assert.Equal(Datapoint.Terminal.Shell.TerminalSide.Right, loaded.TerminalSide);
         Assert.Equal(14, loaded.TerminalFontSize);
         Assert.True(loaded.Notifications);
         Assert.True(loaded.RecordSessions);

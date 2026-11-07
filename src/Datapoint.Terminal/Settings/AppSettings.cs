@@ -30,8 +30,9 @@ public sealed record AppSettings
     // SHA-256 fingerprints of values the user marked as not secret, never the values themselves.
     public IReadOnlyList<string> NotSecrets { get; init => field = value ?? []; } = [];
 
-    // Where new windows put the chat pane; each window can move its own.
-    public Shell.ChatSide ChatSide { get; set; } = Shell.ChatSide.Right;
+    // Where new windows dock the terminals beside the chat; each window can move its own. Replaces chatSide, which placed
+    // the chat and is no longer read.
+    public Shell.TerminalSide TerminalSide { get; set; } = Shell.TerminalSide.Right;
 
     // Desktop notifications when the agent finishes or needs the user in a background window.
     public bool Notifications { get; set; } = true;

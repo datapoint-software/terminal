@@ -522,19 +522,17 @@ public static class Strings
 
     public static string MenuView => Get(nameof(MenuView));
 
-    public static string MenuHideChat => Get(nameof(MenuHideChat));
+    public static string MenuHideTerminals => Get(nameof(MenuHideTerminals));
 
-    public static string MenuShowChat => Get(nameof(MenuShowChat));
+    public static string MenuShowTerminals => Get(nameof(MenuShowTerminals));
 
-    public static string MenuChatRight => Get(nameof(MenuChatRight));
+    public static string MenuTerminalsRight => Get(nameof(MenuTerminalsRight));
 
-    public static string MenuChatLeft => Get(nameof(MenuChatLeft));
+    public static string MenuTerminalsLeft => Get(nameof(MenuTerminalsLeft));
 
-    public static string MenuChatBottom => Get(nameof(MenuChatBottom));
+    public static string MenuTerminalsBottom => Get(nameof(MenuTerminalsBottom));
 
-    public static string MenuChatTop => Get(nameof(MenuChatTop));
-
-    public static string MenuChatSideDefault => Get(nameof(MenuChatSideDefault));
+    public static string MenuTerminalsSideDefault => Get(nameof(MenuTerminalsSideDefault));
 
     public static string FindPlaceholder => Get(nameof(FindPlaceholder));
 

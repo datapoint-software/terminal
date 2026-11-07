@@ -93,7 +93,7 @@
     <side:SidebarView x:Name="Sidebar" AutomationProperties.AutomationId="Sidebar" />
     <Rectangle x:Name="SidebarSeparator" Grid.Column="1" Fill="{DynamicResource SeparatorBrush}" />
     <GridSplitter x:Name="SidebarSplitter" Grid.Column="1" ResizeDirection="Columns" Margin="-3,0" ZIndex="1" />
-    <!-- The chat pane's side and size are set in code (MainWindow.Layout.cs). -->
+    <!-- The chat fills the window; the terminals dock beside it, their side and size set in code (MainWindow.Layout.cs). -->
     <Grid x:Name="Body" Grid.Column="2" ColumnDefinitions="*,1,380">
     <DockPanel x:Name="TerminalArea">
       <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">

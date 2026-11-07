@@ -786,25 +786,22 @@ Fingerprint: {2}</value>
   <data name="MenuView" xml:space="preserve">
     <value>View</value>
   </data>
-  <data name="MenuHideChat" xml:space="preserve">
-    <value>Hide Chat</value>
+  <data name="MenuHideTerminals" xml:space="preserve">
+    <value>Hide Terminals</value>
   </data>
-  <data name="MenuShowChat" xml:space="preserve">
-    <value>Show Chat</value>
+  <data name="MenuShowTerminals" xml:space="preserve">
+    <value>Show Terminals</value>
   </data>
-  <data name="MenuChatRight" xml:space="preserve">
-    <value>Chat on the Right</value>
+  <data name="MenuTerminalsRight" xml:space="preserve">
+    <value>Terminals on the Right</value>
   </data>
-  <data name="MenuChatLeft" xml:space="preserve">
-    <value>Chat on the Left</value>
+  <data name="MenuTerminalsLeft" xml:space="preserve">
+    <value>Terminals on the Left</value>
   </data>
-  <data name="MenuChatBottom" xml:space="preserve">
-    <value>Chat at the Bottom</value>
+  <data name="MenuTerminalsBottom" xml:space="preserve">
+    <value>Terminals at the Bottom</value>
   </data>
-  <data name="MenuChatTop" xml:space="preserve">
-    <value>Chat at the Top</value>
-  </data>
-  <data name="MenuChatSideDefault" xml:space="preserve">
+  <data name="MenuTerminalsSideDefault" xml:space="preserve">
     <value>Use This Side for New Windows</value>
   </data>
   <data name="FindPlaceholder" xml:space="preserve">

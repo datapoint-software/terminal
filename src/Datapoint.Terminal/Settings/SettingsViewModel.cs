@@ -39,7 +39,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         ConfirmedConnections = settings.ConfirmedConnections;
         NotSecrets = settings.NotSecrets;
         HistoryDays = settings.HistoryDays;
-        ChatSide = settings.ChatSide;
+        TerminalSide = settings.TerminalSide;
         Notifications = settings.Notifications;
         RecordSessions = settings.RecordSessions;
         SpendingLimit = settings.SpendingLimit;
@@ -78,7 +78,7 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     public int? HistoryDays { get; private set; }
 
-    public Shell.ChatSide ChatSide { get; private set; }
+    public Shell.TerminalSide TerminalSide { get; private set; }
 
     public Shell.TerminalTheme TerminalTheme { get; private set; }
 
@@ -206,7 +206,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         ConfirmedConnections = ConfirmedConnections,
         NotSecrets = NotSecrets,
         HistoryDays = HistoryDays,
-        ChatSide = ChatSide,
+        TerminalSide = TerminalSide,
         Notifications = Notifications,
         RecordSessions = RecordSessions,
         SpendingLimit = SpendingLimit,
@@ -238,9 +238,9 @@ public sealed partial class SettingsViewModel : ObservableObject
         SaveWorkspaceData();
     }
 
-    public void SetChatSide(Shell.ChatSide side)
+    public void SetTerminalSide(Shell.TerminalSide side)
     {
-        ChatSide = side;
+        TerminalSide = side;
         SaveWorkspaceData();
     }
 
