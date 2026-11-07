@@ -161,6 +161,13 @@
     <Rectangle x:Name="DocumentSeparator" Fill="{DynamicResource SeparatorBrush}" IsVisible="False" />
     <GridSplitter x:Name="DocumentSplitter" ZIndex="1" IsVisible="False" />
     <DockPanel x:Name="DocumentArea" IsVisible="False" AutomationProperties.Name="{x:Static res:Strings.DocumentTabsName}">
+      <!-- Named after the sidebar section the document in front comes from, e.g. Hosts or Skills. -->
+      <Border DockPanel.Dock="Top" Height="{StaticResource PaneHeaderHeight}" Padding="16,0,10,0" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
+        <StackPanel Spacing="2" VerticalAlignment="Center">
+          <TextBlock x:Name="DocumentsTitle" Classes="title" Text="{x:Static res:Strings.DocumentTabsName}" />
+          <TextBlock x:Name="DocumentsSummary" Classes="secondary" TextTrimming="CharacterEllipsis" />
+        </StackPanel>
+      </Border>
       <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
         <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
               <ListBox x:Name="DocumentTabs" Classes="tabs" SelectionMode="Single,AlwaysSelected"

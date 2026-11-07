@@ -1576,11 +1576,13 @@ public static class Strings
 
     public static string MenuPreviousArea => Get(nameof(MenuPreviousArea));
 
-    public static string TerminalsNoneOpen => Get(nameof(TerminalsNoneOpen));
+    public static string CountNoneOpen => Get(nameof(CountNoneOpen));
 
-    public static string TerminalsOneOpen => Get(nameof(TerminalsOneOpen));
+    public static string CountOneOpen => Get(nameof(CountOneOpen));
 
-    public static string TerminalsOpen => Get(nameof(TerminalsOpen));
+    public static string CountOpen => Get(nameof(CountOpen));
+
+    public static string DocumentsServerFiles => Get(nameof(DocumentsServerFiles));
 
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 

@@ -29,6 +29,7 @@ public sealed partial class MainWindow
         DocumentTabs.ItemsSource = _documents;
         DocumentTabs.SelectionChanged += (_, _) => ShowSelectedDocument();
         _documents.CollectionChanged += (_, _) => LayOutDocuments();
+        _documents.CollectionChanged += (_, _) => ShowDocumentsHeading();
         DocumentArea.GotFocus += (_, _) => UpdateTitle();
         TerminalArea.GotFocus += (_, _) => UpdateTitle();
         _tabs.CollectionChanged += (_, _) => RefreshDocumentHosts();
@@ -95,6 +96,7 @@ public sealed partial class MainWindow
             Dispatcher.UIThread.Post(hostFile.FocusText, DispatcherPriority.Background);
         }
 
+        ShowDocumentsHeading();
         _showMarkdownItem?.IsEnabled = shown is { Document.CanShowMarkdown: true };
         _showMarkdownItem?.IsChecked = shown?.Document.IsSourceMode == true;
         UpdateTitle();
@@ -313,4 +315,20 @@ public sealed partial class MainWindow
         _showMarkdownItem?.IsChecked = shown.Document.IsSourceMode;
         Dispatcher.UIThread.Post(shown.View.FocusText, DispatcherPriority.Background);
     }
+
+    private void ShowDocumentsHeading()
+    {
+        DocumentsTitle.Text = SectionOf(DocumentTabs.SelectedItem);
+        DocumentsSummary.Text = OpenCount(_documents.Count);
+    }
+
+    // The sidebar section the document comes from, so the heading says what kind of page is in front.
+    private string SectionOf(object? item) => item switch
+    {
+        ServerFileViewModel => Strings.DocumentsServerFiles,
+        DocumentViewModel { Host: not null } => Strings.SidebarHosts,
+        DocumentViewModel document when IsSkillFile(document.Path) => Strings.SidebarSkills,
+        DocumentViewModel document when string.Equals(document.Path, InstructionsPath, StringComparison.Ordinal) => Strings.SidebarWorkspaceSection,
+        _ => Strings.DocumentTabsName,
+    };
 }

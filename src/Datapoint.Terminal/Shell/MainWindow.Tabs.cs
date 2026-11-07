@@ -292,10 +292,12 @@ public sealed partial class MainWindow
         Close();
     }
 
-    private void ShowTerminalCount() => TerminalsSummary.Text = _tabs.Count switch
+    private void ShowTerminalCount() => TerminalsSummary.Text = OpenCount(_tabs.Count);
+
+    private static string OpenCount(int count) => count switch
     {
-        0 => Strings.TerminalsNoneOpen,
-        1 => Strings.TerminalsOneOpen,
-        var count => Strings.Format(Strings.TerminalsOpen, count),
+        0 => Strings.CountNoneOpen,
+        1 => Strings.CountOneOpen,
+        _ => Strings.Format(Strings.CountOpen, count),
     };
 }
