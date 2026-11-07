@@ -1,0 +1,25 @@
+<!-- The sizes every view shares, so text, corners and controls line up across the application. A view uses these rather than
+     a number of its own. -->
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <FontFamily x:Key="MonoFont">SF Mono, Menlo, Cascadia Mono, Consolas, DejaVu Sans Mono, monospace</FontFamily>
+
+  <!-- Type, after macOS: captions, small labels, body text, a document's reading size, titles and headings. -->
+  <x:Double x:Key="CaptionSize">11</x:Double>
+  <x:Double x:Key="SmallSize">12</x:Double>
+  <x:Double x:Key="BodySize">13</x:Double>
+  <x:Double x:Key="ReadingSize">14</x:Double>
+  <x:Double x:Key="TitleSize">15</x:Double>
+  <x:Double x:Key="HeadingSize">20</x:Double>
+
+  <!-- Corners: badges, controls and rows, blocks inside a card, and cards and groups. -->
+  <CornerRadius x:Key="SmallRadius">4</CornerRadius>
+  <CornerRadius x:Key="ControlRadius">6</CornerRadius>
+  <CornerRadius x:Key="BlockRadius">8</CornerRadius>
+  <CornerRadius x:Key="CardRadius">10</CornerRadius>
+
+  <!-- Heights: a row in a list or the tab strip, a button, and a text field. -->
+  <x:Double x:Key="RowHeight">28</x:Double>
+  <x:Double x:Key="ButtonHeight">26</x:Double>
+  <x:Double x:Key="FieldHeight">30</x:Double>
+</ResourceDictionary>

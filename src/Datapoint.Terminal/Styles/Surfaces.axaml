@@ -1,0 +1,105 @@
+<!-- The boxes views are built from: cards, grouped rows, bordered lists, code, bars and glyphs. -->
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <!-- A card raised off the pane, such as an approval in the chat. -->
+  <Style Selector="Border.card">
+    <Setter Property="Background" Value="{DynamicResource CardBrush}" />
+    <Setter Property="CornerRadius" Value="{StaticResource CardRadius}" />
+    <Setter Property="Padding" Value="14,12" />
+    <Setter Property="BoxShadow" Value="{DynamicResource CardShadow}" />
+    <Setter Property="Margin" Value="0,0,0,10" />
+  </Style>
+
+  <!-- Grouped rows, as in macOS settings: a white box, a label on the left, the control on the right, hairlines between. -->
+  <Style Selector="Border.group">
+    <Setter Property="Background" Value="{DynamicResource CardBrush}" />
+    <Setter Property="CornerRadius" Value="{StaticResource CardRadius}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+  </Style>
+  <Style Selector="Grid.row">
+    <Setter Property="MinHeight" Value="44" />
+    <Setter Property="Margin" Value="14,6" />
+  </Style>
+  <Style Selector="Grid.row > :is(Control)">
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+  <Style Selector="Rectangle.hairline">
+    <Setter Property="Height" Value="1" />
+    <Setter Property="Fill" Value="{DynamicResource SeparatorBrush}" />
+    <Setter Property="Margin" Value="14,0,0,0" />
+  </Style>
+
+  <!-- A page of groups, as in settings: groups 18 apart, and a note just under the group it's about. -->
+  <Style Selector="StackPanel.form > Border.group">
+    <Setter Property="Margin" Value="0,0,0,18" />
+  </Style>
+  <Style Selector="StackPanel.form > TextBlock.note">
+    <Setter Property="Margin" Value="4,-12,4,18" />
+  </Style>
+
+  <!-- A bordered list, a hairline between its items: choices, hosts in a rollout, log entries, notes. -->
+  <Style Selector="Border.list">
+    <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="{StaticResource BlockRadius}" />
+    <Setter Property="ClipToBounds" Value="True" />
+  </Style>
+  <Style Selector="Border.listItem">
+    <Setter Property="Padding" Value="10,8" />
+    <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
+    <Setter Property="BorderThickness" Value="0,1,0,0" />
+  </Style>
+  <Style Selector="ContentPresenter:nth-child(1) > Border.listItem, Border.listItem.first">
+    <Setter Property="BorderThickness" Value="0" />
+  </Style>
+
+  <!-- Code: commands in the chat, code blocks, diffs. -->
+  <Style Selector="Border.code">
+    <Setter Property="Background" Value="{DynamicResource CodeBrush}" />
+    <Setter Property="CornerRadius" Value="{StaticResource BlockRadius}" />
+    <Setter Property="Padding" Value="10,8" />
+    <Setter Property="Margin" Value="0,4" />
+  </Style>
+
+  <!-- A box set into a dialog or a page, holding a list or a diff. -->
+  <Style Selector="Border.inset">
+    <Setter Property="Background" Value="{DynamicResource CardBrush}" />
+    <Setter Property="CornerRadius" Value="{StaticResource BlockRadius}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+  </Style>
+
+  <!-- A warning to read before going on. -->
+  <Style Selector="Border.callout">
+    <Setter Property="Background" Value="{DynamicResource WarningFillBrush}" />
+    <Setter Property="CornerRadius" Value="{StaticResource BlockRadius}" />
+    <Setter Property="Padding" Value="12,8" />
+  </Style>
+  <Style Selector="Border.callout > TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource WarningTextBrush}" />
+    <Setter Property="FontSize" Value="{StaticResource SmallSize}" />
+    <Setter Property="TextWrapping" Value="Wrap" />
+  </Style>
+
+  <!-- A bar across the top of a view, for something the user must see first. -->
+  <Style Selector="Border.bar">
+    <Setter Property="Padding" Value="16,8" />
+    <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
+    <Setter Property="BorderThickness" Value="0,0,0,1" />
+  </Style>
+  <Style Selector="Border.bar.warning">
+    <Setter Property="Background" Value="{DynamicResource WarningFillBrush}" />
+  </Style>
+
+  <!-- Line icons, drawn with a stroke like SF Symbols. -->
+  <Style Selector="Path.glyph">
+    <Setter Property="Width" Value="16" />
+    <Setter Property="Height" Value="16" />
+    <Setter Property="Stroke" Value="{DynamicResource SecondaryLabelBrush}" />
+    <Setter Property="StrokeThickness" Value="1.25" />
+    <Setter Property="StrokeLineCap" Value="Round" />
+    <Setter Property="StrokeJoin" Value="Round" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+</Styles>

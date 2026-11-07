@@ -1,0 +1,66 @@
+<!-- The application's own controls. Each has one theme here, so it looks the same in every view. -->
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:c="clr-namespace:Datapoint.Terminal.Components">
+  <ControlTheme x:Key="{x:Type c:Badge}" TargetType="c:Badge">
+    <Setter Property="Background" Value="{DynamicResource FillBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="CornerRadius" Value="{StaticResource SmallRadius}" />
+    <Setter Property="Padding" Value="6,1" />
+    <Setter Property="FontSize" Value="{StaticResource CaptionSize}" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                CornerRadius="{TemplateBinding CornerRadius}" Padding="{TemplateBinding Padding}">
+          <TextBlock Text="{TemplateBinding Text}" Foreground="{TemplateBinding Foreground}" FontSize="{TemplateBinding FontSize}"
+                     FontWeight="{TemplateBinding FontWeight}" VerticalAlignment="Center" />
+        </Border>
+      </ControlTemplate>
+    </Setter>
+    <!-- Production, the environment where a mistake costs most. -->
+    <Style Selector="^.danger">
+      <Setter Property="Background" Value="{DynamicResource DangerBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="^.accent">
+      <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="^.warning">
+      <Setter Property="Background" Value="{DynamicResource WarningFillBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource WarningTextBrush}" />
+    </Style>
+    <!-- A label the user gave a host: quieter than its environment. -->
+    <Style Selector="^.outline">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="9" />
+      <Setter Property="Padding" Value="7,0" />
+    </Style>
+  </ControlTheme>
+
+  <ControlTheme x:Key="{x:Type c:Avatar}" TargetType="c:Avatar">
+    <Setter Property="Width" Value="28" />
+    <Setter Property="Height" Value="28" />
+    <Setter Property="CornerRadius" Value="7" />
+    <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
+    <Setter Property="FontSize" Value="{StaticResource CaptionSize}" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Border Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}">
+          <TextBlock Text="{TemplateBinding Text}" Foreground="{TemplateBinding Foreground}" FontSize="{TemplateBinding FontSize}"
+                     FontWeight="{TemplateBinding FontWeight}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        </Border>
+      </ControlTemplate>
+    </Setter>
+  </ControlTheme>
+</ResourceDictionary>

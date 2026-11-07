@@ -1,4 +1,4 @@
-<!-- Buttons, fields and the segmented control, styled after macOS: flat, rounded, one prominent action. -->
+<!-- Buttons, fields, lists and the segmented control, styled after macOS: flat, rounded, one prominent action. -->
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
@@ -10,9 +10,9 @@
 
   <!-- Buttons: secondary (grey fill) by default, .primary for the one action, .plain and .icon for toolbar buttons. -->
   <Style Selector="Button">
-    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="CornerRadius" Value="{StaticResource ControlRadius}" />
     <Setter Property="Padding" Value="12,5" />
-    <Setter Property="MinHeight" Value="26" />
+    <Setter Property="MinHeight" Value="{StaticResource ButtonHeight}" />
     <Setter Property="FontSize" Value="{StaticResource BodySize}" />
     <Setter Property="Background" Value="{DynamicResource FillBrush}" />
     <Setter Property="Foreground" Value="{DynamicResource LabelBrush}" />
@@ -67,8 +67,14 @@
     <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
     <Setter Property="Padding" Value="5" />
     <Setter Property="MinHeight" Value="0" />
-    <Setter Property="Width" Value="28" />
-    <Setter Property="Height" Value="28" />
+    <Setter Property="Width" Value="{StaticResource RowHeight}" />
+    <Setter Property="Height" Value="{StaticResource RowHeight}" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+  <Style Selector="Button.icon.small">
+    <Setter Property="Padding" Value="4" />
+    <Setter Property="Width" Value="24" />
+    <Setter Property="Height" Value="24" />
   </Style>
   <Style Selector="Button.icon:pointerover /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="{DynamicResource FillBrush}" />
@@ -77,6 +83,18 @@
   <Style Selector="Button.icon:disabled /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="Transparent" />
   </Style>
+  <!-- A whole row that acts as a button, such as a sidebar row or a card's header: flat until the pointer is over it. -->
+  <Style Selector="Button.row">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="Padding" Value="8,0" />
+    <Setter Property="MinHeight" Value="{StaticResource RowHeight}" />
+  </Style>
+  <Style Selector="Button.row:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource FillBrush}" />
+  </Style>
   <Style Selector="Button PathIcon">
     <Setter Property="Width" Value="15" />
     <Setter Property="Height" Value="15" />
@@ -84,10 +102,10 @@
 
   <!-- Text fields: a hairline border that turns accent when focused. -->
   <Style Selector="TextBox">
-    <Setter Property="CornerRadius" Value="7" />
+    <Setter Property="CornerRadius" Value="{StaticResource ControlRadius}" />
     <Setter Property="FontSize" Value="{StaticResource BodySize}" />
     <Setter Property="Padding" Value="9,6" />
-    <Setter Property="MinHeight" Value="30" />
+    <Setter Property="MinHeight" Value="{StaticResource FieldHeight}" />
     <Setter Property="Background" Value="{DynamicResource FieldBrush}" />
     <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
     <Setter Property="BorderThickness" Value="1" />
@@ -106,7 +124,7 @@
     <Setter Property="BorderBrush" Value="Transparent" />
   </Style>
   <Style Selector="AutoCompleteBox">
-    <Setter Property="CornerRadius" Value="7" />
+    <Setter Property="CornerRadius" Value="{StaticResource ControlRadius}" />
     <Setter Property="Background" Value="{DynamicResource FieldBrush}" />
     <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
     <Setter Property="BorderThickness" Value="1" />
@@ -129,25 +147,26 @@
 
   <Style Selector="TextBox.code">
     <Setter Property="FontFamily" Value="{StaticResource MonoFont}" />
-    <Setter Property="FontSize" Value="12" />
+    <Setter Property="FontSize" Value="{StaticResource SmallSize}" />
   </Style>
 
-  <!-- Code: commands in the chat, and code blocks in the agent's replies. -->
-  <Style Selector="Border.code">
-    <Setter Property="Background" Value="{DynamicResource CodeBrush}" />
-    <Setter Property="CornerRadius" Value="8" />
-    <Setter Property="Padding" Value="10,8" />
-    <Setter Property="Margin" Value="0,4" />
+  <!-- A text box that reads as the text around it: no field, no padding, in every state. -->
+  <Style Selector="TextBox.bare">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="MinHeight" Value="0" />
+    <Setter Property="CornerRadius" Value="0" />
   </Style>
-  <Style Selector="SelectableTextBlock.mono">
-    <Setter Property="FontFamily" Value="{StaticResource MonoFont}" />
-    <Setter Property="FontSize" Value="12" />
+  <Style Selector="TextBox.bare /template/ Border#PART_BorderElement, TextBox.bare:pointerover /template/ Border#PART_BorderElement, TextBox.bare:focus /template/ Border#PART_BorderElement, TextBox.bare:disabled /template/ Border#PART_BorderElement">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
   </Style>
 
   <!-- Segmented control: a ListBox with the .segmented class. -->
   <Style Selector="ListBox.segmented">
     <Setter Property="Background" Value="{DynamicResource FillBrush}" />
-    <Setter Property="CornerRadius" Value="7" />
+    <Setter Property="CornerRadius" Value="{StaticResource ControlRadius}" />
     <Setter Property="Padding" Value="2" />
     <Setter Property="BorderThickness" Value="0" />
     <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
@@ -161,12 +180,12 @@
     <Setter Property="VerticalContentAlignment" Value="Center" />
     <Setter Property="Padding" Value="6,3" />
     <Setter Property="MinHeight" Value="0" />
-    <Setter Property="CornerRadius" Value="5" />
+    <Setter Property="CornerRadius" Value="{StaticResource SmallRadius}" />
     <Setter Property="HorizontalContentAlignment" Value="Center" />
-    <Setter Property="FontSize" Value="12" />
+    <Setter Property="FontSize" Value="{StaticResource SmallSize}" />
   </Style>
   <Style Selector="ListBox.segmented ListBoxItem /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="CornerRadius" Value="5" />
+    <Setter Property="CornerRadius" Value="{StaticResource SmallRadius}" />
     <Setter Property="Foreground" Value="{DynamicResource LabelBrush}" />
   </Style>
   <Style Selector="ListBox.segmented ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
@@ -187,9 +206,9 @@
 
   <!-- A quiet pop-up menu, as macOS draws them in toolbars. -->
   <Style Selector="ComboBox">
-    <Setter Property="CornerRadius" Value="6" />
-    <Setter Property="FontSize" Value="12" />
-    <Setter Property="MinHeight" Value="26" />
+    <Setter Property="CornerRadius" Value="{StaticResource ControlRadius}" />
+    <Setter Property="FontSize" Value="{StaticResource SmallSize}" />
+    <Setter Property="MinHeight" Value="{StaticResource ButtonHeight}" />
     <Setter Property="Padding" Value="10,3" />
   </Style>
   <Style Selector="ComboBox.quiet">
@@ -199,6 +218,29 @@
   <Style Selector="ComboBox.quiet:pointerover /template/ Border#Background">
     <Setter Property="Background" Value="{DynamicResource FillHoverBrush}" />
     <Setter Property="BorderThickness" Value="0" />
+  </Style>
+
+  <!-- A list of rows, as in a macOS sidebar: rounded, the selection a tint of the accent. -->
+  <Style Selector="ListBox.source">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="0" />
+  </Style>
+  <Style Selector="ListBox.source ListBoxItem">
+    <Setter Property="Padding" Value="8,0" />
+    <Setter Property="MinHeight" Value="{StaticResource RowHeight}" />
+    <Setter Property="CornerRadius" Value="{StaticResource ControlRadius}" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+  </Style>
+  <Style Selector="ListBox.source ListBoxItem /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="CornerRadius" Value="{StaticResource ControlRadius}" />
+  </Style>
+  <Style Selector="ListBox.source ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource FillBrush}" />
+  </Style>
+  <Style Selector="ListBox.source ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter, ListBox.source ListBoxItem:selected:pointerover /template/ ContentPresenter#PART_ContentPresenter, ListBox.source ListBoxItem:selected:focus /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource AccentTintBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
   </Style>
 
   <Style Selector="GridSplitter">

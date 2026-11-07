@@ -77,7 +77,4 @@
     </ResourceDictionary>
   </ResourceDictionary.ThemeDictionaries>
 
-  <FontFamily x:Key="MonoFont">SF Mono, Menlo, Cascadia Mono, Consolas, DejaVu Sans Mono, monospace</FontFamily>
-  <x:Double x:Key="BodySize">13</x:Double>
-  <x:Double x:Key="CaptionSize">11</x:Double>
 </ResourceDictionary>

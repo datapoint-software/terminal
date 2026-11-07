@@ -1,0 +1,47 @@
+<!-- Text roles shared by every view: a view names the role, never a size or a colour of its own. -->
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <!-- Explanations under a control, details, timestamps: small and grey. -->
+  <Style Selector="TextBlock.secondary, SelectableTextBlock.secondary">
+    <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
+    <Setter Property="FontSize" Value="{StaticResource CaptionSize}" />
+    <Setter Property="TextWrapping" Value="Wrap" />
+  </Style>
+  <!-- Grey at the size around it, e.g. an empty list's message. -->
+  <Style Selector="TextBlock.quiet">
+    <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
+  </Style>
+  <Style Selector="TextBlock.danger, SelectableTextBlock.danger">
+    <Setter Property="Foreground" Value="{DynamicResource DangerBrush}" />
+  </Style>
+  <Style Selector="TextBlock.title">
+    <Setter Property="FontWeight" Value="SemiBold" />
+  </Style>
+  <!-- A sidebar section's name, above its rows. -->
+  <Style Selector="TextBlock.section">
+    <Setter Property="FontSize" Value="{StaticResource CaptionSize}" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+  <!-- A group's name, above its box of rows. -->
+  <Style Selector="TextBlock.heading">
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Margin" Value="4,0,0,6" />
+  </Style>
+  <!-- A dialog's question or a window's name, at its top. -->
+  <Style Selector="TextBlock.dialogTitle">
+    <Setter Property="FontSize" Value="{StaticResource TitleSize}" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="TextWrapping" Value="Wrap" />
+  </Style>
+  <!-- A heading inside a document page, at the size of the page's own headings. -->
+  <Style Selector="TextBlock.pageHeading">
+    <Setter Property="FontSize" Value="{StaticResource HeadingSize}" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+  </Style>
+  <Style Selector="TextBlock.mono, SelectableTextBlock.mono">
+    <Setter Property="FontFamily" Value="{StaticResource MonoFont}" />
+    <Setter Property="FontSize" Value="{StaticResource SmallSize}" />
+  </Style>
+</Styles>
