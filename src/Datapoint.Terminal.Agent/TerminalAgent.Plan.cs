@@ -18,20 +18,26 @@ public sealed partial class TerminalAgent
     [
         new ToolFunction(
             "propose_plan",
-            "Shows the user your plan for a task that changes a system, for approval: the steps in order, each with the command "
-            + "you intend to run, and how to roll back. Required before changing anything in Plan mode. Once it's "
+            "Shows the user your plan for a task that changes a system, for approval: what you found, the steps in order, and how "
+            + "to roll back. Look first (ask_to_look) when the plan depends on the hosts' state. Each step is one action, names the "
+            + "hosts it runs on, says why it's needed, and gives the command, one simple command per line; mark it as an example "
+            + "when the exact command depends on what you'll see then. Required before changing anything in Plan mode. Once it's "
             + "approved, give the step's number as plan_step when you run each command; anything the plan doesn't include asks "
-            + "the user first. Propose a new plan if the work changes.",
+            + "the user first. The user may comment instead of approving: then propose a revised plan that answers each comment.",
             """
             {"type":"object","properties":{
-              "terminal":{"type":"string","description":"The terminal the plan is for, as listed in the user's message."},
-              "title":{"type":"string","description":"The task in a few words, e.g. \"Update web1\"."},
+              "terminal":{"type":"string","description":"The terminal the plan is mostly about, as listed in the user's message."},
+              "title":{"type":"string","description":"The task in a few words, e.g. \"Drain swarm-b for a kernel update\"."},
               "summary":{"type":"string","description":"What the plan achieves, in one sentence."},
+              "findings":{"type":"string","description":"What you found while looking that the plan rests on, as a short Markdown list naming the hosts."},
               "steps":{"type":"array","description":"The steps in order.","items":{"type":"object","properties":{
-                "command":{"type":"string","description":"The exact command you'll run, e.g. \"sudo systemctl restart nginx\"."},
-                "purpose":{"type":"string","description":"What the step does, in a short plain sentence, e.g. \"Load the new configuration\". Add when you'll stop and ask."},
+                "title":{"type":"string","description":"The action in a few words, e.g. \"Move the Postgres leader off swarm-b\"."},
+                "terminals":{"type":"array","items":{"type":"string"},"description":"The hosts the step runs on: open terminals or listed connections. Never write them into the other fields."},
+                "command":{"type":"string","description":"The command you'll run; several short commands go on separate lines, never joined with ; or loops. E.g. \"sudo systemctl restart nginx\"."},
+                "example":{"type":"boolean","description":"True when the command illustrates the step rather than being exactly what you'll run."},
+                "purpose":{"type":"string","description":"Why the step is needed, in a short plain sentence, e.g. \"Loads the new configuration\"."},
                 "warning":{"type":"string","description":"Only for a step that's risky or hard to undo: what could go wrong, in a few words, e.g. \"Ends the SSH session\"."}},
-               "required":["command","purpose"]}},
+               "required":["title","terminals","command","purpose"]}},
               "rollback":{"type":"string","description":"How to undo the changes if something goes wrong, in short Markdown."}},
              "required":["summary","steps","rollback"]}
             """,
@@ -61,17 +67,39 @@ public sealed partial class TerminalAgent
         return "Approved. Give the step's number as plan_step when you run each command.";
     }
 
-    private static AgentPlan? ReadPlan(AIFunctionArguments arguments, out string problem)
+    private AgentPlan? ReadPlan(AIFunctionArguments arguments, out string problem)
     {
         var summary = (ToolArguments.GetString(arguments, "summary") ?? string.Empty).Trim();
         var steps = PlanSteps.Parse(arguments);
+        if (UnknownHost(steps) is { } unknown)
+        {
+            problem = $"Not proposed: \"{unknown}\" is neither an open terminal nor a listed connection.";
+            return null;
+        }
+
         var rollback = (ToolArguments.GetString(arguments, "rollback") ?? string.Empty).Trim();
-        problem = summary.Length == 0 || steps.Count == 0 ? "Not proposed: give a summary and at least one step."
-            : steps.Any(step => step.Command.Length == 0) ? "Not proposed: give every step the command you'll run."
+        problem = PlanProblem(summary, steps);
+        return problem.Length == 0
+            ? new AgentPlan(summary, steps, rollback) { Title = Optional(arguments, "title"), Findings = Optional(arguments, "findings") }
+            : null;
+    }
+
+    private static string PlanProblem(string summary, IReadOnlyList<AgentPlanStep> steps) =>
+        summary.Length == 0 || steps.Count == 0 ? "Not proposed: give a summary and at least one step."
+            : steps.Any(step => step.Command.Length == 0) ? "Not proposed: give every step the command you'll run, or an example of it."
             : steps.Count > MaxPlanSteps ? $"Not proposed: a plan has at most {MaxPlanSteps} steps. Split the task."
             : string.Empty;
-        var title = ToolArguments.GetString(arguments, "title")?.Trim();
-        return problem.Length == 0 ? new AgentPlan(summary, steps, rollback) { Title = string.IsNullOrEmpty(title) ? null : title } : null;
+
+    private static string? Optional(AIFunctionArguments arguments, string name) =>
+        ToolArguments.GetString(arguments, name)?.Trim() is { Length: > 0 } text ? text : null;
+
+    private string? UnknownHost(IReadOnlyList<AgentPlanStep> steps)
+    {
+        var known = Terminals.SelectMany(terminal => new[] { terminal.Name, terminal.Connection })
+            .Concat((TerminalOpener?.Connections ?? []).Select(connection => connection.Name))
+            .OfType<string>()
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        return steps.SelectMany(step => step.Terminals).FirstOrDefault(name => !known.Contains(name));
     }
 
     // None when the command may go ahead as the approval mode says; otherwise whether it has to ask, or a refusal in Problem.
@@ -94,10 +122,16 @@ public sealed partial class TerminalAgent
                 : PlanCheck.None;
         }
 
-        return step is { } number && number >= 1 && number <= _plan.Steps.Count
+        return step is { } number && number >= 1 && number <= _plan.Steps.Count && IsOnStepHost(_plan.Steps[number - 1], terminal)
             ? new PlanCheck(null, IsOutside: false, number)
             : new PlanCheck(null, IsOutside: true, Step: null);
     }
+
+    // A step approved for some hosts doesn't cover the same command on another one.
+    private static bool IsOnStepHost(AgentPlanStep step, AgentTerminal terminal) =>
+        step.Terminals.Count == 0
+        || step.Terminals.Any(name => string.Equals(name, terminal.Name, StringComparison.OrdinalIgnoreCase)
+            || string.Equals(name, terminal.Connection, StringComparison.OrdinalIgnoreCase));
 
     private sealed record PlanCheck(string? Problem, bool IsOutside, int? Step)
     {

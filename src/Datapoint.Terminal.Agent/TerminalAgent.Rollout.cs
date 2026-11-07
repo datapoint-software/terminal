@@ -49,6 +49,8 @@ public sealed partial class TerminalAgent
         {
             _approvals.Clear();
         }
+
+        ForgetLooking();
     }
 
     private List<string> SameEnvironment(AgentTerminal terminal) =>

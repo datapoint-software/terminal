@@ -67,6 +67,7 @@ public sealed partial class TerminalAgent
     private List<AITool> FeatureTools() =>
     [
         .. OpenTools(),
+        .. LookTools(),
         .. PlanTools(),
         .. FileTools(),
         .. WatchTools(),
@@ -215,8 +216,7 @@ public sealed partial class TerminalAgent
         var risk = CommandClassifier.Classify(command);
         var ignored = IgnoredFileCheck?.Invoke(terminal, command);
         var outgoing = OutgoingCheck(command);
-        var needsApproval = ignored is not null || (Mode != ApprovalMode.IgnorePermissions && (plan.IsOutside || outgoing.Asks || NeedsApproval(Mode, risk)));
-        if (!needsApproval)
+        if (!NeedsAsking(terminal, risk, ignored, plan, outgoing))
         {
             return CommandApproval.Approve(command);
         }
@@ -242,6 +242,9 @@ public sealed partial class TerminalAgent
         RememberApproval(terminal, approval, canCarry);
         return approval;
     }
+
+    private bool NeedsAsking(AgentTerminal terminal, CommandRisk risk, string? ignored, PlanCheck plan, OutgoingRisk outgoing) =>
+        ignored is not null || (Mode != ApprovalMode.IgnorePermissions && (plan.IsOutside || outgoing.Asks || (NeedsApproval(Mode, risk) && !MayLook(terminal, risk))));
 
     // A command that can reach another machine asks first once web text is in the conversation, or when it carries text the
     // terminals showed, whatever the approval mode: either may be a prompt injection sending data out.

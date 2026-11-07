@@ -9,6 +9,9 @@ public sealed record CommandProposal(string Command, string Purpose, CommandRisk
     // For a plan, its steps and rollback; Command then holds the same plan as text.
     public AgentPlan? Plan { get; init; }
 
+    // For a request to look before planning, its hosts and reasons.
+    public AgentLook? Look { get; init; }
+
     // A session opened inside the terminal, e.g. "ssh session to web1", where the command will actually run.
     public string? Session { get; init; }
 

@@ -5,8 +5,12 @@ public sealed record AgentPlan(string Summary, IReadOnlyList<AgentPlanStep> Step
     // A few words naming the task, e.g. "Update web1", for the card's heading and the progress while the plan runs.
     public string? Title { get; init; }
 
+    // What the agent learned while looking, in short Markdown, so the user can check what the plan rests on.
+    public string? Findings { get; init; }
+
     // The plan as plain text, for the approval history and anything that can't show the steps themselves.
     public string Text =>
-        string.Join('\n', Steps.Select((step, index) => $"{index + 1}. {step.Command}" + (step.Purpose.Length == 0 ? string.Empty : ": " + step.Purpose)))
+        string.Join('\n', Steps.Select((step, index) => $"{index + 1}. " + (step.Terminals.Count == 0 ? string.Empty : "On " + string.Join(", ", step.Terminals) + ": ")
+            + step.Command + (step.Purpose.Length == 0 ? string.Empty : ": " + step.Purpose)))
         + (string.IsNullOrWhiteSpace(Rollback) ? string.Empty : "\n\nTo roll back: " + Rollback);
 }

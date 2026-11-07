@@ -40,6 +40,7 @@ public sealed class TerminalAgentPlanTests
         var agent = new TerminalAgent(new ScriptedChatClient(script), _user, new SecretRedactor());
         agent.Mode = mode;
         agent.AddTerminal(new AgentTerminal("web1", _terminal, "production"));
+        agent.AddTerminal(new AgentTerminal("web2", new FakeTerminal(), "production"));
         agent.EventRaised += (_, e) => _events.Add(e);
         await agent.SendAsync("Install nginx", Token);
         return agent;
@@ -82,8 +83,46 @@ public sealed class TerminalAgentPlanTests
         using var steps = System.Text.Json.JsonDocument.Parse("""[{"purpose":"Think about it"}]""");
         using var agent = await RunAsync(ApprovalMode.Ask, _ => Call("propose_plan", Arguments(("summary", "Update"), ("steps", steps.RootElement.Clone()), ("rollback", ""))));
 
-        Assert.Equal("Not proposed: give every step the command you'll run.", _results[0]);
+        Assert.Equal("Not proposed: give every step the command you'll run, or an example of it.", _results[0]);
         Assert.Empty(_user.Proposals);
+    }
+
+    [Fact]
+    public async Task Reads_each_steps_title_hosts_and_whether_its_command_is_an_example()
+    {
+        using var steps = System.Text.Json.JsonDocument.Parse("""
+            [{"title":"Update the kernel","terminals":["web1"],"command":"sudo apt-get install linux-image-generic","example":true,"purpose":"Newer kernel"},
+             {"title":"Check","terminals":"web1","command":"uname -r","purpose":"Confirm"}]
+            """);
+        using var agent = await RunAsync(ApprovalMode.Ask, _ => Call("propose_plan", Arguments(("summary", "Update"), ("findings", "- web1 runs 6.8.0-45"), ("steps", steps.RootElement.Clone()), ("rollback", "None."))));
+
+        var plan = _user.Proposals.Single().Plan!;
+        Assert.Equal("- web1 runs 6.8.0-45", plan.Findings);
+        Assert.Equal(("Update the kernel", true, "web1"), (plan.Steps[0].Title, plan.Steps[0].IsExample, plan.Steps[0].Terminals.Single()));
+        Assert.Equal(("Check", false, "web1"), (plan.Steps[1].Title, plan.Steps[1].IsExample, plan.Steps[1].Terminals.Single()));
+        Assert.StartsWith("1. On web1: sudo apt-get install", plan.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task Refuses_a_step_on_a_host_it_doesnt_know()
+    {
+        using var steps = System.Text.Json.JsonDocument.Parse("""[{"title":"Restart","terminals":["db9"],"command":"sudo reboot","purpose":"Update"}]""");
+        using var agent = await RunAsync(ApprovalMode.Ask, _ => Call("propose_plan", Arguments(("summary", "Update"), ("steps", steps.RootElement.Clone()), ("rollback", ""))));
+
+        Assert.Equal("Not proposed: \"db9\" is neither an open terminal nor a listed connection.", _results[0]);
+        Assert.Empty(_user.Proposals);
+    }
+
+    [Fact]
+    public async Task Asks_when_a_planned_step_runs_on_a_host_it_doesnt_name()
+    {
+        using var steps = System.Text.Json.JsonDocument.Parse("""[{"title":"Install","terminals":["web2"],"command":"sudo apt-get install -y nginx","purpose":"Install it"}]""");
+        var plan = (Func<IReadOnlyList<ChatMessage>, ChatResponse>)(_ => Call("propose_plan", Arguments(("summary", "Install"), ("steps", steps.RootElement.Clone()), ("rollback", ""))));
+
+        using var agent = await RunAsync(ApprovalMode.Plan, plan, Run("sudo apt-get install -y nginx", step: 1));
+
+        Assert.Equal([ProposalKind.Plan, ProposalKind.RunCommand], _user.Proposals.Select(proposal => proposal.Kind));
+        Assert.True(_user.Proposals[1].IsOutsidePlan);
     }
 
     [Theory]

@@ -18,4 +18,7 @@ public enum ProposalKind
 
     // Command holds the rollout of a skill: its hosts, in order, and the health check; Purpose the skill's title and description. Nothing to edit.
     Rollout,
+
+    // Look holds the hosts and what the agent wants to learn on each; Command the same as text. Nothing to edit.
+    Look,
 }
