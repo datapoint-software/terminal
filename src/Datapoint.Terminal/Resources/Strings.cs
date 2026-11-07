@@ -640,6 +640,46 @@ public static class Strings
 
     public static string ApprovalRiskEdit => Get(nameof(ApprovalRiskEdit));
 
+    public static string RecordingUserCommand => Get(nameof(RecordingUserCommand));
+
+    public static string RecordingAgentCommand => Get(nameof(RecordingAgentCommand));
+
+    public static string RecordingAgentAction => Get(nameof(RecordingAgentAction));
+
+    public static string NoticeRecordingFailed => Get(nameof(NoticeRecordingFailed));
+
+    public static string MenuRecordSessions => Get(nameof(MenuRecordSessions));
+
+    public static string MenuShowRecordings => Get(nameof(MenuShowRecordings));
+
+    public static string RecordingsTitle => Get(nameof(RecordingsTitle));
+
+    public static string RecordingsList => Get(nameof(RecordingsList));
+
+    public static string RecordingsEmpty => Get(nameof(RecordingsEmpty));
+
+    public static string RecordingsPlay => Get(nameof(RecordingsPlay));
+
+    public static string RecordingsPause => Get(nameof(RecordingsPause));
+
+    public static string RecordingsSpeed => Get(nameof(RecordingsSpeed));
+
+    public static string RecordingsPosition => Get(nameof(RecordingsPosition));
+
+    public static string RecordingsMarkers => Get(nameof(RecordingsMarkers));
+
+    public static string RecordingsDelete => Get(nameof(RecordingsDelete));
+
+    public static string RecordingsDeleteTitle => Get(nameof(RecordingsDeleteTitle));
+
+    public static string RecordingsDeleteMessage => Get(nameof(RecordingsDeleteMessage));
+
+    public static string RecordingsDeleteConfirm => Get(nameof(RecordingsDeleteConfirm));
+
+    public static string RecordingsUnreadable => Get(nameof(RecordingsUnreadable));
+
+    public static string RecordingsNote => Get(nameof(RecordingsNote));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

@@ -36,6 +36,11 @@ public sealed partial class TerminalTab : ObservableObject
 
     public PaneGroup? Group { get; set; }
 
+    public Sessions.Recording.SessionRecorder? Recorder { get; set; }
+
+    // The last command a recording marker was written for, so each gets one.
+    public object? LastMarkedCommand { get; set; }
+
     public string? BusyReason => TabBusy.Reason(AgentTerminal?.Terminal.GetState(), IsRemote, IsAgentActing);
 
     public string? Environment => AgentTerminal?.Environment;

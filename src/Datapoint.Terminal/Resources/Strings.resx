@@ -965,4 +965,64 @@ git rm -r --cached .terminal</value>
   <data name="ApprovalRiskEdit" xml:space="preserve">
     <value>Before the change, a copy of the file is saved under ~/.datapoint-terminal/backups on the same machine, so it can be undone. The change is made by a command typed into the terminal, using sudo if the file needs it.</value>
   </data>
+  <data name="RecordingUserCommand" xml:space="preserve">
+    <value>User: {0}</value>
+  </data>
+  <data name="RecordingAgentCommand" xml:space="preserve">
+    <value>Agent: {0} ({1})</value>
+  </data>
+  <data name="RecordingAgentAction" xml:space="preserve">
+    <value>Agent: {0}</value>
+  </data>
+  <data name="NoticeRecordingFailed" xml:space="preserve">
+    <value>This tab isn't being recorded: {0}</value>
+  </data>
+  <data name="MenuRecordSessions" xml:space="preserve">
+    <value>Record Sessions</value>
+  </data>
+  <data name="MenuShowRecordings" xml:space="preserve">
+    <value>Show Recordings…</value>
+  </data>
+  <data name="RecordingsTitle" xml:space="preserve">
+    <value>Recordings</value>
+  </data>
+  <data name="RecordingsList" xml:space="preserve">
+    <value>Recordings</value>
+  </data>
+  <data name="RecordingsEmpty" xml:space="preserve">
+    <value>No recordings yet. Each tab is recorded while File › Record Sessions is on.</value>
+  </data>
+  <data name="RecordingsPlay" xml:space="preserve">
+    <value>Play</value>
+  </data>
+  <data name="RecordingsPause" xml:space="preserve">
+    <value>Pause</value>
+  </data>
+  <data name="RecordingsSpeed" xml:space="preserve">
+    <value>Speed</value>
+  </data>
+  <data name="RecordingsPosition" xml:space="preserve">
+    <value>Position</value>
+  </data>
+  <data name="RecordingsMarkers" xml:space="preserve">
+    <value>Who did what</value>
+  </data>
+  <data name="RecordingsDelete" xml:space="preserve">
+    <value>Delete…</value>
+  </data>
+  <data name="RecordingsDeleteTitle" xml:space="preserve">
+    <value>Delete this recording?</value>
+  </data>
+  <data name="RecordingsDeleteMessage" xml:space="preserve">
+    <value>{0} will be deleted from this computer. This can't be undone.</value>
+  </data>
+  <data name="RecordingsDeleteConfirm" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="RecordingsUnreadable" xml:space="preserve">
+    <value>This recording can't be played: {0}</value>
+  </data>
+  <data name="RecordingsNote" xml:space="preserve">
+    <value>Kept on this computer in the project's .terminal folder, with secrets removed where they're recognized. Also playable with asciinema.</value>
+  </data>
 </root>

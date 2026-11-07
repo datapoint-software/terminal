@@ -33,6 +33,16 @@ public sealed partial class MainWindow
         var history = Item(Strings.MenuShowHistory, Shortcut(Key.Y), ShowHistory);
         history.IsEnabled = !Project.IsReadOnly;
         file.Add(history);
+        file.Add(Item(Strings.MenuShowRecordings, null, ShowRecordings));
+        var record = Item(Strings.MenuRecordSessions, null, () => { });
+        record.ToggleType = MenuItemToggleType.CheckBox;
+        record.IsChecked = _settings.RecordSessions;
+        record.Click += (_, _) =>
+        {
+            _settings.SetRecordSessions(!_settings.RecordSessions);
+            record.IsChecked = _settings.RecordSessions;
+        };
+        file.Add(record);
         AddMemoryItems(file);
         file.Add(new NativeMenuItemSeparator());
         if (!IsMac)

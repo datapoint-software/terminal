@@ -33,12 +33,18 @@ public sealed class TerminalConnection : ITerminalHost, IAsyncDisposable
 
     public event EventHandler? BellRang;
 
+    public ITerminalOutputObserver? OutputObserver { get; set; }
+
     [SuppressMessage("Usage", "VSTHRD003", Justification = "The session completes on its own; nothing waits on the caller's context.")]
     public Task<int?> Exited => _session.Exited;
 
     public void Send(ReadOnlySpan<byte> data) => _input.Writer.TryWrite(data.ToArray());
 
-    public Task ResizeAsync(int columns, int rows, CancellationToken cancellationToken) => _session.ResizeAsync(columns, rows, cancellationToken);
+    public Task ResizeAsync(int columns, int rows, CancellationToken cancellationToken)
+    {
+        OutputObserver?.Resized(columns, rows);
+        return _session.ResizeAsync(columns, rows, cancellationToken);
+    }
 
     [SuppressMessage("Usage", "VSTHRD003", Justification = "Both loops are ours, started in the constructor on the thread pool.")]
     public async ValueTask DisposeAsync()
@@ -74,6 +80,7 @@ public sealed class TerminalConnection : ITerminalHost, IAsyncDisposable
             int count;
             while ((count = await _session.ReadAsync(buffer, cancellationToken).ConfigureAwait(false)) > 0)
             {
+                OutputObserver?.Observe(buffer.AsSpan(0, count));
                 Terminal.Feed(buffer.AsSpan(0, count));
                 OutputArrived?.Invoke(this, EventArgs.Empty);
             }

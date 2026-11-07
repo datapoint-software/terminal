@@ -41,6 +41,9 @@ public sealed record AppSettings
     // Desktop notifications when the agent finishes or needs the user in a background window.
     public bool Notifications { get; init; } = true;
 
+    // Session recordings in each project's .terminal/recordings, kept as long as its history (product decision 45).
+    public bool RecordSessions { get; init; } = true;
+
     public Shell.TerminalTheme TerminalTheme { get; init; } = Shell.TerminalTheme.Dark;
 
     // Null uses the default list of monospace fonts.

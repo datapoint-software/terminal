@@ -173,6 +173,7 @@ public sealed partial class MainWindow : Window, ITerminalOpener
                 _agent.OutputLimit = OutputLimits.For(provider.ContextWindow, provider.OutputLimit);
                 _agent.EventRaised += OnAgentEvent;
                 _agent.EventRaised += OnHistoryEvent;
+                _agent.EventRaised += OnRecordingEvent;
                 foreach (var tab in _tabs.Where(tab => tab.AgentTerminal is not null))
                 {
                     _agent.AddTerminal(tab.AgentTerminal!);

@@ -167,6 +167,7 @@ public sealed partial class MainWindow : IHistoryAccess
     {
         _settings.SetHistoryDays(days);
         WithHistory(store => { Prune(store); return 0; }, 0);
+        PruneRecordings(force: true);
     }
 
     private HistoryWindow? _historyWindow;

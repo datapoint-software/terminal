@@ -25,10 +25,13 @@ public sealed partial class MainWindow
         }
     }
 
-    private void ApplyAppearance(TerminalTab tab)
+    private void ApplyAppearance(TerminalTab tab) => ApplyAppearance(tab.View, tab.Connection?.Terminal);
+
+    // Also for the recordings player, so a recording looks like the terminal it came from.
+    private void ApplyAppearance(Controls.TerminalView view, Emulator.Terminal? terminal)
     {
         var isDark = TerminalThemes.IsDark(_settings.TerminalTheme, ActualThemeVariant == ThemeVariant.Dark);
-        if (tab.Connection?.Terminal is { } terminal)
+        if (terminal is not null)
         {
             lock (terminal.SyncRoot)
             {
@@ -36,17 +39,17 @@ public sealed partial class MainWindow
             }
         }
 
-        tab.View.FontSize = _settings.TerminalFontSize;
+        view.FontSize = _settings.TerminalFontSize;
         if (_settings.TerminalFont is { } font)
         {
-            tab.View.FontFamily = new FontFamily(font);
+            view.FontFamily = new FontFamily(font);
         }
         else
         {
-            tab.View.ClearValue(Controls.TerminalView.FontFamilyProperty);
+            view.ClearValue(Controls.TerminalView.FontFamilyProperty);
         }
 
-        tab.View.InvalidateVisual();
+        view.InvalidateVisual();
     }
 
     private void SetAppearance(TerminalTheme? theme = null, string? font = null, bool defaultFont = false, double? size = null) =>

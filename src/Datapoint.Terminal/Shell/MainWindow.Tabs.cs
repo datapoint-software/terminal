@@ -49,6 +49,7 @@ public sealed partial class MainWindow
             Connection = tab.ConnectionName,
             Files = files,
         };
+        StartRecording(tab, connection);
         connection.OutputArrived += (_, _) => tab.View.NotifyOutput();
         tab.View.CommandMarkClicked += (_, e) => ShowChatStep(tab, e.Command.CommandLine);
         tab.View.GotFocus += (_, _) => SelectPane(tab);
@@ -205,6 +206,7 @@ public sealed partial class MainWindow
         }
 
         await connection.DisposeAsync().ConfigureAwait(true);
+        StopRecording(tab);
     }
 
     private void OnAgentEvent(object? sender, AgentEventArgs e)
