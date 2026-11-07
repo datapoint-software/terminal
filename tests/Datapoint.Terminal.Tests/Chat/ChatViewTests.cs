@@ -59,6 +59,28 @@ public sealed class ChatViewTests
         Assert.NotNull(frame);
     }
 
+    // As the window's main pane the chat can be very wide; the conversation and the composer stay a centred reading column.
+    [AvaloniaFact]
+    public void Keeps_the_conversation_a_centred_column_in_a_wide_window()
+    {
+        using var chat = new ChatViewModel(new ImmediateUiThread());
+        chat.Items.Add(new ChatItemViewModel(ChatItemKind.User, "Is anything on web-1 waiting for a restart?"));
+        chat.Items.Add(new ChatItemViewModel(ChatItemKind.Agent, "Yes. The kernel and systemd were updated on 7 Nov and web-1 has been up for 23 days, so it's still on the old kernel. Nothing else is waiting."));
+        var view = new ChatView { DataContext = chat };
+        var window = new Window { Width = 1200, Height = 600, Content = view };
+        window.Show();
+
+        Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+        using var frame = window.CaptureRenderedFrame();
+        Directory.CreateDirectory("rendered");
+        frame?.Save("rendered/chat-wide.png", new PngBitmapEncoderOptions());
+
+        var list = view.FindControl<ItemsControl>("ItemList")!;
+        var left = list.TranslatePoint(new Point(0, 0), window)!.Value.X;
+        Assert.Equal(760, list.Bounds.Width);
+        Assert.InRange(left + (list.Bounds.Width / 2), 595, 605);
+    }
+
     // A long plan scrolls inside its box, so the buttons that approve or decline it stay on screen.
     [AvaloniaFact]
     public void Keeps_the_buttons_in_view_for_a_long_plan()

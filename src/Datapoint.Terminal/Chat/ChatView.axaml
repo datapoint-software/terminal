@@ -379,7 +379,7 @@
     </Border>
 
     <!-- Bottom: approvals and questions, then the composer and the approval mode. -->
-    <StackPanel DockPanel.Dock="Bottom" Margin="12,8,12,12">
+    <StackPanel DockPanel.Dock="Bottom" Margin="12,8,12,12" MaxWidth="{StaticResource ReadingWidth}">
       <!-- No provider yet: offer to connect one. -->
       <Border Classes="card" IsVisible="{Binding NeedsProvider}">
         <StackPanel Spacing="10">
@@ -587,12 +587,12 @@
     </StackPanel>
 
     <!-- The plan in progress, pinned so it stays in view while the conversation scrolls. -->
-    <ContentControl DockPanel.Dock="Top" Content="{Binding ActivePlan}" motion:Fold.IsOpen="{Binding HasActivePlan}" Padding="12,8,12,4" />
-    <ContentControl DockPanel.Dock="Top" Content="{Binding ActiveRollout}" motion:Fold.IsOpen="{Binding HasActiveRollout}" Padding="12,8,12,4" />
+    <ContentControl DockPanel.Dock="Top" Content="{Binding ActivePlan}" motion:Fold.IsOpen="{Binding HasActivePlan}" Padding="12,8,12,4" MaxWidth="{StaticResource ReadingWidth}" />
+    <ContentControl DockPanel.Dock="Top" Content="{Binding ActiveRollout}" motion:Fold.IsOpen="{Binding HasActiveRollout}" Padding="12,8,12,4" MaxWidth="{StaticResource ReadingWidth}" />
 
-    <!-- The conversation. -->
+    <!-- The conversation, a centred reading column however wide the window is; the scroll bar stays at the pane's edge. -->
     <ScrollViewer x:Name="Scroller" Padding="16,8">
-      <ItemsControl x:Name="ItemList" ItemsSource="{Binding Items}">
+      <ItemsControl x:Name="ItemList" ItemsSource="{Binding Items}" MaxWidth="{StaticResource ReadingWidth}">
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="chat:ChatItemViewModel">
             <Panel>

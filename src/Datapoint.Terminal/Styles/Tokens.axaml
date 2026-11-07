@@ -22,4 +22,7 @@
   <x:Double x:Key="RowHeight">28</x:Double>
   <x:Double x:Key="ButtonHeight">26</x:Double>
   <x:Double x:Key="FieldHeight">30</x:Double>
+
+  <!-- The widest a column of text runs, such as the conversation, so lines stay easy to read in a wide window. -->
+  <x:Double x:Key="ReadingWidth">760</x:Double>
 </ResourceDictionary>
