@@ -307,6 +307,7 @@ public sealed partial class TerminalAgent : IDisposable
     {
         MarkAllSeen();
         _plan = null;
+        ForgetApprovals();
         foreach (var terminal in Terminals)
         {
             terminal.IsAwaitingInput = false;

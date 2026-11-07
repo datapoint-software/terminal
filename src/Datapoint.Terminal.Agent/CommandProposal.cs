@@ -13,4 +13,7 @@ public sealed record CommandProposal(string Command, string Purpose, CommandRisk
     public int? PlanStep { get; init; }
 
     public bool IsOutsidePlan { get; init; }
+
+    // The other terminals where approving this also approves the identical command until the task ends.
+    public IReadOnlyList<string> AlsoApproves { get; init; } = [];
 }

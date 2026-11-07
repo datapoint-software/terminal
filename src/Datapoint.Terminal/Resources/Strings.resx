@@ -1040,4 +1040,7 @@ git rm -r --cached .terminal</value>
   <data name="RunbookSaveDraft" xml:space="preserve">
     <value>Save the task we just finished as a runbook called </value>
   </data>
+  <data name="ApprovalAlsoApproves" xml:space="preserve">
+    <value>Approving also lets the agent run this exact command in {0} until the task ends.</value>
+  </data>
 </root>

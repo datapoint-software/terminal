@@ -20,6 +20,7 @@ public sealed partial class ApprovalViewModel : ObservableObject
         Command = proposal.Command;
         Kind = proposal.Kind;
         IgnoredFile = proposal.IgnoredFile;
+        AlsoApprovesText = proposal.AlsoApproves.Count == 0 ? null : Strings.Format(Strings.ApprovalAlsoApproves, string.Join(", ", proposal.AlsoApproves));
         PlanText = proposal.IsOutsidePlan ? Strings.ApprovalOutsidePlan
             : proposal.PlanStep is { } step ? Strings.Format(Strings.ApprovalPlanStep, step)
             : null;
@@ -43,6 +44,10 @@ public sealed partial class ApprovalViewModel : ObservableObject
     public string? PlanText { get; }
 
     public bool HasPlanText => PlanText is not null;
+
+    public string? AlsoApprovesText { get; }
+
+    public bool HasAlsoApproves => AlsoApprovesText is not null;
 
     public string RunLabel => Kind switch
     {

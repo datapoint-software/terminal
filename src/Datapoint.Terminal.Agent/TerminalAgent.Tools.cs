@@ -183,15 +183,16 @@ public sealed partial class TerminalAgent
     {
         var risk = CommandClassifier.Classify(command);
         var ignored = IgnoredFileCheck?.Invoke(terminal, command);
-        var needsApproval = ignored is not null || plan.IsOutside || terminal.Mode switch
-        {
-            ApprovalMode.Auto => risk == CommandRisk.AlwaysAsk,
-            ApprovalMode.AskForRisky => risk != CommandRisk.ReadOnly,
-            _ => true,
-        };
+        var needsApproval = ignored is not null || plan.IsOutside || NeedsApproval(terminal.Mode, risk);
         if (!needsApproval)
         {
             return CommandApproval.Approve(command);
+        }
+
+        var canCarry = ignored is null && risk != CommandRisk.AlwaysAsk && !plan.IsOutside;
+        if (canCarry && CarriedApproval(terminal, command) is { } carried)
+        {
+            return carried;
         }
 
         SetStatus(AgentStatus.WaitingForApproval, terminal);
@@ -200,9 +201,19 @@ public sealed partial class TerminalAgent
             IgnoredFile = ignored,
             PlanStep = plan.Step,
             IsOutsidePlan = plan.IsOutside,
+            AlsoApproves = canCarry ? SameEnvironment(terminal) : [],
         };
-        return await _user.RequestApprovalAsync(proposal, cancellationToken).ConfigureAwait(false);
+        var approval = await _user.RequestApprovalAsync(proposal, cancellationToken).ConfigureAwait(false);
+        RememberApproval(terminal, approval, canCarry);
+        return approval;
     }
+
+    private static bool NeedsApproval(ApprovalMode mode, CommandRisk risk) => mode switch
+    {
+        ApprovalMode.Auto => risk == CommandRisk.AlwaysAsk,
+        ApprovalMode.AskForRisky => risk != CommandRisk.ReadOnly,
+        _ => true,
+    };
 
     private AgentTerminal? FindTerminal(AIFunctionArguments arguments, out string? problem)
     {
