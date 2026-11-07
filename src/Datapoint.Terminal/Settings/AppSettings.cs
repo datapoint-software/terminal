@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Datapoint.Terminal.Agent;
+using Datapoint.Terminal.Agent.Projects;
 
 namespace Datapoint.Terminal.Settings;
 
@@ -20,6 +21,8 @@ public sealed record AppSettings
     public IReadOnlyList<string> RecentProjects { get; init => field = value ?? []; } = [];
 
     public IReadOnlyList<string> OpenProjects { get; init => field = value ?? []; } = [];
+
+    public IReadOnlyList<ProjectTrustRecord> TrustedProjects { get; init => field = value ?? []; } = [];
 
     [JsonIgnore]
     public ProviderAccount? SelectedProvider =>

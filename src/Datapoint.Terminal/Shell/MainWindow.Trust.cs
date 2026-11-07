@@ -1,0 +1,135 @@
+using System.Text;
+using Avalonia.Threading;
+using Datapoint.Terminal.Agent;
+using Datapoint.Terminal.Agent.Projects;
+using Datapoint.Terminal.Resources;
+
+namespace Datapoint.Terminal.Shell;
+
+public sealed partial class MainWindow
+{
+    // Read on the agent's thread when a conversation starts.
+    private volatile ProjectTrustRecord? _trust;
+
+    private IReadOnlyList<string> ProjectInstructionFiles(string? globalFile) =>
+        InstructionFiles.FindForProject(Project.Folder, ProjectFolders.Home, globalFile);
+
+    // Asks when the project has something to trust and no decision covers it yet; from the menu, it always asks.
+    private async Task ReviewTrustAsync(bool always)
+    {
+        var files = ProjectInstructionFiles(InstructionFiles.FindGlobal(ProjectFolders.Global));
+        var record = _settings.TrustFor(Project.Folder);
+        var state = ProjectTrust.Evaluate(Project.IsDefault, Project.Settings.Connections.Count > 0, files, record);
+        if (state == TrustState.Trusted && record is null && !Project.IsDefault)
+        {
+            record = new ProjectTrustRecord { Folder = Project.Folder, IsTrusted = true, InstructionFiles = files };
+            _settings.SetTrust(record);
+        }
+
+        if (state == TrustState.Ask || (always && !Project.IsDefault))
+        {
+            var choice = await ChoiceWindow.AskAsync(
+                this,
+                Strings.Format(Strings.TrustTitle, Project.Name),
+                Strings.TrustMessage,
+                TrustDetails(files, record),
+                hasDefault: false,
+                Strings.TrustDont,
+                Strings.TrustTrust).ConfigureAwait(true);
+
+            // Closing the question decides nothing: the project stays as it was, and is asked about again next time.
+            if (choice is { } answer)
+            {
+                record = new ProjectTrustRecord { Folder = Project.Folder, IsTrusted = answer == 1, InstructionFiles = files };
+                _settings.SetTrust(record);
+            }
+        }
+
+        _trust = record;
+    }
+
+    private string TrustDetails(IReadOnlyList<string> files, ProjectTrustRecord? record)
+    {
+        var connections = Project.Settings.Connections;
+        if (files.Count == 0 && connections.Count == 0)
+        {
+            return Strings.TrustNothing;
+        }
+
+        var text = new StringBuilder();
+        if (files.Count > 0)
+        {
+            text.AppendLine(Strings.TrustFiles);
+            foreach (var file in files)
+            {
+                text.Append("  ").AppendLine(DescribeFile(file, record));
+            }
+        }
+
+        if (connections.Count > 0)
+        {
+            text.AppendLine(files.Count > 0 ? Environment.NewLine + Strings.TrustConnections : Strings.TrustConnections);
+            foreach (var connection in connections)
+            {
+                text.Append("  ").AppendLine(DescribeConnection(connection));
+            }
+        }
+
+        return text.ToString().TrimEnd();
+    }
+
+    private static string DescribeFile(string file, ProjectTrustRecord? record)
+    {
+        var shown = ProjectFolders.Display(file);
+        return record is not null && !record.Covers(file) ? Strings.Format(Strings.TrustNew, shown) : shown;
+    }
+
+    private static string DescribeConnection(ProjectConnection connection)
+    {
+        var user = connection.User is null ? string.Empty : connection.User + "@";
+        var port = connection.Port is { } number ? $":{number}" : string.Empty;
+        var target = connection.SshHost ?? user + connection.Host + port;
+        var environment = connection.Environment is null ? string.Empty : $" ({connection.Environment})";
+        return $"{connection.Name} → {target}{environment}";
+    }
+
+    // The global file is the user's own; the project's files are instructions only when the user trusted them as they were shown.
+    private AgentInstructions LoadInstructions()
+    {
+        var global = InstructionFiles.FindGlobal(ProjectFolders.Global);
+        var projectFiles = ProjectInstructionFiles(global);
+        var files = InstructionFiles.Read([.. global is null ? [] : new[] { global }, .. projectFiles]);
+        var trust = _trust;
+        var isTrusted = (InstructionFile file) => Project.IsDefault
+            || ProjectFolders.AreSame(file.Path, global ?? string.Empty)
+            || (trust is { IsTrusted: true } && trust.Covers(file.Path));
+        var instructions = new AgentInstructions([.. files.Where(isTrusted)], [.. files.Where(file => !isTrusted(file))]);
+        Dispatcher.UIThread.Post(() => ReportInstructions(instructions));
+        return instructions;
+    }
+
+    private void ReportInstructions(AgentInstructions instructions)
+    {
+        static string Names(IEnumerable<InstructionFile> files) => string.Join(", ", files.Select(file => ProjectFolders.Display(file.Path)));
+        var all = instructions.Instructions.Concat(instructions.Data).ToList();
+        if (instructions.Instructions.Any(file => file.Text.Length > 0))
+        {
+            _chat.AddNotice(Strings.Format(Strings.NoticeInstructions, Names(instructions.Instructions.Where(file => file.Text.Length > 0))));
+        }
+
+        if (instructions.Data.Any(file => file.Text.Length > 0))
+        {
+            _chat.AddNotice(Strings.Format(Strings.NoticeInstructionsData, Names(instructions.Data.Where(file => file.Text.Length > 0))));
+        }
+
+        if (all.Any(file => file.IsCut))
+        {
+            _chat.AddNotice(Strings.Format(Strings.NoticeInstructionsCut, Names(all.Where(file => file.IsCut))));
+        }
+
+        foreach (var file in all.Where(file => file.Problem is not null))
+        {
+            _chat.AddNotice(Strings.Format(Strings.NoticeInstructionsUnreadable, ProjectFolders.Display(file.Path), file.Problem));
+        }
+    }
+}

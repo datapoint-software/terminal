@@ -24,6 +24,15 @@ public static class ProjectFolders
         return full.Length > root.Length ? Path.TrimEndingDirectorySeparator(full) : full;
     }
 
+    // Paths under the home folder are shown as ~/..., so the user's account name isn't sent with them.
+    public static string Display(string path)
+    {
+        var home = Normalize(Home);
+        return path.StartsWith(home + Path.DirectorySeparatorChar, OperatingSystem.IsLinux() ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase)
+            ? "~" + path[home.Length..]
+            : path;
+    }
+
     public static bool AreSame(string first, string second) => Comparer.Equals(Normalize(first), Normalize(second));
 
     public static bool IsProject(string folder) =>

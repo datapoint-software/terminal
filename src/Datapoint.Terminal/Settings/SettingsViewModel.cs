@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Datapoint.Terminal.Agent;
+using Datapoint.Terminal.Agent.Projects;
 using Datapoint.Terminal.Agent.Providers;
 using Datapoint.Terminal.Resources;
 using Microsoft.Extensions.AI;
@@ -33,6 +34,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         _defaultApprovalMode = settings.DefaultApprovalMode;
         RecentProjects = settings.RecentProjects;
         OpenProjects = settings.OpenProjects;
+        TrustedProjects = settings.TrustedProjects;
         SelectedProviderId = settings.SelectedProvider?.Id;
         foreach (var account in settings.Providers)
         {
@@ -52,6 +54,8 @@ public sealed partial class SettingsViewModel : ObservableObject
     public IReadOnlyList<string> RecentProjects { get; private set; }
 
     public IReadOnlyList<string> OpenProjects { get; private set; }
+
+    public IReadOnlyList<ProjectTrustRecord> TrustedProjects { get; private set; }
 
     public IReadOnlyList<KindOption> Kinds { get; }
 
@@ -77,7 +81,23 @@ public sealed partial class SettingsViewModel : ObservableObject
         DefaultApprovalMode = _defaultApprovalMode,
         RecentProjects = RecentProjects,
         OpenProjects = OpenProjects,
+        TrustedProjects = TrustedProjects,
     };
+
+    public ProjectTrustRecord? TrustFor(string folder) =>
+        TrustedProjects.FirstOrDefault(record => ProjectFolders.AreSame(record.Folder, folder));
+
+    public void SetTrust(ProjectTrustRecord record)
+    {
+        ArgumentNullException.ThrowIfNull(record);
+        TrustedProjects = [.. TrustedProjects.Where(item => !ProjectFolders.AreSame(item.Folder, record.Folder)), record];
+        if (_store.IsReadOnly)
+        {
+            return;
+        }
+
+        _store.Save(Current);
+    }
 
     public void SetProjects(IReadOnlyList<string> recent, IReadOnlyList<string> open)
     {

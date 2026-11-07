@@ -153,7 +153,7 @@ public sealed partial class TerminalAgent : IDisposable
 
         try
         {
-            _history.Add(new ChatMessage(ChatRole.User, DescribeTerminals() + message));
+            _history.Add(new ChatMessage(ChatRole.User, DescribeTerminals() + StartConversation(message)));
             await RunStepsAsync(task.Token).ConfigureAwait(false);
             SetStatus(AgentStatus.Idle);
         }

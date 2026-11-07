@@ -25,6 +25,11 @@ public sealed partial class MainWindow
         FillRecentMenu();
         file.Add(new NativeMenuItem(Strings.MenuOpenRecent) { Menu = _recentMenu });
         file.Add(new NativeMenuItemSeparator());
+        if (!Project.IsDefault)
+        {
+            file.Add(Item(Strings.MenuProjectTrust, null, () => _ = ReviewTrustAsync(always: true)));
+            file.Add(new NativeMenuItemSeparator());
+        }
         if (!IsMac)
         {
             file.Add(Item(Strings.MenuSettings, new KeyGesture(Key.OemComma, KeyModifiers.Control), _windows.OpenSettings));

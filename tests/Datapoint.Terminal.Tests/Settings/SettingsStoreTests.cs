@@ -1,3 +1,4 @@
+using Datapoint.Terminal.Agent.Projects;
 using Datapoint.Terminal.Agent;
 using Datapoint.Terminal.Agent.Providers;
 using Datapoint.Terminal.Settings;
@@ -27,6 +28,18 @@ public sealed class SettingsStoreTests : IDisposable
         Assert.Equal(ApprovalMode.AskForRisky, loaded.DefaultApprovalMode);
         Assert.Contains("\"openAICompatible\"", File.ReadAllText(FilePath), StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("\"selectedProvider\"", File.ReadAllText(FilePath), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Keeps_trust_decisions_with_the_files_they_covered()
+    {
+        var record = new ProjectTrustRecord { Folder = "/work/site", IsTrusted = true, InstructionFiles = ["/work/site/AGENTS.md"] };
+        new SettingsStore(FilePath).Save(new AppSettings { TrustedProjects = [record] });
+
+        var loaded = Assert.Single(new SettingsStore(FilePath).Load().TrustedProjects);
+
+        Assert.Equal(("/work/site", true), (loaded.Folder, loaded.IsTrusted));
+        Assert.Equal(record.InstructionFiles, loaded.InstructionFiles);
     }
 
     [Fact]

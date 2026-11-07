@@ -59,15 +59,19 @@ public sealed partial class MainWindow : Window
         UpdateTitle();
         NativeMenu.SetMenu(this, BuildMenu());
         AddHandler(KeyDownEvent, OnShortcutKeyDown, Avalonia.Interactivity.RoutingStrategies.Tunnel);
-        Opened += (_, _) =>
-        {
-            ApplySettings();
-            _ = OpenLocalTabAsync();
-        };
+        Opened += (_, _) => _ = OnOpenedAsync();
         Closed += (_, _) => _ = StopAsync();
     }
 
     public Project Project { get; }
+
+    // Trust is settled before any terminal opens, so the first conversation already reads the files the right way.
+    private async Task OnOpenedAsync()
+    {
+        ApplySettings();
+        await ReviewTrustAsync(always: false).ConfigureAwait(true);
+        await OpenLocalTabAsync().ConfigureAwait(true);
+    }
 
     public void AddNotice(string text) => _chat.AddNotice(text);
 
@@ -130,7 +134,7 @@ public sealed partial class MainWindow : Window
             _clientSignature = signature;
             if (_agent is null)
             {
-                _agent = new TerminalAgent(client, _chat, _redactor);
+                _agent = new TerminalAgent(client, _chat, _redactor) { InstructionsSource = LoadInstructions };
                 _agent.EventRaised += OnAgentEvent;
                 foreach (var tab in _tabs.Where(tab => tab.AgentTerminal is not null))
                 {

@@ -444,4 +444,43 @@ Fingerprint: {2}</value>
   <data name="NoticeLoginNote" xml:space="preserve">
     <value>{0}: {1}</value>
   </data>
+  <data name="MenuProjectTrust" xml:space="preserve">
+    <value>Project Trust…</value>
+  </data>
+  <data name="TrustTitle" xml:space="preserve">
+    <value>Trust {0}?</value>
+  </data>
+  <data name="TrustMessage" xml:space="preserve">
+    <value>When you trust a project, its instruction files guide the agent and its connections can be opened. Trust it only if you know where its files come from: a cloned repository or a shared folder can hold instructions written to mislead the agent. Until you trust it, the agent reads these files as data, not instructions.</value>
+  </data>
+  <data name="TrustFiles" xml:space="preserve">
+    <value>Instruction files:</value>
+  </data>
+  <data name="TrustConnections" xml:space="preserve">
+    <value>Connections in .terminal.json:</value>
+  </data>
+  <data name="TrustNothing" xml:space="preserve">
+    <value>This project has no instruction files or connections yet.</value>
+  </data>
+  <data name="TrustNew" xml:space="preserve">
+    <value>{0} (new)</value>
+  </data>
+  <data name="TrustDont" xml:space="preserve">
+    <value>Don't Trust</value>
+  </data>
+  <data name="TrustTrust" xml:space="preserve">
+    <value>Trust Project</value>
+  </data>
+  <data name="NoticeInstructions" xml:space="preserve">
+    <value>The agent follows the instructions in {0}.</value>
+  </data>
+  <data name="NoticeInstructionsData" xml:space="preserve">
+    <value>The agent reads {0} as data, not instructions, because you haven't trusted it. To change this, choose File › Project Trust…</value>
+  </data>
+  <data name="NoticeInstructionsCut" xml:space="preserve">
+    <value>Instruction files are limited to 32 KB in all, so {0} was cut short.</value>
+  </data>
+  <data name="NoticeInstructionsUnreadable" xml:space="preserve">
+    <value>{0} couldn't be read: {1}</value>
+  </data>
 </root>

@@ -294,6 +294,32 @@ public static class Strings
 
     public static string NoticeLoginNote => Get(nameof(NoticeLoginNote));
 
+    public static string MenuProjectTrust => Get(nameof(MenuProjectTrust));
+
+    public static string TrustTitle => Get(nameof(TrustTitle));
+
+    public static string TrustMessage => Get(nameof(TrustMessage));
+
+    public static string TrustFiles => Get(nameof(TrustFiles));
+
+    public static string TrustConnections => Get(nameof(TrustConnections));
+
+    public static string TrustNothing => Get(nameof(TrustNothing));
+
+    public static string TrustNew => Get(nameof(TrustNew));
+
+    public static string TrustDont => Get(nameof(TrustDont));
+
+    public static string TrustTrust => Get(nameof(TrustTrust));
+
+    public static string NoticeInstructions => Get(nameof(NoticeInstructions));
+
+    public static string NoticeInstructionsData => Get(nameof(NoticeInstructionsData));
+
+    public static string NoticeInstructionsCut => Get(nameof(NoticeInstructionsCut));
+
+    public static string NoticeInstructionsUnreadable => Get(nameof(NoticeInstructionsUnreadable));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

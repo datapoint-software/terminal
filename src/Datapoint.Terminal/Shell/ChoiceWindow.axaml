@@ -8,7 +8,9 @@
     <TextBlock x:Name="Heading" FontWeight="SemiBold" FontSize="14" TextWrapping="Wrap" />
     <TextBlock x:Name="Message" TextWrapping="Wrap" />
     <Border x:Name="DetailsBox" Classes="code" IsVisible="False">
-      <SelectableTextBlock x:Name="Details" Classes="mono" TextWrapping="Wrap" />
+      <ScrollViewer MaxHeight="220">
+        <SelectableTextBlock x:Name="Details" Classes="mono" TextWrapping="Wrap" />
+      </ScrollViewer>
     </Border>
     <StackPanel x:Name="Buttons" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" Margin="0,8,0,0" />
   </StackPanel>
