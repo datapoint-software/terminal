@@ -184,7 +184,7 @@ Features agreed while brainstorming, beyond the core concepts above. All of them
 
 ### Cost and control
 
-- **Usage display:** tokens and estimated cost per session and per tab, with an optional budget limit.
+- **Usage display:** tokens and estimated cost per session and per tab, with an optional budget limit. Input read from the provider's prompt cache is counted and priced at its own, lower rate, and the session's details say how much of the input came from the cache.
 
 ## Open questions
 

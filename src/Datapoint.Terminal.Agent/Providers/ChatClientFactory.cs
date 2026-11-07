@@ -5,8 +5,8 @@ using OpenAI;
 
 namespace Datapoint.Terminal.Agent.Providers;
 
-// Anthropic's own SDK is the only one that understands its prompt caching; OpenAI-compatible servers get Chat Completions,
-// since their support for the Responses API varies.
+// Anthropic's own SDK is the only one that can mark its prompt caching (AnthropicPromptCache does); OpenAI caches by
+// itself. OpenAI-compatible servers get Chat Completions, since their support for the Responses API varies.
 public static class ChatClientFactory
 {
     public static IChatClient Create(ProviderSettings settings, string? apiKey)
@@ -14,7 +14,7 @@ public static class ChatClientFactory
         ArgumentNullException.ThrowIfNull(settings);
         return settings.Kind switch
         {
-            ProviderKind.Anthropic => new AnthropicClient { ApiKey = Require(apiKey, "Anthropic") }.AsIChatClient(settings.Model),
+            ProviderKind.Anthropic => new AnthropicPromptCache(new AnthropicClient { ApiKey = Require(apiKey, "Anthropic") }.AsIChatClient(settings.Model)),
             ProviderKind.OpenAI => CreateOpenAI(settings, apiKey),
             _ => CreateCompatible(settings, apiKey),
         };

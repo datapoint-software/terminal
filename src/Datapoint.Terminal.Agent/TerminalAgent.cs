@@ -272,7 +272,7 @@ public sealed partial class TerminalAgent : IDisposable
         _usageTerminal = calls.Select(call => call.Arguments?.TryGetValue("terminal", out var name) == true ? name?.ToString() : null)
             .FirstOrDefault(name => name is not null && Terminals.Any(terminal => string.Equals(terminal.Name, name, StringComparison.Ordinal)))
             ?? _usageTerminal;
-        Usage.Record(_usageTerminal, response.Usage?.InputTokenCount, response.Usage?.OutputTokenCount);
+        Usage.Record(_usageTerminal, Agent.Usage.TokenUsage.From(response.Usage));
         Raise(new AgentEventArgs(AgentEventKind.UsageChanged, string.Empty));
     }
 

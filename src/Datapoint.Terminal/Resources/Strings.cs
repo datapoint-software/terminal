@@ -856,6 +856,12 @@ public static class Strings
 
     public static string PlanHideSteps => Get(nameof(PlanHideSteps));
 
+    public static string ProviderCachedInputPrice => Get(nameof(ProviderCachedInputPrice));
+
+    public static string ProviderCachedPriceHint => Get(nameof(ProviderCachedPriceHint));
+
+    public static string UsageCached => Get(nameof(UsageCached));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

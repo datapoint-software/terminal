@@ -1289,4 +1289,13 @@ git rm -r --cached .terminal</value>
   <data name="PlanHideSteps" xml:space="preserve">
     <value>Hide the plan's steps</value>
   </data>
+  <data name="ProviderCachedInputPrice" xml:space="preserve">
+    <value>Cached input price (US$ per million tokens)</value>
+  </data>
+  <data name="ProviderCachedPriceHint" xml:space="preserve">
+    <value>Optional. Empty: a tenth of the input price for Anthropic, the full input price otherwise</value>
+  </data>
+  <data name="UsageCached" xml:space="preserve">
+    <value>{0} of {1} input tokens read from the cache</value>
+  </data>
 </root>

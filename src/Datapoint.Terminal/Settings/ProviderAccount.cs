@@ -29,7 +29,19 @@ public sealed record ProviderAccount
 
     public decimal? OutputPrice { get; init; }
 
-    public Agent.Usage.TokenPrice? ToPrice() => InputPrice is { } input && OutputPrice is { } output ? new(input, output) : null;
+    // For input read from the prompt cache; optional.
+    public decimal? CachedInputPrice { get; init; }
+
+    // Without a cached price, Anthropic's published rates apply to it (a tenth of the input price to read the cache, 1.25 times
+    // to write it for five minutes); other providers' cached input counts at the full input price, which may overstate the
+    // cost but never understates it against a spending limit.
+    public Agent.Usage.TokenPrice? ToPrice() => InputPrice is { } input && OutputPrice is { } output
+        ? new(input, output)
+        {
+            CachedInputPerMillion = CachedInputPrice ?? (Kind == ProviderKind.Anthropic ? input * 0.1m : null),
+            CacheWritePerMillion = Kind == ProviderKind.Anthropic ? input * 1.25m : null,
+        }
+        : null;
 
     public static string NewId() => Guid.NewGuid().ToString("N");
 

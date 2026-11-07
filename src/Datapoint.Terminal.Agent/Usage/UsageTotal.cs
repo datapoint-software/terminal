@@ -5,12 +5,18 @@ public sealed record UsageTotal(long InputTokens, long OutputTokens, decimal? Co
 {
     public static UsageTotal Empty { get; } = new(0, 0, 0m, 0, 0);
 
+    // The part of InputTokens read from the provider's prompt cache.
+    public long CachedInputTokens { get; init; }
+
     public long Tokens => InputTokens + OutputTokens;
 
-    public UsageTotal Add(long input, long output, decimal? cost, bool reported) => new(
-        InputTokens + input,
-        OutputTokens + output,
+    public UsageTotal Add(TokenUsage? usage, decimal? cost) => new(
+        InputTokens + (usage?.Input ?? 0),
+        OutputTokens + (usage?.Output ?? 0),
         Cost is { } total && cost is { } more ? total + more : null,
         Requests + 1,
-        Unreported + (reported ? 0 : 1));
+        Unreported + (usage is null ? 1 : 0))
+    {
+        CachedInputTokens = CachedInputTokens + (usage?.CacheRead ?? 0),
+    };
 }

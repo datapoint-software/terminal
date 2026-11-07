@@ -48,4 +48,39 @@ public sealed class UsageMeterTests
         priced.Record(null, 1000, 0);
         Assert.True(priced.IsOverBudget);
     }
+
+    [Fact]
+    public void Prices_cache_reads_and_writes_at_their_own_rates()
+    {
+        var meter = new UsageMeter { Price = new TokenPrice(3m, 15m) { CachedInputPerMillion = 0.3m, CacheWritePerMillion = 3.75m } };
+
+        meter.Record("web1", new TokenUsage(1_000_000, 0) { CacheRead = 800_000, CacheWrite = 100_000 });
+
+        // 100k uncached at 3, 800k read at 0.3, 100k written at 3.75.
+        Assert.Equal(0.3m + 0.24m + 0.375m, meter.Session.Cost);
+        Assert.Equal(800_000, meter.Session.CachedInputTokens);
+    }
+
+    [Fact]
+    public void Prices_cached_input_at_the_input_price_without_its_own()
+    {
+        var price = new TokenPrice(2m, 10m);
+
+        Assert.Equal(2m, price.CostOf(new TokenUsage(1_000_000, 0) { CacheRead = 600_000 }));
+    }
+
+    [Fact]
+    public void Reads_cache_counts_from_the_providers_usage()
+    {
+        var details = new Microsoft.Extensions.AI.UsageDetails
+        {
+            InputTokenCount = 2310,
+            OutputTokenCount = 5,
+            CachedInputTokenCount = 2000,
+            AdditionalCounts = new() { ["CacheCreationInputTokens"] = 300 },
+        };
+
+        Assert.Equal(new TokenUsage(2310, 5) { CacheRead = 2000, CacheWrite = 300 }, TokenUsage.From(details));
+        Assert.Null(TokenUsage.From(new Microsoft.Extensions.AI.UsageDetails()));
+    }
 }

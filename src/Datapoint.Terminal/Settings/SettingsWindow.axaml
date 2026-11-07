@@ -160,6 +160,13 @@
               <TextBox Grid.Column="1" Text="{Binding OutputPrice}" PlaceholderText="{x:Static res:Strings.ProviderPriceHint}"
                        AutomationProperties.Name="{x:Static res:Strings.ProviderOutputPrice}" />
             </Grid>
+            <Rectangle Classes="hairline" />
+            <Grid Classes="row" ColumnDefinitions="150,*">
+              <TextBlock Text="{x:Static res:Strings.ProviderCachedInputPrice}" TextWrapping="Wrap" />
+              <TextBox Grid.Column="1" Text="{Binding CachedInputPrice}" PlaceholderText="{x:Static res:Strings.ProviderCachedPriceHint}"
+                       AutomationProperties.Name="{x:Static res:Strings.ProviderCachedInputPrice}"
+                       AutomationProperties.HelpText="{x:Static res:Strings.ProviderCachedPriceHint}" />
+            </Grid>
             <StackPanel IsVisible="{Binding IsCompatible}">
               <Rectangle Classes="hairline" />
               <Grid Classes="row" ColumnDefinitions="150,*">

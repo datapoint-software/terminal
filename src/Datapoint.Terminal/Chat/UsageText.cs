@@ -17,6 +17,11 @@ public static class UsageText
         return total.Unreported > 0 ? text + " " + Strings.Format(Strings.UsageUnreported, total.Unreported) : text;
     }
 
+    // How much of the input came from the provider's prompt cache, which costs less; empty when none did.
+    public static string Cached(UsageTotal total) => total.CachedInputTokens > 0
+        ? Strings.Format(Strings.UsageCached, Tokens(total.CachedInputTokens), Tokens(total.InputTokens))
+        : string.Empty;
+
     public static string PerTerminal(IReadOnlyDictionary<string, UsageTotal> terminals) =>
         string.Join('\n', terminals.OrderBy(pair => pair.Key, StringComparer.CurrentCulture)
             .Select(pair => Strings.Format(Strings.UsageTerminal, pair.Key, Tokens(pair.Value.Tokens)) + Cost(pair.Value)));

@@ -38,18 +38,19 @@ public sealed class UsageMeter
     public bool IsOverBudget => Budget is { } budget && Session.Cost is { } cost && cost >= budget;
 
     // input and output are null when the provider didn't report them; the request still counts.
-    public void Record(string? terminal, long? input, long? output)
+    public void Record(string? terminal, long? input, long? output) =>
+        Record(terminal, input is null && output is null ? null : new TokenUsage(input ?? 0, output ?? 0));
+
+    // usage is null when the provider reported no counts; the request still counts.
+    public void Record(string? terminal, TokenUsage? usage)
     {
-        var reported = input is not null || output is not null;
-        var inputTokens = input ?? 0;
-        var outputTokens = output ?? 0;
-        var cost = reported ? Price?.CostOf(inputTokens, outputTokens) : 0m;
+        var cost = usage is null ? 0m : Price?.CostOf(usage);
         lock (_lock)
         {
-            _session = _session.Add(inputTokens, outputTokens, cost, reported);
+            _session = _session.Add(usage, cost);
             if (terminal is not null)
             {
-                _terminals[terminal] = _terminals.GetValueOrDefault(terminal, UsageTotal.Empty).Add(inputTokens, outputTokens, cost, reported);
+                _terminals[terminal] = _terminals.GetValueOrDefault(terminal, UsageTotal.Empty).Add(usage, cost);
             }
         }
     }
