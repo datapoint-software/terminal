@@ -69,6 +69,39 @@ public static class MemoryFile
         }
     }
 
+    // The user's own correction, from Settings › Memory: the note keeps its place.
+    public static WriteResult Replace(string path, string note, string replacement)
+    {
+        ArgumentNullException.ThrowIfNull(note);
+        ArgumentNullException.ThrowIfNull(replacement);
+        var text = replacement.ReplaceLineEndings(" ").Trim();
+        if (text.Length == 0)
+        {
+            return Remove(path, note);
+        }
+
+        lock (s_sync)
+        {
+            var lines = ReadText(path).Split('\n').ToList();
+            var index = lines.FindIndex(line => IsNote(line.TrimEnd('\r'))
+                && string.Equals(line.TrimEnd('\r')[Bullet.Length..].Trim(), note, StringComparison.Ordinal));
+            if (index < 0)
+            {
+                return WriteResult.Unchanged;
+            }
+
+            lines[index] = Bullet + text;
+            var updated = string.Join('\n', lines);
+            if (Encoding.UTF8.GetByteCount(updated) > MaxBytes)
+            {
+                return WriteResult.Full;
+            }
+
+            Write(path, updated);
+            return WriteResult.Changed;
+        }
+    }
+
     // Leaves the header, so the file still explains itself.
     public static void Clear(string path)
     {

@@ -128,7 +128,7 @@ public sealed partial class MainWindow
         return instructions;
     }
 
-    private static string GlobalMemoryPath => Path.Combine(WorkspaceFolders.Global, MemoryFile.FileName);
+    private static string GlobalMemoryPath => MemoryLocation.Global;
 
     private string? WorkspaceMemoryPath => Workspace.IsDefault ? null : Path.Combine(Workspace.PersonalPath, MemoryFile.FileName);
 

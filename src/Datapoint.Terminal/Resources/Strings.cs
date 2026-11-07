@@ -424,21 +424,9 @@ public static class Strings
 
     public static string NoticeMemory => Get(nameof(NoticeMemory));
 
-    public static string MenuOpenGlobalMemory => Get(nameof(MenuOpenGlobalMemory));
-
-    public static string MenuOpenWorkspaceMemory => Get(nameof(MenuOpenWorkspaceMemory));
-
-    public static string MenuClearWorkspaceMemory => Get(nameof(MenuClearWorkspaceMemory));
-
     public static string NoticeMemoryUnwritable => Get(nameof(NoticeMemoryUnwritable));
 
-    public static string ClearMemoryTitle => Get(nameof(ClearMemoryTitle));
-
     public static string ClearMemoryMessage => Get(nameof(ClearMemoryMessage));
-
-    public static string ClearMemoryConfirm => Get(nameof(ClearMemoryConfirm));
-
-    public static string NoticeMemoryCleared => Get(nameof(NoticeMemoryCleared));
 
     public static string MemoryOpen => Get(nameof(MemoryOpen));
 
@@ -1247,6 +1235,40 @@ public static class Strings
     public static string DocumentLogNone => Get(nameof(DocumentLogNone));
 
     public static string DocumentLogLabel => Get(nameof(DocumentLogLabel));
+
+    public static string MemoryIntro => Get(nameof(MemoryIntro));
+
+    public static string MemoryFooter => Get(nameof(MemoryFooter));
+
+    public static string MemoryEverywhere => Get(nameof(MemoryEverywhere));
+
+    public static string MemoryInWorkspace => Get(nameof(MemoryInWorkspace));
+
+    public static string MemoryClear => Get(nameof(MemoryClear));
+
+    public static string MemoryClearSection => Get(nameof(MemoryClearSection));
+
+    public static string MemoryClearTitle => Get(nameof(MemoryClearTitle));
+
+    public static string MemoryClearEverywhere => Get(nameof(MemoryClearEverywhere));
+
+    public static string MemoryEmpty => Get(nameof(MemoryEmpty));
+
+    public static string MemoryFull => Get(nameof(MemoryFull));
+
+    public static string MemoryEditNote => Get(nameof(MemoryEditNote));
+
+    public static string MemoryDeleteNote => Get(nameof(MemoryDeleteNote));
+
+    public static string MemorySave => Get(nameof(MemorySave));
+
+    public static string MemoryReadOnly => Get(nameof(MemoryReadOnly));
+
+    public static string MenuMemory => Get(nameof(MenuMemory));
+
+    public static string SettingsPageMemory => Get(nameof(SettingsPageMemory));
+
+    public static string MemoryClearConfirm => Get(nameof(MemoryClearConfirm));
 
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 

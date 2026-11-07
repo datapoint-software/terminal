@@ -19,12 +19,29 @@ public sealed partial class SettingsWindow : Window
         set => HistoryPage.Access = value;
     }
 
+    public const int MemoryPageIndex = 3;
+
+    // The memory the Memory page shows: the user's own and that of the workspace Settings was opened from.
+    public MemoryPlaces? Memory
+    {
+        set => MemoryPage.Model.Load(value);
+    }
+
     public void ShowPage(int page) => Pages.SelectedIndex = page;
+
+    public void ReloadMemory() => MemoryPage.Model.Reload();
 
     private void ShowPage()
     {
         ProvidersPage.IsVisible = Pages.SelectedIndex == 0;
         AppearanceScroller.IsVisible = Pages.SelectedIndex == 1;
         HistoryScroller.IsVisible = Pages.SelectedIndex == 2;
+        MemoryScroller.IsVisible = Pages.SelectedIndex == MemoryPageIndex;
+        if (!MemoryScroller.IsVisible)
+        {
+            return;
+        }
+
+        MemoryPage.Model.Reload();
     }
 }

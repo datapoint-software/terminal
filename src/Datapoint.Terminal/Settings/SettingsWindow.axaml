@@ -14,6 +14,7 @@
     <StreamGeometry x:Key="ProvidersGlyph">M10,2.5 A7.5,7.5 0 1,0 10.01,2.5 Z M10,4 A6,6 0 1,1 9.99,4 Z M9.25,6.5 L10.75,6.5 L10.75,9.25 L13.5,9.25 L13.5,10.75 L10.75,10.75 L10.75,13.5 L9.25,13.5 L9.25,10.75 L6.5,10.75 L6.5,9.25 L9.25,9.25 Z</StreamGeometry>
     <StreamGeometry x:Key="AppearanceGlyph">M10,2.5 A7.5,7.5 0 1,0 10.01,2.5 Z M10,4 L10,16 A6,6 0 0,1 10,4 Z</StreamGeometry>
     <StreamGeometry x:Key="HistoryGlyph">M10,2.5 A7.5,7.5 0 1,0 10.01,2.5 Z M10,4 A6,6 0 1,1 9.99,4 Z M9.25,6 L10.75,6 L10.75,9.6 L13.2,11.1 L12.45,12.4 L9.25,10.4 Z</StreamGeometry>
+    <StreamGeometry x:Key="MemoryGlyph">M5,2.5 L15,2.5 L15,17.5 L10,13.5 L5,17.5 Z M6.5,4 L6.5,14.4 L10,11.6 L13.5,14.4 L13.5,4 Z</StreamGeometry>
     <StreamGeometry x:Key="CheckGlyph">M2.5,8.5 L3.6,7.4 L6.3,10.1 L12.4,4 L13.5,5.1 L6.3,12.3 Z</StreamGeometry>
   </Window.Resources>
 
@@ -123,6 +124,12 @@
           <TextBlock Text="{x:Static res:Strings.SettingsPageHistory}" FontSize="{StaticResource CaptionSize}" HorizontalAlignment="Center" />
         </StackPanel>
       </ListBoxItem>
+      <ListBoxItem AutomationProperties.Name="{x:Static res:Strings.SettingsPageMemory}">
+        <StackPanel Spacing="3">
+          <PathIcon Data="{StaticResource MemoryGlyph}" Width="20" Height="20" />
+          <TextBlock Text="{x:Static res:Strings.SettingsPageMemory}" FontSize="{StaticResource CaptionSize}" HorizontalAlignment="Center" />
+        </StackPanel>
+      </ListBoxItem>
     </ListBox>
   </Border>
   <Panel>
@@ -131,6 +138,9 @@
   </ScrollViewer>
   <ScrollViewer x:Name="HistoryScroller" IsVisible="False">
     <settings:HistoryPage x:Name="HistoryPage" Margin="28,22" MaxWidth="560" />
+  </ScrollViewer>
+  <ScrollViewer x:Name="MemoryScroller" IsVisible="False">
+    <settings:MemoryPage x:Name="MemoryPage" Margin="28,22" MaxWidth="560" />
   </ScrollViewer>
   <Grid x:Name="ProvidersPage" ColumnDefinitions="230,1,*">
     <!-- Sidebar: the providers, with add and remove at the bottom. -->

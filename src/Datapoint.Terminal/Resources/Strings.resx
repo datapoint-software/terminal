@@ -639,29 +639,11 @@ Fingerprint: {2}</value>
   <data name="NoticeMemory" xml:space="preserve">
     <value>The agent's memory goes with this conversation: {0}.</value>
   </data>
-  <data name="MenuOpenGlobalMemory" xml:space="preserve">
-    <value>Open Agent Memory (All Workspaces)</value>
-  </data>
-  <data name="MenuOpenWorkspaceMemory" xml:space="preserve">
-    <value>Open Agent Memory (This Workspace)</value>
-  </data>
-  <data name="MenuClearWorkspaceMemory" xml:space="preserve">
-    <value>Clear This Workspace's Agent Memory…</value>
-  </data>
   <data name="NoticeMemoryUnwritable" xml:space="preserve">
     <value>Couldn't write the memory file {0}: {1}</value>
   </data>
-  <data name="ClearMemoryTitle" xml:space="preserve">
-    <value>Clear this workspace's memory?</value>
-  </data>
   <data name="ClearMemoryMessage" xml:space="preserve">
     <value>The agent forgets every note it kept for this workspace. Notes kept for all workspaces stay.</value>
-  </data>
-  <data name="ClearMemoryConfirm" xml:space="preserve">
-    <value>Clear Memory</value>
-  </data>
-  <data name="NoticeMemoryCleared" xml:space="preserve">
-    <value>This workspace's memory was cleared.</value>
   </data>
   <data name="MemoryOpen" xml:space="preserve">
     <value>Open memory</value>
@@ -1874,5 +1856,56 @@ Fingerprint: {2}</value>
   </data>
   <data name="DocumentLogLabel" xml:space="preserve">
     <value>Maintenance log of {0}</value>
+  </data>
+  <data name="MemoryIntro" xml:space="preserve">
+    <value>What the agent has learned about how you like to work. It reads this at the start of every conversation and adds to it on its own, saying so in the chat. Kept on this computer only, never in a workspace folder.</value>
+  </data>
+  <data name="MemoryFooter" xml:space="preserve">
+    <value>Facts about a machine go in its host document, which the whole team shares, not here.</value>
+  </data>
+  <data name="MemoryEverywhere" xml:space="preserve">
+    <value>Everywhere</value>
+  </data>
+  <data name="MemoryInWorkspace" xml:space="preserve">
+    <value>In {0}</value>
+  </data>
+  <data name="MemoryClear" xml:space="preserve">
+    <value>Clear…</value>
+  </data>
+  <data name="MemoryClearSection" xml:space="preserve">
+    <value>Clear memory: {0}</value>
+  </data>
+  <data name="MemoryClearTitle" xml:space="preserve">
+    <value>Clear memory: {0}?</value>
+  </data>
+  <data name="MemoryClearEverywhere" xml:space="preserve">
+    <value>The agent forgets every note it kept for all workspaces. Notes kept for one workspace stay.</value>
+  </data>
+  <data name="MemoryEmpty" xml:space="preserve">
+    <value>Nothing yet.</value>
+  </data>
+  <data name="MemoryFull" xml:space="preserve">
+    <value>Not saved: memory is full. Delete a note first.</value>
+  </data>
+  <data name="MemoryEditNote" xml:space="preserve">
+    <value>Edit: {0}</value>
+  </data>
+  <data name="MemoryDeleteNote" xml:space="preserve">
+    <value>Delete: {0}</value>
+  </data>
+  <data name="MemorySave" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="MemoryReadOnly" xml:space="preserve">
+    <value>This workspace is open in another window, so its memory can only be changed there.</value>
+  </data>
+  <data name="MenuMemory" xml:space="preserve">
+    <value>Agent Memory…</value>
+  </data>
+  <data name="SettingsPageMemory" xml:space="preserve">
+    <value>Memory</value>
+  </data>
+  <data name="MemoryClearConfirm" xml:space="preserve">
+    <value>Clear</value>
   </data>
 </root>

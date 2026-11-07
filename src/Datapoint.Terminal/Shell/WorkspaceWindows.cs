@@ -81,16 +81,29 @@ public sealed class WorkspaceWindows
 
     public void ClearRecent() => Settings.SetWorkspaces([], OpenFolders());
 
-    public void OpenSettings()
+    public void OpenSettings() => OpenSettings(page: null);
+
+    public void OpenSettings(int? page)
     {
         if (_settingsWindow is not null)
         {
             _settingsWindow.History = Active;
+            _settingsWindow.Memory = Active?.MemoryPlaces;
+            if (page is { } shown)
+            {
+                _settingsWindow.ShowPage(shown);
+            }
+
             _settingsWindow.Activate();
             return;
         }
 
-        _settingsWindow = new SettingsWindow { DataContext = Settings, History = Active };
+        _settingsWindow = new SettingsWindow { DataContext = Settings, History = Active, Memory = Active?.MemoryPlaces };
+        if (page is { } first)
+        {
+            _settingsWindow.ShowPage(first);
+        }
+
         _settingsWindow.Closed += (_, _) => _settingsWindow = null;
         if (Active is { } owner)
         {
@@ -101,6 +114,9 @@ public sealed class WorkspaceWindows
             _settingsWindow.Show();
         }
     }
+
+    // The agent changed memory: an open Memory page shows it.
+    public void ReloadMemory() => _settingsWindow?.ReloadMemory();
 
     private MainWindow? Active => _windows.FirstOrDefault(window => window.IsActive) ?? _windows.LastOrDefault();
 

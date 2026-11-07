@@ -21,6 +21,20 @@ public sealed class MemoryFileTests : IDisposable
     }
 
     [Fact]
+    public void Replaces_a_note_in_place_and_deletes_it_when_emptied()
+    {
+        MemoryFile.Add(PathIn, "Use doas");
+        MemoryFile.Add(PathIn, "Answer briefly");
+
+        Assert.Equal(WriteResult.Changed, MemoryFile.Replace(PathIn, "Use doas", "Use doas, not sudo,\non OpenBSD"));
+        Assert.Equal(["Use doas, not sudo, on OpenBSD", "Answer briefly"], MemoryFile.Notes(PathIn), StringComparer.Ordinal);
+
+        Assert.Equal(WriteResult.Changed, MemoryFile.Replace(PathIn, "Answer briefly", "  "));
+        Assert.Equal(["Use doas, not sudo, on OpenBSD"], MemoryFile.Notes(PathIn), StringComparer.Ordinal);
+        Assert.Equal(WriteResult.Unchanged, MemoryFile.Replace(PathIn, "Gone", "Anything"));
+    }
+
+    [Fact]
     public void Does_not_repeat_a_note()
     {
         MemoryFile.Add(PathIn, "Use doas, not sudo");
