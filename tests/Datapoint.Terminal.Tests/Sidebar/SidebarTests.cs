@@ -14,67 +14,65 @@ public sealed class SidebarTests : IDisposable
 
     public SidebarTests()
     {
-        foreach (var folder in new[] { "hosts", "runbooks", ".terminal", ".git", "src/.git" })
-        {
-            Directory.CreateDirectory(Path.Combine(_workspace, folder));
-        }
-
-        foreach (var file in new[] { "hosts/web1.md", "hosts/db1.md", "runbooks/renew.md", "notes.md", "CLAUDE.md", ".gitignore", ".terminal.json", "deploy.sh", ".terminal/MEMORY.md", "src/.terminal" })
-        {
-            File.WriteAllText(Path.Combine(_workspace, file), string.Empty);
-        }
+        Write("skills/patch-and-reboot/SKILL.md", "---\nname: patch-and-reboot\n# not a title\n---\n\nSteps.\n");
+        Write("skills/renew/SKILL.md", "---\nname: renew\n---\n\n# Renew certificates\n");
+        Write("skills/notes/README.md", "Not a skill.");
     }
-
-    private string HostsFolder => Path.Combine(_workspace, "hosts");
 
     public void Dispose() => Directory.Delete(_workspace, recursive: true);
 
-    [Fact]
-    public void Lists_folders_first_and_hides_only_the_personal_folder_and_git()
+    private void Write(string relative, string text)
     {
-        var top = WorkspaceListing.List(_workspace, _workspace);
-        var inside = WorkspaceListing.List(Path.Combine(_workspace, "src"), _workspace);
-
-        Assert.Equal<string>(["hosts", "runbooks", "src", ".gitignore", ".terminal.json", "CLAUDE.md", "deploy.sh", "notes.md"], [.. top.Select(entry => entry.Name)]);
-        Assert.True(top.Single(entry => string.Equals(entry.Name, ".gitignore", StringComparison.Ordinal)).IsQuiet);
-        Assert.Equal<string>([".terminal"], [.. inside.Select(entry => entry.Name)]);
+        var path = Path.Combine(_workspace, relative);
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        File.WriteAllText(path, text);
     }
 
     [Fact]
-    public void Lists_a_folder_once_opened_and_keeps_what_was_open_on_refresh()
+    public void Lists_skills_by_their_title_or_their_folder_in_words()
     {
-        var sidebar = new SidebarViewModel(_workspace, HostsFolder);
-        sidebar.RefreshFiles();
-        var hosts = sidebar.Files.Single(node => string.Equals(node.Name, "hosts", StringComparison.Ordinal));
-        Assert.Single(hosts.Children);
-        Assert.Equal(string.Empty, hosts.Children[0].Name);
+        var sidebar = new SidebarViewModel(_workspace);
 
-        hosts.IsExpanded = true;
-        Assert.Equal<string>(["db1.md", "web1.md"], [.. hosts.Children.Select(node => node.Name)]);
-        Assert.All(hosts.Children, node => Assert.True(node.IsHostDocument));
-        Assert.True(sidebar.Files.Single(node => string.Equals(node.Name, "notes.md", StringComparison.Ordinal)).IsDocument);
-        Assert.True(sidebar.Files.Single(node => string.Equals(node.Name, "deploy.sh", StringComparison.Ordinal)).IsOtherFile);
+        sidebar.RefreshSkills();
 
-        File.WriteAllText(Path.Combine(_workspace, "hosts", "backup.md"), string.Empty);
-        File.Delete(Path.Combine(_workspace, "notes.md"));
-        sidebar.RefreshFiles();
+        Assert.Equal<string>(["Patch and reboot", "Renew certificates"], [.. sidebar.Skills.Select(skill => skill.Name)]);
+        Assert.True(sidebar.HasSkills);
+    }
 
-        Assert.Same(hosts, sidebar.Files.Single(node => string.Equals(node.Name, "hosts", StringComparison.Ordinal)));
-        Assert.True(hosts.IsExpanded);
-        Assert.Equal<string>(["backup.md", "db1.md", "web1.md"], [.. hosts.Children.Select(node => node.Name)]);
-        Assert.DoesNotContain(sidebar.Files, node => string.Equals(node.Name, "notes.md", StringComparison.Ordinal));
+    [Theory]
+    [InlineData("Acme Corp", "AC")]
+    [InlineData("globex", "GL")]
+    [InlineData("home-lab", "HL")]
+    [InlineData("--", "?")]
+    public void Gives_a_workspace_initials(string name, string expected) =>
+        Assert.Equal(expected, WorkspaceLocation.Initials(name));
+
+    [Fact]
+    public void Names_the_service_a_workspace_is_shared_through()
+    {
+        var home = Path.Combine(Path.GetTempPath(), "home");
+
+        Assert.Equal("OneDrive", WorkspaceLocation.Describe(Path.Combine(home, "Library", "CloudStorage", "OneDrive-Acme", "infra"), home));
+        Assert.Equal("Dropbox", WorkspaceLocation.Describe(Path.Combine(home, "Dropbox", "infra"), home));
+        Assert.Equal("~/Workspaces/globex", WorkspaceLocation.Describe(Path.Combine(home, "Workspaces", "globex"), home));
     }
 
     [Fact]
-    public void Shows_hosts_their_open_terminals_and_the_others_from_ssh_config()
+    public void Shows_hosts_their_environments_open_terminals_and_the_others_from_ssh_config()
     {
-        var sidebar = new SidebarViewModel(_workspace, HostsFolder);
+        var sidebar = new SidebarViewModel(_workspace);
         var chosen = new List<string>();
         var added = new List<string>();
         sidebar.HostChosen = connection => chosen.Add(connection.Name);
         sidebar.HostAdded = added.Add;
 
-        sidebar.SetHosts([new WorkspaceConnection { Name = "web1", SshHost = "web1", Environment = "production" }, new WorkspaceConnection { Name = "db1", SshHost = "db1" }], ["bastion", "nas"]);
+        sidebar.SetHosts(
+            [
+                new WorkspaceConnection { Name = "web1", SshHost = "web1", Environment = "production" },
+                new WorkspaceConnection { Name = "db1", SshHost = "db1" },
+                new WorkspaceConnection { Name = "stage", SshHost = "stage", Environment = "staging" },
+            ],
+            ["bastion", "nas"]);
         sidebar.SetOpenTerminals(new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase) { ["WEB1"] = 2 });
         sidebar.ShowHost("db1");
         sidebar.ChooseHostCommand.Execute(sidebar.Hosts[0]);
@@ -82,6 +80,9 @@ public sealed class SidebarTests : IDisposable
 
         Assert.Equal("2 open", sidebar.Hosts[0].OpenText);
         Assert.Equal("web1, production", sidebar.Hosts[0].AccessibleName);
+        Assert.Equal((true, false, false), (sidebar.Hosts[0].IsProduction, sidebar.Hosts[0].IsStaging, sidebar.Hosts[0].HasNoEnvironment));
+        Assert.True(sidebar.Hosts[1].HasNoEnvironment);
+        Assert.True(sidebar.Hosts[2].IsStaging);
         Assert.False(sidebar.Hosts[1].IsOpen);
         Assert.Same(sidebar.Hosts[1], sidebar.SelectedHost);
         Assert.Equal("2 more in your SSH config", sidebar.OtherHostsText);
@@ -90,15 +91,20 @@ public sealed class SidebarTests : IDisposable
     }
 
     [AvaloniaFact]
-    public void Renders_hosts_and_files()
+    public void Renders_the_switcher_hosts_skills_and_instructions()
     {
-        var sidebar = new SidebarViewModel(_workspace, HostsFolder);
-        sidebar.SetHosts([new WorkspaceConnection { Name = "web1", SshHost = "web1" }, new WorkspaceConnection { Name = "db1", SshHost = "db1" }, new WorkspaceConnection { Name = "backup", SshHost = "backup" }], ["bastion", "nas", "router"]);
+        var sidebar = new SidebarViewModel(_workspace)
+        {
+            ListWorkspaces = () => [new WorkspaceSwitchItem("Acme Corp", "OneDrive · 3 hosts", _workspace, IsCurrent: true), new WorkspaceSwitchItem("Globex", "~/Workspaces/globex", "/tmp/globex", IsCurrent: false)],
+            OpenWorkspaceRequested = () => { },
+        };
+        sidebar.SetWorkspace("Acme Corp", "OneDrive · 3 hosts");
+        sidebar.SetHosts([new WorkspaceConnection { Name = "web1", SshHost = "web1", Environment = "production" }, new WorkspaceConnection { Name = "db1", SshHost = "db1" }, new WorkspaceConnection { Name = "backup", SshHost = "backup" }], ["bastion", "nas", "router"]);
         sidebar.SetOpenTerminals(new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase) { ["web1"] = 1 });
-        sidebar.RefreshFiles();
-        sidebar.Files.Single(node => string.Equals(node.Name, "hosts", StringComparison.Ordinal)).IsExpanded = true;
+        sidebar.RefreshSkills();
         sidebar.ShowHost("web1");
-        var window = new Window { Width = 240, Height = 620, Content = new SidebarView { DataContext = sidebar } };
+        var view = new SidebarView { DataContext = sidebar };
+        var window = new Window { Width = 260, Height = 620, Content = view };
         window.Show();
         Avalonia.Threading.Dispatcher.UIThread.RunJobs();
 
@@ -107,8 +113,16 @@ public sealed class SidebarTests : IDisposable
         frame?.Save("rendered/sidebar.png", new PngBitmapEncoderOptions());
 
         var names = window.GetVisualDescendants().OfType<TextBlock>().Where(text => text.IsEffectivelyVisible).Select(text => text.Text).ToList();
-        Assert.Contains("web1.md", names, StringComparer.Ordinal);
+        Assert.Contains("AC", names, StringComparer.Ordinal);
+        Assert.Contains("Renew certificates", names, StringComparer.Ordinal);
+        Assert.Contains("Instructions", names, StringComparer.Ordinal);
         Assert.Contains("3 more in your SSH config", names, StringComparer.Ordinal);
-        Assert.DoesNotContain(".terminal", names, StringComparer.Ordinal);
+        Assert.DoesNotContain("SKILL.md", names, StringComparer.Ordinal);
+
+        var menu = view.BuildSwitcherMenu()!;
+        Assert.Equal(7, menu.Items.Count);
+        Assert.IsType<Avalonia.Controls.Shapes.Path>(Assert.IsType<MenuItem>(menu.Items[0]).Icon);
+        Assert.Null(Assert.IsType<MenuItem>(menu.Items[1]).Icon);
+        Assert.False(Assert.IsType<MenuItem>(menu.Items[3]).IsEnabled);
     }
 }

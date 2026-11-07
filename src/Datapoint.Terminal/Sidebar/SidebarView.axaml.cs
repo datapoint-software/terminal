@@ -1,9 +1,11 @@
 using Avalonia;
+using Avalonia.Automation;
 using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.VisualTree;
+using Avalonia.Layout;
+using Avalonia.Media;
+using Datapoint.Terminal.Resources;
 
 namespace Datapoint.Terminal.Sidebar;
 
@@ -14,73 +16,94 @@ public sealed partial class SidebarView : UserControl
     public SidebarView()
     {
         InitializeComponent();
-        HostList.AddHandler(TappedEvent, OnHostTapped, RoutingStrategies.Bubble);
-        HostList.AddHandler(KeyDownEvent, OnHostKeyDown, RoutingStrategies.Bubble);
-        FileTree.AddHandler(TappedEvent, OnFileTapped, RoutingStrategies.Bubble);
-        FileTree.AddHandler(KeyDownEvent, OnFileKeyDown, RoutingStrategies.Bubble);
+        HostList.AddHandler(TappedEvent, (_, e) => Open<HostItemViewModel>(e.Source, host => Model?.ChooseHostCommand.Execute(host)), RoutingStrategies.Bubble);
+        HostList.AddHandler(KeyDownEvent, (_, e) => OnEnter(e, Model?.SelectedHost, host => Model?.ChooseHostCommand.Execute(host)), RoutingStrategies.Bubble);
+        SkillList.AddHandler(TappedEvent, (_, e) => Open<SkillItemViewModel>(e.Source, skill => Model?.ChooseSkillCommand.Execute(skill)), RoutingStrategies.Bubble);
+        SkillList.AddHandler(KeyDownEvent, (_, e) => OnEnter(e, Model?.SelectedSkill, skill => Model?.ChooseSkillCommand.Execute(skill)), RoutingStrategies.Bubble);
+        SwitcherButton.Click += (_, _) => ShowSwitcher();
     }
 
     private SidebarViewModel? Model => DataContext as SidebarViewModel;
 
-    private void OnHostTapped(object? sender, TappedEventArgs e)
+    // Built when it opens, so it lists the workspaces as they are then.
+    public MenuFlyout? BuildSwitcherMenu()
     {
-        if (ItemOf<HostItemViewModel>(e.Source) is not { } host)
+        if (Model is not { } model)
         {
-            return;
+            return null;
         }
 
-        Model?.ChooseHostCommand.Execute(host);
+        var menu = new MenuFlyout { Placement = PlacementMode.BottomEdgeAlignedLeft };
+        foreach (var workspace in model.ListWorkspaces?.Invoke() ?? [])
+        {
+            var item = new MenuItem { Header = WorkspaceRow(workspace), Icon = workspace.IsCurrent ? CheckMark() : null };
+            AutomationProperties.SetName(item, $"{workspace.Name}, {workspace.Detail}");
+            item.Click += (_, _) => model.WorkspaceChosen?.Invoke(workspace);
+            menu.Items.Add(item);
+        }
+
+        menu.Items.Add(new Separator());
+        menu.Items.Add(Item(Strings.SidebarNewWorkspace, model.NewWorkspaceRequested));
+        menu.Items.Add(Item(Strings.SidebarOpenWorkspace, model.OpenWorkspaceRequested));
+        menu.Items.Add(new Separator());
+        var reveal = OperatingSystem.IsMacOS() ? Strings.SidebarRevealMac : OperatingSystem.IsWindows() ? Strings.SidebarRevealWindows : Strings.SidebarReveal;
+        menu.Items.Add(Item(Strings.Format(reveal, model.WorkspaceName), model.RevealRequested));
+        return menu;
     }
 
-    private void OnHostKeyDown(object? sender, KeyEventArgs e)
-    {
-        if (e.Key != Key.Enter || Model?.SelectedHost is not { } host)
-        {
-            return;
-        }
+    private void ShowSwitcher() => BuildSwitcherMenu()?.ShowAt(SwitcherButton);
 
-        Model.ChooseHostCommand.Execute(host);
-        e.Handled = true;
+    private static MenuItem Item(string header, Action? action)
+    {
+        var item = new MenuItem { Header = header, IsEnabled = action is not null };
+        item.Click += (_, _) => action?.Invoke();
+        return item;
     }
 
-    // The folder's own chevron already opens and closes it.
-    private void OnFileTapped(object? sender, TappedEventArgs e)
+    // The menu opens in a popup, outside this view's styles, so its rows are styled here.
+    private static Grid WorkspaceRow(WorkspaceSwitchItem workspace)
     {
-        if (e.Source is Visual visual && visual.FindAncestorOfType<ToggleButton>(includeSelf: true) is not null)
-        {
-            return;
-        }
-
-        if (ItemOf<FileNodeViewModel>(e.Source) is not { } node)
-        {
-            return;
-        }
-
-        Model?.ChooseFileCommand.Execute(node);
+        var initials = new TextBlock { Text = workspace.Initials, FontSize = 11, FontWeight = FontWeight.SemiBold, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+        initials.Bind(TextBlock.ForegroundProperty, initials.GetResourceObservable("OnAccentBrush"));
+        var badge = new Border { Width = 28, Height = 28, CornerRadius = new CornerRadius(7), Child = initials };
+        badge.Bind(Border.BackgroundProperty, badge.GetResourceObservable("AccentBrush"));
+        var detail = new TextBlock { Text = workspace.Detail, FontSize = 12 };
+        detail.Bind(TextBlock.ForegroundProperty, detail.GetResourceObservable("SecondaryLabelBrush"));
+        var text = new StackPanel { VerticalAlignment = VerticalAlignment.Center, [Grid.ColumnProperty] = 1 };
+        text.Children.Add(new TextBlock { Text = workspace.Name, FontWeight = FontWeight.SemiBold });
+        text.Children.Add(detail);
+        return new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*"), ColumnSpacing = 10, MinWidth = 220, Children = { badge, text } };
     }
 
-    private void OnFileKeyDown(object? sender, KeyEventArgs e)
+    private static Avalonia.Controls.Shapes.Path CheckMark()
     {
-        if (e.Key != Key.Enter || Model?.SelectedFile is not { } node)
-        {
-            return;
-        }
-
-        Model.ChooseFileCommand.Execute(node);
-        e.Handled = true;
+        var mark = new Avalonia.Controls.Shapes.Path { Width = 16, Height = 16, StrokeThickness = 1.5, StrokeLineCap = PenLineCap.Round, StrokeJoin = PenLineJoin.Round, Data = Geometry.Parse("M3.5,8.5 L6.5,11.5 L12.5,4.5") };
+        mark.Bind(Avalonia.Controls.Shapes.Shape.StrokeProperty, mark.GetResourceObservable("AccentBrush"));
+        return mark;
     }
 
-    private static T? ItemOf<T>(object? source)
+    private static void Open<T>(object? source, Action<T> open)
         where T : class
     {
         for (var element = source as StyledElement; element is not null; element = element.Parent)
         {
             if (element.DataContext is T item)
             {
-                return item;
+                open(item);
+                return;
             }
         }
+    }
 
-        return null;
+    private static void OnEnter<T>(KeyEventArgs e, T? selected, Action<T> open)
+        where T : class
+    {
+        if (e.Key != Key.Enter || selected is null)
+        {
+            return;
+        }
+
+        open(selected);
+        e.Handled = true;
     }
 }

@@ -864,15 +864,11 @@ public static class Strings
 
     public static string SidebarHosts => Get(nameof(SidebarHosts));
 
-    public static string SidebarFiles => Get(nameof(SidebarFiles));
-
     public static string SidebarOtherHosts => Get(nameof(SidebarOtherHosts));
 
     public static string SidebarOpenTerminals => Get(nameof(SidebarOpenTerminals));
 
     public static string SidebarAdd => Get(nameof(SidebarAdd));
-
-    public static string SidebarNewFile => Get(nameof(SidebarNewFile));
 
     public static string SidebarOpenTerminal => Get(nameof(SidebarOpenTerminal));
 
@@ -891,16 +887,6 @@ public static class Strings
     public static string SidebarNoDocumentation => Get(nameof(SidebarNoDocumentation));
 
     public static string SidebarReadOnly => Get(nameof(SidebarReadOnly));
-
-    public static string SidebarNewFileTitle => Get(nameof(SidebarNewFileTitle));
-
-    public static string SidebarNewFileMessage => Get(nameof(SidebarNewFileMessage));
-
-    public static string SidebarNewFileName => Get(nameof(SidebarNewFileName));
-
-    public static string SidebarNewFileFailed => Get(nameof(SidebarNewFileFailed));
-
-    public static string SidebarNewFileInvalid => Get(nameof(SidebarNewFileInvalid));
 
     public static string DocumentPlaceholder => Get(nameof(DocumentPlaceholder));
 
@@ -1217,6 +1203,34 @@ public static class Strings
     public static string NewHostLabelsUsed => Get(nameof(NewHostLabelsUsed));
 
     public static string NewHostLabelsItem => Get(nameof(NewHostLabelsItem));
+
+    public static string SidebarSwitcherName => Get(nameof(SidebarSwitcherName));
+
+    public static string SidebarSkills => Get(nameof(SidebarSkills));
+
+    public static string SidebarNoSkills => Get(nameof(SidebarNoSkills));
+
+    public static string SidebarWorkspaceSection => Get(nameof(SidebarWorkspaceSection));
+
+    public static string SidebarInstructions => Get(nameof(SidebarInstructions));
+
+    public static string SidebarSettings => Get(nameof(SidebarSettings));
+
+    public static string SidebarNewWorkspace => Get(nameof(SidebarNewWorkspace));
+
+    public static string SidebarOpenWorkspace => Get(nameof(SidebarOpenWorkspace));
+
+    public static string SidebarReveal => Get(nameof(SidebarReveal));
+
+    public static string SidebarHostCount => Get(nameof(SidebarHostCount));
+
+    public static string SidebarHostCountOne => Get(nameof(SidebarHostCountOne));
+
+    public static string SidebarDefaultWorkspace => Get(nameof(SidebarDefaultWorkspace));
+
+    public static string SidebarRevealMac => Get(nameof(SidebarRevealMac));
+
+    public static string SidebarRevealWindows => Get(nameof(SidebarRevealWindows));
 
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 

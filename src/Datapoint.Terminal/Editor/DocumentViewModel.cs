@@ -40,7 +40,10 @@ public sealed partial class DocumentViewModel : ObservableObject, IOpenDocument
 
     public string Path => _file.Path;
 
-    public string Name => System.IO.Path.GetFileName(Path);
+    // What the tab calls the document: its own title, e.g. a host's name for its README.md, or else the file's name.
+    public string? Title { get; init; }
+
+    public string Name => Title ?? System.IO.Path.GetFileName(Path);
 
     public string ToolTip => Path;
 

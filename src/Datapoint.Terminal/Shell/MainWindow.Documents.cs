@@ -71,6 +71,7 @@ public sealed partial class MainWindow
         {
             CloseRequested = CloseDocument,
             Host = HostHeaderFor(path),
+            Title = TitleFor(path),
         };
         _documentTabs[document] = new DocumentTab(document);
         _documents.Add(document);
@@ -166,6 +167,25 @@ public sealed partial class MainWindow
         }
 
         CloseSelectedTab();
+    }
+
+    // The workspace's files are named for what they are, without extensions (product decision 100).
+    private string? TitleFor(string path)
+    {
+        if (string.Equals(path, InstructionsPath, StringComparison.Ordinal))
+        {
+            return Strings.SidebarInstructions;
+        }
+
+        if (string.Equals(Path.GetFileName(path), Datapoint.Terminal.Sidebar.SkillListing.FileName, StringComparison.Ordinal)
+            && string.Equals(Path.GetDirectoryName(Path.GetDirectoryName(path)), _sidebar.SkillsFolder, StringComparison.Ordinal))
+        {
+            return Datapoint.Terminal.Sidebar.SkillListing.NameOf(path);
+        }
+
+        var docs = CreateHostDocs();
+        var connections = Connections.Count > 0 ? Connections : Workspace.Settings.Connections;
+        return connections.FirstOrDefault(connection => string.Equals(docs.FileFor(connection.Name), path, StringComparison.Ordinal))?.Name;
     }
 
     private HostHeaderViewModel? HostHeaderFor(string path)

@@ -8,9 +8,10 @@
   <UserControl.Resources>
     <!-- Our own outline glyphs, 16 by 16, drawn with a stroke. -->
     <StreamGeometry x:Key="ServerGlyph">M3,2.5 L13,2.5 L13,7 L3,7 Z M3,9 L13,9 L13,13.5 L3,13.5 Z M5,4.75 L6,4.75 M5,11.25 L6,11.25</StreamGeometry>
-    <StreamGeometry x:Key="FolderGlyph">M1.75,4 L1.75,12.75 L14.25,12.75 L14.25,5.5 L7.75,5.5 L6.25,3.25 L1.75,3.25 Z</StreamGeometry>
     <StreamGeometry x:Key="DocumentGlyph">M3.75,1.75 L9.5,1.75 L12.25,4.5 L12.25,14.25 L3.75,14.25 Z M9.5,1.75 L9.5,4.5 L12.25,4.5 M5.75,8 L10.25,8 M5.75,10.5 L10.25,10.5</StreamGeometry>
-    <StreamGeometry x:Key="FileGlyph">M3.75,1.75 L9.5,1.75 L12.25,4.5 L12.25,14.25 L3.75,14.25 Z M9.5,1.75 L9.5,4.5 L12.25,4.5</StreamGeometry>
+    <StreamGeometry x:Key="SkillGlyph">M2.5,4 L3.5,5 L5,3 M2.5,8.5 L3.5,9.5 L5,7.5 M2.5,13 L3.5,14 L5,12 M7,4 L13.5,4 M7,8.5 L13.5,8.5 M7,13 L13.5,13</StreamGeometry>
+    <StreamGeometry x:Key="UpDownGlyph">M5,6 L8,3 L11,6 M5,10 L8,13 L11,10</StreamGeometry>
+    <StreamGeometry x:Key="SlidersGlyph">M2,5 L14,5 M2,11 L14,11 M10,3 L10,7 M6,9 L6,13</StreamGeometry>
     <StreamGeometry x:Key="ChevronGlyph">M6,4 L10,8 L6,12</StreamGeometry>
     <StreamGeometry x:Key="AddGlyph">M8,3 L8,13 M3,8 L13,8</StreamGeometry>
   </UserControl.Resources>
@@ -45,11 +46,6 @@
       <Setter Property="BorderThickness" Value="0" />
       <Setter Property="Padding" Value="0" />
     </Style>
-    <Style Selector="TreeView.source">
-      <Setter Property="Background" Value="Transparent" />
-      <Setter Property="BorderThickness" Value="0" />
-      <Setter Property="Padding" Value="0" />
-    </Style>
     <Style Selector="ListBox.source ListBoxItem">
       <Setter Property="Padding" Value="8,0" />
       <Setter Property="MinHeight" Value="28" />
@@ -57,30 +53,11 @@
       <Setter Property="CornerRadius" Value="6" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
-    <Style Selector="TreeView.source TreeViewItem">
-      <Setter Property="MinHeight" Value="28" />
-      <Setter Property="Padding" Value="0" />
-      <Setter Property="CornerRadius" Value="6" />
-      <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" x:DataType="side:FileNodeViewModel" />
-    </Style>
-    <Style Selector="TreeView.source TreeViewItem /template/ Border#PART_LayoutRoot">
-      <Setter Property="MinHeight" Value="28" />
-      <Setter Property="CornerRadius" Value="6" />
-    </Style>
     <Style Selector="ListBox.source ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource FillBrush}" />
-    </Style>
-    <Style Selector="TreeView.source TreeViewItem /template/ Border#PART_LayoutRoot:pointerover">
       <Setter Property="Background" Value="{DynamicResource FillBrush}" />
     </Style>
     <Style Selector="ListBox.source ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource AccentTintBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
-    </Style>
-    <Style Selector="TreeView.source TreeViewItem:selected /template/ Border#PART_LayoutRoot">
-      <Setter Property="Background" Value="{DynamicResource AccentTintBrush}" />
-    </Style>
-    <Style Selector="TreeView.source TreeViewItem:selected /template/ ContentPresenter#PART_HeaderPresenter">
       <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
     </Style>
 
@@ -107,9 +84,71 @@
     <Style Selector="Button.mini:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource FillBrush}" />
     </Style>
+    <!-- The environment mark, set on the host's glyph. -->
+    <Style Selector="Ellipse.environment">
+      <Setter Property="Width" Value="7" />
+      <Setter Property="Height" Value="7" />
+      <Setter Property="HorizontalAlignment" Value="Right" />
+      <Setter Property="VerticalAlignment" Value="Bottom" />
+      <Setter Property="Margin" Value="0,0,-2,3" />
+      <Setter Property="Stroke" Value="{DynamicResource PaneBrush}" />
+      <Setter Property="StrokeThickness" Value="1" />
+    </Style>
+    <Style Selector="Button.switcher">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+      <Setter Property="Padding" Value="8,6" />
+      <Setter Property="CornerRadius" Value="8" />
+    </Style>
+    <Style Selector="Button.switcher:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource FillBrush}" />
+    </Style>
+    <Style Selector="Border.badge">
+      <Setter Property="Width" Value="28" />
+      <Setter Property="Height" Value="28" />
+      <Setter Property="CornerRadius" Value="7" />
+      <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+    </Style>
+    <Style Selector="Border.badge > TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
+      <Setter Property="FontSize" Value="11" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
   </UserControl.Styles>
 
-  <Border Background="{DynamicResource PaneBrush}">
+  <DockPanel Background="{DynamicResource PaneBrush}">
+    <!-- The workspace switcher: the workspace in this window, and a menu of the others. -->
+    <StackPanel DockPanel.Dock="Top">
+      <Button x:Name="SwitcherButton" Classes="switcher" Margin="8,10,8,8" AutomationProperties.Name="{Binding WorkspaceAccessibleName}"
+              ToolTip.Tip="{Binding WorkspaceFolder}">
+        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+          <Border Classes="badge">
+            <TextBlock Text="{Binding WorkspaceInitials}" />
+          </Border>
+          <StackPanel Grid.Column="1" VerticalAlignment="Center">
+            <TextBlock Text="{Binding WorkspaceName}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+            <TextBlock Classes="quiet" FontSize="12" Text="{Binding WorkspaceDetail}" TextTrimming="CharacterEllipsis" />
+          </StackPanel>
+          <Path Grid.Column="2" Classes="glyph" Data="{StaticResource UpDownGlyph}" />
+        </Grid>
+      </Button>
+      <Rectangle Height="1" Fill="{DynamicResource SeparatorBrush}" />
+    </StackPanel>
+
+    <StackPanel DockPanel.Dock="Bottom">
+      <Rectangle Height="1" Fill="{DynamicResource SeparatorBrush}" />
+      <Button Classes="row" Margin="10,6" Command="{Binding OpenSettingsCommand}" AutomationProperties.Name="{x:Static res:Strings.SidebarSettings}">
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <Path Classes="glyph" Data="{StaticResource SlidersGlyph}" />
+          <TextBlock Text="{x:Static res:Strings.SidebarSettings}" VerticalAlignment="Center" />
+        </StackPanel>
+      </Button>
+    </StackPanel>
+
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
       <StackPanel Margin="10,12,10,16">
         <!-- Hosts: the workspace's connections, then a quiet line for the user's other SSH hosts. -->
@@ -126,7 +165,7 @@
           <ListBox.ItemTemplate>
             <DataTemplate x:DataType="side:HostItemViewModel">
               <Grid ColumnDefinitions="16,*,Auto" ColumnSpacing="8" Background="Transparent"
-                    AutomationProperties.Name="{Binding AccessibleName}">
+                    AutomationProperties.Name="{Binding AccessibleName}" ToolTip.Tip="{Binding Environment}">
                 <Grid.ContextMenu>
                   <ContextMenu>
                     <MenuItem Header="{x:Static res:Strings.SidebarOpenDocumentation}"
@@ -135,7 +174,12 @@
                               Command="{Binding $parent[side:SidebarView].((side:SidebarViewModel)DataContext).OpenTerminalCommand}" CommandParameter="{Binding}" />
                   </ContextMenu>
                 </Grid.ContextMenu>
-                <Path Classes="glyph" Data="{StaticResource ServerGlyph}" />
+                <Panel>
+                  <Path Classes="glyph" Data="{StaticResource ServerGlyph}" />
+                  <Ellipse Classes="environment" Fill="{DynamicResource DangerBrush}" IsVisible="{Binding IsProduction}" />
+                  <Ellipse Classes="environment" Fill="{DynamicResource WaitingBrush}" IsVisible="{Binding IsStaging}" />
+                  <Ellipse Classes="environment" Fill="{DynamicResource AccentBrush}" IsVisible="{Binding IsOtherEnvironment}" />
+                </Panel>
                 <TextBlock Grid.Column="1" Text="{Binding Name}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
                 <TextBlock Grid.Column="2" Classes="count" Text="{Binding OpenText}" IsVisible="{Binding IsOpen}" />
               </Grid>
@@ -166,29 +210,30 @@
           </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <!-- Files: the workspace folder, .terminal/ hidden. -->
-        <Grid ColumnDefinitions="*,Auto" Margin="8,18,0,4" Height="24">
-          <TextBlock Classes="section" Text="{x:Static res:Strings.SidebarFiles}" />
-          <Button Grid.Column="1" Classes="mini" Command="{Binding NewFileCommand}"
-                  ToolTip.Tip="{x:Static res:Strings.SidebarNewFile}" AutomationProperties.Name="{x:Static res:Strings.SidebarNewFile}">
-            <Path Classes="glyph" Data="{StaticResource AddGlyph}" />
-          </Button>
-        </Grid>
-        <TreeView x:Name="FileTree" Classes="source" ItemsSource="{Binding Files}" SelectedItem="{Binding SelectedFile}" Margin="-8,0,0,0"
-                  AutomationProperties.Name="{x:Static res:Strings.SidebarFiles}">
-          <TreeView.ItemTemplate>
-            <TreeDataTemplate x:DataType="side:FileNodeViewModel" ItemsSource="{Binding Children}">
-              <StackPanel Orientation="Horizontal" Spacing="8" Height="28" Background="Transparent">
-                <Path Classes="glyph" Data="{StaticResource FolderGlyph}" IsVisible="{Binding IsFolder}" />
-                <Path Classes="glyph" Data="{StaticResource ServerGlyph}" IsVisible="{Binding IsHostDocument}" />
-                <Path Classes="glyph" Data="{StaticResource DocumentGlyph}" IsVisible="{Binding IsDocument}" />
-                <Path Classes="glyph" Data="{StaticResource FileGlyph}" IsVisible="{Binding IsOtherFile}" />
-                <TextBlock Classes.quiet="{Binding IsQuiet}" Text="{Binding Name}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
-              </StackPanel>
-            </TreeDataTemplate>
-          </TreeView.ItemTemplate>
-        </TreeView>
+        <!-- Skills: saved by the agent, opened here. -->
+        <TextBlock Classes="section" Margin="8,18,0,4" Height="24" Text="{x:Static res:Strings.SidebarSkills}" />
+        <TextBlock Classes="quiet" FontSize="12" Text="{x:Static res:Strings.SidebarNoSkills}" IsVisible="{Binding !HasSkills}" Margin="8,2,8,4" TextWrapping="Wrap" />
+        <ListBox x:Name="SkillList" Classes="source" ItemsSource="{Binding Skills}" SelectedItem="{Binding SelectedSkill}" SelectionMode="Single"
+                 AutomationProperties.Name="{x:Static res:Strings.SidebarSkills}">
+          <ListBox.ItemTemplate>
+            <DataTemplate x:DataType="side:SkillItemViewModel">
+              <Grid ColumnDefinitions="16,*" ColumnSpacing="8" Background="Transparent" AutomationProperties.Name="{Binding Name}">
+                <Path Classes="glyph" Data="{StaticResource SkillGlyph}" />
+                <TextBlock Grid.Column="1" Text="{Binding Name}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+              </Grid>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+
+        <!-- The workspace's own instructions for the agent. -->
+        <TextBlock Classes="section" Margin="8,18,0,4" Height="24" Text="{x:Static res:Strings.SidebarWorkspaceSection}" />
+        <Button Classes="row" Command="{Binding OpenInstructionsCommand}" AutomationProperties.Name="{x:Static res:Strings.SidebarInstructions}">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Path Classes="glyph" Data="{StaticResource DocumentGlyph}" />
+            <TextBlock Text="{x:Static res:Strings.SidebarInstructions}" VerticalAlignment="Center" />
+          </StackPanel>
+        </Button>
       </StackPanel>
     </ScrollViewer>
-  </Border>
+  </DockPanel>
 </UserControl>

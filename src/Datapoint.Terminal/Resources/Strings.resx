@@ -1299,9 +1299,6 @@ Fingerprint: {2}</value>
   <data name="SidebarHosts" xml:space="preserve">
     <value>Hosts</value>
   </data>
-  <data name="SidebarFiles" xml:space="preserve">
-    <value>Files</value>
-  </data>
   <data name="SidebarOtherHosts" xml:space="preserve">
     <value>{0} more in your SSH config</value>
   </data>
@@ -1310,9 +1307,6 @@ Fingerprint: {2}</value>
   </data>
   <data name="SidebarAdd" xml:space="preserve">
     <value>Add</value>
-  </data>
-  <data name="SidebarNewFile" xml:space="preserve">
-    <value>New file</value>
   </data>
   <data name="SidebarOpenTerminal" xml:space="preserve">
     <value>Open terminal</value>
@@ -1340,21 +1334,6 @@ Fingerprint: {2}</value>
   </data>
   <data name="SidebarReadOnly" xml:space="preserve">
     <value>This workspace is open read-only in this window, so files can't be added here.</value>
-  </data>
-  <data name="SidebarNewFileTitle" xml:space="preserve">
-    <value>New file</value>
-  </data>
-  <data name="SidebarNewFileMessage" xml:space="preserve">
-    <value>A new file in {0}.</value>
-  </data>
-  <data name="SidebarNewFileName" xml:space="preserve">
-    <value>Name</value>
-  </data>
-  <data name="SidebarNewFileFailed" xml:space="preserve">
-    <value>Couldn't create {0}: {1}</value>
-  </data>
-  <data name="SidebarNewFileInvalid" xml:space="preserve">
-    <value>"{0}" isn't a file name: use one name without slashes.</value>
   </data>
   <data name="DocumentPlaceholder" xml:space="preserve">
     <value>Start writing…</value>
@@ -1829,5 +1808,47 @@ Fingerprint: {2}</value>
   </data>
   <data name="NewHostLabelsItem" xml:space="preserve">
     <value>Add the label {0}</value>
+  </data>
+  <data name="SidebarSwitcherName" xml:space="preserve">
+    <value>Workspace {0}, {1}. Switch workspace</value>
+  </data>
+  <data name="SidebarSkills" xml:space="preserve">
+    <value>Skills</value>
+  </data>
+  <data name="SidebarNoSkills" xml:space="preserve">
+    <value>No skills yet. Ask the agent to save one after a task.</value>
+  </data>
+  <data name="SidebarWorkspaceSection" xml:space="preserve">
+    <value>Workspace</value>
+  </data>
+  <data name="SidebarInstructions" xml:space="preserve">
+    <value>Instructions</value>
+  </data>
+  <data name="SidebarSettings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="SidebarNewWorkspace" xml:space="preserve">
+    <value>New Workspace…</value>
+  </data>
+  <data name="SidebarOpenWorkspace" xml:space="preserve">
+    <value>Open Workspace Folder…</value>
+  </data>
+  <data name="SidebarReveal" xml:space="preserve">
+    <value>Show {0} in the File Manager</value>
+  </data>
+  <data name="SidebarHostCount" xml:space="preserve">
+    <value>{0} hosts</value>
+  </data>
+  <data name="SidebarHostCountOne" xml:space="preserve">
+    <value>1 host</value>
+  </data>
+  <data name="SidebarDefaultWorkspace" xml:space="preserve">
+    <value>Default workspace</value>
+  </data>
+  <data name="SidebarRevealMac" xml:space="preserve">
+    <value>Show {0} in Finder</value>
+  </data>
+  <data name="SidebarRevealWindows" xml:space="preserve">
+    <value>Show {0} in File Explorer</value>
   </data>
 </root>

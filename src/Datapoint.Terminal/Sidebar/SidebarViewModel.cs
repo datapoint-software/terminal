@@ -6,12 +6,25 @@ using Datapoint.Terminal.Resources;
 
 namespace Datapoint.Terminal.Sidebar;
 
-// Product decision 98: the workspace's hosts, then its files. The window says what happens when one is chosen.
-public sealed partial class SidebarViewModel(string workspaceFolder, string hostsFolder) : ObservableObject
+// Product decision 100: the workspace, its hosts, its skills and its instructions, by name. The sidebar opens and edits what
+// the application created; it doesn't create, rename or delete files. The window says what happens when one is chosen.
+public sealed partial class SidebarViewModel(string workspaceFolder) : ObservableObject
 {
     public string WorkspaceFolder { get; } = workspaceFolder;
 
-    public string HostsFolder { get; } = hostsFolder;
+    public string SkillsFolder => Path.Combine(WorkspaceFolder, "skills");
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(WorkspaceInitials), nameof(WorkspaceAccessibleName))]
+    public partial string WorkspaceName { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(WorkspaceAccessibleName))]
+    public partial string WorkspaceDetail { get; set; } = string.Empty;
+
+    public string WorkspaceInitials => WorkspaceLocation.Initials(WorkspaceName);
+
+    public string WorkspaceAccessibleName => Strings.Format(Strings.SidebarSwitcherName, WorkspaceName, WorkspaceDetail);
 
     public ObservableCollection<HostItemViewModel> Hosts { get; } = [];
 
@@ -30,13 +43,15 @@ public sealed partial class SidebarViewModel(string workspaceFolder, string host
 
     public double OtherHostsChevronAngle => IsOtherHostsExpanded ? 90 : 0;
 
-    public ObservableCollection<FileNodeViewModel> Files { get; } = [];
+    public ObservableCollection<SkillItemViewModel> Skills { get; } = [];
+
+    public bool HasSkills => Skills.Count > 0;
 
     [ObservableProperty]
     public partial HostItemViewModel? SelectedHost { get; set; }
 
     [ObservableProperty]
-    public partial FileNodeViewModel? SelectedFile { get; set; }
+    public partial SkillItemViewModel? SelectedSkill { get; set; }
 
     public Action<WorkspaceConnection>? HostChosen { get; set; }
 
@@ -44,11 +59,30 @@ public sealed partial class SidebarViewModel(string workspaceFolder, string host
 
     public Action<string>? HostAdded { get; set; }
 
-    public Action<FileNodeViewModel>? FileChosen { get; set; }
+    public Action<SkillItemViewModel>? SkillChosen { get; set; }
 
-    public Action? NewFileRequested { get; set; }
+    public Action? InstructionsRequested { get; set; }
 
     public Action? NewHostRequested { get; set; }
+
+    public Action? SettingsRequested { get; set; }
+
+    // The workspaces the switcher offers, read when it opens.
+    public Func<IReadOnlyList<WorkspaceSwitchItem>>? ListWorkspaces { get; set; }
+
+    public Action<WorkspaceSwitchItem>? WorkspaceChosen { get; set; }
+
+    public Action? NewWorkspaceRequested { get; set; }
+
+    public Action? OpenWorkspaceRequested { get; set; }
+
+    public Action? RevealRequested { get; set; }
+
+    public void SetWorkspace(string name, string detail)
+    {
+        WorkspaceName = name;
+        WorkspaceDetail = detail;
+    }
 
     public void SetHosts(IReadOnlyList<WorkspaceConnection> connections, IReadOnlyList<string> otherAliases)
     {
@@ -88,13 +122,23 @@ public sealed partial class SidebarViewModel(string workspaceFolder, string host
     public void ShowHost(string? connection) =>
         SelectedHost = Hosts.FirstOrDefault(host => string.Equals(host.Name, connection, StringComparison.OrdinalIgnoreCase));
 
-    public void RefreshFiles()
+    public void RefreshSkills()
     {
-        FileNodeViewModel.Merge(Files, WorkspaceListing.List(WorkspaceFolder, WorkspaceFolder), WorkspaceFolder, HostsFolder);
-        foreach (var node in Files)
+        var selected = SelectedSkill?.Path;
+        var skills = SkillListing.List(SkillsFolder);
+        if (skills.SequenceEqual(Skills))
         {
-            node.Refresh();
+            return;
         }
+
+        Skills.Clear();
+        foreach (var skill in skills)
+        {
+            Skills.Add(skill);
+        }
+
+        SelectedSkill = Skills.FirstOrDefault(skill => string.Equals(skill.Path, selected, StringComparison.Ordinal));
+        OnPropertyChanged(nameof(HasSkills));
     }
 
     [RelayCommand]
@@ -107,22 +151,16 @@ public sealed partial class SidebarViewModel(string workspaceFolder, string host
     private void OpenTerminal(HostItemViewModel host) => TerminalRequested?.Invoke(host.Connection);
 
     [RelayCommand]
-    private void ChooseFile(FileNodeViewModel node)
-    {
-        if (node.IsFolder)
-        {
-            node.IsExpanded = !node.IsExpanded;
-            return;
-        }
-
-        FileChosen?.Invoke(node);
-    }
+    private void ChooseSkill(SkillItemViewModel skill) => SkillChosen?.Invoke(skill);
 
     [RelayCommand]
-    private void NewFile() => NewFileRequested?.Invoke();
+    private void OpenInstructions() => InstructionsRequested?.Invoke();
 
     [RelayCommand]
     private void NewHost() => NewHostRequested?.Invoke();
+
+    [RelayCommand]
+    private void OpenSettings() => SettingsRequested?.Invoke();
 
     private void AddHost(string alias) => HostAdded?.Invoke(alias);
 }

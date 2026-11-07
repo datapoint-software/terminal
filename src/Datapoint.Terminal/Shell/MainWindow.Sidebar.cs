@@ -9,7 +9,7 @@ using Datapoint.Terminal.Sidebar;
 
 namespace Datapoint.Terminal.Shell;
 
-// Product decision 98: the workspace's hosts and files beside the terminals.
+// Product decisions 98 and 100: the workspace's hosts, skills and instructions beside the terminals.
 public sealed partial class MainWindow
 {
     private const double DefaultSidebarWidth = 240;
@@ -23,26 +23,34 @@ public sealed partial class MainWindow
 
     private string HostsFolder => Path.Combine(Workspace.Folder, "hosts");
 
+    private string InstructionsPath => Path.Combine(Workspace.Folder, InstructionFiles.FileName);
+
     private void SetUpSidebar()
     {
-        _sidebar = new SidebarViewModel(Workspace.Folder, HostsFolder)
+        _sidebar = new SidebarViewModel(Workspace.Folder)
         {
             HostChosen = OpenHostDocument,
             TerminalRequested = connection => _ = OpenConnectionAsync(connection),
             HostAdded = AddSshHost,
-            FileChosen = node => OpenWorkspaceFile(node.Path),
-            NewFileRequested = () => _ = NewFileAsync(),
+            SkillChosen = skill => OpenWorkspaceFile(skill.Path),
+            InstructionsRequested = () => OpenWorkspaceFile(InstructionsPath),
             NewHostRequested = () => _ = NewHostAsync(),
+            SettingsRequested = _windows.OpenSettings,
+            ListWorkspaces = ListWorkspaces,
+            WorkspaceChosen = workspace => _windows.Open(workspace.Folder),
+            NewWorkspaceRequested = () => _ = _windows.PickAsync(this, isNew: true),
+            OpenWorkspaceRequested = () => _ = _windows.PickAsync(this, isNew: false),
+            RevealRequested = () => _ = Launcher.LaunchDirectoryInfoAsync(new DirectoryInfo(Workspace.Folder)),
         };
         Sidebar.DataContext = _sidebar;
-        _sidebar.RefreshFiles();
+        _sidebar.RefreshSkills();
         RefreshSidebarHosts();
         _tabs.CollectionChanged += (_, _) => RefreshOpenTerminals();
         Tabs.SelectionChanged += (_, _) => _sidebar.ShowHost(SelectedTab?.ConnectionName);
         _filesTimer.Tick += (_, _) =>
         {
             _filesTimer.Stop();
-            _sidebar.RefreshFiles();
+            _sidebar.RefreshSkills();
         };
         WatchWorkspace();
         SetUpDocuments();
@@ -53,8 +61,30 @@ public sealed partial class MainWindow
         };
     }
 
-    // Changes to the workspace's files show without the user asking; the personal folder and Git's own change all the time and
-    // aren't shown, so they're not watched for.
+    private static string LocationOf(string folder) =>
+        WorkspaceFolders.AreSame(folder, WorkspaceFolders.DefaultWorkspace) ? Strings.SidebarDefaultWorkspace : WorkspaceLocation.Describe(folder, WorkspaceFolders.Home);
+
+    // This workspace, then the recent ones, then the default one, which is always there to go back to.
+    private List<WorkspaceSwitchItem> ListWorkspaces()
+    {
+        var folders = new List<string> { Workspace.Folder };
+        foreach (var folder in _windows.Recent.Append(WorkspaceFolders.DefaultWorkspace))
+        {
+            if (!folders.Any(known => WorkspaceFolders.AreSame(known, folder)) && (Directory.Exists(folder) || WorkspaceFolders.AreSame(folder, WorkspaceFolders.DefaultWorkspace)))
+            {
+                folders.Add(folder);
+            }
+        }
+
+        return [.. folders.Select(folder => new WorkspaceSwitchItem(
+            WorkspaceFolders.AreSame(folder, WorkspaceFolders.DefaultWorkspace) ? Strings.SidebarDefaultWorkspace : Path.GetFileName(folder.TrimEnd(Path.DirectorySeparatorChar)),
+            WorkspaceFolders.AreSame(folder, Workspace.Folder) ? _sidebar.WorkspaceDetail : LocationOf(folder),
+            folder,
+            WorkspaceFolders.AreSame(folder, Workspace.Folder)))];
+    }
+
+    // Changes to the workspace's skills show without the user asking; the folder is watched as a whole because a skill is
+    // a folder that may arrive before its SKILL.md does.
     private void WatchWorkspace()
     {
         try
@@ -62,30 +92,29 @@ public sealed partial class MainWindow
             _workspaceWatcher = new FileSystemWatcher(Workspace.Folder)
             {
                 IncludeSubdirectories = true,
-                NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName,
+                NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName | NotifyFilters.LastWrite,
             };
             FileSystemEventHandler changed = (_, e) => OnWorkspaceChanged(e.FullPath);
             _workspaceWatcher.Created += changed;
             _workspaceWatcher.Deleted += changed;
+            _workspaceWatcher.Changed += changed;
             _workspaceWatcher.Renamed += (_, e) => OnWorkspaceChanged(e.FullPath);
             _workspaceWatcher.EnableRaisingEvents = true;
         }
         catch (Exception exception) when (exception is IOException or ArgumentException or PlatformNotSupportedException or UnauthorizedAccessException)
         {
-            // Without a watcher, the tree still refreshes when the window comes back to the front.
+            // Without a watcher, the list still refreshes when the window comes back to the front.
             _workspaceWatcher?.Dispose();
             _workspaceWatcher = null;
         }
 
-        Activated += (_, _) => _sidebar.RefreshFiles();
+        Activated += (_, _) => _sidebar.RefreshSkills();
     }
 
     private void OnWorkspaceChanged(string path)
     {
         if (WorkspaceFolders.RelativeInside(Workspace.Folder, path) is not { } relative
-            || relative.StartsWith(WorkspaceFolders.LegacyPersonalFolder + "/", StringComparison.Ordinal)
-            || string.Equals(relative, WorkspaceFolders.LegacyPersonalFolder, StringComparison.Ordinal)
-            || relative.Split('/').Contains(".git", StringComparer.Ordinal))
+            || !relative.StartsWith("skills/", StringComparison.Ordinal))
         {
             return;
         }
@@ -101,6 +130,8 @@ public sealed partial class MainWindow
     {
         var connections = Connections.Count > 0 ? Connections : Workspace.Settings.Connections;
         _sidebar.SetHosts(connections, OtherSshHosts(Workspace.Settings.Connections));
+        var count = connections.Count == 1 ? Strings.SidebarHostCountOne : Strings.Format(Strings.SidebarHostCount, connections.Count);
+        _sidebar.SetWorkspace(Workspace.Name, $"{LocationOf(Workspace.Folder)} · {count}");
         RefreshOpenTerminals();
     }
 
@@ -137,52 +168,6 @@ public sealed partial class MainWindow
         }
 
         OpenWorkspaceFile(path);
-    }
-
-    // A new file goes in the folder selected in the tree, or at the top of the workspace.
-    private async Task NewFileAsync()
-    {
-        if (Workspace.IsReadOnly)
-        {
-            _chat.AddNotice(Strings.SidebarReadOnly);
-            return;
-        }
-
-        var folder = _sidebar.SelectedFile is { } node ? (node.IsFolder ? node.Path : Path.GetDirectoryName(node.Path)!) : Workspace.Folder;
-        var answers = await PromptWindow.AskAsync(this, Strings.SidebarNewFileTitle, Strings.Format(Strings.SidebarNewFileMessage, WorkspaceFolders.RelativeInside(Workspace.Folder, folder) is { Length: > 0 } relative ? relative : Workspace.Name), serverText: null, [(Strings.SidebarNewFileName, false)], ["notes.md"]).ConfigureAwait(true);
-        if (answers is not [var name] || NewFileProblem(name) is { } problem)
-        {
-            if (answers is [var given] && NewFileProblem(given) is { } reason)
-            {
-                _chat.AddNotice(reason);
-            }
-
-            return;
-        }
-
-        var path = Path.Combine(folder, name.Trim());
-        try
-        {
-            using (new FileStream(path, FileMode.CreateNew, FileAccess.Write))
-            {
-            }
-
-            _sidebar.RefreshFiles();
-            OpenWorkspaceFile(path);
-        }
-        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
-        {
-            _chat.AddNotice(Strings.Format(Strings.SidebarNewFileFailed, name.Trim(), exception.Message));
-        }
-    }
-
-    // One plain name, so a new file can't land outside the folder or in the personal one.
-    private static string? NewFileProblem(string name)
-    {
-        var trimmed = name.Trim();
-        return trimmed.Length == 0 || trimmed is "." or ".." || trimmed.IndexOfAny([.. Path.GetInvalidFileNameChars(), '/', '\\']) >= 0
-            ? Strings.Format(Strings.SidebarNewFileInvalid, trimmed)
-            : null;
     }
 
     private void ToggleSidebar()
