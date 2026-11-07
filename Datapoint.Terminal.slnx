@@ -7,6 +7,9 @@
     <Project Path="src/Datapoint.Terminal.Security/Datapoint.Terminal.Security.csproj" />
     <Project Path="src/Datapoint.Terminal.Sessions/Datapoint.Terminal.Sessions.csproj" />
   </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/ThirdPartyNotices/ThirdPartyNotices.csproj" />
+  </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Datapoint.Terminal.Agent.Tests/Datapoint.Terminal.Agent.Tests.csproj" />
     <Project Path="tests/Datapoint.Terminal.Architecture.Tests/Datapoint.Terminal.Architecture.Tests.csproj" />

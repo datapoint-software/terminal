@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Datapoint.Terminal.ThirdPartyNotices</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="Licenses/*.txt" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

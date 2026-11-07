@@ -1,2 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="../../tools/ThirdPartyNotices/ThirdPartyNotices.csproj" />
+  </ItemGroup>
+
 </Project>
