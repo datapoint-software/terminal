@@ -25,13 +25,7 @@ public sealed record AppSettings
 
     public IReadOnlyList<WorkspaceTrustRecord> TrustedWorkspaces { get; init => field = value ?? []; } = [];
 
-    // Workspaces whose owner chose not to add .terminal/ to .gitignore, so they aren't asked again.
-    public IReadOnlyList<string> DeclinedGitIgnore { get; init => field = value ?? []; } = [];
-
     public IReadOnlyList<ConfirmedConnections> ConfirmedConnections { get; init => field = value ?? []; } = [];
-
-    // Workspaces already warned that they're inside a sync service's folder, so the warning is shown once.
-    public IReadOnlyList<string> WarnedSyncFolders { get; init => field = value ?? []; } = [];
 
     // SHA-256 fingerprints of values the user marked as not secret, never the values themselves.
     public IReadOnlyList<string> NotSecrets { get; init => field = value ?? []; } = [];

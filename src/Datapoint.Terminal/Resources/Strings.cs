@@ -320,24 +320,6 @@ public static class Strings
 
     public static string NoticeInstructionsUnreadable => Get(nameof(NoticeInstructionsUnreadable));
 
-    public static string GitIgnoreTitle => Get(nameof(GitIgnoreTitle));
-
-    public static string GitIgnoreMessage => Get(nameof(GitIgnoreMessage));
-
-    public static string GitIgnoreTracked => Get(nameof(GitIgnoreTracked));
-
-    public static string GitIgnoreDont => Get(nameof(GitIgnoreDont));
-
-    public static string GitIgnoreAdd => Get(nameof(GitIgnoreAdd));
-
-    public static string NoticeGitIgnoreAdded => Get(nameof(NoticeGitIgnoreAdded));
-
-    public static string NoticeGitIgnoreStillNot => Get(nameof(NoticeGitIgnoreStillNot));
-
-    public static string NoticeGitIgnoreFailed => Get(nameof(NoticeGitIgnoreFailed));
-
-    public static string NoticeGitTracked => Get(nameof(NoticeGitTracked));
-
     public static string ReviewTitle => Get(nameof(ReviewTitle));
 
     public static string ReviewMessage => Get(nameof(ReviewMessage));
@@ -399,8 +381,6 @@ public static class Strings
     public static string MarkdownLinkName => Get(nameof(MarkdownLinkName));
 
     public static string WindowTitleNeedsUser => Get(nameof(WindowTitleNeedsUser));
-
-    public static string NoticeSyncFolder => Get(nameof(NoticeSyncFolder));
 
     public static string SecretTitle => Get(nameof(SecretTitle));
 

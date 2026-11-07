@@ -2,11 +2,11 @@ using System.Text;
 
 namespace Datapoint.Terminal.Agent.Workspaces;
 
-// Product decision 87. Stopping at the home folder keeps files that others left in shared folders (e.g. /tmp) out.
+// Product decision 100: the user's own file and the workspace's, nothing else. Files in parent folders, AGENTS.md and other
+// tools' files aren't read, so a workspace means the same thing wherever its folder is kept.
 public static class InstructionFiles
 {
     public const string FileName = "TERMINAL.md";
-    public const string FallbackName = "AGENTS.md";
     public const int MaxBytes = 32 * 1024;
 
     public static string? FindGlobal(string globalFolder)
@@ -15,44 +15,13 @@ public static class InstructionFiles
         return File.Exists(path) ? path : null;
     }
 
-    // Broadest folder first, so nearer files come later and take precedence. The global file, when given, isn't listed again.
-    public static IReadOnlyList<string> FindForWorkspace(string workspaceFolder, string home, string? globalFile)
+    // The global file, when given, isn't listed again (e.g. a link to it in the workspace).
+    public static IReadOnlyList<string> FindForWorkspace(string workspaceFolder, string? globalFile)
     {
-        var seen = new HashSet<string>(WorkspaceFolders.Comparer);
-        if (globalFile is not null)
-        {
-            seen.Add(RealPath(globalFile));
-        }
-
-        var files = new List<string>();
-        foreach (var folder in FoldersFor(workspaceFolder, home))
-        {
-            var file = InFolder(folder);
-            if (file is not null && seen.Add(RealPath(file)))
-            {
-                files.Add(file);
-            }
-        }
-
-        return files;
-    }
-
-    public static IReadOnlyList<string> FoldersFor(string workspaceFolder, string home)
-    {
-        var workspace = WorkspaceFolders.Normalize(workspaceFolder);
-        var root = WorkspaceFolders.Normalize(home);
-        var folders = new List<string>();
-        for (var folder = workspace; folder is not null; folder = Path.GetDirectoryName(folder))
-        {
-            folders.Add(folder);
-            if (WorkspaceFolders.Comparer.Equals(folder, root))
-            {
-                folders.Reverse();
-                return folders;
-            }
-        }
-
-        return [workspace];
+        var path = Path.Combine(WorkspaceFolders.Normalize(workspaceFolder), FileName);
+        return !File.Exists(path) || (globalFile is not null && WorkspaceFolders.Comparer.Equals(RealPath(path), RealPath(globalFile)))
+            ? []
+            : [path];
     }
 
     // The cap is shared, in order: once it's reached, later files are cut short or left out, and say so.
@@ -69,18 +38,6 @@ public static class InstructionFiles
         }
 
         return files;
-    }
-
-    private static string? InFolder(string folder)
-    {
-        var preferred = Path.Combine(folder, FileName);
-        if (File.Exists(preferred))
-        {
-            return preferred;
-        }
-
-        var fallback = Path.Combine(folder, FallbackName);
-        return File.Exists(fallback) ? fallback : null;
     }
 
     private static string RealPath(string path)

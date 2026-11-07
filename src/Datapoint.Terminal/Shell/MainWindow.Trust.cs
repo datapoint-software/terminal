@@ -14,7 +14,7 @@ public sealed partial class MainWindow
     private volatile WorkspaceTrustRecord? _trust;
 
     private IReadOnlyList<string> WorkspaceInstructionFiles(string? globalFile) =>
-        InstructionFiles.FindForWorkspace(Workspace.Folder, WorkspaceFolders.Home, globalFile);
+        InstructionFiles.FindForWorkspace(Workspace.Folder, globalFile);
 
     // Asks when the workspace has something to trust and no decision covers it yet; from the menu, it always asks.
     private async Task ReviewTrustAsync(bool always)

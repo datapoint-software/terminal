@@ -451,16 +451,16 @@ Fingerprint: {2}</value>
     <value>Trust {0}?</value>
   </data>
   <data name="TrustMessage" xml:space="preserve">
-    <value>When you trust a workspace, its instruction files guide the agent and its connections can be opened. Trust it only if you know where its files come from: a cloned repository or a shared folder can hold instructions written to mislead the agent. Until you trust it, the agent reads these files as data, not instructions.</value>
+    <value>When you trust a workspace, its instructions guide the agent and its hosts can be opened. Trust it only if you know who can change it: a workspace shared through a sync service, a network drive or a repository can hold instructions written to mislead the agent. Until you trust it, the agent reads these files as data, not instructions.</value>
   </data>
   <data name="TrustFiles" xml:space="preserve">
-    <value>Instruction files:</value>
+    <value>Instructions:</value>
   </data>
   <data name="TrustConnections" xml:space="preserve">
-    <value>Connections in workspace.json:</value>
+    <value>Hosts in workspace.json:</value>
   </data>
   <data name="TrustNothing" xml:space="preserve">
-    <value>This workspace has no instruction files or connections yet.</value>
+    <value>This workspace has no instructions or hosts yet.</value>
   </data>
   <data name="TrustNew" xml:space="preserve">
     <value>{0} (new)</value>
@@ -482,35 +482,6 @@ Fingerprint: {2}</value>
   </data>
   <data name="NoticeInstructionsUnreadable" xml:space="preserve">
     <value>{0} couldn't be read: {1}</value>
-  </data>
-  <data name="GitIgnoreTitle" xml:space="preserve">
-    <value>Keep .terminal out of Git?</value>
-  </data>
-  <data name="GitIgnoreMessage" xml:space="preserve">
-    <value>{0} is in a Git repository, and its .terminal folder isn't ignored. That folder is personal: it holds your terminal history and the agent's notes, which can include command output and details of your machines. If it's committed, everyone who can read the repository can read them. Add .terminal/ to the .gitignore in {1}?</value>
-  </data>
-  <data name="GitIgnoreTracked" xml:space="preserve">
-    <value>Some of .terminal is already committed. Ignoring it doesn't remove it from the repository; to stop tracking it, run this in the workspace's folder, then commit:
-
-git rm -r --cached .terminal</value>
-  </data>
-  <data name="GitIgnoreDont" xml:space="preserve">
-    <value>Don't Add</value>
-  </data>
-  <data name="GitIgnoreAdd" xml:space="preserve">
-    <value>Add to .gitignore</value>
-  </data>
-  <data name="NoticeGitIgnoreAdded" xml:space="preserve">
-    <value>Added .terminal/ to {0}. Commit that change so others' copies ignore it too.</value>
-  </data>
-  <data name="NoticeGitIgnoreStillNot" xml:space="preserve">
-    <value>Added .terminal/ to {0}, but another rule still includes it, so check the repository's ignore files.</value>
-  </data>
-  <data name="NoticeGitIgnoreFailed" xml:space="preserve">
-    <value>The .gitignore couldn't be changed: {0}</value>
-  </data>
-  <data name="NoticeGitTracked" xml:space="preserve">
-    <value>Some of this workspace's .terminal folder is committed to Git, although it's ignored now. To stop tracking it, run git rm -r --cached .terminal in the workspace's folder, then commit.</value>
   </data>
   <data name="ReviewTitle" xml:space="preserve">
     <value>Review connection changes</value>
@@ -604,9 +575,6 @@ git rm -r --cached .terminal</value>
   </data>
   <data name="WindowTitleNeedsUser" xml:space="preserve">
     <value>Waiting for you — {0}</value>
-  </data>
-  <data name="NoticeSyncFolder" xml:space="preserve">
-    <value>{0} is inside {1} ({2}). Its .terminal folder holds this workspace's conversations and terminal output, which {1} would upload, and syncing can damage a database while it's open. Consider moving the workspace out of {2}, or excluding .terminal from syncing. This warning isn't shown again.</value>
   </data>
   <data name="SecretTitle" xml:space="preserve">
     <value>Possible Secret in a File</value>

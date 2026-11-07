@@ -36,9 +36,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         RecentWorkspaces = settings.RecentWorkspaces;
         OpenWorkspaces = settings.OpenWorkspaces;
         TrustedWorkspaces = settings.TrustedWorkspaces;
-        DeclinedGitIgnore = settings.DeclinedGitIgnore;
         ConfirmedConnections = settings.ConfirmedConnections;
-        WarnedSyncFolders = settings.WarnedSyncFolders;
         NotSecrets = settings.NotSecrets;
         HistoryDays = settings.HistoryDays;
         ChatSide = settings.ChatSide;
@@ -73,11 +71,7 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     public IReadOnlyList<WorkspaceTrustRecord> TrustedWorkspaces { get; private set; }
 
-    public IReadOnlyList<string> DeclinedGitIgnore { get; private set; }
-
     public IReadOnlyList<ConfirmedConnections> ConfirmedConnections { get; private set; }
-
-    public IReadOnlyList<string> WarnedSyncFolders { get; private set; }
 
     public IReadOnlyList<string> NotSecrets { get; private set; }
 
@@ -200,9 +194,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         RecentWorkspaces = RecentWorkspaces,
         OpenWorkspaces = OpenWorkspaces,
         TrustedWorkspaces = TrustedWorkspaces,
-        DeclinedGitIgnore = DeclinedGitIgnore,
         ConfirmedConnections = ConfirmedConnections,
-        WarnedSyncFolders = WarnedSyncFolders,
         NotSecrets = NotSecrets,
         HistoryDays = HistoryDays,
         ChatSide = ChatSide,
@@ -224,22 +216,6 @@ public sealed partial class SettingsViewModel : ObservableObject
     {
         var record = new ConfirmedConnections { Folder = folder, Connections = connections };
         ConfirmedConnections = [.. ConfirmedConnections.Where(item => !WorkspaceFolders.AreSame(item.Folder, folder)), record];
-        SaveWorkspaceData();
-    }
-
-    public bool HasDeclinedGitIgnore(string folder) => DeclinedGitIgnore.Any(item => WorkspaceFolders.AreSame(item, folder));
-
-    public void DeclineGitIgnore(string folder)
-    {
-        DeclinedGitIgnore = [.. DeclinedGitIgnore.Where(item => !WorkspaceFolders.AreSame(item, folder)), folder];
-        SaveWorkspaceData();
-    }
-
-    public bool HasWarnedSyncFolder(string folder) => WarnedSyncFolders.Any(item => WorkspaceFolders.AreSame(item, folder));
-
-    public void WarnedSyncFolder(string folder)
-    {
-        WarnedSyncFolders = [.. WarnedSyncFolders.Where(item => !WorkspaceFolders.AreSame(item, folder)), folder];
         SaveWorkspaceData();
     }
 

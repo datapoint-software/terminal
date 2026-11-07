@@ -22,46 +22,32 @@ public sealed class InstructionFilesTests : IDisposable
     }
 
     [Fact]
-    public void Reads_from_the_home_folder_down_to_the_workspace()
+    public void Reads_only_the_workspace_s_own_terminal_md()
     {
         var workspace = Path.Combine(Home, "work", "site");
-        var home = Write(Home, "AGENTS.md");
-        var work = Write(Path.Combine(Home, "work"), "TERMINAL.md");
-        var site = Write(workspace, "AGENTS.md");
-        Write(_root, "TERMINAL.md");
+        Write(Home, "TERMINAL.md");
+        Write(Path.Combine(Home, "work"), "TERMINAL.md");
+        Write(workspace, "AGENTS.md");
+        var own = Write(workspace, "TERMINAL.md");
 
-        Assert.Equal([home, work, site], InstructionFiles.FindForWorkspace(workspace, Home, globalFile: null));
+        Assert.Equal([own], InstructionFiles.FindForWorkspace(workspace, globalFile: null));
     }
 
     [Fact]
-    public void Prefers_terminal_md_over_agents_md_in_the_same_folder()
+    public void Agents_md_is_not_read()
     {
         var workspace = Path.Combine(Home, "work");
         Write(workspace, "AGENTS.md");
-        var terminal = Write(workspace, "TERMINAL.md");
 
-        Assert.Equal([terminal], InstructionFiles.FindForWorkspace(workspace, Home, globalFile: null));
+        Assert.Empty(InstructionFiles.FindForWorkspace(workspace, globalFile: null));
     }
 
     [Fact]
-    public void A_workspace_outside_the_home_folder_reads_only_its_own_folder()
-    {
-        var workspace = Path.Combine(_root, "shared", "workspace");
-        Write(Path.Combine(_root, "shared"), "AGENTS.md");
-        var own = Write(workspace, "AGENTS.md");
-
-        Assert.Equal([own], InstructionFiles.FindForWorkspace(workspace, Home, globalFile: null));
-    }
-
-    [Fact]
-    public void The_global_file_is_not_read_twice_for_the_default_workspace()
+    public void Finds_the_global_file()
     {
         var global = Write(Global, "TERMINAL.md");
-        var workspace = Path.Combine(Global, "default");
-        Directory.CreateDirectory(workspace);
 
         Assert.Equal(global, InstructionFiles.FindGlobal(Global));
-        Assert.Empty(InstructionFiles.FindForWorkspace(workspace, Home, global));
     }
 
     [Fact]
