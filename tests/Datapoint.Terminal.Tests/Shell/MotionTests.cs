@@ -7,16 +7,19 @@ namespace Datapoint.Terminal.Tests.Shell;
 
 public sealed class MotionTests
 {
-    // Headless frames stop after a few, so this relies on each animation being cut short once it should have ended.
-    private static void Wait()
+    // Headless frames stop after a few, so this relies on each animation being cut short once it should have ended. It waits
+    // for the outcome, up to two seconds, as a busy machine runs those deadlines late.
+    private static bool Until(Func<bool> done)
     {
         var watch = System.Diagnostics.Stopwatch.StartNew();
-        while (watch.ElapsedMilliseconds < 400)
+        while (!done() && watch.ElapsedMilliseconds < 2000)
         {
             Thread.Sleep(5);
             Avalonia.Headless.AvaloniaHeadlessPlatform.ForceRenderTimerTick();
             Dispatcher.UIThread.RunJobs();
         }
+
+        return done();
     }
 
     [AvaloniaFact]
@@ -35,12 +38,12 @@ public sealed class MotionTests
             Dispatcher.UIThread.RunJobs();
             var presenter = menu.Popup.Child!;
             Assert.True(presenter.Opacity < 1);
-            Wait();
+            Assert.True(Until(() => presenter.Opacity >= 1));
             Assert.Equal(1, presenter.Opacity);
 
             menu.Hide();
             Assert.True(menu.IsOpen);
-            Wait();
+            Assert.True(Until(() => !menu.IsOpen));
             Assert.False(menu.IsOpen);
 
             MotionPreference.Apply(reduce: true);
@@ -72,13 +75,13 @@ public sealed class MotionTests
             card.Content = null;
             Fold.SetIsOpen(card, false);
             Assert.Equal(("Plan", true), (card.Content as string, card.IsVisible));
-            Wait();
+            Assert.True(Until(() => !card.IsVisible));
             Assert.Equal((null, false), (card.Content, card.IsVisible));
 
             card.Content = "Next plan";
             Fold.SetIsOpen(card, true);
             Assert.True(card.IsVisible);
-            Wait();
+            Assert.True(Until(() => double.IsNaN(card.Height) && card.Opacity >= 1));
             Assert.Equal((double.NaN, 1d), (card.Height, card.Opacity));
         }
         finally
