@@ -864,9 +864,6 @@ Fingerprint: {2}</value>
   <data name="ApprovalHeadingPlan" xml:space="preserve">
     <value>The agent proposes this plan</value>
   </data>
-  <data name="ApprovalApprovePlan" xml:space="preserve">
-    <value>Approve Plan</value>
-  </data>
   <data name="ApprovalRiskPlan" xml:space="preserve">
     <value>Outside the plan, the agent always asks first.</value>
   </data>
@@ -2449,10 +2446,10 @@ Fingerprint: {2}</value>
     <value>New</value>
   </data>
   <data name="ApprovalLookScopeOne" xml:space="preserve">
-    <value>Read-only commands on this host will run without asking, for this task only. Anything that changes a system still asks. Every command shows in its terminal as it runs.</value>
+    <value>Read-only commands on this node will run without asking, for this task only. Anything that changes a system still asks. Every command shows in its terminal as it runs.</value>
   </data>
   <data name="ApprovalLookScope" xml:space="preserve">
-    <value>Read-only commands on these {0} hosts will run without asking, for this task only. Anything that changes a system still asks. Every command shows in its terminal as it runs.</value>
+    <value>Read-only commands on these {0} nodes will run without asking, for this task only. Anything that changes a system still asks. Every command shows in its terminal as it runs.</value>
   </data>
   <data name="ApprovalLookWhere" xml:space="preserve">
     <value>Before planning</value>
@@ -2463,17 +2460,8 @@ Fingerprint: {2}</value>
   <data name="ApprovalLookDecline" xml:space="preserve">
     <value>Don't allow</value>
   </data>
-  <data name="ApprovalHeadingLook" xml:space="preserve">
-    <value>May I look around first?</value>
-  </data>
   <data name="ApprovalLookOpens" xml:space="preserve">
     <value>Opens a connection</value>
-  </data>
-  <data name="PlanCommentStep" xml:space="preserve">
-    <value>Step {0}</value>
-  </data>
-  <data name="PlanCommentPlan" xml:space="preserve">
-    <value>The plan</value>
   </data>
   <data name="PlanCommentSent" xml:space="preserve">
     <value>Sent</value>
@@ -2491,7 +2479,7 @@ Fingerprint: {2}</value>
     <value>{0}, plan</value>
   </data>
   <data name="PlanNoCommentsToSend" xml:space="preserve">
-    <value>No comments yet. Select text in the plan to comment on it.</value>
+    <value>No comments</value>
   </data>
   <data name="PlanOneCommentToSend" xml:space="preserve">
     <value>1 comment to send</value>
@@ -2548,7 +2536,7 @@ Fingerprint: {2}</value>
     <value>What should change?</value>
   </data>
   <data name="PlanCommentSave" xml:space="preserve">
-    <value>Save</value>
+    <value>Comment</value>
   </data>
   <data name="PlanCommentEdit" xml:space="preserve">
     <value>Edit</value>
@@ -2570,5 +2558,53 @@ Fingerprint: {2}</value>
   </data>
   <data name="DocumentsPlans" xml:space="preserve">
     <value>Plans</value>
+  </data>
+  <data name="PlanCommentQuoteStep" xml:space="preserve">
+    <value>Step {0}: {1}</value>
+  </data>
+  <data name="PlanCommentLabel" xml:space="preserve">
+    <value>Your comment</value>
+  </data>
+  <data name="PlanStepsTitle" xml:space="preserve">
+    <value>Steps</value>
+  </data>
+  <data name="LookRunning" xml:space="preserve">
+    <value>Looking on {0}…</value>
+  </data>
+  <data name="LookDone" xml:space="preserve">
+    <value>Looked on {0} · {1} commands</value>
+  </data>
+  <data name="LookDoneOne" xml:space="preserve">
+    <value>Looked on {0} · 1 command</value>
+  </data>
+  <data name="LookOneHost" xml:space="preserve">
+    <value>1 node</value>
+  </data>
+  <data name="LookHosts" xml:space="preserve">
+    <value>{0} nodes</value>
+  </data>
+  <data name="ApprovalReply" xml:space="preserve">
+    <value>Reply…</value>
+  </data>
+  <data name="ApprovalSendReply" xml:space="preserve">
+    <value>Send reply</value>
+  </data>
+  <data name="ApprovalApprove" xml:space="preserve">
+    <value>Approve</value>
+  </data>
+  <data name="PlanApprove" xml:space="preserve">
+    <value>Approve plan</value>
+  </data>
+  <data name="PlanRevisedAfterOne" xml:space="preserve">
+    <value>Revised after 1 comment</value>
+  </data>
+  <data name="PlanRevisedAfter" xml:space="preserve">
+    <value>Revised after {0} comments</value>
+  </data>
+  <data name="PlanCommentSentOne" xml:space="preserve">
+    <value>Sent · step {0} changed</value>
+  </data>
+  <data name="PlanCommentSentMany" xml:space="preserve">
+    <value>Sent · steps {0} changed</value>
   </data>
 </root>

@@ -40,7 +40,7 @@ public sealed partial class PlanReviewView : UserControl
         Dispatcher.UIThread.Post(() => ShowCommentButton(at));
     }
 
-    // Beside where the selection ended, kept inside the page.
+    // Just above where the selection ended, kept inside the page.
     private void ShowCommentButton(Point at)
     {
         _lastSelection = Selection();
@@ -51,8 +51,8 @@ public sealed partial class PlanReviewView : UserControl
         }
 
         CommentSelectionButton.IsVisible = true;
-        Canvas.SetLeft(CommentSelectionButton, Math.Clamp(at.X + 8, 0, Math.Max(0, SelectionLayer.Bounds.Width - 100)));
-        Canvas.SetTop(CommentSelectionButton, Math.Clamp(at.Y + 12, 0, Math.Max(0, SelectionLayer.Bounds.Height - 40)));
+        Canvas.SetLeft(CommentSelectionButton, Math.Clamp(at.X - 36, 8, Math.Max(8, SelectionLayer.Bounds.Width - 90)));
+        Canvas.SetTop(CommentSelectionButton, Math.Clamp(at.Y - 40, 0, Math.Max(0, SelectionLayer.Bounds.Height - 40)));
     }
 
     // The selected text, and the step it's in when it's all in one.

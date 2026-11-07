@@ -25,6 +25,8 @@ public sealed partial class PlanStepViewModel : ObservableObject
 
     public int Number { get; }
 
+    public bool IsFirst => Number == 1;
+
     public string NumberText => Number.ToString(System.Globalization.CultureInfo.CurrentCulture);
 
     public string Command { get; }

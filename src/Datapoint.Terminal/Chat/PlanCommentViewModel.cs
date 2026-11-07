@@ -6,17 +6,19 @@ namespace Datapoint.Terminal.Chat;
 
 // A comment on a plan under review: the text the user selected, if any, the step it's on, and what they want changed.
 // It's a draft until saved, and sent with the others when the user sends the plan back to be revised.
-public sealed partial class PlanCommentViewModel(string? quote, int? step, Action<PlanCommentViewModel> removed) : ObservableObject
+public sealed partial class PlanCommentViewModel(string? quote, int? step, string? stepTitle, Action<PlanCommentViewModel> removed) : ObservableObject
 {
     private string _saved = string.Empty;
 
     public string? Quote { get; } = string.IsNullOrWhiteSpace(quote) ? null : quote.Trim();
 
-    public bool HasQuote => Quote is not null;
-
     public int? Step => step;
 
-    public string WhereText => Step is { } number ? Strings.Format(Strings.PlanCommentStep, number) : Strings.PlanCommentPlan;
+    // What the comment is about, as its card shows it: the selected text, or the step's name when the user commented on a
+    // whole step.
+    public string? DisplayQuote => Quote ?? (step is { } number && stepTitle is not null ? Strings.Format(Strings.PlanCommentQuoteStep, number, stepTitle) : null);
+
+    public bool HasQuote => DisplayQuote is not null;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
@@ -35,7 +37,12 @@ public sealed partial class PlanCommentViewModel(string? quote, int? step, Actio
 
     public bool CanChange => !IsSent;
 
-    public string? SentText => IsSent ? Strings.PlanCommentSent : null;
+    public string? SentText => IsSent ? Revision ?? Strings.PlanCommentSent : null;
+
+    // Once the agent revised the plan after this comment was sent: which steps changed.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SentText))]
+    public partial string? Revision { get; set; }
 
     // Saved and not sent yet: what Send comments sends.
     public bool IsPending => !IsSent && !IsEditing && _saved.Length > 0;

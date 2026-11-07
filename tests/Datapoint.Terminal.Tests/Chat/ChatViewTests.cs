@@ -96,7 +96,7 @@ public sealed class ChatViewTests
         Directory.CreateDirectory("rendered");
         frame?.Save("rendered/chat-long-plan.png", new PngBitmapEncoderOptions());
 
-        var run = window.GetVisualDescendants().OfType<Button>().Single(button => Equals(button.Content, chat.Approval!.RunLabel));
+        var run = window.GetVisualDescendants().OfType<Button>().Single(button => button.IsEffectivelyVisible && Equals(button.Content, chat.Approval!.RunLabel));
         var bottom = run.TranslatePoint(new Point(0, run.Bounds.Height), window)!.Value.Y;
         Assert.InRange(bottom, 0, window.Height);
     }
@@ -189,7 +189,7 @@ public sealed class ChatViewTests
         Assert.Equal("5 steps · 1 ends the SSH session", chat.Approval.StepCountText);
         var reboot = chat.Approval.PlanSteps[3];
         Assert.Equal(["Ends the SSH session"], reboot.Warnings);
-        var run = window.GetVisualDescendants().OfType<Button>().Single(button => Equals(button.Content, chat.Approval.RunLabel));
+        var run = window.GetVisualDescendants().OfType<Button>().Single(button => button.IsEffectivelyVisible && Equals(button.Content, chat.Approval.RunLabel));
         Assert.InRange(run.TranslatePoint(new Point(0, run.Bounds.Height), window)!.Value.Y, 0, window.Height);
     }
 

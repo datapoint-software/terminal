@@ -52,7 +52,7 @@ public sealed class ApprovalViewModelTests
         var approval = new ApprovalViewModel(proposal);
 
         Assert.True(approval.IsCommandReadOnly);
-        Assert.Equal((Strings.ApprovalApprovePlan, Strings.ApprovalHeadingPlan, Strings.ApprovalRiskPlan), (approval.RunLabel, approval.Heading, approval.RiskText));
+        Assert.Equal((Strings.ApprovalApprove, Strings.ApprovalHeadingPlan, Strings.ApprovalRiskPlan), (approval.RunLabel, approval.Heading, approval.RiskText));
         Assert.Equal(Strings.ApprovalPlanAnyTerminal, approval.TerminalText);
         Assert.False(approval.HasPlanText);
     }

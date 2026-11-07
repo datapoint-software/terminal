@@ -11,6 +11,9 @@ public sealed class HostChipViewModel(string name, string? environment)
 
     public bool HasEnvironment => environment is not null;
 
+    // Set in capitals, small, so it reads as a label beside the name.
+    public string? EnvironmentLabel => environment?.ToUpper(System.Globalization.CultureInfo.CurrentCulture);
+
     public bool IsProduction => EnvironmentLabels.IsProduction(environment);
 
     public string AccessibleName => environment is null ? name : $"{name}, {environment}";

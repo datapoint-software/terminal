@@ -128,4 +128,11 @@
     <Setter Property="Foreground" Value="{DynamicResource WarningTextBrush}" />
     <Setter Property="FontSize" Value="{StaticResource CaptionSize}" />
   </Style>
+  <!-- A production host's environment on a host chip. -->
+  <Style Selector="Border.production">
+    <Setter Property="Background" Value="{DynamicResource DangerTintBrush}" />
+  </Style>
+  <Style Selector="TextBlock.production">
+    <Setter Property="Foreground" Value="{DynamicResource DangerBrush}" />
+  </Style>
 </Styles>

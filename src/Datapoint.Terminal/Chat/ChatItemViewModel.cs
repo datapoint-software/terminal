@@ -38,6 +38,10 @@ public sealed partial class ChatItemViewModel(ChatItemKind kind, string text) : 
 
     public RolloutProgressViewModel? Rollout { get; init; }
 
+    public LookProgressViewModel? Look { get; init; }
+
+    public bool IsLook => Kind == ChatItemKind.Look;
+
     [ObservableProperty]
     public partial string Text { get; set; } = text;
 

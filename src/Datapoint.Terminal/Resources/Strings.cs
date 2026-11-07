@@ -574,8 +574,6 @@ public static class Strings
 
     public static string ApprovalHeadingPlan => Get(nameof(ApprovalHeadingPlan));
 
-    public static string ApprovalApprovePlan => Get(nameof(ApprovalApprovePlan));
-
     public static string ApprovalRiskPlan => Get(nameof(ApprovalRiskPlan));
 
     public static string ApprovalPlanAnyTerminal => Get(nameof(ApprovalPlanAnyTerminal));
@@ -1640,13 +1638,7 @@ public static class Strings
 
     public static string ApprovalLookDecline => Get(nameof(ApprovalLookDecline));
 
-    public static string ApprovalHeadingLook => Get(nameof(ApprovalHeadingLook));
-
     public static string ApprovalLookOpens => Get(nameof(ApprovalLookOpens));
-
-    public static string PlanCommentStep => Get(nameof(PlanCommentStep));
-
-    public static string PlanCommentPlan => Get(nameof(PlanCommentPlan));
 
     public static string PlanCommentSent => Get(nameof(PlanCommentSent));
 
@@ -1711,6 +1703,38 @@ public static class Strings
     public static string PlanCommentSelectionTip => Get(nameof(PlanCommentSelectionTip));
 
     public static string DocumentsPlans => Get(nameof(DocumentsPlans));
+
+    public static string PlanCommentQuoteStep => Get(nameof(PlanCommentQuoteStep));
+
+    public static string PlanCommentLabel => Get(nameof(PlanCommentLabel));
+
+    public static string PlanStepsTitle => Get(nameof(PlanStepsTitle));
+
+    public static string LookRunning => Get(nameof(LookRunning));
+
+    public static string LookDone => Get(nameof(LookDone));
+
+    public static string LookDoneOne => Get(nameof(LookDoneOne));
+
+    public static string LookOneHost => Get(nameof(LookOneHost));
+
+    public static string LookHosts => Get(nameof(LookHosts));
+
+    public static string ApprovalReply => Get(nameof(ApprovalReply));
+
+    public static string ApprovalSendReply => Get(nameof(ApprovalSendReply));
+
+    public static string ApprovalApprove => Get(nameof(ApprovalApprove));
+
+    public static string PlanApprove => Get(nameof(PlanApprove));
+
+    public static string PlanRevisedAfterOne => Get(nameof(PlanRevisedAfterOne));
+
+    public static string PlanRevisedAfter => Get(nameof(PlanRevisedAfter));
+
+    public static string PlanCommentSentOne => Get(nameof(PlanCommentSentOne));
+
+    public static string PlanCommentSentMany => Get(nameof(PlanCommentSentMany));
 
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 

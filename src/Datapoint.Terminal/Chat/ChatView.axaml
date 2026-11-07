@@ -302,6 +302,16 @@
       <Setter Property="IsVisible" Value="True" />
       <Setter Property="Stroke" Value="{DynamicResource DangerBrush}" />
     </Style>
+    <!-- A host on the Looking card: a hairline between hosts, none above the first. -->
+    <Style Selector="Border.lookHost">
+      <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
+      <Setter Property="BorderThickness" Value="0,1,0,0" />
+      <Setter Property="Padding" Value="0,8,0,0" />
+    </Style>
+    <Style Selector="Border.lookHost.first">
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="0" />
+    </Style>
     <Style Selector="TextBlock.step-title.pending">
       <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
     </Style>
@@ -371,47 +381,67 @@
               AutomationProperties.Name="{x:Static res:Strings.StatusWaitingForApproval}">
         <StackPanel Spacing="8" DataContext="{Binding Approval}" x:DataType="chat:ApprovalViewModel">
           <StackPanel Spacing="2">
-            <TextBlock Classes="secondary" FontWeight="SemiBold" Text="{Binding TerminalText}" TextWrapping="Wrap" />
+            <TextBlock Classes="secondary" FontWeight="SemiBold" Text="{Binding TerminalText}" TextWrapping="Wrap" IsVisible="{Binding !UsesOwnActions}" />
             <TextBlock Classes="title" Text="{Binding Heading}" TextWrapping="Wrap" />
-            <TextBlock Text="{Binding Purpose}" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding Purpose}" TextWrapping="Wrap" IsVisible="{Binding ShowsPurpose}" />
           </StackPanel>
-          <!-- A request to look: each host, and what the agent will look for there and why. -->
-          <ItemsControl ItemsSource="{Binding LookHosts}" IsVisible="{Binding IsLook}">
-            <ItemsControl.ItemTemplate>
-              <DataTemplate x:DataType="chat:LookHostViewModel">
-                <Border BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,1,0,0" Padding="0,8,0,4">
+          <!-- A request to look: each host, and what the agent will look for there and why, then what allowing it permits. -->
+          <StackPanel Spacing="10" IsVisible="{Binding IsLook}">
+            <ItemsControl ItemsSource="{Binding LookHosts}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <StackPanel Spacing="10" />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="chat:LookHostViewModel">
                   <StackPanel Spacing="2">
-                    <StackPanel Orientation="Horizontal" Spacing="6">
+                    <StackPanel Orientation="Horizontal" Spacing="2">
                       <ContentControl Content="{Binding Chip}" ContentTemplate="{StaticResource HostChip}" />
-                      <TextBlock Classes="secondary" FontSize="{StaticResource CaptionSize}" Text="{x:Static res:Strings.ApprovalLookOpens}" IsVisible="{Binding OpensConnection}"
-                                 VerticalAlignment="Top" Margin="0,2,0,0" />
+                      <TextBlock Classes="secondary" Text="{x:Static res:Strings.ApprovalLookOpens}" IsVisible="{Binding OpensConnection}"
+                                 VerticalAlignment="Top" Margin="0,3,0,0" />
                     </StackPanel>
                     <SelectableTextBlock Text="{Binding Reason}" TextWrapping="Wrap" />
                   </StackPanel>
-                </Border>
-              </DataTemplate>
-            </ItemsControl.ItemTemplate>
-          </ItemsControl>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <Border Background="{DynamicResource PaneBrush}" CornerRadius="{StaticResource BlockRadius}" Padding="10,8">
+              <TextBlock Classes="secondary" FontSize="{StaticResource SmallSize}" Text="{Binding LookScopeText}" TextWrapping="Wrap" />
+            </Border>
+          </StackPanel>
           <!-- A plan: its hosts and how many steps need care here; the steps themselves are reviewed in the documents area. -->
           <StackPanel Spacing="6" IsVisible="{Binding IsPlan}">
-            <ItemsControl ItemsSource="{Binding PlanHosts}" IsVisible="{Binding HasPlanHosts}"
-                          ItemTemplate="{StaticResource HostChip}" ItemsPanel="{StaticResource ChipsPanel}" />
-            <TextBlock Classes="secondary" Text="{Binding StepCountText}" TextWrapping="Wrap" />
-            <Button Content="{x:Static res:Strings.PlanReview}" Command="{Binding ReviewCommand}" HorizontalAlignment="Left" />
+            <DockPanel IsVisible="{Binding HasPlanHosts}">
+              <TextBlock DockPanel.Dock="Left" Classes="secondary" FontSize="{StaticResource SmallSize}" Text="{x:Static res:Strings.PlanStepOn}" VerticalAlignment="Top" Margin="0,3,6,0" />
+              <ItemsControl ItemsSource="{Binding PlanHosts}" ItemTemplate="{StaticResource HostChip}" ItemsPanel="{StaticResource ChipsPanel}" />
+            </DockPanel>
+            <TextBlock Classes="secondary" FontSize="{StaticResource SmallSize}" Text="{Binding StepCountText}" TextWrapping="Wrap" />
           </StackPanel>
           <!-- Capped, so a long diff scrolls inside the box and Run and Decline stay in view. -->
           <TextBox x:Name="ApprovalCommand" Classes="code" Text="{Binding Command}" IsReadOnly="{Binding IsCommandReadOnly}" TextWrapping="Wrap" Background="{DynamicResource CodeBrush}"
                    MaxHeight="280" ScrollViewer.VerticalScrollBarVisibility="Auto" IsVisible="{Binding ShowsCommand}"
                    AutomationProperties.Name="{x:Static res:Strings.ApprovalCommandLabel}" />
           <TextBlock Text="{Binding PlanText}" IsVisible="{Binding HasPlanText}" FontWeight="SemiBold" TextWrapping="Wrap" />
-          <TextBlock Classes="secondary" Text="{Binding RiskText}" TextWrapping="Wrap" />
+          <TextBlock Classes="secondary" Text="{Binding RiskText}" TextWrapping="Wrap" IsVisible="{Binding !UsesOwnActions}" />
           <TextBlock Classes="secondary" Text="{Binding AlsoApprovesText}" IsVisible="{Binding HasAlsoApproves}" TextWrapping="Wrap" />
-          <TextBox Text="{Binding Feedback}" PlaceholderText="{x:Static res:Strings.ApprovalFeedbackPlaceholder}" TextWrapping="Wrap"
-                   AutomationProperties.Name="{x:Static res:Strings.ApprovalFeedbackPlaceholder}" />
-          <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+          <TextBox x:Name="ApprovalFeedback" Text="{Binding Feedback}" PlaceholderText="{x:Static res:Strings.ApprovalFeedbackPlaceholder}" TextWrapping="Wrap"
+                   AutomationProperties.Name="{x:Static res:Strings.ApprovalFeedbackPlaceholder}" IsVisible="{Binding ShowsFeedback}" />
+          <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" IsVisible="{Binding !UsesOwnActions}">
             <Button Content="{Binding DeclineLabel}" Command="{Binding DeclineCommand}" />
             <Button Classes="primary" Content="{Binding RunLabel}" Command="{Binding RunCommand}" />
           </StackPanel>
+          <!-- A look or a plan: the main choice first, as the conversation reads, and a reply in the user's words on request. -->
+          <WrapPanel IsVisible="{Binding IsLook}">
+            <Button Classes="primary" Margin="0,0,8,0" Content="{Binding RunLabel}" Command="{Binding RunCommand}" />
+            <Button Margin="0,0,8,0" Content="{Binding DeclineLabel}" Command="{Binding DeclineCommand}" IsVisible="{Binding !IsReplying}" />
+            <Button Margin="0,0,8,0" Content="{x:Static res:Strings.ApprovalSendReply}" Command="{Binding DeclineCommand}" IsVisible="{Binding IsReplying}" />
+            <Button Classes="plain" Content="{x:Static res:Strings.ApprovalReply}" Command="{Binding ReplyCommand}" IsVisible="{Binding !IsReplying}" />
+          </WrapPanel>
+          <WrapPanel IsVisible="{Binding IsPlan}">
+            <Button Margin="0,0,8,0" Content="{x:Static res:Strings.PlanReview}" Command="{Binding ReviewCommand}" />
+            <Button Classes="primary" Content="{Binding RunLabel}" Command="{Binding RunCommand}" />
+          </WrapPanel>
         </StackPanel>
       </Border>
 
@@ -570,6 +600,42 @@
               <!-- An approved plan, once its task is over; while it runs, it's pinned above the conversation. -->
               <ContentControl Content="{Binding Plan}" Margin="0,6" IsVisible="{Binding Plan.IsInConversation, FallbackValue=False}" />
               <ContentControl Content="{Binding Rollout}" Margin="0,6" IsVisible="{Binding Rollout.IsInConversation, FallbackValue=False}" />
+              <!-- What the agent ran on each host while looking, a line per command, marked as each finishes. -->
+              <Border Classes="card" Margin="0,6" IsVisible="{Binding IsLook}">
+                <StackPanel Spacing="8" DataContext="{Binding Look}" x:DataType="chat:LookProgressViewModel">
+                  <TextBlock Classes="title" Text="{Binding Title}" TextWrapping="Wrap" />
+                  <ItemsControl ItemsSource="{Binding Hosts}">
+                    <ItemsControl.ItemsPanel>
+                      <ItemsPanelTemplate>
+                        <StackPanel Spacing="8" />
+                      </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate x:DataType="chat:LookProgressHostViewModel">
+                        <Border Classes="lookHost" Classes.first="{Binding IsFirst}">
+                          <StackPanel Spacing="4">
+                            <ContentControl Content="{Binding Chip}" ContentTemplate="{StaticResource HostChip}" HorizontalAlignment="Left" Margin="0,0,0,-4" />
+                            <ItemsControl ItemsSource="{Binding Commands}">
+                              <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="chat:LookCommandViewModel">
+                                  <Grid ColumnDefinitions="14,*" ColumnSpacing="4" Margin="0,1">
+                                    <Panel VerticalAlignment="Top" Margin="0,1,0,0">
+                                      <TextBlock Text="✓" Foreground="{DynamicResource SyntaxAddedBrush}" FontSize="{StaticResource SmallSize}" IsVisible="{Binding IsDone}" />
+                                      <TextBlock Text="●" Foreground="{DynamicResource AccentBrush}" FontSize="{StaticResource CaptionSize}" IsVisible="{Binding IsRunning}" />
+                                      <TextBlock Text="✗" Foreground="{DynamicResource DangerBrush}" FontSize="{StaticResource SmallSize}" IsVisible="{Binding IsFailed}" />
+                                    </Panel>
+                                    <SelectableTextBlock Grid.Column="1" Classes="mono secondary" Text="{Binding Command}" TextWrapping="Wrap" />
+                                  </Grid>
+                                </DataTemplate>
+                              </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                          </StackPanel>
+                        </Border>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </StackPanel>
+              </Border>
               <!-- A question the agent asked, kept quiet once answered; the answer follows as the user's message. -->
               <SelectableTextBlock Classes="secondary" Text="{Binding Text}" TextWrapping="Wrap" Margin="0,8,0,0" IsVisible="{Binding IsAsked}" />
               <!-- A web search or page read: what it was, then the pages, which ask before opening. -->

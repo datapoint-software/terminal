@@ -11,6 +11,8 @@
       <SolidColorBrush x:Key="PaneBrush" Color="#F5F5F7" />
       <SolidColorBrush x:Key="GroupedBackgroundBrush" Color="#ECECEE" />
       <SolidColorBrush x:Key="DangerBrush" Color="#D70015" />
+      <!-- An environment named on a host chip: danger text on a pale tint of it, quieter than a solid badge. -->
+      <SolidColorBrush x:Key="DangerTintBrush" Color="#FDE8EA" />
       <SolidColorBrush x:Key="CardBrush" Color="#FFFFFF" />
       <SolidColorBrush x:Key="SegmentBrush" Color="#FFFFFF" />
       <SolidColorBrush x:Key="FieldBrush" Color="#FFFFFF" />
@@ -49,6 +51,7 @@
       <SolidColorBrush x:Key="PaneBrush" Color="#232325" />
       <SolidColorBrush x:Key="GroupedBackgroundBrush" Color="#1C1C1E" />
       <SolidColorBrush x:Key="DangerBrush" Color="#FF6961" />
+      <SolidColorBrush x:Key="DangerTintBrush" Color="#3B1A1A" />
       <SolidColorBrush x:Key="CardBrush" Color="#2C2C2E" />
       <SolidColorBrush x:Key="SegmentBrush" Color="#636366" />
       <SolidColorBrush x:Key="FieldBrush" Color="#2C2C2E" />

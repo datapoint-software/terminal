@@ -16,4 +16,7 @@ public enum ChatItemKind
 
     // A web search or page read, with the pages it found.
     Web,
+
+    // What the agent ran on each host while looking before planning.
+    Look,
 }

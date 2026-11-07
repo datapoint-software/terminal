@@ -43,8 +43,11 @@ public sealed partial class PlanReviewViewModel : ObservableObject, IOpenDocumen
 
     public int PendingCount => Comments.Count(comment => comment.IsPending);
 
+    private int SentCount => Comments.Count(comment => comment.IsSent);
+
     public string PendingText => PendingCount switch
     {
+        0 when Plan.IsRevision && SentCount > 0 => SentCount == 1 ? Strings.PlanRevisedAfterOne : Strings.Format(Strings.PlanRevisedAfter, SentCount),
         0 => Strings.PlanNoCommentsToSend,
         1 => Strings.PlanOneCommentToSend,
         _ => Strings.Format(Strings.PlanCommentsToSend, PendingCount),
@@ -69,7 +72,7 @@ public sealed partial class PlanReviewViewModel : ObservableObject, IOpenDocumen
     };
 
     // On a revision, which steps changed, so the user can go straight to them.
-    public string? RevisionText => RevisionOf(Plan.PlanSteps);
+    public string? RevisionText => RevisionOf(Plan.PlanSteps, sent: false);
 
     public bool HasRevisionText => RevisionText is not null;
 
@@ -87,6 +90,11 @@ public sealed partial class PlanReviewViewModel : ObservableObject, IOpenDocumen
         }
 
         Plan = plan;
+        foreach (var comment in Comments.Where(comment => comment.IsSent))
+        {
+            comment.Revision = RevisionOf(plan.PlanSteps, sent: true);
+        }
+
         _isSending = false;
         IsConfirmingApprove = false;
         State = PlanReviewState.Waiting;
@@ -97,7 +105,8 @@ public sealed partial class PlanReviewViewModel : ObservableObject, IOpenDocumen
 
     public PlanCommentViewModel AddComment(string? quote, int? step)
     {
-        var comment = new PlanCommentViewModel(quote, step, remove => Comments.Remove(remove)) { Changed = Refresh };
+        var title = Plan.PlanSteps.FirstOrDefault(item => item.Number == step)?.Title;
+        var comment = new PlanCommentViewModel(quote, step, title, remove => Comments.Remove(remove)) { Changed = Refresh };
         Comments.Add(comment);
         return comment;
     }
@@ -185,14 +194,17 @@ public sealed partial class PlanReviewViewModel : ObservableObject, IOpenDocumen
         SendCommentsCommand.NotifyCanExecuteChanged();
     }
 
-    private static string? RevisionOf(IReadOnlyList<PlanStepViewModel> steps)
+    // Which steps a revision changed, for the page's heading or, after a comment was sent, for its card.
+    private static string? RevisionOf(IReadOnlyList<PlanStepViewModel> steps, bool sent)
     {
         var changed = steps.Where(step => step.HasChange).Select(step => step.NumberText).ToList();
-        return changed.Count switch
+        return (changed.Count, sent) switch
         {
-            0 => null,
-            1 => Strings.Format(Strings.PlanRevisedOne, changed[0]),
-            _ => Strings.Format(Strings.PlanRevisedMany, string.Join(", ", changed)),
+            (0, _) => null,
+            (1, false) => Strings.Format(Strings.PlanRevisedOne, changed[0]),
+            (_, false) => Strings.Format(Strings.PlanRevisedMany, string.Join(", ", changed)),
+            (1, true) => Strings.Format(Strings.PlanCommentSentOne, changed[0]),
+            _ => Strings.Format(Strings.PlanCommentSentMany, string.Join(", ", changed)),
         };
     }
 }

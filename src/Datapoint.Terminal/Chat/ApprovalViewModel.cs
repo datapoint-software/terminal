@@ -66,6 +66,23 @@ public sealed partial class ApprovalViewModel : ObservableObject
 
     public bool IsLook => Kind == ProposalKind.Look;
 
+    // A look or a plan has its own buttons, main choice first, and no risk line: what allowing means is in the card itself.
+    public bool UsesOwnActions => IsLook || IsPlan;
+
+    // Every other card has a box for the user's reason; a look shows one when the user asks to reply, and a plan is answered
+    // with comments on its page.
+    public bool ShowsFeedback => !UsesOwnActions || IsReplying;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowsFeedback))]
+    public partial bool IsReplying { get; set; }
+
+    [RelayCommand]
+    private void Reply() => IsReplying = true;
+
+    // A look request's heading is the agent's own title, and a plan's summary is on its page, so neither repeats it here.
+    public bool ShowsPurpose => !IsLook && !IsPlan;
+
     public IReadOnlyList<LookHostViewModel> LookHosts { get; }
 
     // What allowing the look lets the agent do, and for how long.
@@ -100,7 +117,7 @@ public sealed partial class ApprovalViewModel : ObservableObject
     {
         ProposalKind.OpenTerminal => Strings.ApprovalOpen,
         ProposalKind.SendKeys => Strings.ApprovalSend,
-        ProposalKind.Plan => Strings.ApprovalApprovePlan,
+        ProposalKind.Plan => Strings.ApprovalApprove,
         ProposalKind.EditFile => Strings.ApprovalApplyEdit,
         ProposalKind.Rollout => Strings.ApprovalStartRollout,
         ProposalKind.Look => Strings.ApprovalLookAllow,
@@ -117,7 +134,7 @@ public sealed partial class ApprovalViewModel : ObservableObject
 
     public string Heading => (Kind, IgnoredFile, Risk) switch
     {
-        (ProposalKind.Look, _, _) => Strings.ApprovalHeadingLook,
+        (ProposalKind.Look, _, _) => Purpose,
         (ProposalKind.OpenTerminal, _, _) => Strings.ApprovalHeadingOpen,
         (ProposalKind.SendKeys, _, _) => Strings.ApprovalHeadingKeys,
         (ProposalKind.Plan, _, _) => PlanTitle is { } title ? Strings.Format(Strings.ApprovalHeadingPlanNamed, title) : Strings.ApprovalHeadingPlan,
@@ -164,8 +181,19 @@ public sealed partial class ApprovalViewModel : ObservableObject
 
     public void Cancel() => _decision.TrySetCanceled();
 
+    // Called as the user allows a look, before the agent hears of it, so the Looking card is there for its first command.
+    public Action? Allowed { get; set; }
+
     [RelayCommand(CanExecute = nameof(CanRun))]
-    private void Run() => _decision.TrySetResult(CommandApproval.Approve(Command));
+    private void Run()
+    {
+        if (!_decision.Task.IsCompleted)
+        {
+            Allowed?.Invoke();
+        }
+
+        _decision.TrySetResult(CommandApproval.Approve(Command));
+    }
 
     // Opens the plan as a page in the documents area, where the user can read it in full and comment on it.
     public Action<ApprovalViewModel>? ReviewRequested { get; set; }
@@ -206,8 +234,8 @@ public sealed partial class ApprovalViewModel : ObservableObject
         (_, { } environment) => Strings.Format(Strings.ApprovalInTerminalEnvironment, proposal.Terminal, environment),
     };
 
-    // Steps compare by their content, so a step that only moved keeps no mark; a step whose title matches one before it is
-    // changed, and any other is new.
+    // Steps compare by their content, so a step that only moved keeps no mark. A step is changed when one before it had its
+    // title, or stood at its number on the same hosts; any other is new.
     private static void MarkChanges(IReadOnlyList<PlanStepViewModel> steps, AgentPlan? previous)
     {
         if (previous is null)
@@ -229,13 +257,17 @@ public sealed partial class ApprovalViewModel : ObservableObject
             return null;
         }
 
-        return same.Any(before => string.Equals(before.Title, step.Title, StringComparison.OrdinalIgnoreCase)) ? Strings.PlanStepChanged : Strings.PlanStepNew;
+        var wasThere = same.Any(before => string.Equals(before.Title, step.Title, StringComparison.OrdinalIgnoreCase))
+            || (same.ElementAtOrDefault(step.Number - 1) is { } at && IsOnSameHosts(at, step));
+        return wasThere ? Strings.PlanStepChanged : Strings.PlanStepNew;
     }
+
+    private static bool IsOnSameHosts(PlanStepViewModel before, PlanStepViewModel after) =>
+        before.Hosts.Select(host => host.Name).SequenceEqual(after.Hosts.Select(host => host.Name), StringComparer.OrdinalIgnoreCase);
 
     private static bool IsSame(PlanStepViewModel before, PlanStepViewModel after) =>
         string.Equals(before.Command, after.Command, StringComparison.Ordinal) && string.Equals(before.Purpose, after.Purpose, StringComparison.Ordinal)
-        && string.Equals(before.Title, after.Title, StringComparison.Ordinal) && before.IsExample == after.IsExample
-        && before.Hosts.Select(host => host.Name).SequenceEqual(after.Hosts.Select(host => host.Name), StringComparer.OrdinalIgnoreCase);
+        && string.Equals(before.Title, after.Title, StringComparison.Ordinal) && before.IsExample == after.IsExample && IsOnSameHosts(before, after);
 
     private static string LowerFirst(string text) =>
         text.Length > 1 && char.IsUpper(text[0]) && !char.IsUpper(text[1]) ? char.ToLower(text[0], System.Globalization.CultureInfo.CurrentCulture) + text[1..] : text;

@@ -15,6 +15,7 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
     private TerminalAgent? _agent;
     private ChatItemViewModel? _streaming;
     private ChatItemViewModel? _command;
+    private LookProgressViewModel? _look;
     private bool _isSettingModels;
 
     public ChatViewModel(IUiThread ui)
@@ -216,6 +217,11 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
     public Task<CommandApproval> RequestApprovalAsync(CommandProposal proposal, CancellationToken cancellationToken)
     {
         var approval = new ApprovalViewModel(proposal) { ReviewRequested = plan => PlanShown?.Invoke(plan, true) };
+        if (proposal.Look is { } look)
+        {
+            approval.Allowed = () => StartLook(look);
+        }
+
         _ui.Post(() =>
         {
             Approval = approval;
@@ -224,6 +230,7 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
                 return;
             }
 
+            EndLook();
             PlanShown?.Invoke(approval, false);
         });
         var registration = cancellationToken.Register(approval.Cancel);
@@ -475,6 +482,11 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
 
     private void ShowCommand(AgentEventArgs e)
     {
+        if (IsLooking(e))
+        {
+            return;
+        }
+
         if (e.Kind == AgentEventKind.CommandFinished)
         {
             FinishCommand(e);
@@ -601,6 +613,31 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
         _command = null;
     }
 
+    // While the agent looks, its commands on the hosts it asked about go on the Looking card rather than a line each.
+    private bool IsLooking(AgentEventArgs e)
+    {
+        if (_look is not { } look || e.Terminal is not { } terminal || e.Command is not { } command)
+        {
+            return false;
+        }
+
+        return e.Kind == AgentEventKind.CommandStarted ? look.Start(terminal, command) : look.Finish(terminal, command, e.ExitCode);
+    }
+
+    private void StartLook(AgentLook look)
+    {
+        EndLook();
+        _streaming = null;
+        _look = new LookProgressViewModel(look);
+        Items.Add(new ChatItemViewModel(ChatItemKind.Look, look.Title) { Look = _look });
+    }
+
+    private void EndLook()
+    {
+        _look?.End();
+        _look = null;
+    }
+
     private void SetStatus(AgentStatus status)
     {
         if (status == AgentStatus.Thinking)
@@ -612,6 +649,7 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
         if (status is AgentStatus.Idle or AgentStatus.Interrupted)
         {
             EndPlan();
+            EndLook();
         }
 
         Status = status;
