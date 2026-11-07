@@ -21,7 +21,7 @@ public sealed partial class MainWindow
                 Record(HistoryEntryKind.Agent, e.Text);
                 break;
             case AgentEventKind.CommandFinished:
-                Record(HistoryEntryKind.Command, e.Command ?? string.Empty, e.Terminal, e.Output, e.ExitCode);
+                Record(HistoryEntryKind.Command, e.Command ?? string.Empty, e.Terminal, e.Output, e.ExitCode, e.Connection);
                 break;
             case AgentEventKind.Notice:
                 Record(HistoryEntryKind.Notice, e.Text);
@@ -31,7 +31,7 @@ public sealed partial class MainWindow
 
     // A read-only window leaves the history to the window that holds the project's lock. The store is opened on the first entry,
     // so a project that's never used with the agent gets no history file.
-    private void Record(HistoryEntryKind kind, string text, string? terminal = null, string? detail = null, int? exitCode = null)
+    private void Record(HistoryEntryKind kind, string text, string? terminal = null, string? detail = null, int? exitCode = null, string? connection = null)
     {
         if (Project.IsReadOnly)
         {
@@ -50,7 +50,7 @@ public sealed partial class MainWindow
                 _history ??= HistoryStore.Open(Project.PersonalPath, _redactor);
                 var now = DateTimeOffset.Now;
                 _conversation ??= _history.StartConversation(now);
-                _history.Add(new HistoryEntry(_conversation.Value, now, kind, text, terminal, detail, exitCode));
+                _history.Add(new HistoryEntry(_conversation.Value, now, kind, text, terminal, detail, exitCode, connection));
             }
             catch (Exception exception) when (exception is SqliteException or HistoryException or IOException or UnauthorizedAccessException)
             {

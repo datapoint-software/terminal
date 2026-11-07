@@ -14,7 +14,8 @@ public sealed class HistoryStore : IDisposable
     // Long outputs keep their start and end, as the agent sees them.
     public const int MaxDetailCharacters = 64 * 1024;
 
-    private const int Version = 1;
+    // 2 added the connection each entry came from.
+    private const int Version = 2;
 
     private readonly SqliteConnection _connection;
     private readonly SecretRedactor _redactor;
@@ -60,14 +61,15 @@ public sealed class HistoryStore : IDisposable
         lock (_lock)
         {
             using var command = Command(
-                "INSERT INTO entries (conversation, time, kind, terminal, text, detail, exit_code) VALUES ($conversation, $time, $kind, $terminal, $text, $detail, $exit)",
+                "INSERT INTO entries (conversation, time, kind, terminal, text, detail, exit_code, connection) VALUES ($conversation, $time, $kind, $terminal, $text, $detail, $exit, $connection)",
                 ("$conversation", entry.Conversation),
                 ("$time", entry.Time.ToUnixTimeMilliseconds()),
                 ("$kind", entry.Kind.ToString()),
                 ("$terminal", entry.Terminal),
                 ("$text", _redactor.Redact(entry.Text)),
                 ("$detail", entry.Detail is null ? null : Shorten(_redactor.Redact(entry.Detail))),
-                ("$exit", entry.ExitCode));
+                ("$exit", entry.ExitCode),
+                ("$connection", entry.Connection));
             command.ExecuteNonQuery();
         }
     }
@@ -102,18 +104,83 @@ public sealed class HistoryStore : IDisposable
         }
     }
 
+    // Newest first.
+    public IReadOnlyList<ConversationSummary> Conversations(int limit)
+    {
+        lock (_lock)
+        {
+            using var command = Command(
+                """
+                SELECT c.id, c.started, count(e.id),
+                    coalesce((SELECT text FROM entries WHERE conversation = c.id AND kind = 'User' ORDER BY id LIMIT 1),
+                             (SELECT text FROM entries WHERE conversation = c.id ORDER BY id LIMIT 1), '')
+                FROM conversations c JOIN entries e ON e.conversation = c.id
+                GROUP BY c.id ORDER BY c.started DESC, c.id DESC LIMIT $limit
+                """,
+                ("$limit", limit));
+            var summaries = new List<ConversationSummary>();
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                summaries.Add(new ConversationSummary(reader.GetInt64(0), DateTimeOffset.FromUnixTimeMilliseconds(reader.GetInt64(1)), reader.GetString(3), reader.GetInt32(2)));
+            }
+
+            return summaries;
+        }
+    }
+
+    public IReadOnlyList<string> Connections()
+    {
+        lock (_lock)
+        {
+            using var command = Command("SELECT DISTINCT connection FROM entries WHERE connection IS NOT NULL ORDER BY connection COLLATE NOCASE");
+            var names = new List<string>();
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                names.Add(reader.GetString(0));
+            }
+
+            return names;
+        }
+    }
+
+    // Clearing per connection (product decision 52) removes what was recorded from its terminals; the rest of each conversation stays.
+    public int DeleteConnection(string connection) =>
+        Delete("DELETE FROM entries WHERE connection = $connection", ("$connection", connection));
+
+    // Deleted pages are overwritten (secure_delete), and the file is vacuumed to give the space back.
+    public void DeleteAll()
+    {
+        Delete("DELETE FROM entries");
+        lock (_lock)
+        {
+            using var vacuum = Command("VACUUM");
+            vacuum.ExecuteNonQuery();
+        }
+    }
+
     // For the retention setting: entries older than the cutoff go, and so do conversations left empty.
-    public int DeleteOlderThan(DateTimeOffset cutoff)
+    public int DeleteOlderThan(DateTimeOffset cutoff) =>
+        Delete("DELETE FROM entries WHERE time < $cutoff", ("$cutoff", cutoff.ToUnixTimeMilliseconds()));
+
+    // Conversations left empty go too.
+    private int Delete(string sql, params (string Name, object? Value)[] parameters)
     {
         lock (_lock)
         {
             using var transaction = _connection.BeginTransaction();
-            using var entries = Command("DELETE FROM entries WHERE time < $cutoff", ("$cutoff", cutoff.ToUnixTimeMilliseconds()));
+            using var entries = Command(sql, parameters);
             entries.Transaction = transaction;
             var deleted = entries.ExecuteNonQuery();
             using var conversations = Command("DELETE FROM conversations WHERE id NOT IN (SELECT conversation FROM entries)");
             conversations.Transaction = transaction;
             conversations.ExecuteNonQuery();
+
+            // The search index only marks rows deleted until its segments are merged; merging drops their words for good.
+            using var merge = Command("INSERT INTO entry_search (entry_search) VALUES ('optimize')");
+            merge.Transaction = transaction;
+            merge.ExecuteNonQuery();
             transaction.Commit();
             return deleted;
         }
@@ -127,7 +194,7 @@ public sealed class HistoryStore : IDisposable
         }
     }
 
-    private const string Columns = "entries.conversation, entries.time, entries.kind, entries.terminal, entries.text, entries.detail, entries.exit_code";
+    private const string Columns = "entries.conversation, entries.time, entries.kind, entries.terminal, entries.text, entries.detail, entries.exit_code, entries.connection";
 
     private SqliteCommand Command(string sql, params (string Name, object? Value)[] parameters)
     {
@@ -154,7 +221,8 @@ public sealed class HistoryStore : IDisposable
                 reader.GetString(4),
                 reader.IsDBNull(3) ? null : reader.GetString(3),
                 reader.IsDBNull(5) ? null : reader.GetString(5),
-                reader.IsDBNull(6) ? null : reader.GetInt32(6)));
+                reader.IsDBNull(6) ? null : reader.GetInt32(6),
+                reader.IsDBNull(7) ? null : reader.GetString(7)));
         }
 
         return entries;
@@ -170,9 +238,11 @@ public sealed class HistoryStore : IDisposable
             throw new HistoryException($"The history was written by a newer version of Datapoint Terminal (format {version}), so it isn't changed.");
         }
 
+        var migrate = version == 1 ? "ALTER TABLE entries ADD COLUMN connection TEXT;" : string.Empty;
         command.CommandText = $"""
             PRAGMA journal_mode = DELETE;
             PRAGMA foreign_keys = ON;
+            PRAGMA secure_delete = ON;
             CREATE TABLE IF NOT EXISTS conversations (
                 id INTEGER PRIMARY KEY,
                 started INTEGER NOT NULL);
@@ -184,7 +254,9 @@ public sealed class HistoryStore : IDisposable
                 terminal TEXT,
                 text TEXT NOT NULL,
                 detail TEXT,
-                exit_code INTEGER);
+                exit_code INTEGER,
+                connection TEXT);
+            {migrate}
             CREATE INDEX IF NOT EXISTS entries_by_conversation ON entries (conversation);
             CREATE INDEX IF NOT EXISTS entries_by_time ON entries (time);
             CREATE VIRTUAL TABLE IF NOT EXISTS entry_search USING fts5 (text, detail, content = 'entries', content_rowid = 'id');

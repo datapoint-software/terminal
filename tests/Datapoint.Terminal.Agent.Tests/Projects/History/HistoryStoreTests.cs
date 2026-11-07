@@ -131,4 +131,76 @@ public sealed class HistoryStoreTests : IDisposable
 
         Assert.Throws<HistoryException>(Open);
     }
+
+    [Fact]
+    public void Lists_conversations_newest_first_with_the_first_message()
+    {
+        using var store = Open();
+        var first = store.StartConversation(s_start);
+        store.Add(new HistoryEntry(first, s_start, HistoryEntryKind.Notice, "Connected."));
+        store.Add(new HistoryEntry(first, s_start, HistoryEntryKind.User, "How full is the disk?"));
+        var second = store.StartConversation(s_start.AddHours(1));
+        store.Add(new HistoryEntry(second, s_start.AddHours(1), HistoryEntryKind.Agent, "Hello."));
+        store.StartConversation(s_start.AddHours(2));
+
+        Assert.Equal(
+            [new ConversationSummary(second, s_start.AddHours(1), "Hello.", 1), new ConversationSummary(first, s_start, "How full is the disk?", 2)],
+            store.Conversations(10));
+    }
+
+    [Fact]
+    public void Clears_one_connection_and_keeps_the_rest()
+    {
+        using var store = Open();
+        var conversation = store.StartConversation(s_start);
+        store.Add(new HistoryEntry(conversation, s_start, HistoryEntryKind.User, "Check both"));
+        store.Add(new HistoryEntry(conversation, s_start, HistoryEntryKind.Command, "uptime", "web1", "up quokka days", 0, "web1"));
+        store.Add(new HistoryEntry(conversation, s_start, HistoryEntryKind.Command, "uptime", "db 2", "up 9 days", 0, "db"));
+
+        Assert.Equal(["db", "web1"], store.Connections(), StringComparer.Ordinal);
+        Assert.Equal(1, store.DeleteConnection("web1"));
+
+        Assert.Equal(["Check both", "uptime"], store.Conversation(conversation).Select(entry => entry.Text), StringComparer.Ordinal);
+        Assert.Empty(store.Search("quokka", 10));
+        Assert.Equal(["db"], store.Connections(), StringComparer.Ordinal);
+        Assert.Equal(-1, File.ReadAllBytes(DatabasePath).AsSpan().IndexOf("quokka"u8));
+    }
+
+    [Fact]
+    public void Clears_everything_from_the_file()
+    {
+        using (var store = Open())
+        {
+            var conversation = store.StartConversation(s_start);
+            store.Add(new HistoryEntry(conversation, s_start, HistoryEntryKind.User, "remember the word zanzibar"));
+            store.DeleteAll();
+            Assert.Empty(store.Conversations(10));
+        }
+
+        Assert.Equal(-1, File.ReadAllBytes(DatabasePath).AsSpan().IndexOf("zanzibar"u8));
+    }
+
+    [Fact]
+    public void Upgrades_a_first_format_history()
+    {
+        using (var connection = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={DatabasePath};Pooling=False"))
+        {
+            connection.Open();
+            using var command = connection.CreateCommand();
+            command.CommandText = """
+                CREATE TABLE conversations (id INTEGER PRIMARY KEY, started INTEGER NOT NULL);
+                CREATE TABLE entries (id INTEGER PRIMARY KEY, conversation INTEGER NOT NULL REFERENCES conversations (id) ON DELETE CASCADE,
+                    time INTEGER NOT NULL, kind TEXT NOT NULL, terminal TEXT, text TEXT NOT NULL, detail TEXT, exit_code INTEGER);
+                INSERT INTO conversations VALUES (1, 0);
+                INSERT INTO entries (conversation, time, kind, text) VALUES (1, 0, 'User', 'old question');
+                PRAGMA user_version = 1;
+                """;
+            command.ExecuteNonQuery();
+        }
+
+        using var store = Open();
+        store.Add(new HistoryEntry(1, s_start, HistoryEntryKind.Command, "ls", "web1", "a b", 0, "web1"));
+
+        Assert.Equal([null, "web1"], store.Conversation(1).Select(entry => entry.Connection), StringComparer.Ordinal);
+    }
 }

@@ -35,7 +35,7 @@ public sealed partial class MainWindow
         {
             var session = await LogInAsync(connection, host).ConfigureAwait(true);
             var view = new TerminalView { Padding = new Thickness(12, 10), IsVisible = false };
-            var tab = new TerminalTab(NextTabName(connection.Name), view, RequestClose) { IsRemote = true };
+            var tab = new TerminalTab(NextTabName(connection.Name), view, RequestClose) { IsRemote = true, ConnectionName = connection.Name };
             Attach(tab, new TerminalConnection(session, 80, 24), connection.Environment, DefaultModeFor(connection), select);
             return tab;
         }

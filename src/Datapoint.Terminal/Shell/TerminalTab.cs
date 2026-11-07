@@ -23,6 +23,9 @@ public sealed partial class TerminalTab : ObservableObject
 
     public string Name { get; }
 
+    // The connection the tab was opened for, which history entries are kept under; local tabs are all "Local".
+    public string? ConnectionName { get; init; }
+
     public TerminalView View { get; }
 
     public TerminalConnection? Connection { get; set; }

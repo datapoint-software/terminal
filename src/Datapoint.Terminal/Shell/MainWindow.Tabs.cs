@@ -21,7 +21,7 @@ public sealed partial class MainWindow
     private async Task<TerminalTab?> OpenLocalTabAsync(bool select = true)
     {
         var view = new TerminalView { Padding = new Thickness(12, 10), IsVisible = false };
-        var tab = new TerminalTab(NextTabName(Strings.TabLocal), view, RequestClose);
+        var tab = new TerminalTab(NextTabName(Strings.TabLocal), view, RequestClose) { ConnectionName = Strings.TabLocal };
         try
         {
             var options = Project.IsDefault ? new LocalSessionOptions() : new LocalSessionOptions { WorkingDirectory = Project.Folder };
@@ -40,7 +40,7 @@ public sealed partial class MainWindow
     private void Attach(TerminalTab tab, TerminalConnection connection, string? environment, ApprovalMode defaultMode, bool select = true)
     {
         tab.Connection = connection;
-        tab.AgentTerminal = new AgentTerminal(tab.Name, new ConnectionTerminal(connection), defaultMode, environment) { IsRemote = tab.IsRemote };
+        tab.AgentTerminal = new AgentTerminal(tab.Name, new ConnectionTerminal(connection), defaultMode, environment) { IsRemote = tab.IsRemote, Connection = tab.ConnectionName };
         connection.OutputArrived += (_, _) => tab.View.NotifyOutput();
         connection.TitleChanged += (_, _) => Dispatcher.UIThread.Post(() =>
         {
