@@ -11,6 +11,9 @@
     <PackageReference Include="Microsoft.Data.Sqlite" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Safety\ReadOnlyCommands.jsonc" LogicalName="Datapoint.Terminal.Agent.Safety.ReadOnlyCommands.jsonc" />
+  </ItemGroup>
+  <ItemGroup>
     <InternalsVisibleTo Include="Datapoint.Terminal.Agent.Tests" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,65 @@
+// Commands that only read (product decision 112). The agent runs them without asking in Ask mode and while it looks; anything
+// not listed here, or listed but given a writing option, counts as a change and asks first. When in doubt, leave it out: a
+// command missing from this list costs the user a click, one wrongly listed can change a machine without asking.
+//
+// Each group lists commands as the words they start with: the program, then any subcommand, e.g. "docker node ls". The rest
+// of the command may follow, except:
+// - "writes": options that make these commands write, delete or run something, on top of the global ones below. An option
+//   matches as the whole word or with "=value"; one ending in "*" matches anything that starts with it.
+// - "allows": global writing options that are harmless for these commands, e.g. "ps -o" chooses columns.
+// - "exact": only options may follow, no further words, for commands whose next word would be another action
+//   (e.g. "ip addr" lists addresses, "ip addr add" changes them).
+// - "windows": matched ignoring case, with the global options not applied, for Windows commands and PowerShell cmdlets.
+//
+// Left out on purpose: shells and interpreters, awk, sed, env, nice, time, timeout, xargs and watch (they run other
+// commands), uniq (writes its second argument), history (can clear), interactive programs such as less and top, which never
+// return, and commands that reach other machines (they're checked separately, see CommandClassifier.IsNetwork).
+{
+  // Options that make many otherwise reading programs write a file or change one in place.
+  "writingOptions": ["-delete", "-exec", "-execdir", "-i", "--in-place*", "-o", "--output*", "--vacuum*", "--rotate*", "--flush*", "--pre*"],
+
+  "groups": [
+    {
+      "commands": [
+        "ls", "pwd", "whoami", "id", "uname", "uptime", "cat", "head", "tail", "wc", "grep", "egrep", "fgrep", "rg", "which",
+        "type", "stat", "df", "du", "free", "ps", "pgrep", "printenv", "echo", "printf", "lsblk", "lscpu", "lsof", "netstat",
+        "journalctl", "sort", "cut", "tr", "column", "diff", "md5sum", "sha256sum", "tree", "realpath", "dirname", "basename",
+        "true", "test", "groups", "last", "w", "who", "nproc", "arch", "sw_vers", "vm_stat", "jq"
+      ]
+    },
+    { "commands": ["date"], "writes": ["-s", "--set"] },
+    { "commands": ["ss"], "writes": ["-K", "--kill"] },
+    { "commands": ["file"], "writes": ["-C"] },
+    {
+      "commands": [
+        "git status", "git log", "git diff", "git show", "git rev-parse", "git blame", "git ls-files", "git describe",
+        "systemctl status", "systemctl list-units", "systemctl list-unit-files", "systemctl is-active", "systemctl is-enabled",
+        "systemctl show", "systemctl cat",
+        "docker ps", "docker images", "docker logs", "docker inspect", "docker version", "docker info", "docker stats",
+        "kubectl get", "kubectl describe", "kubectl logs", "kubectl version", "kubectl top",
+        "apt list", "apt show", "apt search", "apt policy",
+        "dpkg -l", "dpkg -s", "dpkg -L", "dpkg --list", "dpkg --status",
+        "rpm -q", "rpm -qa", "rpm -qi", "rpm -ql",
+        "brew list", "brew info", "brew search", "brew outdated", "brew config", "brew doctor"
+      ]
+    },
+    {
+      // Docker's grouped commands. Left out: exec, run, attach and cp (they run or copy anything), compose config (it prints
+      // the environment filled in, secrets included), and anything that creates, updates, removes, scales, prunes or rolls back.
+      "commands": [
+        "docker node ls", "docker node ps", "docker node inspect",
+        "docker service ls", "docker service ps", "docker service inspect", "docker service logs",
+        "docker stack ls", "docker stack ps", "docker stack services",
+        "docker container ls", "docker container inspect", "docker container logs", "docker container top",
+        "docker container stats", "docker container port", "docker container diff",
+        "docker image ls", "docker image inspect", "docker image history",
+        "docker network ls", "docker network inspect", "docker volume ls", "docker volume inspect",
+        "docker config ls", "docker config inspect", "docker secret ls", "docker secret inspect",
+        "docker context ls", "docker context inspect", "docker context show",
+        "docker system df", "docker system info",
+        "docker compose ps", "docker compose ls", "docker compose logs", "docker compose images", "docker compose top",
+        "docker compose version"
+      ]
+    }
+  ]
+}

@@ -2,8 +2,8 @@ using System.Collections.Frozen;
 
 namespace Datapoint.Terminal.Agent.Safety;
 
-// Conservative: a command is read-only only when every part of it is a known reading command with no output redirection;
-// anything unknown counts as a change.
+// Conservative: a command is read-only only when every part of it is a reading command listed in ReadOnlyCommands.jsonc,
+// with no output redirection or writing option. Anything unknown counts as a change.
 public static class CommandClassifier
 {
     // Programs that reach other machines, and so can carry data off this one: a name looked up with dig or ping goes to a DNS
@@ -17,66 +17,6 @@ public static class CommandClassifier
     private static readonly FrozenSet<string> s_networkAtStart = FrozenSet.Create(StringComparer.Ordinal, "host", "http", "https", "xh");
 
     private static readonly FrozenSet<string> s_gitNetwork = FrozenSet.Create(StringComparer.Ordinal, "push", "pull", "fetch", "clone", "ls-remote", "submodule");
-
-    // Programs that only read, as long as none of the options in s_writingOptions is given. Left out on purpose: env, nice,
-    // time and xargs (they run other commands), ip, ifconfig and hostname (they also change settings), uniq (writes its second
-    // argument), history and dmesg (can clear), and interactive programs such as less and top, which never return.
-    private static readonly FrozenSet<string> s_readOnly = FrozenSet.Create(
-        StringComparer.Ordinal,
-        "ls", "pwd", "whoami", "id", "uname", "uptime", "date", "cat", "head", "tail", "wc", "grep", "egrep", "fgrep", "rg", "which",
-        "type", "file", "stat", "df", "du", "free", "ps", "pgrep", "printenv", "echo", "printf", "lsblk", "lscpu", "lsof", "ss", "netstat",
-        "journalctl", "sort", "cut", "tr", "column", "diff", "md5sum", "sha256sum", "tree", "realpath",
-        "dirname", "basename", "true", "test", "groups", "last", "w", "who", "nproc", "arch", "sw_vers", "vm_stat", "jq");
-
-    // Options that make an otherwise reading program write, delete or run something. Matched as the whole word, or as a prefix
-    // for the long options that take a value (e.g. --output=file, --vacuum-size=1G).
-    private static readonly string[] s_writingOptions =
-    [
-        "-delete", "-exec", "-execdir", "-i", "--in-place", "-o", "--output", "--vacuum", "--rotate", "--flush", "--pre",
-    ];
-
-    // Short options that write only for one program, where they're common harmless options elsewhere (e.g. ls -s, du -s).
-    private static readonly FrozenDictionary<string, string[]> s_writingOptionsByProgram = new Dictionary<string, string[]>(StringComparer.Ordinal)
-    {
-        ["date"] = ["-s", "--set"],
-        ["ss"] = ["-K", "--kill"],
-        ["file"] = ["-C"],
-    }.ToFrozenDictionary(StringComparer.Ordinal);
-
-    private static readonly FrozenDictionary<string, FrozenSet<string>> s_readOnlySubcommands = new Dictionary<string, FrozenSet<string>>(StringComparer.Ordinal)
-    {
-        ["git"] = FrozenSet.Create(StringComparer.Ordinal, "status", "log", "diff", "show", "rev-parse", "blame", "ls-files", "describe"),
-        ["systemctl"] = FrozenSet.Create(StringComparer.Ordinal, "status", "list-units", "list-unit-files", "is-active", "is-enabled", "show", "cat"),
-        ["docker"] = FrozenSet.Create(StringComparer.Ordinal, "ps", "images", "logs", "inspect", "version", "info", "stats"),
-        ["kubectl"] = FrozenSet.Create(StringComparer.Ordinal, "get", "describe", "logs", "version", "top"),
-        ["apt"] = FrozenSet.Create(StringComparer.Ordinal, "list", "show", "search", "policy"),
-        ["dpkg"] = FrozenSet.Create(StringComparer.Ordinal, "-l", "-s", "-L", "--list", "--status"),
-        ["rpm"] = FrozenSet.Create(StringComparer.Ordinal, "-q", "-qa", "-qi", "-ql"),
-        ["brew"] = FrozenSet.Create(StringComparer.Ordinal, "list", "info", "search", "outdated", "config", "doctor"),
-    }.ToFrozenDictionary(StringComparer.Ordinal);
-
-    // Commands of two words that only read, e.g. docker node ls: the group, then what's done with it. Left out on purpose:
-    // exec, run, attach and cp (they run or copy anything), compose config (it prints the environment filled in, secrets
-    // included), and anything that creates, updates, removes, scales, prunes or rolls back.
-    private static readonly FrozenDictionary<string, FrozenDictionary<string, FrozenSet<string>>> s_readOnlyGroupCommands =
-        new Dictionary<string, FrozenDictionary<string, FrozenSet<string>>>(StringComparer.Ordinal)
-        {
-            ["docker"] = new Dictionary<string, FrozenSet<string>>(StringComparer.Ordinal)
-            {
-                ["node"] = FrozenSet.Create(StringComparer.Ordinal, "ls", "ps", "inspect"),
-                ["service"] = FrozenSet.Create(StringComparer.Ordinal, "ls", "ps", "inspect", "logs"),
-                ["stack"] = FrozenSet.Create(StringComparer.Ordinal, "ls", "ps", "services"),
-                ["container"] = FrozenSet.Create(StringComparer.Ordinal, "ls", "inspect", "logs", "top", "stats", "port", "diff"),
-                ["image"] = FrozenSet.Create(StringComparer.Ordinal, "ls", "inspect", "history"),
-                ["network"] = FrozenSet.Create(StringComparer.Ordinal, "ls", "inspect"),
-                ["volume"] = FrozenSet.Create(StringComparer.Ordinal, "ls", "inspect"),
-                ["config"] = FrozenSet.Create(StringComparer.Ordinal, "ls", "inspect"),
-                ["secret"] = FrozenSet.Create(StringComparer.Ordinal, "ls", "inspect"),
-                ["context"] = FrozenSet.Create(StringComparer.Ordinal, "ls", "inspect", "show"),
-                ["system"] = FrozenSet.Create(StringComparer.Ordinal, "df", "info"),
-                ["compose"] = FrozenSet.Create(StringComparer.Ordinal, "ps", "ls", "logs", "images", "top", "version"),
-            }.ToFrozenDictionary(StringComparer.Ordinal),
-        }.ToFrozenDictionary(StringComparer.Ordinal);
 
     private static readonly string[] s_trustMarkers = ["known_hosts", "authorized_keys", ".ssh/config", "ssh-keygen", "ssh-copy-id", "ssh-add", "ssh_config", "sshd_config"];
 
@@ -134,7 +74,7 @@ public static class CommandClassifier
 
     private static bool IsReadOnlyPart(string part)
     {
-        var words = part.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        var words = part.Split([' ', '\t'], StringSplitOptions.RemoveEmptyEntries);
         var index = 0;
         while (index < words.Length && words[index].Contains('=', StringComparison.Ordinal) && !words[index].StartsWith('-'))
         {
@@ -147,28 +87,21 @@ public static class CommandClassifier
         }
 
         var program = Path.GetFileName(words[index]);
-        if (s_readOnly.Contains(program))
-        {
-            var extra = s_writingOptionsByProgram.GetValueOrDefault(program, []);
-            return !words.Skip(index + 1).Any(word => IsWritingOption(word) || extra.Contains(word, StringComparer.Ordinal));
-        }
-
-        return IsReadOnlySubcommand(program, words, index + 1) || IsReadOnlyGroupCommand(program, words, index + 1);
+        return FindRule(program, words, index + 1) is { } rule && rule.Permits(part, words[(index + rule.Length)..]);
     }
 
-    private static bool IsReadOnlySubcommand(string program, string[] words, int index) =>
-        index < words.Length
-        && s_readOnlySubcommands.TryGetValue(program, out var subcommands)
-        && subcommands.Contains(words[index])
-        && !words.Skip(index + 1).Any(IsWritingOption);
+    // The longest listed command the words start with, e.g. "docker node ls" before "docker".
+    private static CommandRule? FindRule(string program, string[] words, int start)
+    {
+        for (var count = Math.Min(CommandRules.MaxWords, words.Length - start + 1); count >= 1; count--)
+        {
+            var command = string.Join(' ', words.Skip(start).Take(count - 1).Prepend(program));
+            if (CommandRules.BuiltIn.Find(command) is { } rule)
+            {
+                return rule;
+            }
+        }
 
-    private static bool IsReadOnlyGroupCommand(string program, string[] words, int index) =>
-        index + 1 < words.Length
-        && s_readOnlyGroupCommands.TryGetValue(program, out var groups)
-        && groups.TryGetValue(words[index], out var actions)
-        && actions.Contains(words[index + 1])
-        && !words.Skip(index + 2).Any(IsWritingOption);
-
-    private static bool IsWritingOption(string word) =>
-        s_writingOptions.Any(option => string.Equals(word, option, StringComparison.Ordinal) || (option.StartsWith("--", StringComparison.Ordinal) && word.StartsWith(option, StringComparison.Ordinal)));
+        return null;
+    }
 }
