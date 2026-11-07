@@ -8,4 +8,5 @@ namespace Datapoint.Terminal.Agent.Projects;
     PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
     DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
 [JsonSerializable(typeof(ProjectSettings))]
+[JsonSerializable(typeof(Dictionary<string, string>))]
 internal sealed partial class ProjectJsonContext : JsonSerializerContext;

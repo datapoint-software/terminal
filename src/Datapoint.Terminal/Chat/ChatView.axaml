@@ -280,8 +280,11 @@
                   <TextBlock Classes="secondary" Text="{Binding Detail}" TextWrapping="Wrap" />
                 </StackPanel>
               </Border>
-              <SelectableTextBlock Classes="secondary" Text="{Binding Text}" TextWrapping="Wrap" TextAlignment="Center"
-                                   Margin="12,6" IsVisible="{Binding IsNotice}" />
+              <StackPanel Margin="12,6" Spacing="4" IsVisible="{Binding IsNotice}">
+                <SelectableTextBlock Classes="secondary" Text="{Binding Text}" TextWrapping="Wrap" TextAlignment="Center" />
+                <Button Content="{Binding ActionLabel}" Command="{Binding ActionCommand}" IsVisible="{Binding HasAction}"
+                        HorizontalAlignment="Center" />
+              </StackPanel>
             </Panel>
           </DataTemplate>
         </ItemsControl.ItemTemplate>

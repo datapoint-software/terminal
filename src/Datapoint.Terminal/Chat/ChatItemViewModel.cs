@@ -1,3 +1,4 @@
+using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Datapoint.Terminal.Chat;
@@ -19,4 +20,11 @@ public sealed partial class ChatItemViewModel(ChatItemKind kind, string text) : 
 
     [ObservableProperty]
     public partial string Detail { get; set; } = string.Empty;
+
+    // An optional button under a notice, e.g. to show what changed.
+    public string? ActionLabel { get; init; }
+
+    public ICommand? ActionCommand { get; init; }
+
+    public bool HasAction => ActionCommand is not null;
 }

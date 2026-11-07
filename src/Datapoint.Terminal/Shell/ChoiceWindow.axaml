@@ -8,7 +8,7 @@
     <TextBlock x:Name="Heading" FontWeight="SemiBold" FontSize="14" TextWrapping="Wrap" />
     <TextBlock x:Name="Message" TextWrapping="Wrap" />
     <Border x:Name="DetailsBox" Classes="code" IsVisible="False">
-      <ScrollViewer MaxHeight="220">
+      <ScrollViewer MaxHeight="320">
         <SelectableTextBlock x:Name="Details" Classes="mono" TextWrapping="Wrap" />
       </ScrollViewer>
     </Border>

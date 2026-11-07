@@ -104,7 +104,12 @@ public sealed partial class MainWindow
             || ProjectFolders.AreSame(file.Path, global ?? string.Empty)
             || (trust is { IsTrusted: true } && trust.Covers(file.Path));
         var instructions = new AgentInstructions([.. files.Where(isTrusted)], [.. files.Where(file => !isTrusted(file))]);
-        Dispatcher.UIThread.Post(() => ReportInstructions(instructions));
+        var changes = _windows.InstructionSnapshots.Update(files);
+        Dispatcher.UIThread.Post(() =>
+        {
+            ReportInstructions(instructions);
+            ReportChanges(changes);
+        });
         return instructions;
     }
 
@@ -130,6 +135,21 @@ public sealed partial class MainWindow
         foreach (var file in all.Where(file => file.Problem is not null))
         {
             _chat.AddNotice(Strings.Format(Strings.NoticeInstructionsUnreadable, ProjectFolders.Display(file.Path), file.Problem));
+        }
+    }
+
+    private void ReportChanges(IReadOnlyList<InstructionChange> changes)
+    {
+        foreach (var change in changes)
+        {
+            var shown = ProjectFolders.Display(change.Path);
+            _chat.AddNotice(Strings.Format(Strings.NoticeInstructionsChanged, shown), Strings.ShowChanges, () => _ = ChoiceWindow.AskAsync(
+                this,
+                Strings.Format(Strings.InstructionChangesTitle, shown),
+                Strings.InstructionChangesMessage,
+                LineDiff.Describe(change.Before, change.After),
+                hasDefault: true,
+                Strings.Close));
         }
     }
 }

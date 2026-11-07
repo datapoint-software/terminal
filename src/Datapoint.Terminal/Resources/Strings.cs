@@ -358,6 +358,14 @@ public static class Strings
 
     public static string NoticeConnectionsHeld => Get(nameof(NoticeConnectionsHeld));
 
+    public static string NoticeInstructionsChanged => Get(nameof(NoticeInstructionsChanged));
+
+    public static string ShowChanges => Get(nameof(ShowChanges));
+
+    public static string InstructionChangesTitle => Get(nameof(InstructionChangesTitle));
+
+    public static string InstructionChangesMessage => Get(nameof(InstructionChangesMessage));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

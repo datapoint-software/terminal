@@ -114,6 +114,12 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
 
     public void AddNotice(string text) => Items.Add(new ChatItemViewModel(ChatItemKind.Notice, text));
 
+    public void AddNotice(string text, string actionLabel, Action action) => Items.Add(new ChatItemViewModel(ChatItemKind.Notice, text)
+    {
+        ActionLabel = actionLabel,
+        ActionCommand = new RelayCommand(action),
+    });
+
     public AgentTerminal? CurrentTerminal { get; private set; }
 
     public void ShowTerminal(AgentTerminal? terminal)

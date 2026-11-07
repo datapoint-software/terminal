@@ -542,4 +542,16 @@ git rm -r --cached .terminal</value>
   <data name="NoticeConnectionsHeld" xml:space="preserve">
     <value>Changes to connections in .terminal.json are waiting for your review; the connections keep the settings you confirmed. They're shown again when you next open the project.</value>
   </data>
+  <data name="NoticeInstructionsChanged" xml:space="preserve">
+    <value>{0} changed since the agent last read it.</value>
+  </data>
+  <data name="ShowChanges" xml:space="preserve">
+    <value>Show Changes</value>
+  </data>
+  <data name="InstructionChangesTitle" xml:space="preserve">
+    <value>Changes to {0}</value>
+  </data>
+  <data name="InstructionChangesMessage" xml:space="preserve">
+    <value>Since the agent last read this file. Lines starting with - were removed, and lines starting with + were added.</value>
+  </data>
 </root>

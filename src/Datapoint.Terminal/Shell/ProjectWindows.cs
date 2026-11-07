@@ -27,6 +27,9 @@ public sealed class ProjectWindows
 
     public SettingsViewModel Settings { get; }
 
+    public InstructionSnapshots InstructionSnapshots { get; } =
+        new(Path.Combine(Path.GetDirectoryName(SettingsStore.DefaultPath)!, "instructions-read.json"));
+
     public IReadOnlyList<string> Recent => Settings.RecentProjects;
 
     public void OpenAtStartup()
