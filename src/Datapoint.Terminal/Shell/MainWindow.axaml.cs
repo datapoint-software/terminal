@@ -60,6 +60,7 @@ public sealed partial class MainWindow : Window
         NativeMenu.SetMenu(this, BuildMenu());
         AddHandler(KeyDownEvent, OnShortcutKeyDown, Avalonia.Interactivity.RoutingStrategies.Tunnel);
         Opened += (_, _) => _ = OnOpenedAsync();
+        Closing += OnWindowClosing;
         Closed += (_, _) => _ = StopAsync();
     }
 

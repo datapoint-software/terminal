@@ -29,6 +29,10 @@ public sealed partial class TerminalTab : ObservableObject
 
     public AgentTerminal? AgentTerminal { get; set; }
 
+    public bool IsRemote { get; init; }
+
+    public string? BusyReason => TabBusy.Reason(AgentTerminal?.Terminal.GetState(), IsRemote, IsAgentActing);
+
     public string? Environment => AgentTerminal?.Environment;
 
     public bool HasEnvironment => Environment is not null;

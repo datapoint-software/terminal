@@ -1,3 +1,4 @@
+using Avalonia.Controls;
 using System.Collections.ObjectModel;
 using Avalonia;
 using Avalonia.Threading;
@@ -20,7 +21,7 @@ public sealed partial class MainWindow
     private async Task OpenLocalTabAsync()
     {
         var view = new TerminalView { Padding = new Thickness(12, 10), IsVisible = false };
-        var tab = new TerminalTab(NextTabName(Strings.TabLocal), view, CloseTab);
+        var tab = new TerminalTab(NextTabName(Strings.TabLocal), view, RequestClose);
         try
         {
             var options = Project.IsDefault ? new LocalSessionOptions() : new LocalSessionOptions { WorkingDirectory = Project.Folder };
@@ -113,6 +114,28 @@ public sealed partial class MainWindow
             return;
         }
 
+        RequestClose(tab);
+    }
+
+    private void RequestClose(TerminalTab tab) => _ = RequestCloseAsync(tab);
+
+    // Asks first when closing would cut something off; a tab whose shell has already ended closes without asking.
+    private async Task RequestCloseAsync(TerminalTab tab)
+    {
+        if (tab.BusyReason is { } reason)
+        {
+            var choice = await ChoiceWindow.AskAsync(
+                this,
+                Strings.Format(Strings.CloseTabTitle, tab.Name),
+                Strings.Format(Strings.CloseTabMessage, tab.Label, reason),
+                Strings.Cancel,
+                Strings.CloseTabConfirm).ConfigureAwait(true);
+            if (choice != 1)
+            {
+                return;
+            }
+        }
+
         CloseTab(tab);
     }
 
@@ -127,6 +150,7 @@ public sealed partial class MainWindow
         _ = DisposeTabAsync(tab);
         if (_tabs.Count == 0)
         {
+            _isCloseConfirmed = true;
             Close();
             return;
         }
@@ -182,5 +206,40 @@ public sealed partial class MainWindow
                 tab.Activity = string.Equals(tab.Name, e.Terminal, StringComparison.OrdinalIgnoreCase) ? activity : TabActivity.None;
             }
         });
+    }
+
+    private bool _isCloseConfirmed;
+
+    // The tabs that closing would cut off, one line each, for the question asked before closing a window or quitting.
+    public IReadOnlyList<string> BusyTabs(bool withProject) => [.. _tabs
+        .Select(tab => (tab, reason: tab.BusyReason))
+        .Where(item => item.reason is not null)
+        .Select(item => Strings.Format(Strings.CloseTabLine, withProject ? $"{Project.Name} › {item.tab.Label}" : item.tab.Label, item.reason))];
+
+    // Set when quitting was confirmed for all windows at once.
+    public void AllowClose() => _isCloseConfirmed = true;
+
+    private void OnWindowClosing(object? sender, WindowClosingEventArgs e)
+    {
+        var busy = BusyTabs(withProject: false);
+        if (_isCloseConfirmed || busy.Count == 0)
+        {
+            return;
+        }
+
+        e.Cancel = true;
+        _ = ConfirmCloseAsync(string.Join(Environment.NewLine, busy));
+    }
+
+    private async Task ConfirmCloseAsync(string details)
+    {
+        var choice = await ChoiceWindow.AskAsync(this, Strings.CloseWindowTitle, Strings.CloseWindowMessage, details, hasDefault: true, Strings.Cancel, Strings.CloseWindowConfirm).ConfigureAwait(true);
+        if (choice != 1)
+        {
+            return;
+        }
+
+        _isCloseConfirmed = true;
+        Close();
     }
 }

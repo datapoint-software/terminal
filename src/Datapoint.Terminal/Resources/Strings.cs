@@ -366,6 +366,34 @@ public static class Strings
 
     public static string InstructionChangesMessage => Get(nameof(InstructionChangesMessage));
 
+    public static string BusyAgent => Get(nameof(BusyAgent));
+
+    public static string BusyFullScreen => Get(nameof(BusyFullScreen));
+
+    public static string BusyCommand => Get(nameof(BusyCommand));
+
+    public static string BusyRemote => Get(nameof(BusyRemote));
+
+    public static string CloseTabTitle => Get(nameof(CloseTabTitle));
+
+    public static string CloseTabMessage => Get(nameof(CloseTabMessage));
+
+    public static string CloseTabConfirm => Get(nameof(CloseTabConfirm));
+
+    public static string CloseWindowTitle => Get(nameof(CloseWindowTitle));
+
+    public static string CloseWindowMessage => Get(nameof(CloseWindowMessage));
+
+    public static string CloseWindowConfirm => Get(nameof(CloseWindowConfirm));
+
+    public static string CloseTabLine => Get(nameof(CloseTabLine));
+
+    public static string QuitTitle => Get(nameof(QuitTitle));
+
+    public static string QuitMessage => Get(nameof(QuitMessage));
+
+    public static string QuitConfirm => Get(nameof(QuitConfirm));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

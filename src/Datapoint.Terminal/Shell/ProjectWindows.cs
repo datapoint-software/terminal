@@ -22,7 +22,7 @@ public sealed class ProjectWindows
         ArgumentNullException.ThrowIfNull(settings);
         _desktop = desktop;
         Settings = settings;
-        desktop.ShutdownRequested += (_, _) => _isQuitting = true;
+        desktop.ShutdownRequested += OnShutdownRequested;
     }
 
     public SettingsViewModel Settings { get; }
@@ -161,6 +161,46 @@ public sealed class ProjectWindows
         }
 
         Settings.SetProjects(Recent, OpenFolders());
+    }
+
+    // Quitting asks once for every window's busy tabs; only a confirmed quit counts as quitting.
+    private void OnShutdownRequested(object? sender, ShutdownRequestedEventArgs e)
+    {
+        var busy = _windows.SelectMany(window => window.BusyTabs(withProject: _windows.Count > 1)).ToList();
+        if (_isQuitting || busy.Count == 0)
+        {
+            Quit();
+            return;
+        }
+
+        e.Cancel = true;
+        _ = ConfirmQuitAsync(string.Join(Environment.NewLine, busy));
+    }
+
+    private async Task ConfirmQuitAsync(string details)
+    {
+        if (Active is not { } owner)
+        {
+            return;
+        }
+
+        var choice = await ChoiceWindow.AskAsync(owner, Strings.QuitTitle, Strings.QuitMessage, details, hasDefault: true, Strings.Cancel, Strings.QuitConfirm).ConfigureAwait(true);
+        if (choice != 1)
+        {
+            return;
+        }
+
+        Quit();
+        _desktop.TryShutdown();
+    }
+
+    private void Quit()
+    {
+        _isQuitting = true;
+        foreach (var window in _windows)
+        {
+            window.AllowClose();
+        }
     }
 
     private void Remember(string folder)
