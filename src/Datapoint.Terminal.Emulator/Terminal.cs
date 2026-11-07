@@ -7,7 +7,7 @@ namespace Datapoint.Terminal.Emulator;
 
 public sealed partial class Terminal : IParserHandler
 {
-    public const int DefaultScrollback = 10_000;
+    public const int DefaultScrollback = 100_000;
     public const int MaxTitleLength = 1024;
 
     private readonly Parser _parser;
@@ -19,13 +19,13 @@ public sealed partial class Terminal : IParserHandler
     private SavedCursor? _savedAlternate;
     private int _lastPrinted;
 
-    public Terminal(int columns, int rows, ITerminalHost? host = null, int maxScrollback = DefaultScrollback)
+    public Terminal(int columns, int rows, ITerminalHost? host = null, int maxScrollback = DefaultScrollback, long maxScrollbackBytes = ScreenBuffer.DefaultScrollbackBytes)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(columns, 2);
         ArgumentOutOfRangeException.ThrowIfLessThan(rows, 1);
         _host = host ?? NullTerminalHost.Instance;
         _parser = new Parser(this);
-        Primary = new ScreenBuffer(columns, rows, maxScrollback, _changes);
+        Primary = new ScreenBuffer(columns, rows, maxScrollback, _changes, maxScrollbackBytes);
         Alternate = new ScreenBuffer(columns, rows, 0, _changes);
         Screen = Primary;
         ScrollBottom = rows - 1;
@@ -72,24 +72,89 @@ public sealed partial class Terminal : IParserHandler
 
     public void Feed(string text) => Feed(Encoding.UTF8.GetBytes(text));
 
+    // Raised, with the terminal's lock held, when the primary screen's lines move because it reflowed.
+    public event EventHandler<LinesMovedEventArgs>? LinesMoved;
+
     public void Resize(int columns, int rows)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(columns, 2);
         ArgumentOutOfRangeException.ThrowIfLessThan(rows, 1);
         lock (_sync)
         {
-            // Shrinking drops empty rows below the cursor first; rows above it go to scrollback only when the cursor would fall off.
-            var dropFromTop = Math.Max(0, Cursor.Row + 1 - rows);
-            Primary.Resize(columns, rows, IsAlternateScreen ? 0 : dropFromTop);
-            Alternate.Resize(columns, rows, IsAlternateScreen ? dropFromTop : 0);
+            var map = columns == Columns ? null : ReflowPrimary(columns, rows);
+            if (map is null)
+            {
+                ResizeWithoutReflow(columns, rows);
+            }
+            else
+            {
+                ResizeAlternate(columns, rows);
+            }
+
             ScrollTop = 0;
             ScrollBottom = rows - 1;
-            Array.Resize(ref _tabStops, columns);
             _tabStops = DefaultTabStops(columns);
-            Cursor.Row = Math.Clamp(Cursor.Row - dropFromTop, 0, rows - 1);
-            Cursor.Column = Math.Min(Cursor.Column, columns - 1);
-            Cursor.PendingWrap = false;
+            if (map is not null)
+            {
+                MoveCommands(map);
+                LinesMoved?.Invoke(this, new LinesMovedEventArgs(map));
+            }
         }
+    }
+
+    // Shrinking drops empty rows below the cursor first; rows above it go to scrollback only when the cursor would fall off.
+    private void ResizeWithoutReflow(int columns, int rows)
+    {
+        var dropFromTop = Math.Max(0, Cursor.Row + 1 - rows);
+        Primary.Resize(columns, rows, IsAlternateScreen ? 0 : dropFromTop);
+        Alternate.Resize(columns, rows, IsAlternateScreen ? dropFromTop : 0);
+        Cursor.Row = Math.Clamp(Cursor.Row - dropFromTop, 0, rows - 1);
+        ClampCursor(columns, rows);
+    }
+
+    // The alternate screen never reflows (full-screen programs redraw for the new size); behind it, the primary screen reflows
+    // around the cursor it will return to.
+    private LineMap ReflowPrimary(int columns, int rows)
+    {
+        if (!IsAlternateScreen)
+        {
+            var map = Primary.Reflow(columns, rows, Cursor);
+            if (_savedPrimary is { } saved)
+            {
+                _savedPrimary = saved with { Row = Math.Min(saved.Row, rows - 1), Column = Math.Min(saved.Column, columns - 1) };
+            }
+
+            return map;
+        }
+
+        var behind = new Cursor { Row = _savedPrimary?.Row ?? Primary.Rows - 1, Column = _savedPrimary?.Column ?? 0 };
+        var moved = Primary.Reflow(columns, rows, behind);
+        if (_savedPrimary is { } before)
+        {
+            _savedPrimary = before with { Row = behind.Row, Column = behind.Column, PendingWrap = behind.PendingWrap };
+        }
+
+        return moved;
+    }
+
+    private void ResizeAlternate(int columns, int rows)
+    {
+        var dropFromTop = IsAlternateScreen ? Math.Max(0, Cursor.Row + 1 - rows) : 0;
+        Alternate.Resize(columns, rows, dropFromTop);
+        if (!IsAlternateScreen)
+        {
+            return;
+        }
+
+        Cursor.Row -= dropFromTop;
+        ClampCursor(columns, rows);
+    }
+
+    private void ClampCursor(int columns, int rows)
+    {
+        Cursor.Row = Math.Clamp(Cursor.Row, 0, rows - 1);
+        Cursor.Column = Math.Min(Cursor.Column, columns - 1);
+        Cursor.PendingWrap = false;
     }
 
     public string GetLineText(long firstLine, long lastLine)

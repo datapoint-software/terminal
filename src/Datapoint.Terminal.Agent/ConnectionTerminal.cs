@@ -16,7 +16,10 @@ public sealed class ConnectionTerminal : IAgentTerminal
         _connection = connection;
         _connection.OutputArrived += (_, _) => OutputArrived?.Invoke(this, EventArgs.Empty);
         _connection.Ended += (_, _) => Ended?.Invoke(this, EventArgs.Empty);
+        _connection.Terminal.LinesMoved += (_, e) => LinesMoved?.Invoke(this, e);
     }
+
+    public event EventHandler<Emulator.LinesMovedEventArgs>? LinesMoved;
 
     public event EventHandler? OutputArrived;
 

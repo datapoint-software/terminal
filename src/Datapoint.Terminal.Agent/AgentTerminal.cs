@@ -14,6 +14,11 @@ public sealed class AgentTerminal
         DefaultMode = defaultMode;
         Environment = environment;
         _mode = (int)defaultMode;
+        terminal.LinesMoved += (_, e) =>
+        {
+            SeenUpTo = e.Map.Map(SeenUpTo);
+            RunningCommandLine = RunningCommandLine is { } running ? e.Map.Map(running) : null;
+        };
     }
 
     public event EventHandler? ModeChanged;
@@ -39,6 +44,7 @@ public sealed class AgentTerminal
     public Files.IHostFiles? Files { get; init; }
 
     private long _seenUpTo;
+    private long _runningCommandLine = -1;
 
     // The first line of output the agent hasn't been given: where the last task ended, or where the terminal was when it was
     // added. Output after it goes with the user's next message (product.md, Output sent to the provider).
@@ -71,7 +77,12 @@ public sealed class AgentTerminal
 
     public string Label => Environment is null ? Name : $"{Name} ({Environment})";
 
-    internal long? RunningCommandLine { get; set; }
+    // Set and moved under different threads, so it's read and written whole.
+    internal long? RunningCommandLine
+    {
+        get => Interlocked.Read(ref _runningCommandLine) is var line && line < 0 ? null : line;
+        set => Interlocked.Exchange(ref _runningCommandLine, value ?? -1);
+    }
 
     internal int? RunningPlanStep { get; set; }
 }

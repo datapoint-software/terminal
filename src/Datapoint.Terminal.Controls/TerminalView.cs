@@ -369,6 +369,12 @@ public sealed partial class TerminalView : Control
                 return;
             }
 
+            // A new width reflows the text, and a selection kept by line and column would cover different text.
+            if (columns != terminal.Columns)
+            {
+                ClearSelection();
+            }
+
             terminal.Resize(columns, rows);
             _scrollOffset = 0;
         }

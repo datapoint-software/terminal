@@ -1,3 +1,4 @@
+using Datapoint.Terminal.Emulator.Screen;
 using Datapoint.Terminal.Emulator.ShellIntegration;
 
 namespace Datapoint.Terminal.Emulator;
@@ -27,6 +28,17 @@ public sealed partial class Terminal
     }
 
     private long CursorLine => Primary.FirstVisibleLine + Cursor.Row;
+
+    private void MoveCommands(LineMap map)
+    {
+        foreach (var command in _commands)
+        {
+            command.PromptLine = map.Map(command.PromptLine);
+            command.InputLine = command.InputLine is { } input ? map.Map(input) : null;
+            command.OutputLine = command.OutputLine is { } output ? map.Map(output) : null;
+            command.EndLine = command.EndLine is { } end ? map.Map(end) : null;
+        }
+    }
 
     private void HandleShellIntegration(string argument)
     {

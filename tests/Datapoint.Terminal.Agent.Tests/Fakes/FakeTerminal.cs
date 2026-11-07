@@ -7,6 +7,12 @@ internal sealed class FakeTerminal : IAgentTerminal
 
     public event EventHandler? OutputArrived;
 
+    public event EventHandler<Datapoint.Terminal.Emulator.LinesMovedEventArgs>? LinesMoved
+    {
+        add { }
+        remove { }
+    }
+
     public event EventHandler? Ended;
 
     public List<string> Typed { get; } = [];

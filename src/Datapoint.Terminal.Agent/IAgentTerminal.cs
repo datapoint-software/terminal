@@ -6,6 +6,9 @@ public interface IAgentTerminal
 
     event EventHandler? Ended;
 
+    // The terminal reflowed, so lines numbered before it moved; raised with the terminal's lock held.
+    event EventHandler<Emulator.LinesMovedEventArgs>? LinesMoved;
+
     TerminalState GetState();
 
     CommandResult? GetCommand(long outputLine);

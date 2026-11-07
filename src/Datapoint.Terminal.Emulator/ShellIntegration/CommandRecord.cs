@@ -2,7 +2,7 @@ namespace Datapoint.Terminal.Emulator.ShellIntegration;
 
 public sealed class CommandRecord
 {
-    public required long PromptLine { get; init; }
+    public long PromptLine { get; internal set; }
 
     public long? InputLine { get; internal set; }
 

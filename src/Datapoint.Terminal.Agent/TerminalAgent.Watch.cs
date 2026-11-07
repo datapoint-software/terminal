@@ -59,11 +59,26 @@ public sealed partial class TerminalAgent
     private async Task<string> WatchAsync(AgentTerminal terminal, List<string> texts, TimeSpan limit, CancellationToken cancellationToken)
     {
         using var signal = new OutputSignal(terminal.Terminal);
-        var started = Clock.GetUtcNow();
         var from = terminal.Terminal.GetState().NextOutputLine;
+        void Move(object? sender, Emulator.LinesMovedEventArgs e) => Interlocked.Exchange(ref from, e.Map.Map(Interlocked.Read(ref from)));
+        terminal.Terminal.LinesMoved += Move;
+        try
+        {
+            return await WatchLinesAsync(terminal, signal, texts, limit, () => Interlocked.Read(ref from), next => Interlocked.Exchange(ref from, next), cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            terminal.Terminal.LinesMoved -= Move;
+        }
+    }
+
+    private async Task<string> WatchLinesAsync(AgentTerminal terminal, OutputSignal signal, List<string> texts, TimeSpan limit, Func<long> getFrom, Action<long> setFrom, CancellationToken cancellationToken)
+    {
+        var started = Clock.GetUtcNow();
         var seen = new List<string>();
         while (true)
         {
+            var from = getFrom();
             var lines = terminal.Terminal.GetTextSince(from).Split('\n');
             var match = Array.FindIndex(lines, line => texts.Any(text => line.Contains(text, StringComparison.OrdinalIgnoreCase)));
             if (match >= 0)
@@ -78,7 +93,7 @@ public sealed partial class TerminalAgent
 
             // Lines already checked aren't read again; the last one may still be growing.
             Remember(seen, lines[..^1]);
-            from = Math.Max(from, terminal.Terminal.GetState().NextOutputLine - 1);
+            setFrom(Math.Max(from, terminal.Terminal.GetState().NextOutputLine - 1));
             await signal.WaitAsync(TimeSpan.FromSeconds(5), cancellationToken).ConfigureAwait(false);
         }
     }

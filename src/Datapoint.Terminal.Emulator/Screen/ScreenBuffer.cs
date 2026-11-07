@@ -1,9 +1,13 @@
 namespace Datapoint.Terminal.Emulator.Screen;
 
-public sealed class ScreenBuffer(int columns, int rows, int maxScrollback, ChangeCounter counter)
+// The scrollback is limited both in lines and in an estimate of the memory its rows take, whichever is reached first.
+public sealed class ScreenBuffer(int columns, int rows, int maxScrollback, ChangeCounter counter, long maxScrollbackBytes = ScreenBuffer.DefaultScrollbackBytes)
 {
+    public const long DefaultScrollbackBytes = 64L * 1024 * 1024;
+
     private readonly List<Row> _scrollback = [];
     private Row[] _rows = CreateRows(rows, columns, CellStyle.Default);
+    private long _scrollbackBytes;
 
     public int Columns { get; private set; } = columns;
 
@@ -68,10 +72,49 @@ public sealed class ScreenBuffer(int columns, int rows, int maxScrollback, Chang
         TouchRange(top, bottom);
     }
 
+    public long ScrollbackBytes => _scrollbackBytes;
+
     public void ClearScrollback()
     {
         LinesScrolledOff += _scrollback.Count;
         _scrollback.Clear();
+        _scrollbackBytes = 0;
+    }
+
+    // Lays the scrollback and screen out again for a new width, keeping the cursor on the same character. Blank rows below the
+    // cursor go first; the rest fill the screen from the bottom, and what doesn't fit goes to the scrollback.
+    public LineMap Reflow(int newColumns, int newRows, Cursor cursor)
+    {
+        ArgumentNullException.ThrowIfNull(cursor);
+        var reflow = new Reflow(newColumns);
+        reflow.Lay([.. _scrollback, .. _rows], _scrollback.Count + cursor.Row, cursor.Column, cursor.PendingWrap);
+        var laid = reflow.Rows.ToList();
+        while (laid.Count - 1 > reflow.CursorRow && laid[^1] is { IsWrapped: false, ContentLength: 0 })
+        {
+            laid.RemoveAt(laid.Count - 1);
+        }
+
+        var top = Math.Clamp(laid.Count - newRows, 0, reflow.CursorRow);
+        var first = LinesScrolledOff;
+        _scrollback.Clear();
+        _scrollbackBytes = 0;
+        foreach (var row in laid.Take(top))
+        {
+            AddToScrollback(row);
+        }
+
+        _rows = CreateRows(newRows, newColumns, CellStyle.Default);
+        for (var row = 0; row < newRows && top + row < laid.Count; row++)
+        {
+            _rows[row] = laid[top + row];
+        }
+
+        Columns = newColumns;
+        cursor.Row = reflow.CursorRow - top;
+        cursor.Column = reflow.CursorColumn;
+        cursor.PendingWrap = reflow.PendingWrap;
+        TouchRange(0, newRows - 1);
+        return new LineMap(first, reflow.Moved, first + top + newRows - 1);
     }
 
     public void Resize(int newColumns, int newRows, int dropFromTop)
@@ -101,14 +144,29 @@ public sealed class ScreenBuffer(int columns, int rows, int maxScrollback, Chang
             return;
         }
 
-        _scrollback.Add(row);
-        if (_scrollback.Count <= maxScrollback)
+        AddToScrollback(row);
+    }
+
+    private void AddToScrollback(Row row)
+    {
+        if (maxScrollback == 0)
         {
             return;
         }
 
-        _scrollback.RemoveAt(0);
-        LinesScrolledOff++;
+        var kept = row.Compacted();
+        _scrollback.Add(kept);
+        _scrollbackBytes += kept.EstimatedBytes;
+        var drop = 0;
+        while (_scrollback.Count - drop > 1 && (_scrollback.Count - drop > maxScrollback || _scrollbackBytes > maxScrollbackBytes))
+        {
+            _scrollbackBytes -= _scrollback[drop].EstimatedBytes;
+            drop++;
+        }
+
+        // Removed in one go: taking rows off the front one at a time moves the whole list each time.
+        _scrollback.RemoveRange(0, drop);
+        LinesScrolledOff += drop;
     }
 
     private void TouchRange(int top, int bottom)

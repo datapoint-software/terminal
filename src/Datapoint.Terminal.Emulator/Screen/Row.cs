@@ -4,12 +4,22 @@ namespace Datapoint.Terminal.Emulator.Screen;
 
 public sealed class Row
 {
+    private const int RowOverhead = 48;
+
+    private static readonly int CellBytes = System.Runtime.CompilerServices.Unsafe.SizeOf<Cell>();
+
     private Cell[] _cells;
 
     public Row(int columns, CellStyle style)
     {
         _cells = new Cell[columns];
         Erase(0, columns, style);
+    }
+
+    private Row(Cell[] cells, bool isWrapped)
+    {
+        _cells = cells;
+        IsWrapped = isWrapped;
     }
 
     public int Columns => _cells.Length;
@@ -70,6 +80,49 @@ public sealed class Row
         other._cells.AsSpan(0, Math.Min(Columns, other.Columns)).CopyTo(_cells);
         IsWrapped = other.IsWrapped;
     }
+
+    // What a row costs to keep, roughly: the scrollback is limited by this rather than by its number of lines.
+    public long EstimatedBytes => RowOverhead + ((long)_cells.Length * CellBytes);
+
+    internal ReadOnlySpan<Cell> Cells => _cells;
+
+    // The cells up to the last one that shows anything: text, a background colour or a link.
+    internal int ContentLength
+    {
+        get
+        {
+            var length = _cells.Length;
+            while (length > 0 && IsBlank(_cells[length - 1]))
+            {
+                length--;
+            }
+
+            return length;
+        }
+    }
+
+    internal static Row From(ReadOnlySpan<Cell> cells, int columns, bool isWrapped)
+    {
+        var row = new Row(columns, CellStyle.Default) { IsWrapped = isWrapped };
+        cells.CopyTo(row._cells);
+        return row;
+    }
+
+    // A row leaving the screen keeps only its content, since most lines are much shorter than the window is wide. A wrapped
+    // row is full by definition and is kept whole, so reflowing finds its width.
+    internal Row Compacted()
+    {
+        if (IsWrapped)
+        {
+            return this;
+        }
+
+        var length = ContentLength;
+        return length == _cells.Length ? this : new Row(_cells.AsSpan(0, length).ToArray(), isWrapped: false);
+    }
+
+    private static bool IsBlank(Cell cell) =>
+        cell is { CodePoint: 0, Width: 1, Grapheme: null, HyperlinkId: 0 } && cell.Style.Background.Kind == ColorKind.Default;
 
     public string GetText()
     {
