@@ -1,6 +1,7 @@
 using System.Text;
 using Avalonia.Threading;
 using Datapoint.Terminal.Agent;
+using Datapoint.Terminal.Agent.Memory;
 using Datapoint.Terminal.Agent.Projects;
 using Datapoint.Terminal.Agent.Projects.Ignore;
 using Datapoint.Terminal.Resources;
@@ -104,13 +105,20 @@ public sealed partial class MainWindow
         var files = InstructionFiles.Read([.. paths.Except(ignored, ProjectFolders.Comparer)]);
         var changes = _windows.InstructionSnapshots.Update(files, _redactor);
         var (reviewed, skipped) = await ReviewSecretsAsync(files, cancellationToken).ConfigureAwait(false);
+        var (memory, ignoredMemory, skippedMemory) = await LoadMemoryAsync(cancellationToken).ConfigureAwait(false);
+        ignored.AddRange(ignoredMemory);
+        skipped.AddRange(skippedMemory);
         var trust = _trust;
         var isTrusted = (InstructionFile file) => Project.IsDefault
             || ProjectFolders.AreSame(file.Path, global ?? string.Empty)
+            || ProjectFolders.AreSame(file.Path, GlobalMemoryPath)
             || (trust is { IsTrusted: true } && trust.Covers(file.Path));
-        var instructions = new AgentInstructions([.. reviewed.Where(isTrusted)], [.. reviewed.Where(file => !isTrusted(file))])
+        var instructions = new AgentInstructions(
+            [.. reviewed.Where(isTrusted)],
+            [.. memory.Where(file => !isTrusted(file)), .. reviewed.Where(file => !isTrusted(file))])
         {
             Ignored = TerminalIgnore.Describe(Project.Folder, ProjectFolders.Home),
+            Memory = [.. memory.Where(isTrusted)],
         };
         Dispatcher.UIThread.Post(() =>
         {
@@ -120,6 +128,20 @@ public sealed partial class MainWindow
             ReportChanges(changes);
         });
         return instructions;
+    }
+
+    private static string GlobalMemoryPath => Path.Combine(ProjectFolders.Global, MemoryFile.FileName);
+
+    private string? ProjectMemoryPath => Project.IsDefault ? null : Path.Combine(Project.PersonalPath, MemoryFile.FileName);
+
+    // Memory goes through the same checks as instruction files, but not their change notices: the agent changes it, in view.
+    private async Task<(List<InstructionFile> Memory, List<string> Ignored, List<string> Skipped)> LoadMemoryAsync(CancellationToken cancellationToken)
+    {
+        var paths = new[] { GlobalMemoryPath, ProjectMemoryPath }.OfType<string>().Where(File.Exists).ToList();
+        var ignored = paths.Where(path => TerminalIgnore.IsIgnored(path, Project.Folder, ProjectFolders.Home)).ToList();
+        var files = InstructionFiles.Read([.. paths.Except(ignored, ProjectFolders.Comparer)], 2 * MemoryFile.MaxBytes);
+        var (reviewed, skipped) = await ReviewSecretsAsync(files, cancellationToken).ConfigureAwait(false);
+        return (reviewed, ignored, skipped);
     }
 
     private void ReportNotSent(string format, List<string> paths)
@@ -135,7 +157,12 @@ public sealed partial class MainWindow
     private void ReportInstructions(AgentInstructions instructions)
     {
         static string Names(IEnumerable<InstructionFile> files) => string.Join(", ", files.Select(file => ProjectFolders.Display(file.Path)));
-        var all = instructions.Instructions.Concat(instructions.Data).ToList();
+        var all = instructions.Instructions.Concat(instructions.Data).Concat(instructions.Memory).ToList();
+        if (instructions.Memory.Any(file => file.Text.Length > 0))
+        {
+            _chat.AddNotice(Strings.Format(Strings.NoticeMemory, Names(instructions.Memory.Where(file => file.Text.Length > 0))));
+        }
+
         if (instructions.Instructions.Any(file => file.Text.Length > 0))
         {
             _chat.AddNotice(Strings.Format(Strings.NoticeInstructions, Names(instructions.Instructions.Where(file => file.Text.Length > 0))));

@@ -442,6 +442,26 @@ public static class Strings
 
     public static string ApprovalRiskIgnored => Get(nameof(ApprovalRiskIgnored));
 
+    public static string NoticeMemory => Get(nameof(NoticeMemory));
+
+    public static string MenuOpenGlobalMemory => Get(nameof(MenuOpenGlobalMemory));
+
+    public static string MenuOpenProjectMemory => Get(nameof(MenuOpenProjectMemory));
+
+    public static string MenuClearProjectMemory => Get(nameof(MenuClearProjectMemory));
+
+    public static string NoticeMemoryUnwritable => Get(nameof(NoticeMemoryUnwritable));
+
+    public static string ClearMemoryTitle => Get(nameof(ClearMemoryTitle));
+
+    public static string ClearMemoryMessage => Get(nameof(ClearMemoryMessage));
+
+    public static string ClearMemoryConfirm => Get(nameof(ClearMemoryConfirm));
+
+    public static string NoticeMemoryCleared => Get(nameof(NoticeMemoryCleared));
+
+    public static string MemoryOpen => Get(nameof(MemoryOpen));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

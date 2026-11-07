@@ -28,8 +28,10 @@ public sealed partial class MainWindow
         if (!Project.IsDefault)
         {
             file.Add(Item(Strings.MenuProjectTrust, null, () => _ = ReviewTrustAsync(always: true)));
-            file.Add(new NativeMenuItemSeparator());
         }
+
+        AddMemoryItems(file);
+        file.Add(new NativeMenuItemSeparator());
         if (!IsMac)
         {
             file.Add(Item(Strings.MenuSettings, new KeyGesture(Key.OemComma, KeyModifiers.Control), _windows.OpenSettings));

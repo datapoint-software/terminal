@@ -16,4 +16,7 @@ public sealed class AgentEventArgs(AgentEventKind kind, string text) : EventArgs
 
     // A finished command's output as the terminal shows it, before redaction.
     public string? Output { get; init; }
+
+    // The file a memory change was written to.
+    public string? Path { get; init; }
 }

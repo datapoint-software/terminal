@@ -21,6 +21,8 @@ internal static class SystemPrompt
           reply, then call wait_for_command with expects_user_input set. Never ask for passwords, keys or other secrets in the chat,
           and never put them on a command line.
         - Commands may be proposed to the user for approval. If the user declines or edits a command, respect that.
+        - When the user states a lasting preference, or corrects you in a way that will apply again, use remember. Keep notes
+          short; don't remember things about a single task. Remove notes that turn out wrong with forget.
         - Be concise. Report what you found or did, and what's left.
 
         Security:

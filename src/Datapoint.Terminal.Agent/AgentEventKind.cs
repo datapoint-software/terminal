@@ -13,4 +13,6 @@ public enum AgentEventKind
     Notice,
 
     StatusChanged,
+
+    MemoryChanged,
 }

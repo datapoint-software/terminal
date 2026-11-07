@@ -9,5 +9,8 @@ public sealed record AgentInstructions(IReadOnlyList<InstructionFile> Instructio
     // The .terminalignore files that apply to the project, so the agent can avoid reading those files in the terminal.
     public IReadOnlyList<IgnoredFiles> Ignored { get; init; } = [];
 
+    // The agent's own notes, global and, in a trusted project, the project's; the user's instruction files take precedence.
+    public IReadOnlyList<InstructionFile> Memory { get; init; } = [];
+
     public static AgentInstructions None { get; } = new([], []);
 }

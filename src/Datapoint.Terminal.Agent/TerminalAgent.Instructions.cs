@@ -19,8 +19,26 @@ public sealed partial class TerminalAgent
         }
 
         var instructions = await source(cancellationToken).ConfigureAwait(false);
-        _history[0] = new ChatMessage(ChatRole.System, SystemPrompt.Text + InstructionsBlock(instructions.Instructions));
+        _history[0] = new ChatMessage(ChatRole.System, SystemPrompt.Text + MemoryBlock(instructions.Memory) + InstructionsBlock(instructions.Instructions));
         return IgnoredBlock(instructions.Ignored) + DataBlock(instructions.Data) + message;
+    }
+
+    private string MemoryBlock(IReadOnlyList<InstructionFile> files)
+    {
+        var usable = files.Where(file => file.Text.Length > 0).ToList();
+        if (usable.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        var text = new StringBuilder("\nYour memory: notes you kept in earlier conversations with remember. The user may have edited them; ")
+            .Append("where they disagree with the user's instruction files, the instruction files win.\n");
+        foreach (var file in usable)
+        {
+            AppendFile(text, "memory_file", file);
+        }
+
+        return text.ToString();
     }
 
     private string InstructionsBlock(IReadOnlyList<InstructionFile> files)

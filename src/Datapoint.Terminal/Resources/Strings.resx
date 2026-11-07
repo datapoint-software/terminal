@@ -668,4 +668,34 @@ git rm -r --cached .terminal</value>
   <data name="ApprovalRiskIgnored" xml:space="preserve">
     <value>{0} is listed in .terminalignore. If this runs, what it prints is sent to the AI provider, with only likely secrets masked. Asks in every mode.</value>
   </data>
+  <data name="NoticeMemory" xml:space="preserve">
+    <value>The agent's memory goes with this conversation: {0}.</value>
+  </data>
+  <data name="MenuOpenGlobalMemory" xml:space="preserve">
+    <value>Open Agent Memory (All Projects)</value>
+  </data>
+  <data name="MenuOpenProjectMemory" xml:space="preserve">
+    <value>Open Agent Memory (This Project)</value>
+  </data>
+  <data name="MenuClearProjectMemory" xml:space="preserve">
+    <value>Clear This Project's Agent Memory…</value>
+  </data>
+  <data name="NoticeMemoryUnwritable" xml:space="preserve">
+    <value>Couldn't write the memory file {0}: {1}</value>
+  </data>
+  <data name="ClearMemoryTitle" xml:space="preserve">
+    <value>Clear this project's memory?</value>
+  </data>
+  <data name="ClearMemoryMessage" xml:space="preserve">
+    <value>The agent forgets every note it kept for this project. Notes kept for all projects stay.</value>
+  </data>
+  <data name="ClearMemoryConfirm" xml:space="preserve">
+    <value>Clear Memory</value>
+  </data>
+  <data name="NoticeMemoryCleared" xml:space="preserve">
+    <value>This project's memory was cleared.</value>
+  </data>
+  <data name="MemoryOpen" xml:space="preserve">
+    <value>Open memory</value>
+  </data>
 </root>

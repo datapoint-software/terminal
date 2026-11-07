@@ -66,6 +66,7 @@ public sealed partial class TerminalAgent
              "required":["connection","purpose"]}
             """,
             OpenTerminalAsync),
+        .. MemoryTools(),
     ];
 
     private async Task<string> RunCommandAsync(AIFunctionArguments arguments, CancellationToken cancellationToken)

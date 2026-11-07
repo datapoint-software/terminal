@@ -145,7 +145,9 @@ public sealed partial class MainWindow : Window, ITerminalOpener
                     InstructionsSource = LoadInstructionsAsync,
                     TerminalOpener = this,
                     IgnoredFileCheck = FindIgnoredFile,
+                    Memory = CreateMemory(),
                 };
+                _agent.EventRaised += OnMemoryEvent;
                 _agent.EventRaised += OnAgentEvent;
                 _agent.EventRaised += OnHistoryEvent;
                 foreach (var tab in _tabs.Where(tab => tab.AgentTerminal is not null))
