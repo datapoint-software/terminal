@@ -140,7 +140,7 @@
               <Rectangle Classes="hairline" />
               <Grid Classes="row" ColumnDefinitions="150,*">
                 <TextBlock Text="{x:Static res:Strings.ProviderEndpoint}" />
-                <TextBox Grid.Column="1" Text="{Binding Endpoint}" Watermark="{x:Static res:Strings.ProviderEndpointHint}"
+                <TextBox Grid.Column="1" Text="{Binding Endpoint}" PlaceholderText="{x:Static res:Strings.ProviderEndpointHint}"
                          AutomationProperties.Name="{x:Static res:Strings.ProviderEndpoint}" />
               </Grid>
               <Rectangle Classes="hairline" />
@@ -157,7 +157,7 @@
             <Grid Classes="row" ColumnDefinitions="150,*">
               <TextBlock Text="{x:Static res:Strings.ProviderApiKey}" />
               <Grid Grid.Column="1" ColumnDefinitions="*,Auto" IsVisible="{Binding ShowKeyEntry}">
-                <TextBox Text="{Binding KeyDraft}" PasswordChar="•" Watermark="{x:Static res:Strings.ProviderKeyPlaceholder}"
+                <TextBox Text="{Binding KeyDraft}" PasswordChar="•" PlaceholderText="{x:Static res:Strings.ProviderKeyPlaceholder}"
                          AutomationProperties.Name="{x:Static res:Strings.ProviderApiKey}">
                   <TextBox.KeyBindings>
                     <KeyBinding Gesture="Enter" Command="{Binding SaveKeyCommand}" />

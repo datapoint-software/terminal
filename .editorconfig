@@ -268,3 +268,9 @@ dotnet_diagnostic.MA0008.severity = none
 dotnet_diagnostic.CA1707.severity = none
 # xUnit asks tests not to use ConfigureAwait(false) (xUnit1030); helpers in test projects follow the tests.
 dotnet_diagnostic.MA0004.severity = none
+
+# The main window needs its project, so it has no parameterless constructor and is created only through the compiled
+# InitializeComponent, never by the runtime loader this warning is about. Avalonia reads this line whatever the section, so it
+# applies to every XAML file: give any other window or control a public parameterless constructor.
+[*.axaml]
+avalonia_xaml_diagnostic.AVLN3001.severity = none
