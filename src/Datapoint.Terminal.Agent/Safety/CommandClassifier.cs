@@ -18,6 +18,14 @@ public static class CommandClassifier
 
     private static readonly FrozenSet<string> s_gitNetwork = FrozenSet.Create(StringComparer.Ordinal, "push", "pull", "fetch", "clone", "ls-remote", "submodule");
 
+    private static readonly FrozenSet<string> s_harmlessVariables = FrozenSet.Create(
+        StringComparer.Ordinal, "LANG", "LANGUAGE", "TZ", "COLUMNS", "LINES", "TERM", "NO_COLOR", "CLICOLOR", "SYSTEMD_COLORS");
+
+    private static readonly FrozenSet<string> s_pagerVariables = FrozenSet.Create(StringComparer.Ordinal, "PAGER", "GIT_PAGER", "SYSTEMD_PAGER", "MANPAGER");
+
+    private static readonly FrozenSet<string> s_systemFolders = FrozenSet.Create(
+        StringComparer.Ordinal, "/bin", "/sbin", "/usr/bin", "/usr/sbin", "/usr/local/bin", "/usr/local/sbin", "/opt/homebrew/bin");
+
     private static readonly string[] s_trustMarkers = ["known_hosts", "authorized_keys", ".ssh/config", "ssh-keygen", "ssh-copy-id", "ssh-add", "ssh_config", "sshd_config"];
 
     private static readonly char[] s_separators = ['|', ';', '&'];
@@ -76,18 +84,51 @@ public static class CommandClassifier
     {
         var words = part.Split([' ', '\t'], StringSplitOptions.RemoveEmptyEntries);
         var index = 0;
-        while (index < words.Length && words[index].Contains('=', StringComparison.Ordinal) && !words[index].StartsWith('-'))
+        while (index < words.Length && IsAssignment(words[index]))
         {
+            if (!IsHarmlessAssignment(words[index]))
+            {
+                return false;
+            }
+
             index++;
         }
 
-        if (index >= words.Length)
+        if (index >= words.Length || ProgramName(words[index]) is not { } program)
         {
             return false;
         }
 
-        var program = Path.GetFileName(words[index]);
         return FindRule(program, words, index + 1) is { } rule && rule.Permits(part, words[(index + rule.Length)..]);
+    }
+
+    private static bool IsAssignment(string word) => word.Contains('=', StringComparison.Ordinal) && !word.StartsWith('-');
+
+    // Variables can make a reading program run something else (LD_PRELOAD, GIT_EXTERNAL_DIFF, LESSOPEN, a pager), so only
+    // ones that change how output looks keep a command reading.
+    private static bool IsHarmlessAssignment(string word)
+    {
+        var name = word[..word.IndexOf('=', StringComparison.Ordinal)];
+        var value = word[(name.Length + 1)..].Trim('\'', '"');
+        return s_harmlessVariables.Contains(name) || name.StartsWith("LC_", StringComparison.Ordinal)
+            || (s_pagerVariables.Contains(name) && value is "" or "cat");
+    }
+
+    // A program given by its path counts only from the system's own folders: ./ls or /tmp/cat could be anything.
+    private static string? ProgramName(string word)
+    {
+        if (word.Contains('\\', StringComparison.Ordinal))
+        {
+            return null;
+        }
+
+        if (!word.Contains('/', StringComparison.Ordinal))
+        {
+            return word;
+        }
+
+        var folder = word[..word.LastIndexOf('/')];
+        return s_systemFolders.Contains(folder) ? word[(folder.Length + 1)..] : null;
     }
 
     // The longest listed command the words start with, e.g. "docker node ls" before "docker".
