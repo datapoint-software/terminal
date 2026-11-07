@@ -964,6 +964,10 @@ public static class Strings
 
     public static string MenuPaste => Get(nameof(MenuPaste));
 
+    public static string NoticeRemoteIntegration => Get(nameof(NoticeRemoteIntegration));
+
+    public static string NoticeRemoteNoIntegration => Get(nameof(NoticeRemoteNoIntegration));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

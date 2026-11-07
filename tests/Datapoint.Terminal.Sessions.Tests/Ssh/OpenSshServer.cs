@@ -65,6 +65,12 @@ public sealed class OpenSshServer : IAsyncLifetime
         await RunAsync("docker", "exec", _container!, "sh", "-c", $"echo '{publicKeyLine.Trim()}' >> /home/tester/.ssh/authorized_keys");
     }
 
+    // The tester's login shell, e.g. "/bin/zsh".
+    public async Task SetShellAsync(string shell) =>
+        await RunAsync("docker", "exec", _container!, "sed", "-i", $"s#^tester:\\(.*\\):[^:]*$#tester:\\1:{shell}#", "/etc/passwd");
+
+    public async Task<string> RunAsync(string command) => (await RunAsync("docker", "exec", _container!, "sh", "-c", command)).Output;
+
     public static Task<(bool Succeeded, string Output)> RunToolAsync(string fileName, params string[] arguments) => RunAsync(fileName, arguments);
 
     public SshConnectionOptions Options(IHostKeyVerifier? verifier = null) => new()

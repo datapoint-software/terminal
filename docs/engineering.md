@@ -284,6 +284,7 @@ Following [David Leadbeater's survey of terminal security](https://dgl.cx/2023/0
 - **Our own scripts,** loaded when the shell starts without changing any of the user's files, using VS Code's technique: `--init-file` for bash, a temporary `ZDOTDIR` for zsh, `--init-command` for fish, `-NoExit -Command` for PowerShell. Each script loads the user's own configuration first.
 - **VS Code's scripts are MIT** and may be adapted, with their notice kept. Ghostty's bash and zsh scripts are GPL, despite Ghostty itself being MIT, and so are iTerm2's and kitty's: none of them is copied, only the ideas.
 - **The scripts emit** OSC 133 (A, B, C, D), OSC 633 with a nonce passed to the shell in an environment variable, and OSC 7.
+- **Over SSH** the session runs a one-line bootstrap (`RemoteShellIntegration`) as an exec request in place of the login shell. It turns the terminal's echo off and prints a ready marker; the application then sends the nonce and the scripts as the terminal's input, never on a command line other users of the host can read. They land in a `mktemp -d` folder (mode 700) that the shell deletes while loading them, and the login shell starts with them as it would locally. A host whose login shell isn't bash, zsh or fish, or that lacks `mktemp` or `stty`, or refuses the command, gets its ordinary login shell. A connection can turn it off with `"shellIntegration": false`. Tested against OpenSSH on Alpine (`tests/ssh-server`, which has bash, zsh and fish).
 
 ### Reference projects
 

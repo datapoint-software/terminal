@@ -1,5 +1,5 @@
 FROM alpine:3.22
-RUN apk add --no-cache openssh-server bash \
+RUN apk add --no-cache openssh-server bash zsh fish \
  && ssh-keygen -A \
  && adduser -D -s /bin/bash tester \
  && echo 'tester:correct horse battery staple' | chpasswd \

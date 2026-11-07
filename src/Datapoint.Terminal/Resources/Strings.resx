@@ -1140,7 +1140,7 @@ git rm -r --cached .terminal</value>
     <value>Select some text in the terminal first, then choose Explain Selection.</value>
   </data>
   <data name="NoticeNoFailedCommand" xml:space="preserve">
-    <value>There's no failed command to fix in this terminal. Failed commands are recognized in local shells with shell integration.</value>
+    <value>There's no failed command to fix in this terminal. Failed commands are recognized in shells with shell integration.</value>
   </data>
   <data name="ExcerptSelection" xml:space="preserve">
     <value>the selected text</value>
@@ -1450,5 +1450,11 @@ git rm -r --cached .terminal</value>
   </data>
   <data name="MenuPaste" xml:space="preserve">
     <value>Paste</value>
+  </data>
+  <data name="NoticeRemoteIntegration" xml:space="preserve">
+    <value>Shell integration is on in {0}: the app sees where each command starts and ends, and its exit code.</value>
+  </data>
+  <data name="NoticeRemoteNoIntegration" xml:space="preserve">
+    <value>{0}'s login shell isn't bash, zsh or fish, so the app judges when commands finish from their output.</value>
   </data>
 </root>

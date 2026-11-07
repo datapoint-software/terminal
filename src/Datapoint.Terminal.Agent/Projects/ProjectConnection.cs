@@ -26,6 +26,9 @@ public sealed record ProjectConnection
     // Ports forwarded while a tab is open, written as LocalForward is: "8080 localhost:80".
     public IReadOnlyList<string>? Forwards { get; init; }
 
+    // False for a host whose shell shouldn't be started through our scripts, e.g. one that logs every command run at login.
+    public bool? ShellIntegration { get; init; }
+
     public bool IsProduction => EnvironmentLabels.IsProduction(Environment);
 
     // Names and labels come from a shared file and reach the model and the screen, so they're kept to short, plain text that

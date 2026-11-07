@@ -40,6 +40,11 @@ public sealed partial class MainWindow
         try
         {
             var session = await LogInAsync(connection, config, host, jumps).ConfigureAwait(true);
+            if (connection.Container is null && connection.ShellIntegration != false)
+            {
+                _chat.AddNotice(Strings.Format(session.ShellIntegrationNonce is null ? Strings.NoticeRemoteNoIntegration : Strings.NoticeRemoteIntegration, connection.Name));
+            }
+
             return AttachSsh(connection, host, session, select);
         }
         catch (Exception exception) when (exception is SshAuthenticationException or SshDisconnectedException or SshProtocolException or SshChannelException
@@ -79,7 +84,7 @@ public sealed partial class MainWindow
         try
         {
             var command = connection.Container?.CommandLine();
-            return await SshTerminalSession.StartAsync(client, "xterm-256color", 80, 24, CancellationToken.None, ownsClient: true, command).ConfigureAwait(true);
+            return await SshTerminalSession.StartAsync(client, "xterm-256color", 80, 24, CancellationToken.None, ownsClient: true, command, shellIntegration: connection.ShellIntegration != false).ConfigureAwait(true);
         }
         catch
         {

@@ -4,6 +4,8 @@
 
 if [ -n "${__dpt_loaded:-}" ]; then return; fi
 __dpt_loaded=1
+# Over SSH the scripts arrive in a temporary folder; bash has read this whole file already, so the folder can go.
+if [ -n "${DATAPOINT_CLEANUP:-}" ]; then rm -rf -- "$DATAPOINT_CLEANUP"; unset DATAPOINT_CLEANUP; fi
 __dpt_nonce="${DATAPOINT_NONCE:-}"
 unset DATAPOINT_NONCE
 

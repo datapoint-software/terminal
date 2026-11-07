@@ -95,18 +95,28 @@ public sealed class ShellIntegrationInstaller : IDisposable
 
     private static string QuoteForPowerShell(string path) => "'" + path.Replace("'", "''", StringComparison.Ordinal) + "'";
 
-    private void WriteScripts()
+    // The scripts by their path in the folder, e.g. "zsh/.zshrc".
+    public static IReadOnlyList<(string Path, string Text)> Scripts()
     {
         const string prefix = "ShellIntegration/";
         var assembly = typeof(ShellIntegrationInstaller).Assembly;
-        foreach (var name in assembly.GetManifestResourceNames().Where(name => name.StartsWith(prefix, StringComparison.Ordinal)))
+        return [.. assembly.GetManifestResourceNames()
+            .Where(name => name.StartsWith(prefix, StringComparison.Ordinal))
+            .Order(StringComparer.Ordinal)
+            .Select(name =>
+            {
+                using var reader = new StreamReader(assembly.GetManifestResourceStream(name)!);
+                return (name[prefix.Length..].Replace('\\', '/'), reader.ReadToEnd());
+            })];
+    }
+
+    private void WriteScripts()
+    {
+        foreach (var (relative, text) in Scripts())
         {
-            var relative = name[prefix.Length..].Replace('\\', '/');
             var path = Path.Combine(Folder, relative);
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-            using var source = assembly.GetManifestResourceStream(name)!;
-            using var target = File.Create(path);
-            source.CopyTo(target);
+            File.WriteAllText(path, text);
         }
     }
 }

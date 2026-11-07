@@ -5,6 +5,11 @@ if set -q __dpt_loaded
     exit
 end
 set -g __dpt_loaded 1
+# Over SSH the scripts arrive in a temporary folder; fish has read this whole file already, so the folder can go.
+if set -q DATAPOINT_CLEANUP
+    rm -rf -- $DATAPOINT_CLEANUP
+    set -e DATAPOINT_CLEANUP
+end
 set -g __dpt_nonce $DATAPOINT_NONCE
 set -e DATAPOINT_NONCE
 set -g __dpt_in_command 0
