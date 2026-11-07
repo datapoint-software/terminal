@@ -2226,4 +2226,7 @@ Fingerprint: {2}</value>
   <data name="AppearanceReduceMotionHint" xml:space="preserve">
     <value>Menus, dialogs and cards appear and close without animating. They also do while your system asks to reduce motion.</value>
   </data>
+  <data name="SidebarDefaultWorkspaceDetail" xml:space="preserve">
+    <value>Always here</value>
+  </data>
 </root>

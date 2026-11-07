@@ -62,8 +62,9 @@ public sealed partial class MainWindow
         };
     }
 
-    private static string LocationOf(string folder) =>
-        WorkspaceFolders.AreSame(folder, WorkspaceFolders.DefaultWorkspace) ? Strings.SidebarDefaultWorkspace : WorkspaceLocation.Describe(folder, WorkspaceFolders.Home);
+    // None for the default workspace, whose name already says where it is.
+    private static string? LocationOf(string folder) =>
+        WorkspaceFolders.AreSame(folder, WorkspaceFolders.DefaultWorkspace) ? null : WorkspaceLocation.Describe(folder, WorkspaceFolders.Home);
 
     // This workspace, then the recent ones, then the default one, which is always there to go back to.
     private List<WorkspaceSwitchItem> ListWorkspaces()
@@ -79,7 +80,7 @@ public sealed partial class MainWindow
 
         return [.. folders.Select(folder => new WorkspaceSwitchItem(
             WorkspaceFolders.AreSame(folder, WorkspaceFolders.DefaultWorkspace) ? Strings.SidebarDefaultWorkspace : Path.GetFileName(folder.TrimEnd(Path.DirectorySeparatorChar)),
-            WorkspaceFolders.AreSame(folder, Workspace.Folder) ? _sidebar.WorkspaceDetail : LocationOf(folder),
+            WorkspaceFolders.AreSame(folder, Workspace.Folder) ? _sidebar.WorkspaceDetail : LocationOf(folder) ?? Strings.SidebarDefaultWorkspaceDetail,
             folder,
             WorkspaceFolders.AreSame(folder, Workspace.Folder)))];
     }
@@ -136,7 +137,7 @@ public sealed partial class MainWindow
         var connections = Connections.Count > 0 ? Connections : Workspace.Settings.Connections;
         _sidebar.SetHosts(connections, OtherSshHosts(Workspace.Settings.Connections));
         var count = connections.Count == 1 ? Strings.SidebarHostCountOne : Strings.Format(Strings.SidebarHostCount, connections.Count);
-        _sidebar.SetWorkspace(Workspace.Name, $"{LocationOf(Workspace.Folder)} · {count}");
+        _sidebar.SetWorkspace(Workspace.Name, LocationOf(Workspace.Folder) is { } location ? $"{location} · {count}" : count);
         RefreshOpenTerminals();
     }
 

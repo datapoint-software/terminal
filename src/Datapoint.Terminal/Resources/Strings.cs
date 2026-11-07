@@ -1482,6 +1482,8 @@ public static class Strings
 
     public static string AppearanceReduceMotionHint => Get(nameof(AppearanceReduceMotionHint));
 
+    public static string SidebarDefaultWorkspaceDetail => Get(nameof(SidebarDefaultWorkspaceDetail));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;
