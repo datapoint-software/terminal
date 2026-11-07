@@ -48,7 +48,7 @@ public sealed partial class TerminalAgent
         {
             SetStatus(AgentStatus.WaitingForApproval);
             var proposal = new CommandProposal(connection.Name, purpose, CommandRisk.Changes, connection.Name, connection.Environment) { Kind = ProposalKind.OpenTerminal };
-            var approval = await _user.RequestApprovalAsync(proposal, cancellationToken).ConfigureAwait(false);
+            var approval = await RequestApprovalAsync(proposal, cancellationToken).ConfigureAwait(false);
             SetStatus(AgentStatus.Thinking);
             if (!approval.Approved)
             {

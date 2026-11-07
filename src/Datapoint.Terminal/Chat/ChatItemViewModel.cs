@@ -24,6 +24,8 @@ public sealed partial class ChatItemViewModel(ChatItemKind kind, string text) : 
 
     public bool IsPlan => Kind == ChatItemKind.Plan;
 
+    public bool IsAsked => Kind == ChatItemKind.Asked;
+
     // For an approved plan, its progress, shown here once it's no longer pinned above the conversation.
     public PlanProgressViewModel? Plan { get; init; }
 

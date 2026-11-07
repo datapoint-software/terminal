@@ -166,16 +166,53 @@
       <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
     </Style>
 
-    <!-- A choice offered by the agent: label, a line on what it does, and a tag on the one it recommends. -->
-    <Style Selector="Button.option">
+    <!-- The agent's choices: one bordered list of rows, each with its number key, label and a line on what it does. The
+         recommended one is tinted and tagged; "Something else…" is quieter. -->
+    <Style Selector="Border.choices">
+      <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="ClipToBounds" Value="True" />
+    </Style>
+    <Style Selector="Button.choice">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
+      <Setter Property="BorderThickness" Value="0,1,0,0" />
+      <Setter Property="CornerRadius" Value="0" />
+      <Setter Property="Padding" Value="10,8" />
       <Setter Property="HorizontalAlignment" Value="Stretch" />
       <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-      <Setter Property="Padding" Value="12,8" />
-      <Setter Property="CornerRadius" Value="8" />
     </Style>
-    <Style Selector="Button.option.recommended /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
-      <Setter Property="BorderThickness" Value="1.5" />
+    <Style Selector="Button.choice:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource FillBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
+    </Style>
+    <Style Selector="Button.choice.recommended /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource AccentTintBrush}" />
+    </Style>
+    <Style Selector="Button.choice.other TextBlock.label">
+      <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
+    </Style>
+    <Style Selector="Border.key">
+      <Setter Property="Width" Value="18" />
+      <Setter Property="Height" Value="18" />
+      <Setter Property="CornerRadius" Value="5" />
+      <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="VerticalAlignment" Value="Top" />
+      <Setter Property="Margin" Value="0,1,0,0" />
+    </Style>
+    <Style Selector="Border.key TextBlock">
+      <Setter Property="FontSize" Value="11" />
+      <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.choice.recommended Border.key">
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentTextBrush}" />
+    </Style>
+    <Style Selector="Button.choice.recommended Border.key TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
     </Style>
     <Style Selector="Border.tag">
       <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
@@ -405,52 +442,66 @@
         </StackPanel>
       </Border>
 
-      <!-- A question from the agent. -->
-      <Border Classes="card" IsVisible="{Binding Question, Converter={x:Static ObjectConverters.IsNotNull}}"
-              AutomationProperties.LiveSetting="Assertive">
+      <!-- A question from the agent: one list to click, or pick from by number while the card has focus. Like an approval,
+           it never takes focus from the terminal. -->
+      <Border x:Name="QuestionCard" Classes="card" IsVisible="{Binding Question, Converter={x:Static ObjectConverters.IsNotNull}}"
+              AutomationProperties.LiveSetting="Assertive" AutomationProperties.Name="{x:Static res:Strings.StatusWaitingForUser}">
         <StackPanel Spacing="8" DataContext="{Binding Question}" x:DataType="chat:QuestionViewModel">
           <!-- Capped, so long background scrolls and the choices stay in view. Only the question itself is bold. -->
           <ScrollViewer MaxHeight="240" VerticalScrollBarVisibility="Auto">
             <StackPanel Spacing="4">
+              <TextBlock Classes="secondary" FontWeight="SemiBold" Text="{Binding HeaderText}" TextWrapping="Wrap" />
               <md:MarkdownView Text="{Binding Details}" IsVisible="{Binding HasDetails}" />
               <SelectableTextBlock Text="{Binding Text}" FontWeight="SemiBold" TextWrapping="Wrap" />
             </StackPanel>
           </ScrollViewer>
-          <ItemsControl ItemsSource="{Binding Options}" IsVisible="{Binding HasOptions}">
-            <ItemsControl.ItemsPanel>
-              <ItemsPanelTemplate>
-                <StackPanel Spacing="6" />
-              </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-              <DataTemplate x:DataType="agent:AgentOption">
-                <Button Classes="option" Classes.recommended="{Binding IsRecommended}"
-                        Command="{Binding $parent[ItemsControl].((chat:QuestionViewModel)DataContext).ChooseCommand}"
-                        CommandParameter="{Binding}"
-                        AutomationProperties.Name="{Binding Label}" AutomationProperties.HelpText="{Binding Description}">
-                  <StackPanel Spacing="2">
-                    <Grid ColumnDefinitions="*,Auto">
-                      <TextBlock Text="{Binding Label}" FontWeight="SemiBold" TextWrapping="Wrap" VerticalAlignment="Center" />
-                      <Border Grid.Column="1" Classes="tag" IsVisible="{Binding IsRecommended}" Margin="8,0,0,0" VerticalAlignment="Top">
-                        <TextBlock Text="{x:Static res:Strings.QuestionRecommended}" />
+          <Border Classes="choices" IsVisible="{Binding IsChoosing}">
+            <ItemsControl ItemsSource="{Binding Rows}" Margin="0,-1,0,0">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="chat:QuestionRowViewModel">
+                  <Button Classes="choice" Classes.recommended="{Binding IsRecommended}" Classes.other="{Binding IsOther}"
+                          Command="{Binding $parent[ItemsControl].((chat:QuestionViewModel)DataContext).ChooseCommand}"
+                          CommandParameter="{Binding}"
+                          AutomationProperties.Name="{Binding Label}" AutomationProperties.HelpText="{Binding Description}"
+                          AutomationProperties.AcceleratorKey="{Binding NumberText}">
+                    <Grid ColumnDefinitions="18,*" ColumnSpacing="9">
+                      <Border Classes="key">
+                        <TextBlock Text="{Binding NumberText}" />
                       </Border>
+                      <StackPanel Grid.Column="1" Spacing="1">
+                        <Grid ColumnDefinitions="*,Auto">
+                          <TextBlock Classes="label" Text="{Binding Label}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                          <Border Grid.Column="1" Classes="tag" IsVisible="{Binding IsRecommended}" Margin="8,0,0,0" VerticalAlignment="Top">
+                            <TextBlock Text="{x:Static res:Strings.QuestionRecommended}" />
+                          </Border>
+                        </Grid>
+                        <TextBlock Classes="secondary" Text="{Binding Description}" TextWrapping="Wrap" IsVisible="{Binding HasDescription}" />
+                      </StackPanel>
                     </Grid>
-                    <TextBlock Classes="secondary" Text="{Binding Description}" TextWrapping="Wrap"
-                               IsVisible="{Binding Description, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                  </StackPanel>
-                </Button>
-              </DataTemplate>
-            </ItemsControl.ItemTemplate>
-          </ItemsControl>
-          <TextBox Text="{Binding Draft}" PlaceholderText="{x:Static res:Strings.QuestionPlaceholder}"
-                   AutomationProperties.Name="{x:Static res:Strings.QuestionPlaceholder}">
-            <TextBox.KeyBindings>
-              <KeyBinding Gesture="Enter" Command="{Binding SubmitCommand}" />
-            </TextBox.KeyBindings>
-          </TextBox>
-          <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
-            <Button Content="{x:Static res:Strings.QuestionSkip}" Command="{Binding SkipCommand}" />
-            <Button Classes="primary" Content="{x:Static res:Strings.QuestionAnswer}" Command="{Binding SubmitCommand}" />
+                  </Button>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </Border>
+          <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsChoosing}">
+            <TextBlock Classes="secondary" Text="{Binding KeysText}" VerticalAlignment="Center" />
+            <Button Grid.Column="1" Classes="plain" Content="{x:Static res:Strings.QuestionSkip}" Command="{Binding SkipCommand}" />
+          </Grid>
+          <!-- An answer in the user's own words: in place of the list after "Something else…", or straight away when there are no
+               choices. -->
+          <StackPanel x:Name="QuestionWriting" Spacing="8" IsVisible="{Binding IsWriting}">
+            <TextBox x:Name="QuestionAnswerBox" Text="{Binding Draft}" PlaceholderText="{x:Static res:Strings.QuestionPlaceholder}" TextWrapping="Wrap"
+                     AutomationProperties.Name="{x:Static res:Strings.QuestionPlaceholder}">
+              <TextBox.KeyBindings>
+                <KeyBinding Gesture="Enter" Command="{Binding SubmitCommand}" />
+                <KeyBinding Gesture="Escape" Command="{Binding BackCommand}" />
+              </TextBox.KeyBindings>
+            </TextBox>
+            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+              <Button Content="{x:Static res:Strings.QuestionBack}" Command="{Binding BackCommand}" IsVisible="{Binding CanGoBack}" />
+              <Button Content="{x:Static res:Strings.QuestionSkip}" Command="{Binding SkipCommand}" IsVisible="{Binding !CanGoBack}" />
+              <Button Classes="primary" Content="{x:Static res:Strings.QuestionSend}" Command="{Binding SubmitCommand}" />
+            </StackPanel>
           </StackPanel>
         </StackPanel>
       </Border>
@@ -467,7 +518,7 @@
       <!-- Composer: a rounded field with the send button inside, and quiet menus for the model and approval under it. -->
       <Border Classes="composer">
         <Grid ColumnDefinitions="*,Auto">
-          <TextBox x:Name="DraftBox" Classes="bare" Text="{Binding Draft}" PlaceholderText="{x:Static res:Strings.ChatInputPlaceholder}"
+          <TextBox x:Name="DraftBox" Classes="bare" Text="{Binding Draft}" PlaceholderText="{Binding DraftPlaceholder}"
                    TextWrapping="Wrap" MaxHeight="160" VerticalContentAlignment="Center" IsEnabled="{Binding HasAgent}"
                    AutomationProperties.Name="{x:Static res:Strings.ChatInputPlaceholder}">
             <TextBox.KeyBindings>
@@ -545,6 +596,8 @@
               </Border>
               <!-- An approved plan, once its task is over; while it runs, it's pinned above the conversation. -->
               <ContentControl Content="{Binding Plan}" Margin="0,6" IsVisible="{Binding Plan.IsInConversation, FallbackValue=False}" />
+              <!-- A question the agent asked, kept quiet once answered; the answer follows as the user's message. -->
+              <SelectableTextBlock Classes="secondary" Text="{Binding Text}" TextWrapping="Wrap" Margin="0,8,0,0" IsVisible="{Binding IsAsked}" />
               <StackPanel Margin="12,6" Spacing="4" IsVisible="{Binding IsNotice}">
                 <SelectableTextBlock Classes="secondary" Text="{Binding Text}" TextWrapping="Wrap" TextAlignment="Center" />
                 <Button Content="{Binding ActionLabel}" Command="{Binding ActionCommand}" IsVisible="{Binding HasAction}"

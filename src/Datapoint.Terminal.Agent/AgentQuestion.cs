@@ -4,4 +4,9 @@ namespace Datapoint.Terminal.Agent;
 public sealed record AgentQuestion(string Text, IReadOnlyList<AgentOption> Options)
 {
     public string? Details { get; init; }
+
+    // The terminal it's about, and the session started in it, if any, so the user knows which machine it concerns.
+    public string? Terminal { get; init; }
+
+    public string? Session { get; init; }
 }

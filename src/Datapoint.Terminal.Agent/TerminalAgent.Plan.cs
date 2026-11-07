@@ -49,7 +49,7 @@ public sealed partial class TerminalAgent
         var terminal = FindTerminal(arguments, out _);
         SetStatus(AgentStatus.WaitingForApproval, terminal);
         var proposal = new CommandProposal(plan.Text, summary, CommandRisk.Changes, terminal?.Name ?? string.Empty, terminal?.Environment) { Kind = ProposalKind.Plan, Plan = plan, Session = terminal?.Terminal.GetState().Session };
-        var approval = await _user.RequestApprovalAsync(proposal, cancellationToken).ConfigureAwait(false);
+        var approval = await RequestApprovalAsync(proposal, cancellationToken).ConfigureAwait(false);
         SetStatus(AgentStatus.Thinking);
         if (!approval.Approved)
         {

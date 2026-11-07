@@ -200,6 +200,7 @@ public sealed partial class TerminalAgent : IDisposable
             lock (_sync)
             {
                 _task = null;
+                _redirect = null;
             }
         }
     }
@@ -235,9 +236,11 @@ public sealed partial class TerminalAgent : IDisposable
             _history.Add(results);
             foreach (var call in calls)
             {
-                var result = await InvokeToolAsync(call, cancellationToken).ConfigureAwait(false);
+                var result = IsRedirected ? SkippedForNewMessage : await InvokeToolAsync(call, cancellationToken).ConfigureAwait(false);
                 results.Contents.Add(new FunctionResultContent(call.CallId, result));
             }
+
+            ClearRedirect();
         }
 
         Raise(new AgentEventArgs(AgentEventKind.Notice, $"Stopped after {_options.MaxStepsPerTask} steps. Tell me whether to go on."));
@@ -297,8 +300,15 @@ public sealed partial class TerminalAgent : IDisposable
         }
 
         var arguments = call.Arguments is null ? new AIFunctionArguments(StringComparer.Ordinal) : new AIFunctionArguments(call.Arguments, StringComparer.Ordinal);
-        var result = await tool.InvokeAsync(arguments, cancellationToken).ConfigureAwait(false);
-        return result?.ToString() ?? string.Empty;
+        try
+        {
+            var result = await tool.InvokeAsync(arguments, cancellationToken).ConfigureAwait(false);
+            return result?.ToString() ?? string.Empty;
+        }
+        catch (RedirectedException)
+        {
+            return RedirectedResult();
+        }
     }
 
     // Every tool call needs a result, or the conversation isn't valid for the provider.

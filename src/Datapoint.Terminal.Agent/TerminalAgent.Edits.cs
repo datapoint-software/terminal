@@ -107,7 +107,7 @@ public sealed partial class TerminalAgent
             PlanStep = plan.Step,
             IsOutsidePlan = plan.IsOutside,
         };
-        var approval = await _user.RequestApprovalAsync(proposal, cancellationToken).ConfigureAwait(false);
+        var approval = await RequestApprovalAsync(proposal, cancellationToken).ConfigureAwait(false);
         SetStatus(AgentStatus.Thinking);
         return approval.Approved
             ? null

@@ -93,18 +93,48 @@ public sealed class ChatViewTests
         {
             Details = "Four of the 6 updates are **Docker** packages, and this node is the swarm's only manager.",
         };
-        _ = chat.AskAsync(question, CancellationToken.None);
-        var window = new Window { Width = 420, Height = 700, Content = new ChatView { DataContext = chat } };
+        _ = chat.AskAsync(question with { Terminal = "Local", Session = "ssh session to root@swarm-a" }, CancellationToken.None);
+
+        foreach (var width in new[] { 340, 640 })
+        {
+            var window = new Window { Width = width, Height = 700, Content = new ChatView { DataContext = chat } };
+            window.Show();
+            Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+            using var frame = window.CaptureRenderedFrame();
+            Directory.CreateDirectory("rendered");
+            frame?.Save($"rendered/chat-question-{width}.png", new PngBitmapEncoderOptions());
+
+            var choices = window.GetVisualDescendants().OfType<Button>().Where(button => button.Classes.Contains("choice")).ToList();
+            Assert.Equal(4, choices.Count);
+            Assert.Single(choices, button => button.Classes.Contains("recommended"));
+            Assert.Single(choices, button => button.Classes.Contains("other"));
+            window.Close();
+        }
+    }
+
+    [AvaloniaFact]
+    public void Writes_something_else_in_place_and_keeps_the_answered_question()
+    {
+        using var chat = new ChatViewModel(new ImmediateUiThread());
+        _ = chat.AskAsync(new AgentQuestion("How do you want to proceed?", [new AgentOption("Everything now"), new AgentOption("Drain the node first", IsRecommended: true)]), CancellationToken.None);
+        var window = new Window { Width = 340, Height = 600, Content = new ChatView { DataContext = chat } };
         window.Show();
-
+        chat.Question!.ChooseNumber(3);
+        chat.Question.Draft = "Drain it, but only after 22:00";
         Avalonia.Threading.Dispatcher.UIThread.RunJobs();
-        using var frame = window.CaptureRenderedFrame();
         Directory.CreateDirectory("rendered");
-        frame?.Save("rendered/chat-question.png", new PngBitmapEncoderOptions());
+        using (var frame = window.CaptureRenderedFrame())
+        {
+            frame?.Save("rendered/chat-question-writing.png", new PngBitmapEncoderOptions());
+        }
 
-        var options = window.GetVisualDescendants().OfType<Button>().Where(button => button.Classes.Contains("option")).ToList();
-        Assert.Equal(3, options.Count);
-        Assert.Single(options, button => button.Classes.Contains("recommended"));
+        chat.Question.SubmitCommand.Execute(null);
+        Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+        using var answered = window.CaptureRenderedFrame();
+        answered?.Save("rendered/chat-question-answered.png", new PngBitmapEncoderOptions());
+
+        Assert.Null(chat.Question);
+        Assert.Contains(window.GetVisualDescendants().OfType<SelectableTextBlock>(), text => text.IsEffectivelyVisible && string.Equals(text.Text, "The agent asked: How do you want to proceed?", StringComparison.Ordinal));
     }
 
     [AvaloniaFact]

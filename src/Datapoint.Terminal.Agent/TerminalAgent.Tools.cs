@@ -53,12 +53,12 @@ public sealed partial class TerminalAgent
             {"type":"object","properties":{
               "question":{"type":"string","description":"The question alone, in one short sentence. It's shown in bold."},
               "details":{"type":"string","description":"What the user needs to know to decide, in short Markdown, shown above the question. Omit when the question says it all."},
+              "terminal":{"type":"string","description":"The terminal the question is about, if any; it's named above the question."},
               "options":{"type":"array","maxItems":6,"description":"Up to 6 choices; omit for an open question.","items":{"type":"object","properties":{
                 "label":{"type":"string","description":"A few words, shown on the button."},
                 "description":{"type":"string","description":"One short sentence on what the choice does or costs."},
                 "recommended":{"type":"boolean","description":"True on the one option you recommend, if any."}},
-               "required":["label"]}}},
-             "required":["question"]}
+               "required":["label"]}}},"required":["question"]}
             """,
             AskUserAsync),
         .. OpenTools(),
@@ -190,9 +190,15 @@ public sealed partial class TerminalAgent
         }
 
         var details = ToolArguments.GetString(arguments, "details");
-        var asked = new AgentQuestion(question.Trim(), QuestionOptions.Parse(arguments)) { Details = string.IsNullOrWhiteSpace(details) ? null : details.Trim() };
+        var terminal = FindTerminal(arguments, out _);
+        var asked = new AgentQuestion(question.Trim(), QuestionOptions.Parse(arguments))
+        {
+            Details = string.IsNullOrWhiteSpace(details) ? null : details.Trim(),
+            Terminal = terminal?.Name,
+            Session = terminal?.Terminal.GetState().Session,
+        };
         SetStatus(AgentStatus.WaitingForUser);
-        var answer = await _user.AskAsync(asked, cancellationToken).ConfigureAwait(false);
+        var answer = await AskAsync(asked, cancellationToken).ConfigureAwait(false);
         SetStatus(AgentStatus.Thinking);
         return answer is null ? "The user didn't answer." : "The user answered: " + answer;
     }
@@ -222,7 +228,7 @@ public sealed partial class TerminalAgent
             IsOutsidePlan = plan.IsOutside,
             AlsoApproves = canCarry ? SameEnvironment(terminal) : [],
         };
-        var approval = await _user.RequestApprovalAsync(proposal, cancellationToken).ConfigureAwait(false);
+        var approval = await RequestApprovalAsync(proposal, cancellationToken).ConfigureAwait(false);
         RememberApproval(terminal, approval, canCarry);
         return approval;
     }

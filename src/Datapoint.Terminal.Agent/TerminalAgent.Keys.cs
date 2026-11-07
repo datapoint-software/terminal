@@ -75,7 +75,7 @@ public sealed partial class TerminalAgent
 
         SetStatus(AgentStatus.WaitingForApproval, terminal);
         var proposal = new CommandProposal(keys, purpose, risk == CommandRisk.AlwaysAsk ? risk : CommandRisk.Changes, terminal.Name, terminal.Environment) { Kind = ProposalKind.SendKeys };
-        var approval = await _user.RequestApprovalAsync(proposal, cancellationToken).ConfigureAwait(false);
+        var approval = await RequestApprovalAsync(proposal, cancellationToken).ConfigureAwait(false);
         if (!approval.Approved)
         {
             return (keys, parts, Declined(approval).Replace("Not run", "Not sent", StringComparison.Ordinal));

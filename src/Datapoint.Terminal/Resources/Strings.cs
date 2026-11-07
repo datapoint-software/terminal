@@ -862,6 +862,26 @@ public static class Strings
 
     public static string UsageCached => Get(nameof(UsageCached));
 
+    public static string QuestionHeading => Get(nameof(QuestionHeading));
+
+    public static string QuestionSomethingElse => Get(nameof(QuestionSomethingElse));
+
+    public static string QuestionKeys => Get(nameof(QuestionKeys));
+
+    public static string QuestionBack => Get(nameof(QuestionBack));
+
+    public static string QuestionSend => Get(nameof(QuestionSend));
+
+    public static string QuestionAsked => Get(nameof(QuestionAsked));
+
+    public static string QuestionSkipped => Get(nameof(QuestionSkipped));
+
+    public static string QuestionReplaced => Get(nameof(QuestionReplaced));
+
+    public static string ApprovalReplaced => Get(nameof(ApprovalReplaced));
+
+    public static string ChatInputReplaces => Get(nameof(ChatInputReplaces));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

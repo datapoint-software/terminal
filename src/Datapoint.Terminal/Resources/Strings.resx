@@ -1298,4 +1298,34 @@ git rm -r --cached .terminal</value>
   <data name="UsageCached" xml:space="preserve">
     <value>{0} of {1} input tokens read from the cache</value>
   </data>
+  <data name="QuestionHeading" xml:space="preserve">
+    <value>The agent asks</value>
+  </data>
+  <data name="QuestionSomethingElse" xml:space="preserve">
+    <value>Something else…</value>
+  </data>
+  <data name="QuestionKeys" xml:space="preserve">
+    <value>Press 1–{0}, or click</value>
+  </data>
+  <data name="QuestionBack" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="QuestionSend" xml:space="preserve">
+    <value>Send</value>
+  </data>
+  <data name="QuestionAsked" xml:space="preserve">
+    <value>The agent asked: {0}</value>
+  </data>
+  <data name="QuestionSkipped" xml:space="preserve">
+    <value>Skipped</value>
+  </data>
+  <data name="QuestionReplaced" xml:space="preserve">
+    <value>You sent a new message instead</value>
+  </data>
+  <data name="ApprovalReplaced" xml:space="preserve">
+    <value>Not approved: you sent a new message instead.</value>
+  </data>
+  <data name="ChatInputReplaces" xml:space="preserve">
+    <value>Or ask for something else instead…</value>
+  </data>
 </root>

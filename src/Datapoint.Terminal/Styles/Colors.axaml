@@ -26,6 +26,9 @@
       <SolidColorBrush x:Key="StoppedBrush" Color="#FF3B30" />
       <!-- A warning tag: dark amber text on a pale amber fill, about 7:1. -->
       <SolidColorBrush x:Key="WarningFillBrush" Color="#FFF1D6" />
+      <!-- The recommended choice: a tint of the accent, with accent text dark enough to read on it. -->
+      <SolidColorBrush x:Key="AccentTintBrush" Color="#EAF3FF" />
+      <SolidColorBrush x:Key="AccentTextBrush" Color="#0062CC" />
       <SolidColorBrush x:Key="WarningTextBrush" Color="#8A4B00" />
       <!-- Code: after Xcode's default themes. -->
       <SolidColorBrush x:Key="SyntaxKeywordBrush" Color="#9B2393" />
@@ -60,6 +63,8 @@
       <SolidColorBrush x:Key="WaitingBrush" Color="#FF9F0A" />
       <SolidColorBrush x:Key="StoppedBrush" Color="#FF453A" />
       <SolidColorBrush x:Key="WarningFillBrush" Color="#3D2C0D" />
+      <SolidColorBrush x:Key="AccentTintBrush" Color="#132A45" />
+      <SolidColorBrush x:Key="AccentTextBrush" Color="#5EADFF" />
       <SolidColorBrush x:Key="WarningTextBrush" Color="#FFCC66" />
       <SolidColorBrush x:Key="SyntaxKeywordBrush" Color="#FF7AB2" />
       <SolidColorBrush x:Key="SyntaxStringBrush" Color="#FF8170" />

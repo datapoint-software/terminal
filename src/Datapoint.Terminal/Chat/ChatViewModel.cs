@@ -50,10 +50,19 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
     public partial ModeOption SelectedMode { get; set; }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasPendingCard), nameof(DraftPlaceholder))]
+    [NotifyCanExecuteChangedFor(nameof(SendCommand))]
     public partial ApprovalViewModel? Approval { get; set; }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasPendingCard), nameof(DraftPlaceholder))]
+    [NotifyCanExecuteChangedFor(nameof(SendCommand))]
     public partial QuestionViewModel? Question { get; set; }
+
+    // While the agent waits on a card, the message box stays open: a message sent then replaces what the agent was doing.
+    public bool HasPendingCard => Approval is not null || Question is not null;
+
+    public string DraftPlaceholder => HasPendingCard ? Strings.ChatInputReplaces : Strings.ChatInputPlaceholder;
 
     public bool HasAgent => _agent is not null && IsConnected;
 
@@ -220,6 +229,7 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
     public Task<string?> AskAsync(AgentQuestion question, CancellationToken cancellationToken)
     {
         var view = new QuestionViewModel(question);
+        view.Answered = answer => RecordAnswer(view, answer);
         _ui.Post(() => Question = view);
         var registration = cancellationToken.Register(view.Cancel);
         return FinishAsync(view.Response, registration, () => ReferenceEquals(Question, view), () => Question = null);
@@ -303,12 +313,60 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
     {
         var message = Draft.Trim();
         var excerpt = Excerpt;
+        var replaces = IsBusy;
+        if (replaces && !ReplacePending(message, excerpt))
+        {
+            return;
+        }
+
         Draft = string.Empty;
         Excerpt = null;
         Items.Add(new ChatItemViewModel(ChatItemKind.User, excerpt is null ? message : message + "\n" + Strings.Format(Strings.ExcerptSent, excerpt.Label, excerpt.Terminal)));
         Status = AgentStatus.Thinking;
         MessageSent?.Invoke(message);
+        if (replaces)
+        {
+            return;
+        }
+
         _ = _agent!.SendAsync(message, excerpt);
+    }
+
+    // The card goes, a line says what became of it, and the agent takes the message as its new goal in the same task. The
+    // draft stays when the agent had stopped waiting a moment before, so nothing the user typed is lost.
+    private bool ReplacePending(string message, TerminalExcerpt? excerpt)
+    {
+        var question = Question;
+        if (!HasPendingCard || !_agent!.Redirect(message, excerpt))
+        {
+            return false;
+        }
+
+        Items.Add(question is null
+            ? new ChatItemViewModel(ChatItemKind.Notice, Strings.ApprovalReplaced)
+            : Asked(question, Strings.QuestionReplaced));
+        Question = null;
+        Approval = null;
+        EndPlan();
+        return true;
+    }
+
+    // An answered question stays in the conversation: what was asked, then the answer as the user's own message.
+    private void RecordAnswer(QuestionViewModel question, string? answer)
+    {
+        Items.Add(Asked(question, answer is null ? Strings.QuestionSkipped : null));
+        if (answer is null)
+        {
+            return;
+        }
+
+        Items.Add(new ChatItemViewModel(ChatItemKind.User, answer));
+    }
+
+    private static ChatItemViewModel Asked(QuestionViewModel question, string? outcome)
+    {
+        var asked = Strings.Format(Strings.QuestionAsked, question.Text);
+        return new ChatItemViewModel(ChatItemKind.Asked, outcome is null ? asked : Strings.Format(Strings.CommandInTerminal, asked, outcome));
     }
 
     [RelayCommand(CanExecute = nameof(IsBusyCheck))]
@@ -330,7 +388,7 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
         Cleared?.Invoke();
     }
 
-    private bool CanSend() => HasAgent && !IsBusy && !string.IsNullOrWhiteSpace(Draft);
+    private bool CanSend() => HasAgent && (!IsBusy || HasPendingCard) && !string.IsNullOrWhiteSpace(Draft);
 
     private bool IsBusyCheck() => _agent is not null && IsBusy;
 

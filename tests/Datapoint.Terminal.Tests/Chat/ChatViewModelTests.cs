@@ -99,14 +99,73 @@ public sealed class ChatViewModelTests
         using var chat = new ChatViewModel(new ImmediateUiThread());
 
         var first = chat.AskAsync(new AgentQuestion("Which?", [new AgentOption("a"), new AgentOption("b", "The second.")]), Token);
-        chat.Question!.ChooseCommand.Execute(chat.Question.Options[1]);
+        chat.Question!.ChooseCommand.Execute(chat.Question.Rows[1]);
         var second = chat.AskAsync(new AgentQuestion("Why?", []), Token);
-        chat.Question!.Draft = " because ";
+        Assert.True(chat.Question!.IsWriting);
+        chat.Question.Draft = " because ";
         chat.Question.SubmitCommand.Execute(null);
 
         Assert.Equal("b", await first);
         Assert.Equal("because", await second);
         Assert.Null(chat.Question);
+    }
+
+    [Fact]
+    public async Task Picks_by_number_or_writes_something_else_and_keeps_the_question_in_the_conversation()
+    {
+        using var chat = new ChatViewModel(new ImmediateUiThread());
+
+        var first = chat.AskAsync(new AgentQuestion("Which?", [new AgentOption("a"), new AgentOption("b")]), Token);
+        Assert.Equal<string>(["1 a", "2 b", "3 Something else…"], [.. chat.Question!.Rows.Select(row => $"{row.NumberText} {row.Label}")]);
+        Assert.Equal("Press 1–3, or click", chat.Question.KeysText);
+        Assert.False(chat.Question.ChooseNumber(4));
+        Assert.True(chat.Question.ChooseNumber(3));
+        Assert.True(chat.Question.IsWriting);
+        Assert.False(chat.Question.ChooseNumber(1));
+        chat.Question.BackCommand.Execute(null);
+        Assert.False(chat.Question.IsWriting);
+        chat.Question.ChooseNumber(3);
+        chat.Question.Draft = "c";
+        chat.Question.SubmitCommand.Execute(null);
+        var second = chat.AskAsync(new AgentQuestion("Why?", []) { Terminal = "Local", Session = "ssh session to root@web1" }, Token);
+        Assert.Equal("The agent asks · In Local · ssh session to root@web1", chat.Question!.HeaderText);
+        chat.Question.SkipCommand.Execute(null);
+
+        Assert.Equal("c", await first);
+        Assert.Null(await second);
+        Assert.Equal<string>(
+            ["Asked: The agent asked: Which?", "User: c", "Asked: The agent asked: Why? · Skipped"],
+            [.. chat.Items.Select(item => $"{item.Kind}: {item.Text}")]);
+    }
+
+    [Fact]
+    public async Task A_message_sent_while_a_question_waits_replaces_the_task()
+    {
+        using var chat = new ChatViewModel(new ImmediateUiThread());
+        var ask = new ChatResponse(new ChatMessage(
+            ChatRole.Assistant,
+            [new FunctionCallContent("call-1", "ask_user", new Dictionary<string, object?>(StringComparer.Ordinal) { ["question"] = "Which environment?" })]));
+        using var agent = new TerminalAgent(new ListChatClient(ask, new ChatResponse(new ChatMessage(ChatRole.Assistant, "Here are the logs."))), chat, new SecretRedactor());
+        agent.AddTerminal(new AgentTerminal("Local", new InstantTerminal(), ApprovalMode.Ask));
+        chat.Attach(agent, "privacy notice");
+        var sent = new List<string>();
+        chat.MessageSent = sent.Add;
+        chat.Draft = "Deploy";
+        chat.SendCommand.Execute(null);
+        await WaitUntilAsync(() => chat.Question is not null);
+
+        Assert.Equal("Or ask for something else instead…", chat.DraftPlaceholder);
+        chat.Draft = "Show me the logs instead";
+        Assert.True(chat.SendCommand.CanExecute(null));
+        chat.SendCommand.Execute(null);
+        await WaitUntilAsync(() => chat.Status == AgentStatus.Idle);
+
+        Assert.Null(chat.Question);
+        Assert.Equal("Ask the agent…", chat.DraftPlaceholder);
+        Assert.Equal<string>(["Deploy", "Show me the logs instead"], [.. sent]);
+        Assert.Equal<string>(
+            ["User: Deploy", "Asked: The agent asked: Which environment? · You sent a new message instead", "User: Show me the logs instead", "Agent: Here are the logs."],
+            [.. chat.Items.Where(item => !item.IsNotice).Select(item => $"{item.Kind}: {item.Text}")]);
     }
 
     [Fact]
