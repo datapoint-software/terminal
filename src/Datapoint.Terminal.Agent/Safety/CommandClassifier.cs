@@ -55,6 +55,29 @@ public static class CommandClassifier
         ["brew"] = FrozenSet.Create(StringComparer.Ordinal, "list", "info", "search", "outdated", "config", "doctor"),
     }.ToFrozenDictionary(StringComparer.Ordinal);
 
+    // Commands of two words that only read, e.g. docker node ls: the group, then what's done with it. Left out on purpose:
+    // exec, run, attach and cp (they run or copy anything), compose config (it prints the environment filled in, secrets
+    // included), and anything that creates, updates, removes, scales, prunes or rolls back.
+    private static readonly FrozenDictionary<string, FrozenDictionary<string, FrozenSet<string>>> s_readOnlyGroupCommands =
+        new Dictionary<string, FrozenDictionary<string, FrozenSet<string>>>(StringComparer.Ordinal)
+        {
+            ["docker"] = new Dictionary<string, FrozenSet<string>>(StringComparer.Ordinal)
+            {
+                ["node"] = FrozenSet.Create(StringComparer.Ordinal, "ls", "ps", "inspect"),
+                ["service"] = FrozenSet.Create(StringComparer.Ordinal, "ls", "ps", "inspect", "logs"),
+                ["stack"] = FrozenSet.Create(StringComparer.Ordinal, "ls", "ps", "services"),
+                ["container"] = FrozenSet.Create(StringComparer.Ordinal, "ls", "inspect", "logs", "top", "stats", "port", "diff"),
+                ["image"] = FrozenSet.Create(StringComparer.Ordinal, "ls", "inspect", "history"),
+                ["network"] = FrozenSet.Create(StringComparer.Ordinal, "ls", "inspect"),
+                ["volume"] = FrozenSet.Create(StringComparer.Ordinal, "ls", "inspect"),
+                ["config"] = FrozenSet.Create(StringComparer.Ordinal, "ls", "inspect"),
+                ["secret"] = FrozenSet.Create(StringComparer.Ordinal, "ls", "inspect"),
+                ["context"] = FrozenSet.Create(StringComparer.Ordinal, "ls", "inspect", "show"),
+                ["system"] = FrozenSet.Create(StringComparer.Ordinal, "df", "info"),
+                ["compose"] = FrozenSet.Create(StringComparer.Ordinal, "ps", "ls", "logs", "images", "top", "version"),
+            }.ToFrozenDictionary(StringComparer.Ordinal),
+        }.ToFrozenDictionary(StringComparer.Ordinal);
+
     private static readonly string[] s_trustMarkers = ["known_hosts", "authorized_keys", ".ssh/config", "ssh-keygen", "ssh-copy-id", "ssh-add", "ssh_config", "sshd_config"];
 
     private static readonly char[] s_separators = ['|', ';', '&'];
@@ -130,11 +153,21 @@ public static class CommandClassifier
             return !words.Skip(index + 1).Any(word => IsWritingOption(word) || extra.Contains(word, StringComparer.Ordinal));
         }
 
-        return index + 1 < words.Length
-            && s_readOnlySubcommands.TryGetValue(program, out var subcommands)
-            && subcommands.Contains(words[index + 1])
-            && !words.Skip(index + 2).Any(IsWritingOption);
+        return IsReadOnlySubcommand(program, words, index + 1) || IsReadOnlyGroupCommand(program, words, index + 1);
     }
+
+    private static bool IsReadOnlySubcommand(string program, string[] words, int index) =>
+        index < words.Length
+        && s_readOnlySubcommands.TryGetValue(program, out var subcommands)
+        && subcommands.Contains(words[index])
+        && !words.Skip(index + 1).Any(IsWritingOption);
+
+    private static bool IsReadOnlyGroupCommand(string program, string[] words, int index) =>
+        index + 1 < words.Length
+        && s_readOnlyGroupCommands.TryGetValue(program, out var groups)
+        && groups.TryGetValue(words[index], out var actions)
+        && actions.Contains(words[index + 1])
+        && !words.Skip(index + 2).Any(IsWritingOption);
 
     private static bool IsWritingOption(string word) =>
         s_writingOptions.Any(option => string.Equals(word, option, StringComparison.Ordinal) || (option.StartsWith("--", StringComparison.Ordinal) && word.StartsWith(option, StringComparison.Ordinal)));

@@ -179,8 +179,7 @@ public sealed class PlanReviewTests
 
         Assert.Equal([A, B, C], approval.PlanHosts.Select(host => host.Name).ToList(), StringComparer.Ordinal);
         Assert.All(approval.PlanHosts, host => Assert.True(host.IsProduction));
-        Assert.Equal(("Wait until nothing runs on b", Strings.PlanStepCommand), (approval.PlanSteps[2].Title, approval.PlanSteps[2].CodeLabel));
-        Assert.Equal(Strings.PlanStepReadOnly, new PlanStepViewModel(1, new AgentPlanStep("docker ps", "List the containers.")).KindText);
+        Assert.Equal(("Wait until nothing runs on b", Strings.PlanStepCommand, Strings.PlanStepReadOnly), (approval.PlanSteps[2].Title, approval.PlanSteps[2].CodeLabel, approval.PlanSteps[2].KindText));
         Assert.Equal((Strings.PlanStepExample, Strings.PlanStepChanges), (approval.PlanSteps[3].CodeLabel, approval.PlanSteps[3].KindText));
         Assert.True(approval.HasFindings);
         Assert.False(approval.IsRevision);

@@ -14,6 +14,12 @@ public sealed class CommandClassifierTests
     [InlineData("LC_ALL=C sort file.txt")]
     [InlineData("du -sh /var/log")]
     [InlineData("date +%F")]
+    [InlineData("docker node ls")]
+    [InlineData("docker node ps swarm-b --filter desired-state=running")]
+    [InlineData("docker service inspect --format '{{.Spec.TaskTemplate.Placement}}' datapoint_postgres")]
+    [InlineData("docker container ls -a")]
+    [InlineData("docker compose ps")]
+    [InlineData("docker system df")]
     public void Treats_reading_commands_as_read_only(string command) => Assert.Equal(CommandRisk.ReadOnly, CommandClassifier.Classify(command));
 
     [Theory]
@@ -35,6 +41,15 @@ public sealed class CommandClassifierTests
     [InlineData("systemctl restart nginx")]
     [InlineData("unknown-tool --flag")]
     [InlineData("( rm x )")]
+    [InlineData("docker node update --availability drain swarm-b")]
+    [InlineData("docker node rm swarm-b")]
+    [InlineData("docker service scale web=0")]
+    [InlineData("docker exec datapoint_postgres-1 patronictl list")]
+    [InlineData("docker container exec web ls")]
+    [InlineData("docker compose config")]
+    [InlineData("docker system prune -f")]
+    [InlineData("docker node")]
+    [InlineData("docker image ls -o x")]
     public void Treats_anything_else_as_a_change(string command) => Assert.Equal(CommandRisk.Changes, CommandClassifier.Classify(command));
 
     [Theory]
