@@ -58,6 +58,7 @@ public sealed partial class TerminalAgent
             AskUserAsync),
         .. OpenTools(),
         .. PlanTools(),
+        .. FileTools(),
         .. KeysTools(),
         .. MemoryTools(),
         .. HostDocsTools(),

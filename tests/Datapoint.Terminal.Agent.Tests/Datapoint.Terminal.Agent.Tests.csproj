@@ -3,4 +3,8 @@
     <ProjectReference Include="..\..\src\Datapoint.Terminal.Agent\Datapoint.Terminal.Agent.csproj" />
     <ProjectReference Include="..\Datapoint.Terminal.Testing\Datapoint.Terminal.Testing.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <!-- The same OpenSSH container as the session tests, for file access over a real connection. -->
+    <Compile Include="..\Datapoint.Terminal.Sessions.Tests\Ssh\OpenSshServer.cs" Link="Fakes\OpenSshServer.cs" />
+  </ItemGroup>
 </Project>

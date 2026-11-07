@@ -3,6 +3,8 @@ using System.Collections.ObjectModel;
 using Avalonia;
 using Avalonia.Threading;
 using Datapoint.Terminal.Agent;
+using Datapoint.Terminal.Agent.Files;
+using Datapoint.Terminal.Agent.Projects;
 using Datapoint.Terminal.Controls;
 using Datapoint.Terminal.Resources;
 using Datapoint.Terminal.Sessions;
@@ -26,7 +28,8 @@ public sealed partial class MainWindow
         {
             var options = Project.IsDefault ? new LocalSessionOptions() : new LocalSessionOptions { WorkingDirectory = Project.Folder };
             var session = await LocalSession.StartAsync(options, CancellationToken.None).ConfigureAwait(true);
-            Attach(tab, new TerminalConnection(session, 80, 24), environment: null, _settings.Current.DefaultApprovalMode, select);
+            var files = OperatingSystem.IsWindows() ? null : new LocalHostFiles(ProjectFolders.Home);
+            Attach(tab, new TerminalConnection(session, 80, 24), environment: null, _settings.Current.DefaultApprovalMode, select, files);
             return tab;
         }
         catch (Exception exception) when (exception is IOException or InvalidOperationException or PlatformNotSupportedException or System.ComponentModel.Win32Exception)
@@ -37,10 +40,15 @@ public sealed partial class MainWindow
     }
 
     // A tab the agent opened isn't selected: the agent never switches the tab the user is looking at.
-    private void Attach(TerminalTab tab, TerminalConnection connection, string? environment, ApprovalMode defaultMode, bool select = true)
+    private void Attach(TerminalTab tab, TerminalConnection connection, string? environment, ApprovalMode defaultMode, bool select = true, IHostFiles? files = null)
     {
         tab.Connection = connection;
-        tab.AgentTerminal = new AgentTerminal(tab.Name, new ConnectionTerminal(connection), defaultMode, environment) { IsRemote = tab.IsRemote, Connection = tab.ConnectionName };
+        tab.AgentTerminal = new AgentTerminal(tab.Name, new ConnectionTerminal(connection), defaultMode, environment)
+        {
+            IsRemote = tab.IsRemote,
+            Connection = tab.ConnectionName,
+            Files = files,
+        };
         connection.OutputArrived += (_, _) => tab.View.NotifyOutput();
         tab.View.CommandMarkClicked += (_, e) => ShowChatStep(tab, e.Command.CommandLine);
         tab.View.GotFocus += (_, _) => SelectPane(tab);

@@ -161,6 +161,19 @@ public sealed class OpenSshInteropTests(OpenSshServer server) : IClassFixture<Op
     }
 
     [Fact]
+    public async Task Runs_a_command_beside_the_terminal_with_input_and_a_limit()
+    {
+        server.SkipIfUnavailable();
+        await using var client = await OpenSshServer.ConnectWithPasswordAsync(server.Options());
+
+        var copied = await client.RunAsync("tr a-z A-Z; echo done >&2; exit 4", "hello\tworld\n"u8.ToArray(), 100, Token);
+        var limited = await client.RunAsync("head -c 5000 /dev/zero", ReadOnlyMemory<byte>.Empty, 1000, Token);
+
+        Assert.Equal(("HELLO\tWORLD\n", "done\n", 4, false), (Encoding.UTF8.GetString(copied.Output), copied.Error, copied.ExitCode, copied.IsTruncated));
+        Assert.Equal((1000, 0, true), (limited.Output.Length, limited.ExitCode ?? -1, limited.IsTruncated));
+    }
+
+    [Fact]
     public async Task Runs_an_interactive_shell_in_a_pty()
     {
         server.SkipIfUnavailable();

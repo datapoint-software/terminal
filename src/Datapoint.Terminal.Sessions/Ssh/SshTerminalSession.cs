@@ -16,6 +16,9 @@ public sealed class SshTerminalSession : ITerminalSession
         Exited = WaitForExitAsync(channel);
     }
 
+    // The connection, when the session owns it, for commands and file access beside the terminal.
+    public SshClient? Client => _ownedClient;
+
     // Shell integration over SSH comes with uploading the scripts; until then remote shells have none.
     public string? ShellIntegrationNonce => null;
 

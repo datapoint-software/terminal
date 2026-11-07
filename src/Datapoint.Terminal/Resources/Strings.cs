@@ -634,6 +634,12 @@ public static class Strings
 
     public static string ApprovalOutsidePlan => Get(nameof(ApprovalOutsidePlan));
 
+    public static string ApprovalHeadingEdit => Get(nameof(ApprovalHeadingEdit));
+
+    public static string ApprovalApplyEdit => Get(nameof(ApprovalApplyEdit));
+
+    public static string ApprovalRiskEdit => Get(nameof(ApprovalRiskEdit));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

@@ -956,4 +956,13 @@ git rm -r --cached .terminal</value>
   <data name="ApprovalOutsidePlan" xml:space="preserve">
     <value>Not in the approved plan: the agent needs a step it didn't plan for.</value>
   </data>
+  <data name="ApprovalHeadingEdit" xml:space="preserve">
+    <value>The agent wants to change a file</value>
+  </data>
+  <data name="ApprovalApplyEdit" xml:space="preserve">
+    <value>Apply Change</value>
+  </data>
+  <data name="ApprovalRiskEdit" xml:space="preserve">
+    <value>Before the change, a copy of the file is saved under ~/.datapoint-terminal/backups on the same machine, so it can be undone. The change is made by a command typed into the terminal, using sudo if the file needs it.</value>
+  </data>
 </root>

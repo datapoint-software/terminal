@@ -38,7 +38,7 @@ public sealed partial class ApprovalViewModel : ObservableObject
     public string? IgnoredFile { get; }
 
     // Opening a terminal names a connection, which isn't the user's to edit; they can decline and say which one instead.
-    public bool IsCommandReadOnly => Kind is ProposalKind.OpenTerminal or ProposalKind.Plan;
+    public bool IsCommandReadOnly => Kind is ProposalKind.OpenTerminal or ProposalKind.Plan or ProposalKind.EditFile;
 
     public string? PlanText { get; }
 
@@ -49,6 +49,7 @@ public sealed partial class ApprovalViewModel : ObservableObject
         ProposalKind.OpenTerminal => Strings.ApprovalOpen,
         ProposalKind.SendKeys => Strings.ApprovalSend,
         ProposalKind.Plan => Strings.ApprovalApprovePlan,
+        ProposalKind.EditFile => Strings.ApprovalApplyEdit,
         _ => Strings.ApprovalRun,
     };
 
@@ -63,6 +64,7 @@ public sealed partial class ApprovalViewModel : ObservableObject
         (ProposalKind.OpenTerminal, _, _) => Strings.ApprovalHeadingOpen,
         (ProposalKind.SendKeys, _, _) => Strings.ApprovalHeadingKeys,
         (ProposalKind.Plan, _, _) => Strings.ApprovalHeadingPlan,
+        (ProposalKind.EditFile, _, _) => Strings.ApprovalHeadingEdit,
         (_, not null, _) => Strings.ApprovalHeadingIgnored,
         (_, _, CommandRisk.AlwaysAsk) => Strings.ApprovalHeadingTrust,
         _ => Strings.ApprovalHeading,
@@ -70,6 +72,7 @@ public sealed partial class ApprovalViewModel : ObservableObject
 
     public string RiskText => Kind == ProposalKind.OpenTerminal ? Strings.ApprovalRiskOpen
         : Kind == ProposalKind.Plan ? Strings.ApprovalRiskPlan
+        : Kind == ProposalKind.EditFile ? Strings.ApprovalRiskEdit
         : Kind == ProposalKind.SendKeys && Risk != CommandRisk.AlwaysAsk ? Strings.ApprovalRiskKeys
         : IgnoredFile is not null ? Strings.Format(Strings.ApprovalRiskIgnored, ProjectFolders.Display(IgnoredFile))
         : Risk switch

@@ -32,6 +32,9 @@ public sealed class AgentTerminal
 
     public ApprovalMode DefaultMode { get; }
 
+    // Exact file access on the terminal's machine, beside the terminal; null where it isn't available, e.g. on Windows for now.
+    public Files.IHostFiles? Files { get; init; }
+
     private long _seenUpTo;
 
     // The first line of output the agent hasn't been given: where the last task ended, or where the terminal was when it was

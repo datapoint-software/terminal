@@ -12,4 +12,7 @@ public enum ProposalKind
 
     // Command holds the plan's numbered steps and how to roll back; Purpose its summary. Nothing to edit.
     Plan,
+
+    // Command holds the diff to approve; the change is applied as the user sees it, with a backup first.
+    EditFile,
 }
