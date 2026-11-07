@@ -64,4 +64,20 @@ public sealed class TerminalIgnoreTests : IDisposable
         Assert.False(TerminalIgnore.IsIgnored(Path.Combine(project, "AGENTS.md"), project, home));
         Assert.True(TerminalIgnore.IsIgnored(Path.Combine(project, "TERMINAL.md"), project, home));
     }
+
+    [Fact]
+    public void Describes_the_ignore_files_above_and_inside_the_project()
+    {
+        Write(_home, "*.secret");
+        Write(Project, "# keys", ".env", "");
+        Write(Path.Combine(Project, "deploy"), "*.pem");
+        Write(Path.Combine(Project, ".hidden"), "skipped");
+        Write(Path.Combine(_home, "elsewhere"), "unrelated");
+
+        var described = TerminalIgnore.Describe(Project, _home);
+
+        Assert.Equal(
+            [(_home, "*.secret"), (Project, ".env"), (Path.Combine(Project, "deploy"), "*.pem")],
+            described.Select(file => (file.Folder, string.Join(',', file.Patterns))));
+    }
 }

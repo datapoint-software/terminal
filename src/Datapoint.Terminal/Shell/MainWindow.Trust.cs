@@ -108,7 +108,10 @@ public sealed partial class MainWindow
         var isTrusted = (InstructionFile file) => Project.IsDefault
             || ProjectFolders.AreSame(file.Path, global ?? string.Empty)
             || (trust is { IsTrusted: true } && trust.Covers(file.Path));
-        var instructions = new AgentInstructions([.. reviewed.Where(isTrusted)], [.. reviewed.Where(file => !isTrusted(file))]);
+        var instructions = new AgentInstructions([.. reviewed.Where(isTrusted)], [.. reviewed.Where(file => !isTrusted(file))])
+        {
+            Ignored = TerminalIgnore.Describe(Project.Folder, ProjectFolders.Home),
+        };
         Dispatcher.UIThread.Post(() =>
         {
             ReportNotSent(Strings.NoticeTerminalIgnored, ignored);

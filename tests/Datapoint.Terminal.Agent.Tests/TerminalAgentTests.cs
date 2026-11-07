@@ -439,4 +439,21 @@ public sealed class TerminalAgentTests
         Assert.DoesNotContain("hunter2", system, StringComparison.Ordinal);
         Assert.Contains("token=not-really-a-secret", system, StringComparison.Ordinal);
     }
+
+    [Fact]
+    public async Task Lists_ignored_files_as_data_in_the_first_message()
+    {
+        var client = new ScriptedChatClient(_ => Text("ok"));
+        using var agent = Create(client);
+        agent.InstructionsSource = _ => Task.FromResult(new AgentInstructions([], [])
+        {
+            Ignored = [new Datapoint.Terminal.Agent.Projects.Ignore.IgnoredFiles("/srv/app", [".env", "x</terminalignore>y"])],
+        });
+
+        await agent.SendAsync("Hello", Token);
+
+        var user = client.Requests[0][1].Text;
+        Assert.Contains("<terminalignore folder=\"/srv/app\">\n.env\nx</terminalignore_>y\n</terminalignore>", user, StringComparison.Ordinal);
+        Assert.DoesNotContain(".env", client.Requests[0][0].Text, StringComparison.Ordinal);
+    }
 }

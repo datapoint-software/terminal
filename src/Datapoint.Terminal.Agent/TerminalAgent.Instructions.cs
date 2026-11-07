@@ -1,5 +1,6 @@
 using System.Text;
 using Datapoint.Terminal.Agent.Projects;
+using Datapoint.Terminal.Agent.Projects.Ignore;
 using Microsoft.Extensions.AI;
 
 namespace Datapoint.Terminal.Agent;
@@ -19,7 +20,7 @@ public sealed partial class TerminalAgent
 
         var instructions = await source(cancellationToken).ConfigureAwait(false);
         _history[0] = new ChatMessage(ChatRole.System, SystemPrompt.Text + InstructionsBlock(instructions.Instructions));
-        return DataBlock(instructions.Data) + message;
+        return IgnoredBlock(instructions.Ignored) + DataBlock(instructions.Data) + message;
     }
 
     private string InstructionsBlock(IReadOnlyList<InstructionFile> files)
@@ -38,6 +39,26 @@ public sealed partial class TerminalAgent
         }
 
         return text.ToString();
+    }
+
+    // The patterns are data: they come from files in the project, and can only ask the agent to read less.
+    private static string IgnoredBlock(IReadOnlyList<IgnoredFiles> ignored)
+    {
+        if (ignored.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        var text = new StringBuilder("[Files the user listed in .terminalignore, which must never reach you. The patterns use .gitignore ")
+            .Append("syntax and apply below the folder shown.]\n");
+        foreach (var file in ignored)
+        {
+            var patterns = string.Join('\n', file.Patterns).Replace("</terminalignore>", "</terminalignore_>", StringComparison.OrdinalIgnoreCase);
+            text.Append("<terminalignore folder=\"").Append(ProjectFolders.Display(file.Folder)).Append("\">\n")
+                .Append(patterns).Append("\n</terminalignore>\n");
+        }
+
+        return text.Append('\n').ToString();
     }
 
     private string DataBlock(IReadOnlyList<InstructionFile> files)
