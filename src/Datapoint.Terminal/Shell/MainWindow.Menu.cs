@@ -47,6 +47,12 @@ public sealed partial class MainWindow
         terminal.Add(Item(Strings.MenuNewTab, Shortcut(Key.T), () => _ = OpenLocalTabAsync()));
         terminal.Add(Item(Strings.MenuCloseTab, Shortcut(Key.W), () => CloseSelectedTab()));
         terminal.Add(new NativeMenuItemSeparator());
+        terminal.Add(Item(Strings.MenuSplitRight, IsMac ? Shortcut(Key.D) : Shortcut(Key.E), () => _ = SplitAsync(beside: true)));
+        terminal.Add(Item(Strings.MenuSplitDown, Shortcut(Key.D, shift: true), () => _ = SplitAsync(beside: false)));
+        terminal.Add(Item(Strings.MenuNextPane, Shortcut(Key.OemCloseBrackets), () => MovePaneFocus(1)));
+        terminal.Add(Item(Strings.MenuPreviousPane, Shortcut(Key.OemOpenBrackets), () => MovePaneFocus(-1)));
+        terminal.Add(Item(Strings.MenuMovePaneToTab, null, MovePaneToOwnTab));
+        terminal.Add(new NativeMenuItemSeparator());
         terminal.Add(Item(Strings.MenuFind, Shortcut(Key.F), OpenFind));
         terminal.Add(new NativeMenuItemSeparator());
         terminal.Add(Item(Strings.MenuNextTab, new KeyGesture(Key.Tab, KeyModifiers.Control), () => MoveTab(1)));

@@ -43,6 +43,7 @@ public sealed partial class MainWindow
         tab.AgentTerminal = new AgentTerminal(tab.Name, new ConnectionTerminal(connection), defaultMode, environment) { IsRemote = tab.IsRemote, Connection = tab.ConnectionName };
         connection.OutputArrived += (_, _) => tab.View.NotifyOutput();
         tab.View.CommandMarkClicked += (_, e) => ShowChatStep(tab, e.Command.CommandLine);
+        tab.View.GotFocus += (_, _) => SelectPane(tab);
         ApplyAppearance(tab);
         connection.TitleChanged += (_, _) => Dispatcher.UIThread.Post(() =>
         {
@@ -88,10 +89,7 @@ public sealed partial class MainWindow
     private void ShowSelectedTab()
     {
         var selected = SelectedTab;
-        foreach (var tab in _tabs)
-        {
-            tab.View.IsVisible = ReferenceEquals(tab, selected);
-        }
+        LayOutPanes(selected);
 
         _chat.ShowTerminal(selected?.AgentTerminal);
         UpdateTitle();
@@ -157,6 +155,10 @@ public sealed partial class MainWindow
             return;
         }
 
+        var panes = tab.Group?.Tabs.ToList() ?? [];
+        var pane = panes.IndexOf(tab);
+        panes.Remove(tab);
+        PaneGroup.Leave(tab);
         _ = DisposeTabAsync(tab);
         if (_tabs.Count == 0)
         {
@@ -165,7 +167,8 @@ public sealed partial class MainWindow
             return;
         }
 
-        Tabs.SelectedItem = _tabs[Math.Min(index, _tabs.Count - 1)];
+        // A closed pane's neighbour takes its place, so the rest of the split stays in view.
+        Tabs.SelectedItem = panes.Count > 0 ? panes[Math.Min(pane, panes.Count - 1)] : _tabs[Math.Min(index, _tabs.Count - 1)];
         SelectedTab?.View.Focus();
     }
 

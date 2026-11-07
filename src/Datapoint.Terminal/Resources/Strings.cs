@@ -608,6 +608,20 @@ public static class Strings
 
     public static string MenuNotifications => Get(nameof(MenuNotifications));
 
+    public static string NoticePanesFull => Get(nameof(NoticePanesFull));
+
+    public static string MenuSplitRight => Get(nameof(MenuSplitRight));
+
+    public static string MenuSplitDown => Get(nameof(MenuSplitDown));
+
+    public static string MenuNextPane => Get(nameof(MenuNextPane));
+
+    public static string MenuPreviousPane => Get(nameof(MenuPreviousPane));
+
+    public static string MenuMovePaneToTab => Get(nameof(MenuMovePaneToTab));
+
+    public static string NoticePaneConnectionGone => Get(nameof(NoticePaneConnectionGone));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

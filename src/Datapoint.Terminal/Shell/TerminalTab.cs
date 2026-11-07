@@ -34,6 +34,8 @@ public sealed partial class TerminalTab : ObservableObject
 
     public bool IsRemote { get; init; }
 
+    public PaneGroup? Group { get; set; }
+
     public string? BusyReason => TabBusy.Reason(AgentTerminal?.Terminal.GetState(), IsRemote, IsAgentActing);
 
     public string? Environment => AgentTerminal?.Environment;

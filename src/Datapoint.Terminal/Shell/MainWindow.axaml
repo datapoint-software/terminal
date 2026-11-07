@@ -114,7 +114,7 @@
           <TextBox x:Name="FindBox" PlaceholderText="{x:Static res:Strings.FindPlaceholder}" AutomationProperties.Name="{x:Static res:Strings.FindPlaceholder}" />
         </DockPanel>
       </Border>
-      <Panel x:Name="TerminalHost" />
+      <Grid x:Name="TerminalHost" />
     </DockPanel>
     <!-- A hairline separator, with a wider invisible handle for dragging. -->
     <Rectangle x:Name="ChatSeparator" Grid.Column="1" Fill="{DynamicResource SeparatorBrush}" />

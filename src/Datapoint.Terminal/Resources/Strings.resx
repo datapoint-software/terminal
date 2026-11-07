@@ -917,4 +917,25 @@ git rm -r --cached .terminal</value>
   <data name="MenuNotifications" xml:space="preserve">
     <value>Notify When the Agent Finishes or Waits</value>
   </data>
+  <data name="NoticePanesFull" xml:space="preserve">
+    <value>A tab can show at most {0} terminals. Move one to its own tab first (Terminal › Move Pane to Its Own Tab).</value>
+  </data>
+  <data name="MenuSplitRight" xml:space="preserve">
+    <value>Split Right</value>
+  </data>
+  <data name="MenuSplitDown" xml:space="preserve">
+    <value>Split Down</value>
+  </data>
+  <data name="MenuNextPane" xml:space="preserve">
+    <value>Next Pane</value>
+  </data>
+  <data name="MenuPreviousPane" xml:space="preserve">
+    <value>Previous Pane</value>
+  </data>
+  <data name="MenuMovePaneToTab" xml:space="preserve">
+    <value>Move Pane to Its Own Tab</value>
+  </data>
+  <data name="NoticePaneConnectionGone" xml:space="preserve">
+    <value>Couldn't split: the project no longer lists the connection {0}.</value>
+  </data>
 </root>
