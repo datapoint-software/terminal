@@ -32,9 +32,12 @@ public sealed record AppSettings
     // SHA-256 fingerprints of values the user marked as not secret, never the values themselves.
     public IReadOnlyList<string> NotSecrets { get; init => field = value ?? []; } = [];
 
-    // Where new windows dock the terminals beside the chat; each window can move its own. Replaces chatSide, which placed
-    // the chat and is no longer read.
+    // Where the terminals docked beside the chat before areas could be moved; read only to start areaLayout from it.
     public Shell.TerminalSide TerminalSide { get; set; } = Shell.TerminalSide.Right;
+
+    // Where the agent, terminals and documents sit, the same in every window (product decision 109), e.g.
+    // "row(640;agent,column(280;terminals,documents))". Null until the user first moves or resizes an area.
+    public string? AreaLayout { get; set; }
 
     // Desktop notifications when the agent finishes or needs the user in a background window.
     public bool Notifications { get; set; } = true;

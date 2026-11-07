@@ -780,18 +780,6 @@ Fingerprint: {2}</value>
   <data name="MenuShowTerminals" xml:space="preserve">
     <value>Show Terminals</value>
   </data>
-  <data name="MenuTerminalsRight" xml:space="preserve">
-    <value>Terminals on the Right</value>
-  </data>
-  <data name="MenuTerminalsLeft" xml:space="preserve">
-    <value>Terminals on the Left</value>
-  </data>
-  <data name="MenuTerminalsBottom" xml:space="preserve">
-    <value>Terminals at the Bottom</value>
-  </data>
-  <data name="MenuTerminalsSideDefault" xml:space="preserve">
-    <value>Use This Side for New Windows</value>
-  </data>
   <data name="FindPlaceholder" xml:space="preserve">
     <value>Find in terminal</value>
   </data>
@@ -2378,5 +2366,38 @@ Fingerprint: {2}</value>
   </data>
   <data name="DocumentsServerFiles" xml:space="preserve">
     <value>Server files</value>
+  </data>
+  <data name="MenuMoveArea" xml:space="preserve">
+    <value>Move {0}</value>
+  </data>
+  <data name="MenuAreaLeftOf" xml:space="preserve">
+    <value>Left of {0}</value>
+  </data>
+  <data name="MenuAreaRightOf" xml:space="preserve">
+    <value>Right of {0}</value>
+  </data>
+  <data name="MenuAreaAbove" xml:space="preserve">
+    <value>Above {0}</value>
+  </data>
+  <data name="MenuAreaBelow" xml:space="preserve">
+    <value>Below {0}</value>
+  </data>
+  <data name="MenuWindowLeft" xml:space="preserve">
+    <value>Left Side of the Window</value>
+  </data>
+  <data name="MenuWindowRight" xml:space="preserve">
+    <value>Right Side of the Window</value>
+  </data>
+  <data name="MenuWindowTop" xml:space="preserve">
+    <value>Top of the Window</value>
+  </data>
+  <data name="MenuWindowBottom" xml:space="preserve">
+    <value>Bottom of the Window</value>
+  </data>
+  <data name="MenuResetLayout" xml:space="preserve">
+    <value>Reset Layout</value>
+  </data>
+  <data name="NoticeAreaDoesNotFit" xml:space="preserve">
+    <value>{0} can't go there: the window is too small for every area to keep a usable size. Make the window larger, or hide an area first.</value>
   </data>
 </root>

@@ -61,7 +61,7 @@ public sealed partial class MainWindow : Window, ITerminalOpener
         }
 
         UpdateTitle();
-        _terminalSide = _settings.TerminalSide;
+        SetUpAreas();
         SetUpFind();
         SetUpSidebar();
         NativeMenu.SetMenu(this, BuildMenu());
@@ -252,6 +252,7 @@ public sealed partial class MainWindow : Window, ITerminalOpener
     private async Task StopAsync()
     {
         _settings.Changed -= OnSettingsChanged;
+        _settings.AreaLayoutChanged -= OnAreaLayoutChanged;
         _settings.WorkspacesChanged -= OnWorkspacesChanged;
         _agent?.Dispose();
         _chat.Dispose();

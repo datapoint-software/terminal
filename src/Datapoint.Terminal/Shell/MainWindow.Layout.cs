@@ -1,42 +1,90 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Datapoint.Terminal.Resources;
+using Datapoint.Terminal.Shell.Areas;
 
 namespace Datapoint.Terminal.Shell;
 
-// Product decision 104: the chat fills the window and the terminals dock beside it, on a side set for the application and
-// changeable per window. A shortcut hides and shows them, and they come back whenever the agent is about to act in them.
+// Product decisions 104 and 109: the agent, the terminals and the documents sit where the user dragged them, the same in every
+// window. A shortcut hides and shows the terminals, and they come back whenever the agent is about to act in them. Documents
+// take space only while one is open.
 public sealed partial class MainWindow
 {
-    // About 80 columns at the default text size, which full-screen programs expect.
-    private const double DefaultTerminalWidth = 640;
-    private const double DefaultTerminalHeight = 300;
-    private const double DefaultDocumentLength = 280;
-
-    private TerminalSide _terminalSide;
+    private AreaNode _layout = AreaLayout.Default();
+    private AreaView? _areaView;
     private bool _areTerminalsHidden;
-    private double _terminalWidth = DefaultTerminalWidth;
-    private double _terminalHeight = DefaultTerminalHeight;
-    private double? _documentSize;
 
-    private static bool IsBeside(TerminalSide side) => DockLayout.IsBeside(side);
-
-    private void PlaceTerminals(TerminalSide side)
+    private bool IsShown(AreaKind kind) => kind switch
     {
-        RememberTerminalSize();
-        RememberDocumentSize();
-        if (IsBeside(side) != IsBeside(_terminalSide))
+        AreaKind.Terminals => !_areTerminalsHidden,
+        AreaKind.Documents => _documents.Count > 0,
+        _ => true,
+    };
+
+    private Control AreaControl(AreaKind kind) => kind switch
+    {
+        AreaKind.Terminals => TerminalArea,
+        AreaKind.Documents => DocumentArea,
+        _ => Chat,
+    };
+
+    private static string AreaName(AreaKind kind) => kind switch
+    {
+        AreaKind.Terminals => Strings.TabsName,
+        AreaKind.Documents => Strings.DocumentTabsName,
+        _ => Strings.ChatTitle,
+    };
+
+    // The settings of a version without moving areas say only which side the terminals were on.
+    private void SetUpAreas()
+    {
+        _layout = AreaLayout.Parse(_settings.AreaLayout) ?? AreaLayout.FromSide(_settings.TerminalSide);
+        _areaView = new AreaView(Body, Enum.GetValues<AreaKind>().ToDictionary(kind => kind, AreaControl));
+        _areaView.Resized += (_, _) => SaveLayout();
+        _settings.AreaLayoutChanged += OnAreaLayoutChanged;
+        SetUpAreaDragging();
+    }
+
+    private void OnAreaLayoutChanged(object? sender, EventArgs e)
+    {
+        if (string.Equals(_settings.AreaLayout, AreaLayout.Format(_layout), StringComparison.Ordinal) || AreaLayout.Parse(_settings.AreaLayout) is not { } layout)
         {
-            _documentSize = null;
+            return;
         }
 
-        _terminalSide = side;
+        _layout = layout;
         LayOutPanes();
+    }
+
+    private void SaveLayout() => _settings.SetAreaLayout(AreaLayout.Format(_layout));
+
+    // Refused, with a note in the chat, when the window is too small for every area to keep a usable size there.
+    private void MoveArea(AreaKind moved, AreaKind? target, AreaEdge edge)
+    {
+        bool IsShownAfter(AreaKind kind) => kind == moved || IsShown(kind);
+        var layout = AreaLayout.Move(_layout, moved, target, edge);
+        if (AreaLayout.MinimumLength(layout, isRow: true, IsShownAfter) > Body.Bounds.Width
+            || AreaLayout.MinimumLength(layout, isRow: false, IsShownAfter) > Body.Bounds.Height)
+        {
+            _chat.AddNotice(Strings.Format(Strings.NoticeAreaDoesNotFit, AreaName(moved)));
+            return;
+        }
+
+        UseLayout(layout);
+    }
+
+    private void ResetLayout() => UseLayout(AreaLayout.Default());
+
+    private void UseLayout(AreaNode layout)
+    {
+        AreaLayout.Fit(layout, Body.Bounds.Width, Body.Bounds.Height, IsShown);
+        _layout = layout;
+        LayOutPanes();
+        SaveLayout();
     }
 
     private void ToggleTerminals()
     {
-        RememberTerminalSize();
         _areTerminalsHidden = !_areTerminalsHidden;
         LayOutPanes();
         if (_areTerminalsHidden)
@@ -61,55 +109,10 @@ public sealed partial class MainWindow
         LayOutPanes();
     }
 
-    // The size the user dragged the pane to is kept per direction, so moving it between sides doesn't lose it.
-    private void RememberTerminalSize()
-    {
-        if (_areTerminalsHidden || DockedArea.Bounds.Width <= 0)
-        {
-            return;
-        }
-
-        if (IsBeside(_terminalSide))
-        {
-            _terminalWidth = DockedArea.Bounds.Width;
-            return;
-        }
-
-        _terminalHeight = DockedArea.Bounds.Height;
-    }
-
     private void LayOutPanes()
     {
-        new DockLayout(Body, Chat, DockedArea, ChatSeparator, ChatSplitter).Apply(_terminalSide, _areTerminalsHidden, _terminalWidth, _terminalHeight);
-        LayOutDocuments();
+        _areaView?.Show(_layout, IsShown);
         UpdateLayoutMenu();
-    }
-
-    // Product decision 108: documents get a pane of their own, below the terminals, or beside them when the terminals are below
-    // the chat, so neither hides the other. It's there only while a document is open, and keeps the size the user dragged it to.
-    private void LayOutDocuments()
-    {
-        RememberDocumentSize();
-        var size = _documentSize ?? DefaultDocumentSize();
-        var side = IsBeside(_terminalSide) ? TerminalSide.Bottom : TerminalSide.Right;
-        new DockLayout(DockedArea, TerminalArea, DocumentArea, DocumentSeparator, DocumentSplitter).Apply(side, _documents.Count == 0, size, size);
-    }
-
-    private void RememberDocumentSize()
-    {
-        if (!DocumentArea.IsVisible || DocumentArea.Bounds.Width <= 0)
-        {
-            return;
-        }
-
-        _documentSize = IsBeside(_terminalSide) ? DocumentArea.Bounds.Height : DocumentArea.Bounds.Width;
-    }
-
-    // Two fifths of the terminals' column at first, leaving the terminal the larger share.
-    private double DefaultDocumentSize()
-    {
-        var length = IsBeside(_terminalSide) ? DockedArea.Bounds.Height : DockedArea.Bounds.Width;
-        return length > 0 ? Math.Max(DockLayout.MinimumSize, length * 0.4) : DefaultDocumentLength;
     }
 
     // The agent's commands lead to their step in the chat; the user's own failed ones offer the agent's help.
@@ -134,7 +137,6 @@ public sealed partial class MainWindow
         return true;
     }
 
-    private readonly Dictionary<TerminalSide, NativeMenuItem> _sideItems = [];
     private NativeMenuItem? _toggleTerminalsItem;
 
     private NativeMenu BuildViewMenu()
@@ -147,34 +149,39 @@ public sealed partial class MainWindow
         view.Add(Item(Strings.MenuPreviousArea, new KeyGesture(Key.F6, KeyModifiers.Shift), () => MoveAreaFocus(-1)));
         view.Add(ShowMarkdownMenuItem());
         view.Add(new NativeMenuItemSeparator());
-        foreach (var (side, label) in new[]
+        foreach (var kind in Enum.GetValues<AreaKind>())
         {
-            (TerminalSide.Right, Strings.MenuTerminalsRight),
-            (TerminalSide.Left, Strings.MenuTerminalsLeft),
-            (TerminalSide.Bottom, Strings.MenuTerminalsBottom),
-        })
-        {
-            var item = Item(label, null, () => PlaceTerminals(side));
-            item.ToggleType = MenuItemToggleType.Radio;
-            _sideItems[side] = item;
-            view.Add(item);
+            view.Add(MoveAreaMenuItem(kind));
         }
 
-        view.Add(new NativeMenuItemSeparator());
-        view.Add(Item(Strings.MenuTerminalsSideDefault, null, () => _settings.SetTerminalSide(_terminalSide)));
+        view.Add(Item(Strings.MenuResetLayout, null, ResetLayout));
         view.Add(new NativeMenuItemSeparator());
         AddAppearanceItems(view);
         return view;
     }
 
-    private void UpdateLayoutMenu()
+    // The keyboard's way to do what dragging a header does: each place beside the other areas, then the window's edges.
+    private NativeMenuItem MoveAreaMenuItem(AreaKind moved)
     {
-        _toggleTerminalsItem?.Header = _areTerminalsHidden ? Strings.MenuShowTerminals : Strings.MenuHideTerminals;
-        foreach (var (side, item) in _sideItems)
+        var menu = new NativeMenu();
+        foreach (var target in Enum.GetValues<AreaKind>().Where(kind => kind != moved))
         {
-            item.IsChecked = side == _terminalSide;
+            var name = AreaName(target);
+            menu.Add(Item(Strings.Format(Strings.MenuAreaLeftOf, name), null, () => MoveArea(moved, target, AreaEdge.Left)));
+            menu.Add(Item(Strings.Format(Strings.MenuAreaRightOf, name), null, () => MoveArea(moved, target, AreaEdge.Right)));
+            menu.Add(Item(Strings.Format(Strings.MenuAreaAbove, name), null, () => MoveArea(moved, target, AreaEdge.Top)));
+            menu.Add(Item(Strings.Format(Strings.MenuAreaBelow, name), null, () => MoveArea(moved, target, AreaEdge.Bottom)));
+            menu.Add(new NativeMenuItemSeparator());
         }
+
+        menu.Add(Item(Strings.MenuWindowLeft, null, () => MoveArea(moved, null, AreaEdge.Left)));
+        menu.Add(Item(Strings.MenuWindowRight, null, () => MoveArea(moved, null, AreaEdge.Right)));
+        menu.Add(Item(Strings.MenuWindowTop, null, () => MoveArea(moved, null, AreaEdge.Top)));
+        menu.Add(Item(Strings.MenuWindowBottom, null, () => MoveArea(moved, null, AreaEdge.Bottom)));
+        return new NativeMenuItem(Strings.Format(Strings.MenuMoveArea, AreaName(moved))) { Menu = menu };
     }
+
+    private void UpdateLayoutMenu() => _toggleTerminalsItem?.Header = _areTerminalsHidden ? Strings.MenuShowTerminals : Strings.MenuHideTerminals;
 
     // F6 moves the keyboard between the window's areas, as in most desktop applications: the chat, the terminals and the
     // documents, skipping any that are hidden.

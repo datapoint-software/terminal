@@ -56,6 +56,9 @@ public sealed partial class ChatView : UserControl
     }
 
     // The caret goes to the end, after any text the menu put there for the user to finish.
+    // The user drags the chat by its header to move it elsewhere in the window.
+    public Control DragHandle => Header;
+
     public void FocusInput()
     {
         DraftBox.Focus();

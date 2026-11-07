@@ -17,6 +17,9 @@
   </Window.Resources>
   <Window.Styles>
     <!-- Tabs: a ListBox, so arrow keys move between tabs and screen readers announce them as a list. -->
+    <Style Selector="Rectangle.areaseparator">
+      <Setter Property="Fill" Value="{DynamicResource SeparatorBrush}" />
+    </Style>
     <Style Selector="ListBox.tabs">
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="BorderThickness" Value="0" />
@@ -85,14 +88,12 @@
     <side:SidebarView x:Name="Sidebar" AutomationProperties.AutomationId="Sidebar" />
     <Rectangle x:Name="SidebarSeparator" Grid.Column="1" Fill="{DynamicResource SeparatorBrush}" />
     <GridSplitter x:Name="SidebarSplitter" Grid.Column="1" ResizeDirection="Columns" Margin="-3,0" ZIndex="1" />
-    <!-- The chat fills the window; the terminals dock beside it, their side and size set in code (MainWindow.Layout.cs). -->
-    <Grid x:Name="Body" Grid.Column="2" ColumnDefinitions="*,1,380">
-    <!-- The terminals, with documents in a pane of their own below them, or beside them when they're docked below the chat
-         (product decision 108). The split is set in code (MainWindow.Layout.cs). -->
-    <Grid x:Name="DockedArea">
+    <!-- The agent, the terminals and the documents, arranged in code (MainWindow.Layout.cs) where the user put them by
+         dragging their headers (product decision 109). -->
+    <Panel x:Name="Body" Grid.Column="2">
     <DockPanel x:Name="TerminalArea" AutomationProperties.Name="{x:Static res:Strings.TabsName}">
       <!-- A header like the chat's, at the same height, so the two line up side by side. -->
-      <Border DockPanel.Dock="Top" Height="{StaticResource PaneHeaderHeight}" Padding="16,0,10,0" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
+      <Border x:Name="TerminalsHeader" DockPanel.Dock="Top" Height="{StaticResource PaneHeaderHeight}" Padding="16,0,10,0" Background="Transparent" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
         <Grid ColumnDefinitions="*,Auto">
           <StackPanel Spacing="2" VerticalAlignment="Center">
             <TextBlock Classes="title" Text="{x:Static res:Strings.TabsName}" />
@@ -158,11 +159,9 @@
         </StackPanel>
       </Panel>
     </DockPanel>
-    <Rectangle x:Name="DocumentSeparator" Fill="{DynamicResource SeparatorBrush}" IsVisible="False" />
-    <GridSplitter x:Name="DocumentSplitter" ZIndex="1" IsVisible="False" />
-    <DockPanel x:Name="DocumentArea" IsVisible="False" AutomationProperties.Name="{x:Static res:Strings.DocumentTabsName}">
+    <DockPanel x:Name="DocumentArea" AutomationProperties.Name="{x:Static res:Strings.DocumentTabsName}">
       <!-- Named after the sidebar section the document in front comes from, e.g. Hosts or Skills. -->
-      <Border DockPanel.Dock="Top" Height="{StaticResource PaneHeaderHeight}" Padding="16,0,10,0" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
+      <Border x:Name="DocumentsHeader" DockPanel.Dock="Top" Background="Transparent" Height="{StaticResource PaneHeaderHeight}" Padding="16,0,10,0" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
         <StackPanel Spacing="2" VerticalAlignment="Center">
           <TextBlock x:Name="DocumentsTitle" Classes="title" Text="{x:Static res:Strings.DocumentTabsName}" />
           <TextBlock x:Name="DocumentsSummary" Classes="secondary" TextTrimming="CharacterEllipsis" />
@@ -192,12 +191,12 @@
       </Border>
       <ContentControl x:Name="DocumentHost" />
     </DockPanel>
-    </Grid>
-    <!-- A hairline separator, with a wider invisible handle for dragging. -->
-    <Rectangle x:Name="ChatSeparator" Grid.Column="1" Fill="{DynamicResource SeparatorBrush}" />
-    <GridSplitter x:Name="ChatSplitter" Grid.Column="1" ResizeDirection="Columns" Margin="-3,0" ZIndex="1" />
-    <chat:ChatView x:Name="Chat" Grid.Column="2" AutomationProperties.AutomationId="Chat" />
-    </Grid>
+    <chat:ChatView x:Name="Chat" AutomationProperties.AutomationId="Chat" />
+    </Panel>
+    <!-- Where a dragged area would land, shown over the others until it's dropped. -->
+    <Canvas x:Name="AreaOverlay" Grid.Column="2" IsVisible="False" IsHitTestVisible="False" ZIndex="2">
+      <Border x:Name="AreaPreview" Background="{DynamicResource AccentBrush}" Opacity="0.25" CornerRadius="4" />
+    </Canvas>
     </Grid>
   </Grid>
 </Window>

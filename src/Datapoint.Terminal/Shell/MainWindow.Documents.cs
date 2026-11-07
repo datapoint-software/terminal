@@ -28,7 +28,7 @@ public sealed partial class MainWindow
     {
         DocumentTabs.ItemsSource = _documents;
         DocumentTabs.SelectionChanged += (_, _) => ShowSelectedDocument();
-        _documents.CollectionChanged += (_, _) => LayOutDocuments();
+        _documents.CollectionChanged += (_, _) => LayOutPanes();
         _documents.CollectionChanged += (_, _) => ShowDocumentsHeading();
         DocumentArea.GotFocus += (_, _) => UpdateTitle();
         TerminalArea.GotFocus += (_, _) => UpdateTitle();

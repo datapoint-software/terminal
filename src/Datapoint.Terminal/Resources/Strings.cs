@@ -518,14 +518,6 @@ public static class Strings
 
     public static string MenuShowTerminals => Get(nameof(MenuShowTerminals));
 
-    public static string MenuTerminalsRight => Get(nameof(MenuTerminalsRight));
-
-    public static string MenuTerminalsLeft => Get(nameof(MenuTerminalsLeft));
-
-    public static string MenuTerminalsBottom => Get(nameof(MenuTerminalsBottom));
-
-    public static string MenuTerminalsSideDefault => Get(nameof(MenuTerminalsSideDefault));
-
     public static string FindPlaceholder => Get(nameof(FindPlaceholder));
 
     public static string FindOlder => Get(nameof(FindOlder));
@@ -1583,6 +1575,28 @@ public static class Strings
     public static string CountOpen => Get(nameof(CountOpen));
 
     public static string DocumentsServerFiles => Get(nameof(DocumentsServerFiles));
+
+    public static string MenuMoveArea => Get(nameof(MenuMoveArea));
+
+    public static string MenuAreaLeftOf => Get(nameof(MenuAreaLeftOf));
+
+    public static string MenuAreaRightOf => Get(nameof(MenuAreaRightOf));
+
+    public static string MenuAreaAbove => Get(nameof(MenuAreaAbove));
+
+    public static string MenuAreaBelow => Get(nameof(MenuAreaBelow));
+
+    public static string MenuWindowLeft => Get(nameof(MenuWindowLeft));
+
+    public static string MenuWindowRight => Get(nameof(MenuWindowRight));
+
+    public static string MenuWindowTop => Get(nameof(MenuWindowTop));
+
+    public static string MenuWindowBottom => Get(nameof(MenuWindowBottom));
+
+    public static string MenuResetLayout => Get(nameof(MenuResetLayout));
+
+    public static string NoticeAreaDoesNotFit => Get(nameof(NoticeAreaDoesNotFit));
 
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 

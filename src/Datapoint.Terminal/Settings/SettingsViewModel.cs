@@ -40,6 +40,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         NotSecrets = settings.NotSecrets;
         HistoryDays = settings.HistoryDays;
         TerminalSide = settings.TerminalSide;
+        AreaLayout = settings.AreaLayout;
         Notifications = settings.Notifications;
         RecordSessions = settings.RecordSessions;
         SpendingLimit = settings.SpendingLimit;
@@ -84,6 +85,23 @@ public sealed partial class SettingsViewModel : ObservableObject
     public int? HistoryDays { get; private set; }
 
     public Shell.TerminalSide TerminalSide { get; private set; }
+
+    public string? AreaLayout { get; private set; }
+
+    // Every window lays out its areas the same way, so a move in one is made in the others.
+    public event EventHandler? AreaLayoutChanged;
+
+    public void SetAreaLayout(string layout)
+    {
+        if (string.Equals(layout, AreaLayout, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        AreaLayout = layout;
+        SaveWorkspaceData();
+        AreaLayoutChanged?.Invoke(this, EventArgs.Empty);
+    }
 
     public Shell.TerminalTheme TerminalTheme { get; private set; }
 
@@ -239,6 +257,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         NotSecrets = NotSecrets,
         HistoryDays = HistoryDays,
         TerminalSide = TerminalSide,
+        AreaLayout = AreaLayout,
         Notifications = Notifications,
         RecordSessions = RecordSessions,
         SpendingLimit = SpendingLimit,
@@ -285,12 +304,6 @@ public sealed partial class SettingsViewModel : ObservableObject
     public void MarkNotSecret(IEnumerable<string> values)
     {
         NotSecrets = [.. NotSecrets.Union(values.Select(SecretRedactor.Fingerprint), StringComparer.Ordinal)];
-        SaveWorkspaceData();
-    }
-
-    public void SetTerminalSide(Shell.TerminalSide side)
-    {
-        TerminalSide = side;
         SaveWorkspaceData();
     }
 

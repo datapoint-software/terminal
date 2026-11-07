@@ -346,7 +346,8 @@
 
   <DockPanel>
     <!-- Header: what the agent is doing, announced to screen readers as it changes. -->
-    <Border DockPanel.Dock="Top" Height="{StaticResource PaneHeaderHeight}" Padding="16,0,10,0" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
+    <!-- Dragging the header moves the chat elsewhere in the window (product decision 109). -->
+    <Border x:Name="Header" DockPanel.Dock="Top" Height="{StaticResource PaneHeaderHeight}" Padding="16,0,10,0" Background="Transparent" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
       <Grid ColumnDefinitions="*,Auto">
         <StackPanel Spacing="2" VerticalAlignment="Center">
           <TextBlock Classes="title" Text="{x:Static res:Strings.ChatTitle}" />
