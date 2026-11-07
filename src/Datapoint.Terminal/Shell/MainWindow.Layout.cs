@@ -97,6 +97,7 @@ public sealed partial class MainWindow
         var view = new NativeMenu();
         _toggleChatItem = Item(Strings.MenuHideChat, Shortcut(Key.J), ToggleChat);
         view.Add(_toggleChatItem);
+        view.Add(SidebarMenuItem());
         view.Add(new NativeMenuItemSeparator());
         foreach (var (side, label) in new[]
         {

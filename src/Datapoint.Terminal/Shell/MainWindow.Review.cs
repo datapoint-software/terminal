@@ -42,6 +42,7 @@ public sealed partial class MainWindow
         var details = Describe(review.Held);
         _settings.SetConfirmed(Project.Folder, review.Effective);
         _connections = review.Effective;
+        RefreshSidebarHosts();
         if (string.Equals(details, _keptHeld, StringComparison.Ordinal))
         {
             return;
@@ -69,6 +70,7 @@ public sealed partial class MainWindow
     {
         _connections = connections;
         _settings.SetConfirmed(Project.Folder, connections);
+        RefreshSidebarHosts();
     }
 
     private void ReportStricter(IReadOnlyList<ProjectConnection> confirmed, IReadOnlyList<ProjectConnection> effective)

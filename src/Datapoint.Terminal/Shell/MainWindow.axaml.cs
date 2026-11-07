@@ -67,6 +67,7 @@ public sealed partial class MainWindow : Window, ITerminalOpener
         UpdateTitle();
         _chatSide = _settings.ChatSide;
         SetUpFind();
+        SetUpSidebar();
         NativeMenu.SetMenu(this, BuildMenu());
         LayOutChat();
         AddHandler(KeyDownEvent, OnShortcutKeyDown, Avalonia.Interactivity.RoutingStrategies.Tunnel);

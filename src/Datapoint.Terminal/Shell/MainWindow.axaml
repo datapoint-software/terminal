@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:chat="clr-namespace:Datapoint.Terminal.Chat"
+        xmlns:side="clr-namespace:Datapoint.Terminal.Sidebar"
         xmlns:shell="clr-namespace:Datapoint.Terminal.Shell"
         xmlns:res="clr-namespace:Datapoint.Terminal.Resources"
         xmlns:controls="clr-namespace:Datapoint.Terminal.Controls;assembly=Datapoint.Terminal.Controls"
@@ -70,8 +71,13 @@
   </Window.Styles>
   <Grid RowDefinitions="Auto,*">
     <NativeMenuBar />
+    <!-- The sidebar on the left (product decision 98), then the terminals and the chat. -->
+    <Grid x:Name="Workspace" Grid.Row="1" ColumnDefinitions="240,1,*">
+    <side:SidebarView x:Name="Sidebar" AutomationProperties.AutomationId="Sidebar" />
+    <Rectangle x:Name="SidebarSeparator" Grid.Column="1" Fill="{DynamicResource SeparatorBrush}" />
+    <GridSplitter x:Name="SidebarSplitter" Grid.Column="1" ResizeDirection="Columns" Margin="-3,0" ZIndex="1" />
     <!-- The chat pane's side and size are set in code (MainWindow.Layout.cs). -->
-    <Grid x:Name="Body" Grid.Row="1" ColumnDefinitions="*,1,380">
+    <Grid x:Name="Body" Grid.Column="2" ColumnDefinitions="*,1,380">
     <DockPanel x:Name="TerminalArea">
       <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
         <DockPanel>
@@ -120,6 +126,7 @@
     <Rectangle x:Name="ChatSeparator" Grid.Column="1" Fill="{DynamicResource SeparatorBrush}" />
     <GridSplitter x:Name="ChatSplitter" Grid.Column="1" ResizeDirection="Columns" Margin="-3,0" ZIndex="1" />
     <chat:ChatView x:Name="Chat" Grid.Column="2" AutomationProperties.AutomationId="Chat" />
+    </Grid>
     </Grid>
   </Grid>
 </Window>

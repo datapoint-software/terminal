@@ -1328,4 +1328,64 @@ git rm -r --cached .terminal</value>
   <data name="ChatInputReplaces" xml:space="preserve">
     <value>Or ask for something else instead…</value>
   </data>
+  <data name="SidebarHosts" xml:space="preserve">
+    <value>Hosts</value>
+  </data>
+  <data name="SidebarFiles" xml:space="preserve">
+    <value>Files</value>
+  </data>
+  <data name="SidebarOtherHosts" xml:space="preserve">
+    <value>{0} more in your SSH config</value>
+  </data>
+  <data name="SidebarOpenTerminals" xml:space="preserve">
+    <value>{0} open</value>
+  </data>
+  <data name="SidebarAdd" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="SidebarNewFile" xml:space="preserve">
+    <value>New file</value>
+  </data>
+  <data name="SidebarOpenTerminal" xml:space="preserve">
+    <value>Open terminal</value>
+  </data>
+  <data name="SidebarOpenDocumentation" xml:space="preserve">
+    <value>Open documentation</value>
+  </data>
+  <data name="SidebarNoHosts" xml:space="preserve">
+    <value>No hosts in this project yet.</value>
+  </data>
+  <data name="MenuHideSidebar" xml:space="preserve">
+    <value>Hide Sidebar</value>
+  </data>
+  <data name="MenuShowSidebar" xml:space="preserve">
+    <value>Show Sidebar</value>
+  </data>
+  <data name="SidebarLabel" xml:space="preserve">
+    <value>Project hosts and files</value>
+  </data>
+  <data name="SidebarAddHost" xml:space="preserve">
+    <value>Add {0} to the project</value>
+  </data>
+  <data name="SidebarNoDocumentation" xml:space="preserve">
+    <value>{0} has no documentation yet.</value>
+  </data>
+  <data name="SidebarReadOnly" xml:space="preserve">
+    <value>This project is open read-only in this window, so files can't be added here.</value>
+  </data>
+  <data name="SidebarNewFileTitle" xml:space="preserve">
+    <value>New file</value>
+  </data>
+  <data name="SidebarNewFileMessage" xml:space="preserve">
+    <value>A new file in {0}.</value>
+  </data>
+  <data name="SidebarNewFileName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="SidebarNewFileFailed" xml:space="preserve">
+    <value>Couldn't create {0}: {1}</value>
+  </data>
+  <data name="SidebarNewFileInvalid" xml:space="preserve">
+    <value>"{0}" isn't a file name: use one name without slashes.</value>
+  </data>
 </root>

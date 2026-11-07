@@ -882,6 +882,46 @@ public static class Strings
 
     public static string ChatInputReplaces => Get(nameof(ChatInputReplaces));
 
+    public static string SidebarHosts => Get(nameof(SidebarHosts));
+
+    public static string SidebarFiles => Get(nameof(SidebarFiles));
+
+    public static string SidebarOtherHosts => Get(nameof(SidebarOtherHosts));
+
+    public static string SidebarOpenTerminals => Get(nameof(SidebarOpenTerminals));
+
+    public static string SidebarAdd => Get(nameof(SidebarAdd));
+
+    public static string SidebarNewFile => Get(nameof(SidebarNewFile));
+
+    public static string SidebarOpenTerminal => Get(nameof(SidebarOpenTerminal));
+
+    public static string SidebarOpenDocumentation => Get(nameof(SidebarOpenDocumentation));
+
+    public static string SidebarNoHosts => Get(nameof(SidebarNoHosts));
+
+    public static string MenuHideSidebar => Get(nameof(MenuHideSidebar));
+
+    public static string MenuShowSidebar => Get(nameof(MenuShowSidebar));
+
+    public static string SidebarLabel => Get(nameof(SidebarLabel));
+
+    public static string SidebarAddHost => Get(nameof(SidebarAddHost));
+
+    public static string SidebarNoDocumentation => Get(nameof(SidebarNoDocumentation));
+
+    public static string SidebarReadOnly => Get(nameof(SidebarReadOnly));
+
+    public static string SidebarNewFileTitle => Get(nameof(SidebarNewFileTitle));
+
+    public static string SidebarNewFileMessage => Get(nameof(SidebarNewFileMessage));
+
+    public static string SidebarNewFileName => Get(nameof(SidebarNewFileName));
+
+    public static string SidebarNewFileFailed => Get(nameof(SidebarNewFileFailed));
+
+    public static string SidebarNewFileInvalid => Get(nameof(SidebarNewFileInvalid));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;
