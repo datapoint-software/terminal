@@ -12,6 +12,5 @@ public static class Program
         AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .UseHarfBuzz()
-            .WithInterFont()
             .LogToTrace();
 }

@@ -2,6 +2,7 @@
   <ItemGroup>
     <PackageReference Include="Avalonia.Headless.XUnit" />
     <PackageReference Include="Avalonia.Skia" />
+    <PackageReference Include="Avalonia.Fonts.Inter" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Datapoint.Terminal\Datapoint.Terminal.csproj" />

@@ -2,6 +2,15 @@
   "version": 2,
   "dependencies": {
     "net10.0": {
+      "Avalonia.Fonts.Inter": {
+        "type": "Direct",
+        "requested": "[12.1.5, )",
+        "resolved": "12.1.5",
+        "contentHash": "SeFNLktbuxrHxUzPjYubzWB1O9HVCNo3IezZZ9SgkFBAcKcSYrY2KcD8lfP7QWMGxPUvqdLyn0TmioR9d3nZUg==",
+        "dependencies": {
+          "Avalonia": "12.1.5"
+        }
+      },
       "Avalonia.Headless.XUnit": {
         "type": "Direct",
         "requested": "[12.1.5, )",
@@ -419,7 +428,6 @@
         "dependencies": {
           "Avalonia": "[12.1.5, )",
           "Avalonia.Desktop": "[12.1.5, )",
-          "Avalonia.Fonts.Inter": "[12.1.5, )",
           "Avalonia.HarfBuzz": "[12.1.5, )",
           "Avalonia.Themes.Fluent": "[12.1.5, )",
           "CommunityToolkit.Mvvm": "[8.4.2, )",
@@ -502,15 +510,6 @@
           "Avalonia.Skia": "12.1.5",
           "Avalonia.Win32": "12.1.5",
           "Avalonia.X11": "12.1.5"
-        }
-      },
-      "Avalonia.Fonts.Inter": {
-        "type": "CentralTransitive",
-        "requested": "[12.1.5, )",
-        "resolved": "12.1.5",
-        "contentHash": "SeFNLktbuxrHxUzPjYubzWB1O9HVCNo3IezZZ9SgkFBAcKcSYrY2KcD8lfP7QWMGxPUvqdLyn0TmioR9d3nZUg==",
-        "dependencies": {
-          "Avalonia": "12.1.5"
         }
       },
       "Avalonia.HarfBuzz": {
