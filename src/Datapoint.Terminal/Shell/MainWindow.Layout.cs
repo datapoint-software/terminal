@@ -62,11 +62,22 @@ public sealed partial class MainWindow
         UpdateChatMenu();
     }
 
-    private void ShowChatStep(TerminalTab tab, string? commandLine)
+    // The agent's commands lead to their step in the chat; the user's own failed ones offer the agent's help.
+    private void OnCommandMarkClicked(TerminalTab tab, Emulator.ShellIntegration.CommandRecord command)
+    {
+        if (ShowChatStep(tab, command.CommandLine) || command.ExitCode is null or 0)
+        {
+            return;
+        }
+
+        FixCommand(tab, command);
+    }
+
+    private bool ShowChatStep(TerminalTab tab, string? commandLine)
     {
         if (commandLine is null || _chat.FindCommand(tab.Name, commandLine) is not { } item)
         {
-            return;
+            return false;
         }
 
         if (_isChatHidden)
@@ -75,6 +86,7 @@ public sealed partial class MainWindow
         }
 
         Chat.Reveal(item);
+        return true;
     }
 
     private readonly Dictionary<ChatSide, NativeMenuItem> _sideItems = [];

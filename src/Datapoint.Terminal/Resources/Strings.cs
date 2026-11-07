@@ -744,6 +744,28 @@ public static class Strings
 
     public static string SizeMegabytes => Get(nameof(SizeMegabytes));
 
+    public static string ExcerptAttached => Get(nameof(ExcerptAttached));
+
+    public static string ExcerptSent => Get(nameof(ExcerptSent));
+
+    public static string ExcerptRemove => Get(nameof(ExcerptRemove));
+
+    public static string MenuExplainSelection => Get(nameof(MenuExplainSelection));
+
+    public static string MenuFixFailedCommand => Get(nameof(MenuFixFailedCommand));
+
+    public static string NoticeSelectFirst => Get(nameof(NoticeSelectFirst));
+
+    public static string NoticeNoFailedCommand => Get(nameof(NoticeNoFailedCommand));
+
+    public static string ExcerptSelection => Get(nameof(ExcerptSelection));
+
+    public static string ExcerptFailedCommand => Get(nameof(ExcerptFailedCommand));
+
+    public static string ExplainSelectionDraft => Get(nameof(ExplainSelectionDraft));
+
+    public static string FixCommandDraft => Get(nameof(FixCommandDraft));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

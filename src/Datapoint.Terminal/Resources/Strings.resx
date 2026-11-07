@@ -1121,4 +1121,37 @@ git rm -r --cached .terminal</value>
   <data name="SizeMegabytes" xml:space="preserve">
     <value>{0} MB</value>
   </data>
+  <data name="ExcerptAttached" xml:space="preserve">
+    <value>Attached: {0} from {1} ({2} lines), sent with your message with secrets masked.</value>
+  </data>
+  <data name="ExcerptSent" xml:space="preserve">
+    <value>(with {0} from {1} attached)</value>
+  </data>
+  <data name="ExcerptRemove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="MenuExplainSelection" xml:space="preserve">
+    <value>Explain Selection</value>
+  </data>
+  <data name="MenuFixFailedCommand" xml:space="preserve">
+    <value>Fix Last Failed Command</value>
+  </data>
+  <data name="NoticeSelectFirst" xml:space="preserve">
+    <value>Select some text in the terminal first, then choose Explain Selection.</value>
+  </data>
+  <data name="NoticeNoFailedCommand" xml:space="preserve">
+    <value>There's no failed command to fix in this terminal. Failed commands are recognized in local shells with shell integration.</value>
+  </data>
+  <data name="ExcerptSelection" xml:space="preserve">
+    <value>the selected text</value>
+  </data>
+  <data name="ExcerptFailedCommand" xml:space="preserve">
+    <value>a failed command and its output (exit code {0})</value>
+  </data>
+  <data name="ExplainSelectionDraft" xml:space="preserve">
+    <value>Explain this output.</value>
+  </data>
+  <data name="FixCommandDraft" xml:space="preserve">
+    <value>This command failed. Explain why, and fix it if you can.</value>
+  </data>
 </root>

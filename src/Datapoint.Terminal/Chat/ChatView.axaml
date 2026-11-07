@@ -218,6 +218,12 @@
       <TextBlock Classes="secondary" Text="{Binding PendingOutputText}" IsVisible="{Binding HasPendingOutput}" TextWrapping="Wrap"
                  Margin="4,0,4,6" />
 
+      <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding HasExcerpt}" Margin="4,0,0,6">
+        <TextBlock Classes="secondary" Text="{Binding ExcerptText}" TextWrapping="Wrap" VerticalAlignment="Center" />
+        <Button Grid.Column="1" Classes="plain" Content="{x:Static res:Strings.ExcerptRemove}" Command="{Binding RemoveExcerptCommand}"
+                AutomationProperties.Name="{x:Static res:Strings.ExcerptRemove}" />
+      </Grid>
+
       <!-- Composer: a rounded field with the send button inside, and quiet menus for the model and approval under it. -->
       <Border Classes="composer">
         <Grid ColumnDefinitions="*,Auto">

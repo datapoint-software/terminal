@@ -52,7 +52,8 @@ public sealed partial class MainWindow
         };
         StartRecording(tab, connection);
         connection.OutputArrived += (_, _) => tab.View.NotifyOutput();
-        tab.View.CommandMarkClicked += (_, e) => ShowChatStep(tab, e.Command.CommandLine);
+        tab.View.CommandMarkClicked += (_, e) => OnCommandMarkClicked(tab, e.Command);
+        tab.View.ContextMenu = BuildTerminalContextMenu(tab);
         tab.View.GotFocus += (_, _) => SelectPane(tab);
         ApplyAppearance(tab);
         connection.TitleChanged += (_, _) => Dispatcher.UIThread.Post(() =>

@@ -146,4 +146,22 @@ public sealed class ChatViewModelTests
         Assert.False(chat.SendCommand.CanExecute(null));
         Assert.False(chat.HasAgent);
     }
+
+    [Fact]
+    public async Task Sends_an_attached_excerpt_once_and_says_so()
+    {
+        using var chat = new ChatViewModel(new ImmediateUiThread());
+        using var agent = new TerminalAgent(new ListChatClient(new ChatResponse(new ChatMessage(ChatRole.Assistant, "A typo."))), chat, new SecretRedactor());
+        agent.AddTerminal(new AgentTerminal("Local", new InstantTerminal(), ApprovalMode.Ask));
+        chat.Attach(agent, "privacy notice");
+        chat.Excerpt = new TerminalExcerpt("Local", "the selected text", "bash: gti: command not found");
+        chat.Draft = "Explain this output.";
+
+        Assert.True(chat.HasExcerpt);
+        chat.SendCommand.Execute(null);
+        await WaitUntilAsync(() => chat.Status == AgentStatus.Idle);
+
+        Assert.Null(chat.Excerpt);
+        Assert.Contains("(with the selected text from Local attached)", chat.Items.Single(item => item.Kind == ChatItemKind.User).Text, StringComparison.Ordinal);
+    }
 }

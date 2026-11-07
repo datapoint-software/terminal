@@ -145,6 +145,18 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
         PendingOutputText = Strings.Format(Strings.PendingOutput, terminals) + (pending.Any(item => item.IsCut) ? " " + Strings.PendingOutputCut : string.Empty);
     }
 
+    // Explain and fix (product.md): part of a terminal that goes with the next message, said before it's sent like new output.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasExcerpt), nameof(ExcerptText))]
+    public partial TerminalExcerpt? Excerpt { get; set; }
+
+    public bool HasExcerpt => Excerpt is not null;
+
+    public string ExcerptText => Excerpt is { } excerpt ? Strings.Format(Strings.ExcerptAttached, excerpt.Label, excerpt.Terminal, excerpt.Lines) : string.Empty;
+
+    [RelayCommand]
+    private void RemoveExcerpt() => Excerpt = null;
+
     // The latest step that ran this command line in this terminal.
     public ChatItemViewModel? FindCommand(string terminal, string commandLine) => Items.LastOrDefault(item =>
         item.IsCommand
@@ -265,11 +277,13 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
     private void Send()
     {
         var message = Draft.Trim();
+        var excerpt = Excerpt;
         Draft = string.Empty;
-        Items.Add(new ChatItemViewModel(ChatItemKind.User, message));
+        Excerpt = null;
+        Items.Add(new ChatItemViewModel(ChatItemKind.User, excerpt is null ? message : message + "\n" + Strings.Format(Strings.ExcerptSent, excerpt.Label, excerpt.Terminal)));
         Status = AgentStatus.Thinking;
         MessageSent?.Invoke(message);
-        _ = _agent!.SendAsync(message);
+        _ = _agent!.SendAsync(message, excerpt);
     }
 
     [RelayCommand(CanExecute = nameof(IsBusyCheck))]
