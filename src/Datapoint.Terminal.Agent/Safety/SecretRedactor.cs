@@ -1,4 +1,6 @@
+using System.Text;
 using System.Text.RegularExpressions;
+using Datapoint.Terminal.Security.Cryptography;
 
 namespace Datapoint.Terminal.Agent.Safety;
 
@@ -24,32 +26,99 @@ public sealed partial class SecretRedactor
         }
     }
 
-    public string Redact(string text)
+    public string Redact(string text) => Redact(text, isAllowed: null);
+
+    // Values the user marked as not secret are left as they are.
+    public string Redact(string text, Func<string, bool>? isAllowed)
     {
         ArgumentNullException.ThrowIfNull(text);
+        var result = new StringBuilder(text.Length);
+        var end = 0;
+        foreach (var match in Find(text).Where(match => isAllowed?.Invoke(match.Value) != true))
+        {
+            result.Append(text, end, match.Index - end).Append(Mask);
+            end = match.Index + match.Length;
+        }
+
+        return result.Append(text, end, text.Length - end).ToString();
+    }
+
+    // In order and without overlaps. When the rules take too long, the whole text is one match: sending nothing is safer
+    // than risking a secret.
+    public IReadOnlyList<SecretMatch> Find(string text)
+    {
+        ArgumentNullException.ThrowIfNull(text);
+        if (text.Length == 0)
+        {
+            return [];
+        }
+
+        List<(int Index, int Length)> spans;
+        try
+        {
+            spans = [.. KnownSpans(text), .. Spans(PrivateKey(), text), .. Spans(TokenFormats(), text), .. AssignmentSpans(text)];
+        }
+        catch (RegexMatchTimeoutException)
+        {
+            spans = [(0, text.Length)];
+        }
+
+        return Merge(spans).Select(span => new SecretMatch(span.Index, span.Length, text.Substring(span.Index, span.Length), LineOf(text, span.Index))).ToList();
+    }
+
+    // Remembering a value as "not a secret" keeps only this hash, so the application's settings never hold the value itself.
+    public static string Fingerprint(string value)
+    {
+        ArgumentNullException.ThrowIfNull(value);
+        return Convert.ToHexStringLower(Hashing.Hash(HashKind.Sha256, Encoding.UTF8.GetBytes(value)));
+    }
+
+    private List<(int Index, int Length)> KnownSpans(string text)
+    {
         string[] known;
         lock (_lock)
         {
             known = [.. _known];
         }
 
+        var spans = new List<(int, int)>();
         foreach (var secret in known)
         {
-            text = text.Replace(secret, Mask, StringComparison.Ordinal);
+            for (var index = text.IndexOf(secret, StringComparison.Ordinal); index >= 0; index = text.IndexOf(secret, index + secret.Length, StringComparison.Ordinal))
+            {
+                spans.Add((index, secret.Length));
+            }
         }
 
-        try
-        {
-            text = PrivateKey().Replace(text, Mask);
-            text = TokenFormats().Replace(text, Mask);
-            return Assignment().Replace(text, match => match.Groups["name"].Value + match.Groups["separator"].Value + Mask);
-        }
-        catch (RegexMatchTimeoutException)
-        {
-            // Too slow to check safely: send nothing rather than risk a secret.
-            return Mask;
-        }
+        return spans;
     }
+
+    private static IEnumerable<(int Index, int Length)> Spans(Regex regex, string text) =>
+        regex.Matches(text).Select(match => (match.Index, match.Length));
+
+    // Only the value is a secret; its name stays so the text still reads.
+    private static IEnumerable<(int Index, int Length)> AssignmentSpans(string text) =>
+        Assignment().Matches(text).Select(match => match.Groups["value"]).Select(value => (value.Index, value.Length));
+
+    private static List<(int Index, int Length)> Merge(List<(int Index, int Length)> spans)
+    {
+        var merged = new List<(int Index, int Length)>();
+        foreach (var (index, length) in spans.OrderBy(span => span.Index))
+        {
+            if (merged.Count > 0 && index <= merged[^1].Index + merged[^1].Length)
+            {
+                var last = merged[^1];
+                merged[^1] = (last.Index, Math.Max(last.Length, index + length - last.Index));
+                continue;
+            }
+
+            merged.Add((index, length));
+        }
+
+        return merged;
+    }
+
+    private static int LineOf(string text, int index) => 1 + text.AsSpan(0, index).Count('\n');
 
     [GeneratedRegex(@"-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]*?(-----END [A-Z ]*PRIVATE KEY-----|$)", RegexOptions.ExplicitCapture, matchTimeoutMilliseconds: 500)]
     private static partial Regex PrivateKey();

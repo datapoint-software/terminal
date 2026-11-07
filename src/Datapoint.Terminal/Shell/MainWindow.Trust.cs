@@ -2,6 +2,7 @@ using System.Text;
 using Avalonia.Threading;
 using Datapoint.Terminal.Agent;
 using Datapoint.Terminal.Agent.Projects;
+using Datapoint.Terminal.Agent.Projects.Ignore;
 using Datapoint.Terminal.Resources;
 
 namespace Datapoint.Terminal.Shell;
@@ -94,23 +95,38 @@ public sealed partial class MainWindow
     }
 
     // The global file is the user's own; the project's files are instructions only when the user trusted them as they were shown.
-    private AgentInstructions LoadInstructions()
+    // Files listed in .terminalignore aren't read at all, and those that look like they hold a secret wait for the user's choice.
+    private async Task<AgentInstructions> LoadInstructionsAsync(CancellationToken cancellationToken)
     {
         var global = InstructionFiles.FindGlobal(ProjectFolders.Global);
-        var projectFiles = ProjectInstructionFiles(global);
-        var files = InstructionFiles.Read([.. global is null ? [] : new[] { global }, .. projectFiles]);
+        List<string> paths = [.. global is null ? [] : new[] { global }, .. ProjectInstructionFiles(global)];
+        var ignored = paths.Where(path => TerminalIgnore.IsIgnored(path, Project.Folder, ProjectFolders.Home)).ToList();
+        var files = InstructionFiles.Read([.. paths.Except(ignored, ProjectFolders.Comparer)]);
+        var changes = _windows.InstructionSnapshots.Update(files);
+        var (reviewed, skipped) = await ReviewSecretsAsync(files, cancellationToken).ConfigureAwait(false);
         var trust = _trust;
         var isTrusted = (InstructionFile file) => Project.IsDefault
             || ProjectFolders.AreSame(file.Path, global ?? string.Empty)
             || (trust is { IsTrusted: true } && trust.Covers(file.Path));
-        var instructions = new AgentInstructions([.. files.Where(isTrusted)], [.. files.Where(file => !isTrusted(file))]);
-        var changes = _windows.InstructionSnapshots.Update(files);
+        var instructions = new AgentInstructions([.. reviewed.Where(isTrusted)], [.. reviewed.Where(file => !isTrusted(file))]);
         Dispatcher.UIThread.Post(() =>
         {
+            ReportNotSent(Strings.NoticeTerminalIgnored, ignored);
+            ReportNotSent(Strings.NoticeFilesSkipped, skipped);
             ReportInstructions(instructions);
             ReportChanges(changes);
         });
         return instructions;
+    }
+
+    private void ReportNotSent(string format, List<string> paths)
+    {
+        if (paths.Count == 0)
+        {
+            return;
+        }
+
+        _chat.AddNotice(Strings.Format(format, string.Join(", ", paths.Select(ProjectFolders.Display))));
     }
 
     private void ReportInstructions(AgentInstructions instructions)

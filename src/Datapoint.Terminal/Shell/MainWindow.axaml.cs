@@ -137,7 +137,7 @@ public sealed partial class MainWindow : Window
             _clientSignature = signature;
             if (_agent is null)
             {
-                _agent = new TerminalAgent(client, _chat, _redactor) { InstructionsSource = LoadInstructions };
+                _agent = new TerminalAgent(client, _chat, _redactor) { InstructionsSource = LoadInstructionsAsync };
                 _agent.EventRaised += OnAgentEvent;
                 foreach (var tab in _tabs.Where(tab => tab.AgentTerminal is not null))
                 {

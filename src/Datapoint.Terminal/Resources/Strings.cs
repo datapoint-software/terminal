@@ -402,6 +402,26 @@ public static class Strings
 
     public static string NoticeSyncFolder => Get(nameof(NoticeSyncFolder));
 
+    public static string SecretTitle => Get(nameof(SecretTitle));
+
+    public static string SecretMessage => Get(nameof(SecretMessage));
+
+    public static string SecretSkip => Get(nameof(SecretSkip));
+
+    public static string SecretAsWritten => Get(nameof(SecretAsWritten));
+
+    public static string SecretNotSecret => Get(nameof(SecretNotSecret));
+
+    public static string SecretMasked => Get(nameof(SecretMasked));
+
+    public static string SecretLine => Get(nameof(SecretLine));
+
+    public static string SecretMore => Get(nameof(SecretMore));
+
+    public static string NoticeTerminalIgnored => Get(nameof(NoticeTerminalIgnored));
+
+    public static string NoticeFilesSkipped => Get(nameof(NoticeFilesSkipped));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

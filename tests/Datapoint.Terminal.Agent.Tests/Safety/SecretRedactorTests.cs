@@ -47,4 +47,46 @@ public sealed class SecretRedactorTests
 
         Assert.Equal(text, new SecretRedactor().Redact(text));
     }
+
+    [Fact]
+    public void Finds_each_match_with_its_line()
+    {
+        var redactor = new SecretRedactor();
+        redactor.AddKnownSecret("my-very-own-key-123");
+
+        var matches = redactor.Find("name: api\npassword=hunter2hunter2\nkey my-very-own-key-123 and AKIAIOSFODNN7EXAMPLE");
+
+        Assert.Equal([(2, "hunter2hunter2"), (3, "my-very-own-key-123"), (3, "AKIAIOSFODNN7EXAMPLE")], matches.Select(match => (match.Line, match.Value)));
+    }
+
+    [Fact]
+    public void Merges_overlapping_matches()
+    {
+        var redactor = new SecretRedactor();
+        redactor.AddKnownSecret("sk-ant-api03-abcdefghijklmnopqrstuvwxyz");
+
+        var matches = redactor.Find("token=sk-ant-api03-abcdefghijklmnopqrstuvwxyz0123");
+
+        var match = Assert.Single(matches);
+        Assert.Equal("sk-ant-api03-abcdefghijklmnopqrstuvwxyz0123", match.Value);
+    }
+
+    [Fact]
+    public void Leaves_values_the_user_allowed()
+    {
+        const string text = "password=correct-horse\ntoken=hunter2hunter2";
+
+        var redacted = new SecretRedactor().Redact(text, value => string.Equals(value, "correct-horse", StringComparison.Ordinal));
+
+        Assert.Equal("password=correct-horse\ntoken=" + SecretRedactor.Mask, redacted);
+    }
+
+    [Fact]
+    public void Fingerprints_without_keeping_the_value()
+    {
+        var fingerprint = SecretRedactor.Fingerprint("hunter2");
+
+        Assert.Equal("f52fbd32b2b3b86ff88ef6c490628285f482af15ddcb29541f94bcf526a3f6c7", fingerprint);
+        Assert.DoesNotContain("hunter2", fingerprint, StringComparison.Ordinal);
+    }
 }

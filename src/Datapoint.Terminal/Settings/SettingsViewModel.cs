@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using Datapoint.Terminal.Agent;
 using Datapoint.Terminal.Agent.Projects;
 using Datapoint.Terminal.Agent.Providers;
+using Datapoint.Terminal.Agent.Safety;
 using Datapoint.Terminal.Resources;
 using Microsoft.Extensions.AI;
 
@@ -38,6 +39,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         DeclinedGitIgnore = settings.DeclinedGitIgnore;
         ConfirmedConnections = settings.ConfirmedConnections;
         WarnedSyncFolders = settings.WarnedSyncFolders;
+        NotSecrets = settings.NotSecrets;
         SelectedProviderId = settings.SelectedProvider?.Id;
         foreach (var account in settings.Providers)
         {
@@ -65,6 +67,8 @@ public sealed partial class SettingsViewModel : ObservableObject
     public IReadOnlyList<ConfirmedConnections> ConfirmedConnections { get; private set; }
 
     public IReadOnlyList<string> WarnedSyncFolders { get; private set; }
+
+    public IReadOnlyList<string> NotSecrets { get; private set; }
 
     public IReadOnlyList<KindOption> Kinds { get; }
 
@@ -94,6 +98,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         DeclinedGitIgnore = DeclinedGitIgnore,
         ConfirmedConnections = ConfirmedConnections,
         WarnedSyncFolders = WarnedSyncFolders,
+        NotSecrets = NotSecrets,
     };
 
     public IReadOnlyList<ProjectConnection>? ConfirmedFor(string folder) =>
@@ -119,6 +124,15 @@ public sealed partial class SettingsViewModel : ObservableObject
     public void WarnedSyncFolder(string folder)
     {
         WarnedSyncFolders = [.. WarnedSyncFolders.Where(item => !ProjectFolders.AreSame(item, folder)), folder];
+        SaveProjectData();
+    }
+
+    // Read from the agent's thread too; the list is replaced, never changed in place.
+    public bool IsNotSecret(string value) => NotSecrets.Contains(SecretRedactor.Fingerprint(value), StringComparer.Ordinal);
+
+    public void MarkNotSecret(IEnumerable<string> values)
+    {
+        NotSecrets = [.. NotSecrets.Union(values.Select(SecretRedactor.Fingerprint), StringComparer.Ordinal)];
         SaveProjectData();
     }
 

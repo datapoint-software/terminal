@@ -608,4 +608,34 @@ git rm -r --cached .terminal</value>
   <data name="NoticeSyncFolder" xml:space="preserve">
     <value>{0} is inside {1} ({2}). Its .terminal folder holds this project's conversations and terminal output, which {1} would upload, and syncing can damage a database while it's open. Consider moving the project out of {2}, or excluding .terminal from syncing. This warning isn't shown again.</value>
   </data>
+  <data name="SecretTitle" xml:space="preserve">
+    <value>Possible Secret in a File</value>
+  </data>
+  <data name="SecretMessage" xml:space="preserve">
+    <value>{0} is about to be sent to the AI provider with your message, and the lines below look like they hold a secret. Send it masked, with each match replaced by “{1}”, send it as written, or don't send it. “Not a Secret” sends these matches as written and remembers them, in this application's settings, so they aren't flagged again.</value>
+  </data>
+  <data name="SecretSkip" xml:space="preserve">
+    <value>Don't Send</value>
+  </data>
+  <data name="SecretAsWritten" xml:space="preserve">
+    <value>Send As Written</value>
+  </data>
+  <data name="SecretNotSecret" xml:space="preserve">
+    <value>Not a Secret</value>
+  </data>
+  <data name="SecretMasked" xml:space="preserve">
+    <value>Send Masked</value>
+  </data>
+  <data name="SecretLine" xml:space="preserve">
+    <value>Line {0}: {1}</value>
+  </data>
+  <data name="SecretMore" xml:space="preserve">
+    <value>…and {0} more lines</value>
+  </data>
+  <data name="NoticeTerminalIgnored" xml:space="preserve">
+    <value>Not sent to the AI provider, as .terminalignore lists them: {0}</value>
+  </data>
+  <data name="NoticeFilesSkipped" xml:space="preserve">
+    <value>Not sent to the AI provider, as you chose: {0}</value>
+  </data>
 </root>

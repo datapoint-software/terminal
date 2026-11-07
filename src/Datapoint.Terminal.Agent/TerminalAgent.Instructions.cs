@@ -6,17 +6,18 @@ namespace Datapoint.Terminal.Agent;
 
 public sealed partial class TerminalAgent
 {
-    // Called on a background thread at the start of each conversation, so edited files apply from the next one.
-    public Func<AgentInstructions>? InstructionsSource { get; set; }
+    // Called on a background thread at the start of each conversation, so edited files apply from the next one. It may wait
+    // for the user, e.g. to decide about a file that looks like it holds a secret.
+    public Func<CancellationToken, Task<AgentInstructions>>? InstructionsSource { get; set; }
 
-    private string StartConversation(string message)
+    private async Task<string> StartConversationAsync(string message, CancellationToken cancellationToken)
     {
         if (_history.Count != 1 || InstructionsSource is not { } source)
         {
             return message;
         }
 
-        var instructions = source();
+        var instructions = await source(cancellationToken).ConfigureAwait(false);
         _history[0] = new ChatMessage(ChatRole.System, SystemPrompt.Text + InstructionsBlock(instructions.Instructions));
         return DataBlock(instructions.Data) + message;
     }
@@ -60,7 +61,7 @@ public sealed partial class TerminalAgent
     private void AppendFile(StringBuilder text, string tag, InstructionFile file)
     {
         var closing = $"</{tag}>";
-        var body = _redactor.Redact(file.Text).Replace(closing, $"</{tag}_>", StringComparison.OrdinalIgnoreCase);
+        var body = (file.IsReviewed ? file.Text : _redactor.Redact(file.Text)).Replace(closing, $"</{tag}_>", StringComparison.OrdinalIgnoreCase);
         text.Append('<').Append(tag).Append(" path=\"").Append(ProjectFolders.Display(file.Path)).Append("\">\n")
             .Append(body)
             .Append(file.IsCut ? $"\n[cut short at the {InstructionFiles.MaxBytes / 1024} KB limit for instruction files]" : string.Empty)
