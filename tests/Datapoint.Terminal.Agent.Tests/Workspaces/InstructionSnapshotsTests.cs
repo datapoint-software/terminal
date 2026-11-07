@@ -97,4 +97,46 @@ public sealed class InstructionSnapshotsTests : IDisposable
 
         Assert.DoesNotContain("doas", System.IO.File.ReadAllText(StorePath), StringComparison.Ordinal);
     }
+
+    [Fact]
+    public void Checks_a_file_against_the_accepted_copy_without_accepting_the_change()
+    {
+        Read("Use doas.");
+        var store = new InstructionSnapshots(StorePath);
+        Assert.Equal(ReviewStatus.New, store.Check(FilePath, "Use doas.", _redactor, out _));
+
+        store.Accept(FilePath, "Use doas.", _redactor);
+        Read("Use sudo.");
+
+        var later = new InstructionSnapshots(StorePath);
+        Assert.Equal(ReviewStatus.Changed, later.Check(FilePath, "Use sudo.", _redactor, out var accepted));
+        Assert.Equal("Use doas.", accepted!.Text);
+        Assert.Equal(ReviewStatus.Changed, later.Check(FilePath, "Use sudo.", _redactor, out _));
+        Assert.Equal(ReviewStatus.Accepted, later.Check(FilePath, "Use doas.", _redactor, out _));
+    }
+
+    [Fact]
+    public void Knows_a_folder_once_it_is_accepted()
+    {
+        var store = new InstructionSnapshots(StorePath);
+        Assert.False(store.IsKnown(_folder, _redactor));
+
+        store.Accept(_folder, string.Empty, _redactor);
+
+        Assert.True(new InstructionSnapshots(StorePath).IsKnown(_folder, _redactor));
+    }
+
+    [Fact]
+    public void Tells_whether_the_accepted_copy_can_be_written_back()
+    {
+        Read("x");
+        var store = new InstructionSnapshots(StorePath);
+        store.Accept(FilePath, "Use doas.", _redactor);
+        store.Check(FilePath, "x", _redactor, out var plain);
+        store.Accept(FilePath, "token ghp_abcdefghijklmnopqrstuvwxyz0123456789", _redactor);
+        store.Check(FilePath, "x", _redactor, out var masked);
+
+        Assert.True(InstructionSnapshots.IsWhole(plain!));
+        Assert.False(InstructionSnapshots.IsWhole(masked!));
+    }
 }

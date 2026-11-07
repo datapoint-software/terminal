@@ -84,6 +84,7 @@ public sealed class MarkdownFile
         var output = string.Equals(_newline, "\n", StringComparison.Ordinal) ? whole : whole.Replace("\n", _newline, StringComparison.Ordinal);
         var bytes = _hasBom ? [.. s_bom, .. s_strict.GetBytes(output)] : s_strict.GetBytes(output);
         Write(bytes);
+        Agent.Files.FileWrites.Notify(Path, output);
         _disk = output;
         Text = text;
         return SaveResult.Saved;

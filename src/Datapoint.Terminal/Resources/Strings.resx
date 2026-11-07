@@ -2133,4 +2133,49 @@ Fingerprint: {2}</value>
   <data name="RolloutSeconds" xml:space="preserve">
     <value>{0} s</value>
   </data>
+  <data name="NoticeChangedOutside" xml:space="preserve">
+    <value>{0} changed outside the application. The agent keeps using the version you accepted until you review the change.</value>
+  </data>
+  <data name="NoticeNewSkillOutside" xml:space="preserve">
+    <value>A new skill, {0}, arrived from outside the application. The agent won't use it until you review it.</value>
+  </data>
+  <data name="ReviewChangeAction" xml:space="preserve">
+    <value>Review…</value>
+  </data>
+  <data name="ReviewChangeTitle" xml:space="preserve">
+    <value>Review the change to {0}</value>
+  </data>
+  <data name="ReviewChangeMessage" xml:space="preserve">
+    <value>This file changed outside the application, e.g. by a teammate through a sync service or Git. Accept the change for the agent to use it, or keep your version.</value>
+  </data>
+  <data name="ReviewNewSkillTitle" xml:space="preserve">
+    <value>Review the new skill {0}</value>
+  </data>
+  <data name="ReviewNewSkillMessage" xml:space="preserve">
+    <value>This skill arrived from outside the application, e.g. from a teammate. Accept it for the agent to use it.</value>
+  </data>
+  <data name="ReviewLooser" xml:space="preserve">
+    <value>This change makes the rollout less careful: more hosts at once or more hosts in all, a shorter or missing health check, or carrying on after a failure.</value>
+  </data>
+  <data name="ReviewKeepMine" xml:space="preserve">
+    <value>Keep My Version</value>
+  </data>
+  <data name="ReviewAcceptChange" xml:space="preserve">
+    <value>Accept Change</value>
+  </data>
+  <data name="ReviewLeaveOut" xml:space="preserve">
+    <value>Leave It Out</value>
+  </data>
+  <data name="ReviewAcceptSkill" xml:space="preserve">
+    <value>Accept Skill</value>
+  </data>
+  <data name="NoticeKeptForAgent" xml:space="preserve">
+    <value>Kept your version of {0} for the agent. The file still has the change, since your version has masked secrets and can't be written back.</value>
+  </data>
+  <data name="NoticeChangeAccepted" xml:space="preserve">
+    <value>Accepted the change to {0}.</value>
+  </data>
+  <data name="NoticeChangeKept" xml:space="preserve">
+    <value>Put your version of {0} back.</value>
+  </data>
 </root>

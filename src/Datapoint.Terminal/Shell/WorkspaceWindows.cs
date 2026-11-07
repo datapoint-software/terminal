@@ -23,6 +23,22 @@ public sealed class WorkspaceWindows
         _desktop = desktop;
         Settings = settings;
         desktop.ShutdownRequested += OnShutdownRequested;
+        Agent.Files.FileWrites.Written += OnFileWritten;
+    }
+
+    private readonly Agent.Safety.SecretRedactor _redactor = new();
+
+    // Instructions and skills the application writes, whether the user edited them or the agent saved one, are accepted as
+    // written; only changes from outside wait for review (product decision 101).
+    private void OnFileWritten(object? sender, Agent.Files.FileWrittenEventArgs e)
+    {
+        var name = Path.GetFileName(e.Path);
+        if (!string.Equals(name, Agent.Skills.SkillDocument.FileName, StringComparison.Ordinal) && !string.Equals(name, InstructionFiles.FileName, StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        InstructionSnapshots.Accept(e.Path, e.Text, _redactor);
     }
 
     public SettingsViewModel Settings { get; }

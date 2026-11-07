@@ -7,6 +7,10 @@ namespace Datapoint.Terminal.Agent.Skills;
 // is open.
 public sealed record SkillFolder(string Path, Func<string, bool> IsIgnored, bool CanWrite, Func<bool> IsTrusted)
 {
+    // Product decision 101: given a skill's file and its text, the text the agent may use (the copy the user last accepted, while
+    // a change from outside waits for review), or null to leave it out until the user has looked at it.
+    public Func<string, string, string?>? Reviewed { get; init; }
+
     private const int MostSkills = 500;
 
     public string FileFor(string name) => System.IO.Path.Combine(Path, name, SkillDocument.FileName);
@@ -20,7 +24,9 @@ public sealed record SkillFolder(string Path, Func<string, bool> IsIgnored, bool
                     .Select(folder => System.IO.Path.Combine(folder, SkillDocument.FileName))
                     .Where(file => File.Exists(file) && !IsIgnored(file))
                     .Take(MostSkills)
-                    .Select(file => SkillDocument.Read(TextFiles.Read(file), file))
+                    .Select(file => (File: file, Text: TextToUse(file)))
+                    .Where(item => item.Text is not null)
+                    .Select(item => SkillDocument.Read(item.Text!, item.File))
                     .OrderBy(skill => skill.Title, StringComparer.OrdinalIgnoreCase)]
                 : [];
         }
@@ -28,6 +34,12 @@ public sealed record SkillFolder(string Path, Func<string, bool> IsIgnored, bool
         {
             return [];
         }
+    }
+
+    private string? TextToUse(string file)
+    {
+        var text = TextFiles.Read(file);
+        return Reviewed is null ? text : Reviewed(file, text);
     }
 
     // By its name or its title, as the user or the model may give either.

@@ -1420,6 +1420,36 @@ public static class Strings
 
     public static string RolloutSeconds => Get(nameof(RolloutSeconds));
 
+    public static string NoticeChangedOutside => Get(nameof(NoticeChangedOutside));
+
+    public static string NoticeNewSkillOutside => Get(nameof(NoticeNewSkillOutside));
+
+    public static string ReviewChangeAction => Get(nameof(ReviewChangeAction));
+
+    public static string ReviewChangeTitle => Get(nameof(ReviewChangeTitle));
+
+    public static string ReviewChangeMessage => Get(nameof(ReviewChangeMessage));
+
+    public static string ReviewNewSkillTitle => Get(nameof(ReviewNewSkillTitle));
+
+    public static string ReviewNewSkillMessage => Get(nameof(ReviewNewSkillMessage));
+
+    public static string ReviewLooser => Get(nameof(ReviewLooser));
+
+    public static string ReviewKeepMine => Get(nameof(ReviewKeepMine));
+
+    public static string ReviewAcceptChange => Get(nameof(ReviewAcceptChange));
+
+    public static string ReviewLeaveOut => Get(nameof(ReviewLeaveOut));
+
+    public static string ReviewAcceptSkill => Get(nameof(ReviewAcceptSkill));
+
+    public static string NoticeKeptForAgent => Get(nameof(NoticeKeptForAgent));
+
+    public static string NoticeChangeAccepted => Get(nameof(NoticeChangeAccepted));
+
+    public static string NoticeChangeKept => Get(nameof(NoticeChangeKept));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

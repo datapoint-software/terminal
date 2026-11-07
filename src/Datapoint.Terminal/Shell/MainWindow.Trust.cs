@@ -48,6 +48,7 @@ public sealed partial class MainWindow
         }
 
         _trust = record;
+        TakeSkillBaseline();
     }
 
     private string TrustDetails(IReadOnlyList<string> files, WorkspaceTrustRecord? record)
@@ -100,13 +101,15 @@ public sealed partial class MainWindow
         var global = InstructionFiles.FindGlobal(WorkspaceFolders.Global);
         List<string> paths = [.. global is null ? [] : new[] { global }, .. WorkspaceInstructionFiles(global)];
         var ignored = paths.Where(path => TerminalIgnore.IsIgnored(path, Workspace.Folder, WorkspaceFolders.Home)).ToList();
-        var files = InstructionFiles.Read([.. paths.Except(ignored, WorkspaceFolders.Comparer)]);
-        var changes = _windows.InstructionSnapshots.Update(files, _redactor);
+        var trust = _trust;
+        var read = InstructionFiles.Read([.. paths.Except(ignored, WorkspaceFolders.Comparer)]);
+        var isOwn = (InstructionFile file) => WorkspaceFolders.AreSame(file.Path, global ?? string.Empty);
+        var changes = _windows.InstructionSnapshots.Update(read.Where(isOwn), _redactor);
+        List<InstructionFile> files = [.. read.Select(file => isOwn(file) ? file : ReviewedInstruction(file, trust is { IsTrusted: true } && trust.Covers(file.Path)))];
         var (reviewed, skipped) = await ReviewSecretsAsync(files, cancellationToken).ConfigureAwait(false);
         var (memory, ignoredMemory, skippedMemory) = await LoadMemoryAsync(cancellationToken).ConfigureAwait(false);
         ignored.AddRange(ignoredMemory);
         skipped.AddRange(skippedMemory);
-        var trust = _trust;
         var isTrusted = (InstructionFile file) => Workspace.IsDefault
             || WorkspaceFolders.AreSame(file.Path, global ?? string.Empty)
             || WorkspaceFolders.AreSame(file.Path, GlobalMemoryPath)

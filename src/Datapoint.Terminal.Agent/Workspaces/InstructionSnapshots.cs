@@ -50,6 +50,61 @@ public sealed class InstructionSnapshots(string path)
         }
     }
 
+    // Product decision 101: how a workspace's instruction file or skill compares with the copy the user last accepted, without
+    // accepting it. Accepted is that copy, masked, when there is one.
+    public ReviewStatus Check(string path, string text, SecretRedactor redactor, out InstructionSnapshot? accepted)
+    {
+        ArgumentNullException.ThrowIfNull(text);
+        lock (_sync)
+        {
+            _snapshots ??= LoadAndSave(redactor);
+            accepted = _snapshots.GetValueOrDefault(path);
+            return accepted is null ? ReviewStatus.New
+                : string.Equals(accepted.Fingerprint, SecretRedactor.Fingerprint(text), StringComparison.Ordinal) ? ReviewStatus.Accepted
+                : ReviewStatus.Changed;
+        }
+    }
+
+    public void Accept(string path, string text, SecretRedactor redactor)
+    {
+        ArgumentNullException.ThrowIfNull(text);
+        ArgumentNullException.ThrowIfNull(redactor);
+        lock (_sync)
+        {
+            _snapshots ??= LoadAndSave(redactor);
+            _snapshots[path] = new InstructionSnapshot(redactor.Redact(text), SecretRedactor.Fingerprint(text));
+            Save(_snapshots);
+        }
+    }
+
+    // A folder is known once its files were first taken as they were, so a file added later counts as new.
+    public bool IsKnown(string path, SecretRedactor redactor)
+    {
+        lock (_sync)
+        {
+            _snapshots ??= LoadAndSave(redactor);
+            return _snapshots.ContainsKey(path);
+        }
+    }
+
+    // Whether the accepted copy is the text itself, with nothing masked, so it can be written back over a change.
+    public static bool IsWhole(InstructionSnapshot snapshot)
+    {
+        ArgumentNullException.ThrowIfNull(snapshot);
+        return string.Equals(SecretRedactor.Fingerprint(snapshot.Text), snapshot.Fingerprint, StringComparison.Ordinal);
+    }
+
+    private Dictionary<string, InstructionSnapshot> LoadAndSave(SecretRedactor redactor)
+    {
+        var snapshots = Load(redactor, out var changed);
+        if (changed)
+        {
+            Save(snapshots);
+        }
+
+        return snapshots;
+    }
+
     // Files that no longer exist are dropped, and the unmasked copies earlier versions stored are masked, so changed is set
     // whenever the file needs saving again.
     private Dictionary<string, InstructionSnapshot> Load(SecretRedactor redactor, out bool changed)
@@ -73,7 +128,7 @@ public sealed class InstructionSnapshots(string path)
             return new Dictionary<string, InstructionSnapshot>(WorkspaceFolders.Comparer);
         }
 
-        foreach (var gone in snapshots.Keys.Where(file => !File.Exists(file)).ToList())
+        foreach (var gone in snapshots.Keys.Where(file => !File.Exists(file) && !Directory.Exists(file)).ToList())
         {
             snapshots.Remove(gone);
             changed = true;
@@ -112,7 +167,7 @@ public sealed class InstructionSnapshots(string path)
         {
             var folder = Path.GetDirectoryName(path)!;
             Directory.CreateDirectory(folder);
-            var temporary = Path.Combine(folder, $".instructions-{Guid.NewGuid():N}.tmp");
+            var temporary = Files.TemporaryFiles.For(path);
             var options = new FileStreamOptions { Mode = FileMode.CreateNew, Access = FileAccess.Write };
             if (!OperatingSystem.IsWindows())
             {

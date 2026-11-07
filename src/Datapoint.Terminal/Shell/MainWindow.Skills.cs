@@ -16,7 +16,10 @@ public sealed partial class MainWindow
         Path.Combine(Workspace.Folder, "skills"),
         path => TerminalIgnore.IsIgnored(path, Workspace.Folder, WorkspaceFolders.Home),
         CanWrite: !Workspace.IsReadOnly,
-        IsTrusted: () => Workspace.IsDefault || _trust is { IsTrusted: true });
+        IsTrusted: () => Workspace.IsDefault || _trust is { IsTrusted: true })
+    {
+        Reviewed = ReviewedSkill,
+    };
 
     private void AddSkillItems(NativeMenu terminal)
     {

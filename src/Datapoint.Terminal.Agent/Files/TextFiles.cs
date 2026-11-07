@@ -29,6 +29,7 @@ public static class TextFiles
             }
 
             File.Move(temporary, path, overwrite: true);
+            FileWrites.Notify(path, text);
         }
         finally
         {
