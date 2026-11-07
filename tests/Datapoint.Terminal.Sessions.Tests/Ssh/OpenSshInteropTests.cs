@@ -291,4 +291,20 @@ public sealed class OpenSshInteropTests(OpenSshServer server) : IClassFixture<Op
 
         await Assert.ThrowsAsync<SshChannelException>(() => jump.OpenDirectTcpIpAsync("127.0.0.1", 1, Token));
     }
+
+    // The forward leads back to the server's own sshd, whose greeting proves the bytes went through the tunnel.
+    [Fact]
+    public async Task Forwards_a_local_port_to_the_server_side()
+    {
+        server.SkipIfUnavailable();
+        await using var client = await OpenSshServer.ConnectWithPasswordAsync(server.Options());
+        await using var forward = SshLocalForward.Start(client, 0, "127.0.0.1", 22);
+
+        using var socket = new System.Net.Sockets.TcpClient();
+        await socket.ConnectAsync(System.Net.IPAddress.Loopback, forward.LocalPort, Token);
+        var buffer = new byte[64];
+        var count = await socket.GetStream().ReadAsync(buffer, Token);
+
+        Assert.StartsWith("SSH-2.0-OpenSSH", Encoding.ASCII.GetString(buffer, 0, count), StringComparison.Ordinal);
+    }
 }

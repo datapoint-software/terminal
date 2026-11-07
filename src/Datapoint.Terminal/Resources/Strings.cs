@@ -694,6 +694,14 @@ public static class Strings
 
     public static string NoticeJumping => Get(nameof(NoticeJumping));
 
+    public static string NoticeForwardUnreadable => Get(nameof(NoticeForwardUnreadable));
+
+    public static string NoticeForwardLoopbackOnly => Get(nameof(NoticeForwardLoopbackOnly));
+
+    public static string NoticeForwarding => Get(nameof(NoticeForwarding));
+
+    public static string NoticeForwardFailed => Get(nameof(NoticeForwardFailed));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

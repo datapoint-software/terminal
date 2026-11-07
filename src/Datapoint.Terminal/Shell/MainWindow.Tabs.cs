@@ -201,6 +201,11 @@ public sealed partial class MainWindow
         }
 
         TerminalHost.Children.Remove(tab.View);
+        foreach (var forward in tab.Forwards)
+        {
+            await forward.DisposeAsync().ConfigureAwait(true);
+        }
+
         if (tab.Connection is not { } connection)
         {
             return;

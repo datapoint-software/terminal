@@ -24,6 +24,15 @@ public sealed class ConnectionReviewTests
     }
 
     [Fact]
+    public void Holds_new_forwarded_ports_as_a_changed_address()
+    {
+        var review = Compare(s_web with { Forwards = ["5432 db:5432"] });
+
+        Assert.Equal("web1 -L 5432 db:5432", Assert.Single(review.Held).Proposed);
+        Assert.Null(Assert.Single(review.Effective).Forwards);
+    }
+
+    [Fact]
     public void Holds_a_label_that_leaves_production_and_keeps_asking()
     {
         var review = Compare(s_web with { Environment = "development" });

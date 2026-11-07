@@ -45,6 +45,11 @@ public sealed partial class MainWindow
             // File access goes to the host, not into a container on it, so a container's files are changed through its shell.
             var files = session.Client is { } client && connection.Container is null ? new SshHostFiles(client) : null;
             Attach(tab, new TerminalConnection(session, 80, 24), connection.Environment, DefaultModeFor(connection), select, files, connection.Container?.Describe());
+            if (session.Client is { } forwarding)
+            {
+                StartForwards(tab, forwarding, [.. host.GetAll("LocalForward"), .. connection.Forwards ?? []]);
+            }
+
             return tab;
         }
         catch (Exception exception) when (exception is SshAuthenticationException or SshDisconnectedException or SshProtocolException or SshChannelException

@@ -23,6 +23,9 @@ public sealed record ProjectConnection
 
     public bool IsLocal => SshHost is null && Host is null;
 
+    // Ports forwarded while a tab is open, written as LocalForward is: "8080 localhost:80".
+    public IReadOnlyList<string>? Forwards { get; init; }
+
     public bool IsProduction => EnvironmentLabels.IsProduction(Environment);
 
     // Names and labels come from a shared file and reach the model and the screen, so they're kept to short, plain text that
@@ -37,6 +40,15 @@ public sealed record ProjectConnection
         !IsPlainLabel(Name) ? "a connection's name must be up to 40 letters, digits, spaces, dots, dashes, underscores or @."
         : Environment is not null && !IsPlainLabel(Environment) ? $"the environment label of {Name} must be up to 40 letters, digits, spaces, dots, dashes, underscores or @."
         : SshHost is not null && !IsPlainLabel(SshHost) ? $"the SSH host of {Name} isn't a plain host name."
-        : SshHost is null && Host is null && Container is null ? $"{Name} names neither an SSH host, a host nor a container."
-        : Container?.Problem(Name);
+        : PlaceProblem();
+
+    private string? PlaceProblem() =>
+        IsLocal && Container is null ? $"{Name} names neither an SSH host, a host nor a container."
+        : Container?.Problem(Name) ?? ForwardsProblem();
+
+    private string? ForwardsProblem() =>
+        Forwards is not { Count: > 0 } ? null
+        : IsLocal ? $"{Name} forwards ports but names no SSH host to forward them through."
+        : Forwards.FirstOrDefault(forward => Sessions.Ssh.Config.SshForward.Parse(forward) is null) is { } wrong ? $"the forward \"{wrong}\" of {Name} isn't written as port host:port."
+        : null;
 }

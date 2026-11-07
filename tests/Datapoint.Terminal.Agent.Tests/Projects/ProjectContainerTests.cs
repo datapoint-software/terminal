@@ -52,6 +52,14 @@ public sealed class ProjectContainerTests : IDisposable
         Assert.NotNull(new ProjectContainer { Name = "web", Namespace = "shop" }.Problem("app"));
 
     [Fact]
+    public void Refuses_forwards_without_an_ssh_host() =>
+        Assert.NotNull(new ProjectConnection { Name = "db", Container = new ProjectContainer { Name = "postgres" }, Forwards = ["5432 localhost:5432"] }.Problem());
+
+    [Fact]
+    public void Refuses_a_forward_it_cant_read() =>
+        Assert.NotNull(new ProjectConnection { Name = "web", SshHost = "web", Forwards = ["5432"] }.Problem());
+
+    [Fact]
     public void A_container_alone_is_a_local_connection()
     {
         var connection = new ProjectConnection { Name = "db", Container = new ProjectContainer { Name = "postgres" } };

@@ -41,11 +41,13 @@ public sealed record ConnectionReview(IReadOnlyList<ProjectConnection> Effective
             && string.Equals(Address(first), Address(second), StringComparison.Ordinal);
     }
 
-    // A changed container counts as a changed address: it decides where the agent's commands run.
+    // A changed container counts as a changed address: it decides where the agent's commands run. So do forwarded ports, which
+    // open a way from this computer into the host's network.
     public static string Address(ProjectConnection connection)
     {
         ArgumentNullException.ThrowIfNull(connection);
-        var container = connection.Container is { } target ? (connection.IsLocal ? string.Empty : " ") + target.Address() : string.Empty;
+        var container = (connection.Container is { } target ? (connection.IsLocal ? string.Empty : " ") + target.Address() : string.Empty)
+            + string.Concat((connection.Forwards ?? []).Select(forward => " -L " + forward));
         if (connection.SshHost is { } alias)
         {
             return alias + container;
@@ -74,7 +76,7 @@ public sealed record ConnectionReview(IReadOnlyList<ProjectConnection> Effective
         if (!string.Equals(Address(connection), Address(previous), StringComparison.Ordinal))
         {
             held.Add(new ConnectionChange(connection.Name, AddressSetting, Address(previous), Address(connection)));
-            merged = merged with { SshHost = previous.SshHost, Host = previous.Host, User = previous.User, Port = previous.Port, Container = previous.Container };
+            merged = merged with { SshHost = previous.SshHost, Host = previous.Host, User = previous.User, Port = previous.Port, Container = previous.Container, Forwards = previous.Forwards };
         }
 
         return merged;

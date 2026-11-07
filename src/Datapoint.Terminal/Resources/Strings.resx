@@ -1046,4 +1046,16 @@ git rm -r --cached .terminal</value>
   <data name="NoticeJumping" xml:space="preserve">
     <value>Connecting to {0} through {1}…</value>
   </data>
+  <data name="NoticeForwardUnreadable" xml:space="preserve">
+    <value>The forward "{1}" for {0} isn't written as port host:port, so it was skipped.</value>
+  </data>
+  <data name="NoticeForwardLoopbackOnly" xml:space="preserve">
+    <value>The forward from {0}:{1} listens only on this computer: Datapoint Terminal doesn't open forwarded ports to the network.</value>
+  </data>
+  <data name="NoticeForwarding" xml:space="preserve">
+    <value>Forwarding localhost:{0} to {1}:{2} through {3} while the tab is open.</value>
+  </data>
+  <data name="NoticeForwardFailed" xml:space="preserve">
+    <value>Port {0} couldn't be forwarded: {1}</value>
+  </data>
 </root>
