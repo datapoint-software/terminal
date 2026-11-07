@@ -324,7 +324,7 @@ public sealed partial class TerminalAgent : IDisposable
         var openable = connections.Count == 0
             ? string.Empty
             : "[Connections open_terminal can open: " + string.Join(", ", connections.Select(item => Named(item.Name, item.Environment))) + "]\n";
-        return open + openable + DescribeHostDocs();
+        return open + openable + DescribeHostDocs() + DescribeRunbooks();
     }
 
     private static string Named(string name, string? environment) => $"\"{name}\"" + (environment is null ? string.Empty : $" ({environment})");

@@ -680,6 +680,16 @@ public static class Strings
 
     public static string RecordingsNote => Get(nameof(RecordingsNote));
 
+    public static string MenuRunRunbook => Get(nameof(MenuRunRunbook));
+
+    public static string MenuSaveRunbook => Get(nameof(MenuSaveRunbook));
+
+    public static string MenuNoRunbooks => Get(nameof(MenuNoRunbooks));
+
+    public static string RunbookRunDraft => Get(nameof(RunbookRunDraft));
+
+    public static string RunbookSaveDraft => Get(nameof(RunbookSaveDraft));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

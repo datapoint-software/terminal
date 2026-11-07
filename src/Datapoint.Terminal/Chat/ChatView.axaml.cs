@@ -23,7 +23,12 @@ public sealed partial class ChatView : UserControl
         };
     }
 
-    public void FocusInput() => DraftBox.Focus();
+    // The caret goes to the end, after any text the menu put there for the user to finish.
+    public void FocusInput()
+    {
+        DraftBox.Focus();
+        DraftBox.CaretIndex = DraftBox.Text?.Length ?? 0;
+    }
 
     // Scrolls the step into view and outlines it for a moment.
     public void Reveal(ChatItemViewModel item)

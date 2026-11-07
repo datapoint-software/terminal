@@ -1025,4 +1025,19 @@ git rm -r --cached .terminal</value>
   <data name="RecordingsNote" xml:space="preserve">
     <value>Kept on this computer in the project's .terminal folder, with secrets removed where they're recognized. Also playable with asciinema.</value>
   </data>
+  <data name="MenuRunRunbook" xml:space="preserve">
+    <value>Run Runbook</value>
+  </data>
+  <data name="MenuSaveRunbook" xml:space="preserve">
+    <value>Save Last Task as Runbook…</value>
+  </data>
+  <data name="MenuNoRunbooks" xml:space="preserve">
+    <value>No Runbooks Yet</value>
+  </data>
+  <data name="RunbookRunDraft" xml:space="preserve">
+    <value>Run the runbook "{0}" in {1}.</value>
+  </data>
+  <data name="RunbookSaveDraft" xml:space="preserve">
+    <value>Save the task we just finished as a runbook called </value>
+  </data>
 </root>

@@ -53,6 +53,12 @@ public sealed partial class MainWindow
 
         file.Add(Item(Strings.MenuCloseWindow, IsMac ? Shortcut(Key.W, shift: true) : null, Close));
 
+        var terminal = BuildTerminalMenu();
+        return [new NativeMenuItem(Strings.MenuFile) { Menu = file }, new NativeMenuItem(Strings.MenuView) { Menu = BuildViewMenu() }, new NativeMenuItem(Strings.MenuTerminal) { Menu = terminal }];
+    }
+
+    private NativeMenu BuildTerminalMenu()
+    {
         var terminal = new NativeMenu();
         terminal.Add(Item(Strings.MenuNewTab, Shortcut(Key.T), () => _ = OpenLocalTabAsync()));
         terminal.Add(Item(Strings.MenuCloseTab, Shortcut(Key.W), () => CloseSelectedTab()));
@@ -65,9 +71,11 @@ public sealed partial class MainWindow
         terminal.Add(new NativeMenuItemSeparator());
         terminal.Add(Item(Strings.MenuFind, Shortcut(Key.F), OpenFind));
         terminal.Add(new NativeMenuItemSeparator());
+        AddRunbookItems(terminal);
+        terminal.Add(new NativeMenuItemSeparator());
         terminal.Add(Item(Strings.MenuNextTab, new KeyGesture(Key.Tab, KeyModifiers.Control), () => MoveTab(1)));
         terminal.Add(Item(Strings.MenuPreviousTab, new KeyGesture(Key.Tab, KeyModifiers.Control | KeyModifiers.Shift), () => MoveTab(-1)));
-        return [new NativeMenuItem(Strings.MenuFile) { Menu = file }, new NativeMenuItem(Strings.MenuView) { Menu = BuildViewMenu() }, new NativeMenuItem(Strings.MenuTerminal) { Menu = terminal }];
+        return terminal;
     }
 
     private void FillRecentMenu()
