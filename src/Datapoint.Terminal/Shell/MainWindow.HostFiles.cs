@@ -36,6 +36,14 @@ public sealed partial class MainWindow
             return;
         }
 
+        // Names listed by the host end up in the command typed to save the file, quoted in a way that holds only for paths
+        // without backslashes or line breaks.
+        if (ShellText.PathProblem(path) is { } problem)
+        {
+            _chat.AddNotice(Strings.Format(Strings.HostFileCantOpen, path, problem));
+            return;
+        }
+
         if (_hostFiles.FirstOrDefault(item => ReferenceEquals(item.Value.Tab, tab) && string.Equals(item.Key.Path, path, StringComparison.Ordinal)).Key is { } open)
         {
             DocumentTabs.SelectedItem = open;
