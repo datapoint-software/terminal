@@ -878,4 +878,31 @@ git rm -r --cached .terminal</value>
   <data name="MenuFind" xml:space="preserve">
     <value>Find…</value>
   </data>
+  <data name="MenuBiggerText" xml:space="preserve">
+    <value>Bigger Text</value>
+  </data>
+  <data name="MenuSmallerText" xml:space="preserve">
+    <value>Smaller Text</value>
+  </data>
+  <data name="MenuActualSize" xml:space="preserve">
+    <value>Actual Size</value>
+  </data>
+  <data name="MenuTheme" xml:space="preserve">
+    <value>Terminal Theme</value>
+  </data>
+  <data name="MenuThemeSystem" xml:space="preserve">
+    <value>Match System</value>
+  </data>
+  <data name="MenuThemeDark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="MenuThemeLight" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="MenuFont" xml:space="preserve">
+    <value>Terminal Font</value>
+  </data>
+  <data name="MenuFontDefault" xml:space="preserve">
+    <value>Default</value>
+  </data>
 </root>

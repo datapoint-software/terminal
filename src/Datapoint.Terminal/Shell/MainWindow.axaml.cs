@@ -36,6 +36,8 @@ public sealed partial class MainWindow : Window, ITerminalOpener
         _windows = windows;
         _settings = windows.Settings;
         _settings.Changed += OnSettingsChanged;
+        _settings.AppearanceChanged += OnAppearanceChanged;
+        ActualThemeVariantChanged += (_, _) => ApplyAppearance();
         _settings.ProjectsChanged += OnProjectsChanged;
         _chat.SettingsRequested = windows.OpenSettings;
         _chat.MessageSent = message => Record(HistoryEntryKind.User, message);
@@ -115,6 +117,8 @@ public sealed partial class MainWindow : Window, ITerminalOpener
     public static IChatClient CreateClient(ProviderAccount provider, string? key) => ChatClientFactory.Create(provider.ToProviderSettings(), key);
 
     private void OnSettingsChanged(object? sender, EventArgs e) => ApplySettings();
+
+    private void OnAppearanceChanged(object? sender, EventArgs e) => ApplyAppearance();
 
     private void OnProjectsChanged(object? sender, EventArgs e) => FillRecentMenu();
 

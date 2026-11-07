@@ -38,6 +38,13 @@ public sealed record AppSettings
     // Where new windows put the chat pane; each window can move its own.
     public Shell.ChatSide ChatSide { get; init; } = Shell.ChatSide.Right;
 
+    public Shell.TerminalTheme TerminalTheme { get; init; } = Shell.TerminalTheme.Dark;
+
+    // Null uses the default list of monospace fonts.
+    public string? TerminalFont { get; init; }
+
+    public double TerminalFontSize { get; init; } = 14;
+
     // How long conversation history is kept, in days; null keeps it forever (product decision 52).
     public int? HistoryDays { get; init; }
 

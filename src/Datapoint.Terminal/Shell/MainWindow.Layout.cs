@@ -102,6 +102,8 @@ public sealed partial class MainWindow
 
         view.Add(new NativeMenuItemSeparator());
         view.Add(Item(Strings.MenuChatSideDefault, null, () => _settings.SetChatSide(_chatSide)));
+        view.Add(new NativeMenuItemSeparator());
+        AddAppearanceItems(view);
         return view;
     }
 

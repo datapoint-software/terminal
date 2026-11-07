@@ -42,6 +42,9 @@ public sealed partial class SettingsViewModel : ObservableObject
         NotSecrets = settings.NotSecrets;
         HistoryDays = settings.HistoryDays;
         ChatSide = settings.ChatSide;
+        TerminalTheme = settings.TerminalTheme;
+        TerminalFont = settings.TerminalFont;
+        TerminalFontSize = settings.TerminalFontSize;
         SelectedProviderId = settings.SelectedProvider?.Id;
         foreach (var account in settings.Providers)
         {
@@ -76,6 +79,23 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     public Shell.ChatSide ChatSide { get; private set; }
 
+    public Shell.TerminalTheme TerminalTheme { get; private set; }
+
+    public string? TerminalFont { get; private set; }
+
+    public double TerminalFontSize { get; private set; }
+
+    public event EventHandler? AppearanceChanged;
+
+    public void SetAppearance(Shell.TerminalTheme theme, string? font, double size)
+    {
+        TerminalTheme = theme;
+        TerminalFont = font;
+        TerminalFontSize = Math.Clamp(size, 8, 40);
+        SaveProjectData();
+        AppearanceChanged?.Invoke(this, EventArgs.Empty);
+    }
+
     public IReadOnlyList<KindOption> Kinds { get; }
 
     public ObservableCollection<ProviderViewModel> Providers { get; } = [];
@@ -107,6 +127,9 @@ public sealed partial class SettingsViewModel : ObservableObject
         NotSecrets = NotSecrets,
         HistoryDays = HistoryDays,
         ChatSide = ChatSide,
+        TerminalTheme = TerminalTheme,
+        TerminalFont = TerminalFont,
+        TerminalFontSize = TerminalFontSize,
     };
 
     public IReadOnlyList<ProjectConnection>? ConfirmedFor(string folder) =>

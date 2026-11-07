@@ -582,6 +582,24 @@ public static class Strings
 
     public static string MenuFind => Get(nameof(MenuFind));
 
+    public static string MenuBiggerText => Get(nameof(MenuBiggerText));
+
+    public static string MenuSmallerText => Get(nameof(MenuSmallerText));
+
+    public static string MenuActualSize => Get(nameof(MenuActualSize));
+
+    public static string MenuTheme => Get(nameof(MenuTheme));
+
+    public static string MenuThemeSystem => Get(nameof(MenuThemeSystem));
+
+    public static string MenuThemeDark => Get(nameof(MenuThemeDark));
+
+    public static string MenuThemeLight => Get(nameof(MenuThemeLight));
+
+    public static string MenuFont => Get(nameof(MenuFont));
+
+    public static string MenuFontDefault => Get(nameof(MenuFontDefault));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;
