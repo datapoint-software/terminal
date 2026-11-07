@@ -171,6 +171,7 @@
           </StackPanel>
           <TextBox Classes="code" Text="{Binding Command}" IsReadOnly="{Binding IsCommandReadOnly}" TextWrapping="Wrap" Background="{DynamicResource CodeBrush}"
                    AutomationProperties.Name="{x:Static res:Strings.ApprovalCommandLabel}" />
+          <TextBlock Text="{Binding PlanText}" IsVisible="{Binding HasPlanText}" FontWeight="SemiBold" TextWrapping="Wrap" />
           <TextBlock Classes="secondary" Text="{Binding RiskText}" TextWrapping="Wrap" />
           <TextBox Text="{Binding Feedback}" PlaceholderText="{x:Static res:Strings.ApprovalFeedbackPlaceholder}" TextWrapping="Wrap"
                    AutomationProperties.Name="{x:Static res:Strings.ApprovalFeedbackPlaceholder}" />

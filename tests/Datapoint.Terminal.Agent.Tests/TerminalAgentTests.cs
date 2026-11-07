@@ -9,6 +9,7 @@ namespace Datapoint.Terminal.Agent.Tests;
 public sealed class TerminalAgentTests
 {
     private static readonly string[] s_environments = ["staging", "production"];
+    private static readonly string[] s_cleanUp = ["rm -rf build", "ssh-keygen -R example.com"];
 
     private readonly FakeTerminal _terminal = new();
     private AgentTerminal _local = null!;
@@ -100,13 +101,20 @@ public sealed class TerminalAgentTests
     [Fact]
     public async Task Still_asks_about_trust_in_auto_mode_and_auto_ends_with_the_task()
     {
-        var client = new ScriptedChatClient(RunCommand("rm -rf build"), RunCommand("ssh-keygen -R example.com"), _ => Text("Done."), RunCommand("rm x"), _ => Text("Done."));
+        var client = new ScriptedChatClient(
+            _ => Call("propose_plan", Arguments(("summary", "Clean up"), ("steps", s_cleanUp), ("rollback", "Rebuild."))),
+            _ => Call("run_command", Arguments(("command", "rm -rf build"), ("purpose", "clean"), ("plan_step", 1))),
+            _ => Call("run_command", Arguments(("command", "ssh-keygen -R example.com"), ("purpose", "forget"), ("plan_step", 2))),
+            _ => Text("Done."),
+            RunCommand("rm x"),
+            _ => Text("Done."));
         using var agent = Create(client);
         _local.Mode = ApprovalMode.Auto;
 
         await agent.SendAsync("Clean up", Token);
 
-        Assert.Equal("ssh-keygen -R example.com", Assert.Single(_user.Proposals).Command);
+        Assert.Equal([ProposalKind.Plan, ProposalKind.RunCommand], _user.Proposals.Select(proposal => proposal.Kind));
+        Assert.Equal("ssh-keygen -R example.com", _user.Proposals[1].Command);
         Assert.Equal(ApprovalMode.Ask, _local.Mode);
 
         await agent.SendAsync("And x", Token);

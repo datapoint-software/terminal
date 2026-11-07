@@ -9,4 +9,7 @@ public enum ProposalKind
 
     // Command holds the keys in KeyNotation; they can be edited like a command.
     SendKeys,
+
+    // Command holds the plan's numbered steps and how to roll back; Purpose its summary. Nothing to edit.
+    Plan,
 }

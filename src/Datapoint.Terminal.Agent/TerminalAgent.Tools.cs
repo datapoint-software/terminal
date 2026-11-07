@@ -20,7 +20,8 @@ public sealed partial class TerminalAgent
             {"type":"object","properties":{
               "terminal":{"type":"string","description":"The name of the terminal, as listed in the user's message. May be left out when only one is open."},
               "command":{"type":"string","description":"The command line to type, without a trailing newline."},
-              "purpose":{"type":"string","description":"Why you want to run it, in a short sentence the user reads when approving it."}},
+              "purpose":{"type":"string","description":"Why you want to run it, in a short sentence the user reads when approving it."},
+              "plan_step":{"type":"integer","description":"The number of the approved plan's step this command carries out. Leave it out when the command isn't in the plan."}},
              "required":["command","purpose"]}
             """,
             RunCommandAsync),
@@ -55,17 +56,8 @@ public sealed partial class TerminalAgent
              "required":["question"]}
             """,
             AskUserAsync),
-        new ToolFunction(
-            "open_terminal",
-            "Opens a new terminal for one of the connections listed in the user's message, as a new tab, and returns its name. The "
-            + "user sees it open and may have to approve it first. Use it when the task needs a machine that has no open terminal.",
-            """
-            {"type":"object","properties":{
-              "connection":{"type":"string","description":"The connection's name, as listed in the user's message."},
-              "purpose":{"type":"string","description":"Why you need it, in a short sentence the user reads when approving it."}},
-             "required":["connection","purpose"]}
-            """,
-            OpenTerminalAsync),
+        .. OpenTools(),
+        .. PlanTools(),
         .. KeysTools(),
         .. MemoryTools(),
         .. HostDocsTools(),
@@ -87,7 +79,13 @@ public sealed partial class TerminalAgent
             return "Not run: " + problem;
         }
 
-        var approval = await ApproveAsync(terminal, proposed!, purpose, cancellationToken).ConfigureAwait(false);
+        var plan = CheckPlan(terminal, CommandClassifier.Classify(proposed!), PlanStep(arguments));
+        if (plan.Problem is not null)
+        {
+            return "Not run: " + plan.Problem;
+        }
+
+        var approval = await ApproveAsync(terminal, proposed!, purpose, plan, cancellationToken).ConfigureAwait(false);
         if (!approval.Approved)
         {
             return Declined(approval);
@@ -179,11 +177,11 @@ public sealed partial class TerminalAgent
         return answer is null ? "The user didn't answer." : "The user answered: " + answer;
     }
 
-    private async Task<CommandApproval> ApproveAsync(AgentTerminal terminal, string command, string purpose, CancellationToken cancellationToken)
+    private async Task<CommandApproval> ApproveAsync(AgentTerminal terminal, string command, string purpose, PlanCheck plan, CancellationToken cancellationToken)
     {
         var risk = CommandClassifier.Classify(command);
         var ignored = IgnoredFileCheck?.Invoke(terminal, command);
-        var needsApproval = ignored is not null || terminal.Mode switch
+        var needsApproval = ignored is not null || plan.IsOutside || terminal.Mode switch
         {
             ApprovalMode.Auto => risk == CommandRisk.AlwaysAsk,
             ApprovalMode.AskForRisky => risk != CommandRisk.ReadOnly,
@@ -195,7 +193,12 @@ public sealed partial class TerminalAgent
         }
 
         SetStatus(AgentStatus.WaitingForApproval, terminal);
-        var proposal = new CommandProposal(command, purpose, risk, terminal.Name, terminal.Environment) { IgnoredFile = ignored };
+        var proposal = new CommandProposal(command, purpose, risk, terminal.Name, terminal.Environment)
+        {
+            IgnoredFile = ignored,
+            PlanStep = plan.Step,
+            IsOutsidePlan = plan.IsOutside,
+        };
         return await _user.RequestApprovalAsync(proposal, cancellationToken).ConfigureAwait(false);
     }
 

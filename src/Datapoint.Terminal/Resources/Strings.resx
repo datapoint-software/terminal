@@ -938,4 +938,22 @@ git rm -r --cached .terminal</value>
   <data name="NoticePaneConnectionGone" xml:space="preserve">
     <value>Couldn't split: the project no longer lists the connection {0}.</value>
   </data>
+  <data name="ApprovalHeadingPlan" xml:space="preserve">
+    <value>The agent proposes this plan</value>
+  </data>
+  <data name="ApprovalApprovePlan" xml:space="preserve">
+    <value>Approve Plan</value>
+  </data>
+  <data name="ApprovalRiskPlan" xml:space="preserve">
+    <value>Approving lets the agent start. Commands still ask as the approval mode says; in Auto, the plan's steps run without asking again, and anything the plan doesn't include asks first. The plan lasts until the task ends.</value>
+  </data>
+  <data name="ApprovalPlanAnyTerminal" xml:space="preserve">
+    <value>For this task</value>
+  </data>
+  <data name="ApprovalPlanStep" xml:space="preserve">
+    <value>Step {0} of the approved plan.</value>
+  </data>
+  <data name="ApprovalOutsidePlan" xml:space="preserve">
+    <value>Not in the approved plan: the agent needs a step it didn't plan for.</value>
+  </data>
 </root>

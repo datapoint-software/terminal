@@ -43,4 +43,27 @@ public sealed class ApprovalViewModelTests
         Assert.Equal(Strings.ApprovalHeadingIgnored, approval.Heading);
         Assert.Contains(".env", approval.RiskText, StringComparison.Ordinal);
     }
+
+    [Fact]
+    public void A_plan_is_approved_as_a_whole_and_cannot_be_edited()
+    {
+        var proposal = new CommandProposal("1. apt-get install nginx", "Install nginx", CommandRisk.Changes, string.Empty) { Kind = ProposalKind.Plan };
+
+        var approval = new ApprovalViewModel(proposal);
+
+        Assert.True(approval.IsCommandReadOnly);
+        Assert.Equal((Strings.ApprovalApprovePlan, Strings.ApprovalHeadingPlan, Strings.ApprovalRiskPlan), (approval.RunLabel, approval.Heading, approval.RiskText));
+        Assert.Equal(Strings.ApprovalPlanAnyTerminal, approval.TerminalText);
+        Assert.False(approval.HasPlanText);
+    }
+
+    [Theory]
+    [InlineData(2, false, "Step 2 of the approved plan.")]
+    [InlineData(null, true, "Not in the approved plan: the agent needs a step it didn't plan for.")]
+    public void Says_how_a_command_relates_to_the_approved_plan(int? step, bool isOutside, string expected)
+    {
+        var proposal = new CommandProposal("rm -rf /var/www", "Clean up", CommandRisk.Changes, "web1") { PlanStep = step, IsOutsidePlan = isOutside };
+
+        Assert.Equal(expected, new ApprovalViewModel(proposal).PlanText);
+    }
 }

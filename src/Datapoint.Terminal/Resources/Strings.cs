@@ -622,6 +622,18 @@ public static class Strings
 
     public static string NoticePaneConnectionGone => Get(nameof(NoticePaneConnectionGone));
 
+    public static string ApprovalHeadingPlan => Get(nameof(ApprovalHeadingPlan));
+
+    public static string ApprovalApprovePlan => Get(nameof(ApprovalApprovePlan));
+
+    public static string ApprovalRiskPlan => Get(nameof(ApprovalRiskPlan));
+
+    public static string ApprovalPlanAnyTerminal => Get(nameof(ApprovalPlanAnyTerminal));
+
+    public static string ApprovalPlanStep => Get(nameof(ApprovalPlanStep));
+
+    public static string ApprovalOutsidePlan => Get(nameof(ApprovalOutsidePlan));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

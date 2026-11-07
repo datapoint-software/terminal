@@ -302,10 +302,11 @@ public sealed partial class TerminalAgent : IDisposable
         _history.Add(results);
     }
 
-    // Auto lasts for one task, then each terminal falls back to its default.
+    // Auto and an approved plan last for one task; then each terminal falls back to its default.
     private void EndTask()
     {
         MarkAllSeen();
+        _plan = null;
         foreach (var terminal in Terminals)
         {
             terminal.IsAwaitingInput = false;

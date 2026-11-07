@@ -6,6 +6,21 @@ namespace Datapoint.Terminal.Agent;
 
 public sealed partial class TerminalAgent
 {
+    private List<AITool> OpenTools() =>
+    [
+        new ToolFunction(
+            "open_terminal",
+            "Opens a new terminal for one of the connections listed in the user's message, as a new tab, and returns its name. The "
+            + "user sees it open and may have to approve it first. Use it when the task needs a machine that has no open terminal.",
+            """
+            {"type":"object","properties":{
+              "connection":{"type":"string","description":"The connection's name, as listed in the user's message."},
+              "purpose":{"type":"string","description":"Why you need it, in a short sentence the user reads when approving it."}},
+             "required":["connection","purpose"]}
+            """,
+            OpenTerminalAsync),
+    ];
+
     // Opens terminals for the application's connections; without one, open_terminal reports that it can't.
     public ITerminalOpener? TerminalOpener { get; set; }
 
