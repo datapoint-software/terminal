@@ -9,12 +9,14 @@ public sealed class LocalSession : ITerminalSession
     private static readonly string[] s_localeVariables = ["LANG", "LC_ALL", "LC_CTYPE"];
 
     private readonly IPtyConnection _pty;
+    private readonly int _master;
     private readonly ShellIntegrationInstaller? _integration;
     private readonly TaskCompletionSource<int?> _exited = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
     private LocalSession(IPtyConnection pty, ShellIntegrationInstaller? integration, string? nonce, ShellKind kind)
     {
         _pty = pty;
+        _master = MasterDescriptor(pty);
         _integration = integration;
         ShellIntegrationNonce = nonce;
         Kind = kind;
@@ -24,6 +26,8 @@ public sealed class LocalSession : ITerminalSession
     public string? ShellIntegrationNonce { get; }
 
     public ShellKind Kind { get; }
+
+    public bool? IsInputHidden => TerminalModes.IsInputHidden(_master);
 
     public int ProcessId => _pty.Pid;
 
@@ -84,6 +88,41 @@ public sealed class LocalSession : ITerminalSession
     {
         _pty.Resize(columns, rows);
         return Task.CompletedTask;
+    }
+
+    // Porta.Pty keeps the pseudo-terminal's descriptor inside its streams (a field "fd", an int or a descriptor holding one); -1
+    // when a version keeps it elsewhere.
+    [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2075", Justification = "If trimming removes the field, the descriptor isn't found and hidden input is just not detected.")]
+    private static int MasterDescriptor(IPtyConnection pty)
+    {
+        object? holder = pty.ReaderStream;
+        for (var depth = 0; depth < 3 && holder is not null; depth++)
+        {
+            var value = FieldNamed(holder, "fd") ?? FieldNamed(holder, "MasterFd") ?? FieldNamed(holder, "descriptor") ?? FieldNamed(holder, "_descriptor");
+            if (value is int descriptor)
+            {
+                return descriptor;
+            }
+
+            holder = value;
+        }
+
+        return -1;
+    }
+
+    [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2075", Justification = "As above.")]
+    private static object? FieldNamed(object holder, string name)
+    {
+        const System.Reflection.BindingFlags Any = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic;
+        for (var type = holder.GetType(); type is not null; type = type.BaseType)
+        {
+            if (type.GetField(name, Any) is { } field)
+            {
+                return field.GetValue(holder);
+            }
+        }
+
+        return null;
     }
 
     public ValueTask DisposeAsync()

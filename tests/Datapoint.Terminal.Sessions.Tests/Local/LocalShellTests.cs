@@ -129,6 +129,30 @@ public sealed class LocalShellTests : IDisposable
     }
 
     [Fact]
+    public async Task Knows_when_a_program_waits_for_hidden_input()
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            return;
+        }
+
+        var (session, terminal, _) = await StartAsync("/bin/bash");
+        await using (session)
+        {
+            await WaitForAsync(terminal, () => terminal.IsAtPrompt, "the first prompt");
+            Assert.False(session.IsInputHidden);
+
+            await session.WriteAsync(Encoding.UTF8.GetBytes("read -r -s -p 'Password: ' secret; echo \"got ${#secret}\"\r"), Token);
+            await WaitForAsync(terminal, () => session.IsInputHidden == true, "the hidden prompt");
+
+            await session.WriteAsync(Encoding.UTF8.GetBytes("hunter2\r"), Token);
+            await WaitForAsync(terminal, () => terminal.GetVisibleText().Contains("got 7", StringComparison.Ordinal), "the answer");
+            Assert.DoesNotContain("hunter2", terminal.GetVisibleText(), StringComparison.Ordinal);
+            await WaitForAsync(terminal, () => session.IsInputHidden == false, "the prompt again");
+        }
+    }
+
+    [Fact]
     public async Task Hides_the_nonce_from_programs_the_shell_runs()
     {
         var (session, terminal, _) = await StartAsync("/bin/bash");

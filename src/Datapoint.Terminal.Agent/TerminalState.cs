@@ -5,4 +5,7 @@ public sealed record TerminalState(bool HasShellIntegration, bool IsAtPrompt, st
 {
     // An interactive session started in the terminal's shell, e.g. "ssh session to web1", whose prompt the agent is typing at.
     public string? Session { get; init; }
+
+    // A program is waiting for input it doesn't show, such as a password, which only the user types.
+    public bool IsInputHidden { get; init; }
 }

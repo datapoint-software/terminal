@@ -38,6 +38,8 @@ public sealed class TerminalConnection : ITerminalHost, IAsyncDisposable
     [SuppressMessage("Usage", "VSTHRD003", Justification = "The session completes on its own; nothing waits on the caller's context.")]
     public Task<int?> Exited => _session.Exited;
 
+    public bool? IsInputHidden => _session.IsInputHidden;
+
     public void Send(ReadOnlySpan<byte> data) => _input.Writer.TryWrite(data.ToArray());
 
     public Task ResizeAsync(int columns, int rows, CancellationToken cancellationToken)

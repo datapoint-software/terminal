@@ -1,4 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- [LibraryImport] for reading the pseudo-terminal's modes. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Datapoint.Terminal.Emulator\Datapoint.Terminal.Emulator.csproj" />
     <ProjectReference Include="..\Datapoint.Terminal.Security\Datapoint.Terminal.Security.csproj" />

@@ -34,7 +34,11 @@ public sealed class ConnectionTerminal : IAgentTerminal
             // Inside ssh or another session the shell's reports describe the outer shell, so they're set aside.
             if (NestedIn(current) is { } session)
             {
-                return new TerminalState(HasShellIntegration: false, IsAtPrompt: false, string.Empty, Emulator.IsAlternateScreen, WorkingDirectory: null, nextLine) { Session = session };
+                return new TerminalState(HasShellIntegration: false, IsAtPrompt: false, string.Empty, Emulator.IsAlternateScreen, WorkingDirectory: null, nextLine)
+                {
+                    Session = session,
+                    IsInputHidden = !Emulator.IsAlternateScreen && _connection.IsInputHidden == true,
+                };
             }
 
             var pending = current is { InputLine: { } inputLine, OutputLine: null } ? ReadPendingInput(inputLine, current.InputColumn) : string.Empty;
@@ -44,7 +48,10 @@ public sealed class ConnectionTerminal : IAgentTerminal
                 pending,
                 Emulator.IsAlternateScreen,
                 Emulator.WorkingDirectory,
-                nextLine);
+                nextLine)
+            {
+                IsInputHidden = !Emulator.IsAlternateScreen && _connection.IsInputHidden == true,
+            };
         }
     }
 

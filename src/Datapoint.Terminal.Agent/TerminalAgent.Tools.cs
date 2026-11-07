@@ -175,6 +175,7 @@ public sealed partial class TerminalAgent
                 ? $"In a session started in this terminal ({session}): commands go to it, and its prompts and exit codes aren't reported"
                 : state.HasShellIntegration ? (state.IsAtPrompt ? "At a prompt" : "A command is running") : "The shell doesn't report prompts")
             .Append(state.IsAlternateScreen ? "; a full-screen program is open" : string.Empty)
+            .Append(state.IsInputHidden ? "; a program is waiting for hidden input, such as a password" : string.Empty)
             .Append(state.WorkingDirectory is null ? string.Empty : "; working folder: " + state.WorkingDirectory)
             .Append(".\n");
         text.Append(Untrusted(terminal.Terminal.GetVisibleText()));
@@ -264,6 +265,11 @@ public sealed partial class TerminalAgent
     private static string? TerminalProblem(AgentTerminal terminal)
     {
         var state = terminal.Terminal.GetState();
+        if (state.IsInputHidden)
+        {
+            return HiddenInputNote;
+        }
+
         if (state.IsAlternateScreen)
         {
             return "a full-screen program is open in the terminal. Ask the user to close it, or use read_screen.";
@@ -291,7 +297,9 @@ public sealed partial class TerminalAgent
                 return outcome;
             }
 
-            await signal.WaitAsync(hasIntegration ? deadline - DateTimeOffset.UtcNow : s_quietPeriod, cancellationToken).ConfigureAwait(false);
+            // Woken now and then even with integration, to notice a prompt for hidden input, which prints nothing more.
+            var untilDeadline = deadline - DateTimeOffset.UtcNow;
+            await signal.WaitAsync(hasIntegration && untilDeadline < s_quietPeriod ? untilDeadline : s_quietPeriod, cancellationToken).ConfigureAwait(false);
         }
     }
 
@@ -304,14 +312,29 @@ public sealed partial class TerminalAgent
             return Finish(terminal, command, result.Output, result.ExitCode, isFinished: true);
         }
 
-        var isQuiet = !hasIntegration && DateTimeOffset.UtcNow - signal.LastOutputAt >= s_quietPeriod;
+        var quietFor = DateTimeOffset.UtcNow - signal.LastOutputAt;
+        if (IsWaitingForSecret(terminal, quietFor))
+        {
+            return Finish(terminal, command, OutputOf(terminal, result), exitCode: null, isFinished: false, "Waiting: " + HiddenInputNote);
+        }
+
+        var isQuiet = !hasIntegration && quietFor >= s_quietPeriod;
         var isOver = isQuiet || signal.HasEnded;
         return isOver || DateTimeOffset.UtcNow >= deadline
-            ? Finish(terminal, command, result?.Output ?? terminal.Terminal.GetVisibleText(), exitCode: null, isOver)
+            ? Finish(terminal, command, OutputOf(terminal, result), exitCode: null, isOver)
             : null;
     }
 
-    private string Finish(AgentTerminal terminal, string? command, string output, int? exitCode, bool isFinished)
+    private static string OutputOf(AgentTerminal terminal, CommandResult? result) => result?.Output ?? terminal.Terminal.GetVisibleText();
+
+    // A prompt for a password the agent didn't expect: it stops waiting and hands over to the user, rather than time out.
+    private static bool IsWaitingForSecret(AgentTerminal terminal, TimeSpan quietFor) =>
+        !terminal.IsAwaitingInput && quietFor >= s_quietPeriod && terminal.Terminal.GetState().IsInputHidden;
+
+    private const string HiddenInputNote = "a program in the terminal is waiting for hidden input, such as a password. Never type it: ask the user to "
+        + "type it into the terminal, then call wait_for_command with expects_user_input set.";
+
+    private string Finish(AgentTerminal terminal, string? command, string output, int? exitCode, bool isFinished, string? note = null)
     {
         var step = terminal.RunningPlanStep;
         if (isFinished)
@@ -331,7 +354,7 @@ public sealed partial class TerminalAgent
             StepState = StepState(isFinished, exitCode),
         });
         SetStatus(AgentStatus.Thinking);
-        var status = (isFinished, exitCode) switch
+        var status = note ?? (isFinished, exitCode) switch
         {
             (true, { } code) => "Exit code: " + code.ToString(CultureInfo.InvariantCulture),
             (true, null) => "The output has stopped; the shell doesn't report exit codes, so check the output.",

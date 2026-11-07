@@ -97,6 +97,11 @@ public sealed partial class TerminalAgent
     private static string? KeysProblem(AgentTerminal terminal, string keys, out IReadOnlyList<string>? parts)
     {
         parts = KeyNotation.Parse(keys, out var problem);
+        if (terminal.Terminal.GetState().IsInputHidden)
+        {
+            return "a program in the terminal is waiting for hidden input, such as a password, which only the user types. Ask them to.";
+        }
+
         if (problem is not null)
         {
             return problem;
