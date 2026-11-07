@@ -75,11 +75,14 @@ public sealed partial class TerminalView
         InvalidateVisual();
     }
 
-    // The next match before (older) or after the given position, wrapping around; case is ignored.
-    public (TextPosition Start, TextPosition End)? Find(string query, bool older)
+    public (TextPosition Start, TextPosition End)? Find(string query, bool older) =>
+        string.IsNullOrEmpty(query) ? null : Find(TextSearch.ForText(query), older);
+
+    // The next match before (older) or after the given position, wrapping around.
+    public (TextPosition Start, TextPosition End)? Find(TextSearch query, bool older)
     {
         var terminal = _terminal;
-        if (terminal is null || string.IsNullOrEmpty(query))
+        if (terminal is null || query is null)
         {
             return null;
         }
@@ -103,10 +106,12 @@ public sealed partial class TerminalView
         return null;
     }
 
-    public int CountMatches(string query)
+    public int CountMatches(string query) => string.IsNullOrEmpty(query) ? 0 : CountMatches(TextSearch.ForText(query));
+
+    public int CountMatches(TextSearch query)
     {
         var terminal = _terminal;
-        if (terminal is null || string.IsNullOrEmpty(query))
+        if (terminal is null || query is null)
         {
             return 0;
         }
@@ -117,25 +122,18 @@ public sealed partial class TerminalView
             var total = 0;
             for (var line = first; line <= last; line++)
             {
-                var (text, _) = LineText(terminal, line);
-                for (var index = text.IndexOf(query, StringComparison.OrdinalIgnoreCase); index >= 0; index = text.IndexOf(query, index + query.Length, StringComparison.OrdinalIgnoreCase))
-                {
-                    total++;
-                }
+                total += query.In(LineText(terminal, line).Text).Count();
             }
 
             return total;
         }
     }
 
-    private static (TextPosition, TextPosition)? MatchIn(EmulatorTerminal terminal, long line, string query, bool older, TextPosition? current)
+    private static (TextPosition, TextPosition)? MatchIn(EmulatorTerminal terminal, long line, TextSearch query, bool older, TextPosition? current)
     {
         var (text, columns) = LineText(terminal, line);
-        var indexes = new List<int>();
-        for (var index = text.IndexOf(query, StringComparison.OrdinalIgnoreCase); index >= 0; index = text.IndexOf(query, index + 1, StringComparison.OrdinalIgnoreCase))
-        {
-            indexes.Add(index);
-        }
+        var matches = query.In(text).ToList();
+        var indexes = matches.Select(match => match.Index).ToList();
 
         // On the current match's line, only matches beyond it count.
         var candidates = current is { } position
@@ -147,7 +145,7 @@ public sealed partial class TerminalView
             return null;
         }
 
-        var endIndex = start + query.Length;
+        var endIndex = start + matches.First(match => match.Index == start).Length;
         var endColumn = endIndex < columns.Count ? columns[endIndex] : columns[^1] + 1;
         return (new TextPosition(line, columns[start]), new TextPosition(line, endColumn));
     }
@@ -285,19 +283,54 @@ public sealed partial class TerminalView
         {
             var position = PositionAt(terminal, point.Position);
             _selectionOnAlternate = terminal.IsAlternateScreen;
-            if (e.ClickCount == 2)
+            if (e.ClickCount >= 2)
             {
-                SelectWord(terminal, position);
+                SelectWordOrLine(terminal, position, e.ClickCount);
                 return true;
             }
 
-            (_anchor, _caret) = (position, position);
+            // Shift-click extends the selection to where was clicked, as in text editors.
+            if (e.KeyModifiers.HasFlag(KeyModifiers.Shift) && _anchor is not null)
+            {
+                _caret = position;
+            }
+            else
+            {
+                (_anchor, _caret) = (position, position);
+            }
         }
 
         _isSelecting = true;
         e.Pointer.Capture(this);
         InvalidateVisual();
         return true;
+    }
+
+    private void SelectWordOrLine(EmulatorTerminal terminal, TextPosition position, int clicks)
+    {
+        if (clicks == 2)
+        {
+            SelectWord(terminal, position);
+            return;
+        }
+
+        // A line that wrapped is selected whole, from the row it starts on to the row it ends on.
+        var (first, last) = LineRange(terminal);
+        var start = position.Line;
+        while (start > first && RowAtLine(terminal, start - 1) is { IsWrapped: true })
+        {
+            start--;
+        }
+
+        var end = position.Line;
+        while (end < last && RowAtLine(terminal, end) is { IsWrapped: true })
+        {
+            end++;
+        }
+
+        var (text, columns) = LineText(terminal, end);
+        (_anchor, _caret) = (new TextPosition(start, 0), new TextPosition(end, columns[text.TrimEnd(' ').Length]));
+        InvalidateVisual();
     }
 
     private void SelectWord(EmulatorTerminal terminal, TextPosition position)

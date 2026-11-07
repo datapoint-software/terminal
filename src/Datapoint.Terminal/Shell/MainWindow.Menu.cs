@@ -70,6 +70,7 @@ public sealed partial class MainWindow
         terminal.Add(Item(Strings.MenuMovePaneToTab, null, MovePaneToOwnTab));
         terminal.Add(new NativeMenuItemSeparator());
         terminal.Add(Item(Strings.MenuFind, Shortcut(Key.F), OpenFind));
+        terminal.Add(Item(Strings.MenuSelectWithKeyboard, Shortcut(Key.A, shift: true), SelectWithKeyboard));
         terminal.Add(new NativeMenuItemSeparator());
         AddExplainItems(terminal);
         terminal.Add(new NativeMenuItemSeparator());

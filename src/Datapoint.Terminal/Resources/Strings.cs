@@ -986,6 +986,12 @@ public static class Strings
 
     public static string NoticeHostDocsArchiveFailed => Get(nameof(NoticeHostDocsArchiveFailed));
 
+    public static string MenuSelectWithKeyboard => Get(nameof(MenuSelectWithKeyboard));
+
+    public static string FindPattern => Get(nameof(FindPattern));
+
+    public static string FindInvalidPattern => Get(nameof(FindInvalidPattern));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

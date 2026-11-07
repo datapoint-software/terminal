@@ -1484,4 +1484,13 @@ git rm -r --cached .terminal</value>
   <data name="NoticeHostDocsArchiveFailed" xml:space="preserve">
     <value>Couldn't move the documentation for {0}: {1}</value>
   </data>
+  <data name="MenuSelectWithKeyboard" xml:space="preserve">
+    <value>Select with Keyboard</value>
+  </data>
+  <data name="FindPattern" xml:space="preserve">
+    <value>Regular expression</value>
+  </data>
+  <data name="FindInvalidPattern" xml:space="preserve">
+    <value>Not a valid pattern</value>
+  </data>
 </root>

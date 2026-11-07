@@ -65,4 +65,69 @@ public sealed class TerminalViewSelectionTests
         Assert.Equal(2, view.CountMatches("error"));
         Assert.Null(view.Find("missing", older: true));
     }
+
+    [AvaloniaFact]
+    public void Selects_a_whole_wrapped_line_on_triple_click()
+    {
+        var (window, view) = Show("$ echo " + new string('a', 90) + "\r\nnext\r\n");
+
+        for (var click = 0; click < 3; click++)
+        {
+            window.MouseDown(Cell(view, 3, 1), MouseButton.Left);
+            window.MouseUp(Cell(view, 3, 1), MouseButton.Left);
+        }
+
+        Assert.Equal("$ echo " + new string('a', 90), view.SelectedText);
+    }
+
+    [AvaloniaFact]
+    public void Extends_the_selection_on_shift_click()
+    {
+        var (window, view) = Show("first line\r\nsecond line\r\n");
+
+        window.MouseDown(Cell(view, 0, 0), MouseButton.Left);
+        window.MouseUp(Cell(view, 0, 0), MouseButton.Left);
+        window.MouseDown(Cell(view, 6, 1), MouseButton.Left, RawInputModifiers.Shift);
+        window.MouseUp(Cell(view, 6, 1), MouseButton.Left, RawInputModifiers.Shift);
+
+        Assert.Equal("first line\nsecond", view.SelectedText);
+    }
+
+    [AvaloniaFact]
+    public void Selects_and_copies_with_the_keyboard_without_typing_into_the_shell()
+    {
+        var (window, view) = Show("hello world\r\n$ ");
+        var sent = 0;
+        view.Input += (_, _) => sent++;
+        view.Focus();
+
+        view.StartKeyboardSelection();
+        window.KeyPress(Key.Up, RawInputModifiers.None, PhysicalKey.ArrowUp, keySymbol: null);
+        window.KeyPress(Key.Home, RawInputModifiers.None, PhysicalKey.Home, keySymbol: null);
+        for (var step = 0; step < 5; step++)
+        {
+            window.KeyPress(Key.Right, RawInputModifiers.Shift, PhysicalKey.ArrowRight, keySymbol: null);
+        }
+
+        Assert.Equal("hello", view.SelectedText);
+        window.KeyPress(Key.X, RawInputModifiers.None, PhysicalKey.X, "x");
+        window.KeyPress(Key.Escape, RawInputModifiers.None, PhysicalKey.Escape, keySymbol: null);
+
+        Assert.False(view.IsSelectingWithKeyboard);
+        Assert.Equal(0, sent);
+    }
+
+    [AvaloniaFact]
+    public void Finds_with_a_regular_expression()
+    {
+        var (_, view) = Show("took 12 ms\r\ntook 340 ms\r\n");
+
+        var pattern = TextSearch.ForPattern(@"\d+ ms")!;
+        var match = view.Find(pattern, older: true);
+        view.Select(match!.Value.Start, match.Value.End);
+
+        Assert.Equal("340 ms", view.SelectedText);
+        Assert.Equal(2, view.CountMatches(pattern));
+        Assert.Null(TextSearch.ForPattern("(unclosed"));
+    }
 }

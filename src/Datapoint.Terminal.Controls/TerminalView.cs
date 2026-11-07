@@ -139,6 +139,7 @@ public sealed partial class TerminalView : Control
             }
 
             DrawSelection(context, terminal);
+            DrawSelectionCaret(context, terminal);
             DrawCursor(context, terminal, palette);
             DrawMarks(context, terminal);
         }
@@ -434,6 +435,18 @@ public sealed partial class TerminalView : Control
         var terminal = _terminal;
         if (terminal is null || e.Handled)
         {
+            return;
+        }
+
+        if (IsSelectingWithKeyboard)
+        {
+            // Shortcuts with ⌘ or Ctrl still reach the menus; nothing goes to the shell.
+            if (!IsCopyGesture(e) && (e.KeyModifiers & (KeyModifiers.Meta | KeyModifiers.Control)) != KeyModifiers.None)
+            {
+                return;
+            }
+
+            HandleSelectionKey(terminal, e);
             return;
         }
 

@@ -1,4 +1,5 @@
 using Avalonia.Input;
+using Datapoint.Terminal.Controls;
 using Datapoint.Terminal.Resources;
 
 namespace Datapoint.Terminal.Shell;
@@ -12,6 +13,7 @@ public sealed partial class MainWindow
         FindOlder.Click += (_, _) => FindNext(older: true);
         FindNewer.Click += (_, _) => FindNext(older: false);
         FindClose.Click += (_, _) => CloseFind();
+        FindPattern.IsCheckedChanged += (_, _) => FindNext(older: true, fromEnd: true);
         FindBox.KeyDown += (_, e) =>
         {
             if (e.Key == Key.Enter)
@@ -25,6 +27,17 @@ public sealed partial class MainWindow
                 CloseFind();
             }
         };
+    }
+
+    private void SelectWithKeyboard()
+    {
+        if (SelectedTab?.View is not { } view)
+        {
+            return;
+        }
+
+        view.Focus();
+        view.StartKeyboardSelection();
     }
 
     private void OpenFind()
@@ -60,8 +73,15 @@ public sealed partial class MainWindow
             return;
         }
 
-        var count = view.CountMatches(query);
-        if (view.Find(query, older) is { } match)
+        var search = FindPattern.IsChecked == true ? TextSearch.ForPattern(query) : TextSearch.ForText(query);
+        if (search is null)
+        {
+            FindStatus.Text = Strings.FindInvalidPattern;
+            return;
+        }
+
+        var count = view.CountMatches(search);
+        if (view.Find(search, older) is { } match)
         {
             view.Select(match.Start, match.End);
         }
