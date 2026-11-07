@@ -31,6 +31,8 @@ public sealed partial class ApprovalViewModel : ObservableObject
         var where = (proposal.Kind, proposal.Environment) switch
         {
             (ProposalKind.Plan, _) when proposal.Terminal.Length == 0 => Strings.ApprovalPlanAnyTerminal,
+            (ProposalKind.Rollout, null) => Strings.Format(Strings.ApprovalRolloutHosts, proposal.Terminal),
+            (ProposalKind.Rollout, { } environment) => Strings.Format(Strings.ApprovalRolloutHostsEnvironment, proposal.Terminal, environment),
             (ProposalKind.OpenTerminal, null) => Strings.Format(Strings.ApprovalForConnection, proposal.Terminal),
             (ProposalKind.OpenTerminal, { } environment) => Strings.Format(Strings.ApprovalForConnectionEnvironment, proposal.Terminal, environment),
             (_, null) => Strings.Format(Strings.ApprovalInTerminal, proposal.Terminal),
@@ -63,7 +65,7 @@ public sealed partial class ApprovalViewModel : ObservableObject
     public string? IgnoredFile { get; }
 
     // Opening a terminal names a connection, which isn't the user's to edit; they can decline and say which one instead.
-    public bool IsCommandReadOnly => Kind is ProposalKind.OpenTerminal or ProposalKind.Plan or ProposalKind.EditFile;
+    public bool IsCommandReadOnly => Kind is ProposalKind.OpenTerminal or ProposalKind.Plan or ProposalKind.EditFile or ProposalKind.Rollout;
 
     public string? PlanText { get; }
 
@@ -79,6 +81,7 @@ public sealed partial class ApprovalViewModel : ObservableObject
         ProposalKind.SendKeys => Strings.ApprovalSend,
         ProposalKind.Plan => Strings.ApprovalApprovePlan,
         ProposalKind.EditFile => Strings.ApprovalApplyEdit,
+        ProposalKind.Rollout => Strings.ApprovalStartRollout,
         _ => Strings.ApprovalRun,
     };
 
@@ -94,6 +97,7 @@ public sealed partial class ApprovalViewModel : ObservableObject
         (ProposalKind.SendKeys, _, _) => Strings.ApprovalHeadingKeys,
         (ProposalKind.Plan, _, _) => PlanTitle is { } title ? Strings.Format(Strings.ApprovalHeadingPlanNamed, title) : Strings.ApprovalHeadingPlan,
         (ProposalKind.EditFile, _, _) => Strings.ApprovalHeadingEdit,
+        (ProposalKind.Rollout, _, _) => Strings.ApprovalHeadingRollout,
         (_, not null, _) => Strings.ApprovalHeadingIgnored,
         (_, _, CommandRisk.AlwaysAsk) => Strings.ApprovalHeadingTrust,
         _ => Strings.ApprovalHeading,
@@ -102,6 +106,7 @@ public sealed partial class ApprovalViewModel : ObservableObject
     public string RiskText => Kind == ProposalKind.OpenTerminal ? Strings.ApprovalRiskOpen
         : Kind == ProposalKind.Plan ? Strings.ApprovalRiskPlan
         : Kind == ProposalKind.EditFile ? Strings.ApprovalRiskEdit
+        : Kind == ProposalKind.Rollout ? Strings.ApprovalRiskRollout
         : Kind == ProposalKind.SendKeys && Risk != CommandRisk.AlwaysAsk ? Strings.ApprovalRiskKeys
         : IgnoredFile is not null ? Strings.Format(Strings.ApprovalRiskIgnored, WorkspaceFolders.Display(IgnoredFile))
         : Risk switch

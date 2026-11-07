@@ -52,6 +52,7 @@ public sealed partial class TerminalAgent
              "required":["name"]}
             """,
             ReadSkillAsync),
+        .. SkillRunTools(),
     ];
 
     private string DescribeSkills()
@@ -97,7 +98,7 @@ public sealed partial class TerminalAgent
     private string DescribeSkill(Skill skill)
     {
         var rollout = skill.Rollout;
-        var hosts = TerminalOpener?.Connections.Where(connection => skill.RunsOn(connection.Labels)).Select(connection => connection.Name).ToList() ?? [];
+        var hosts = SkillHosts(skill);
         var text = new StringBuilder()
             .Append("Skill \"").Append(skill.Name).Append("\" (").Append(skill.Title).Append(").\n")
             .Append("Runs on ").Append(skill.Labels.Count == 0 ? "every host" : "hosts labeled " + string.Join(" and ", skill.Labels))

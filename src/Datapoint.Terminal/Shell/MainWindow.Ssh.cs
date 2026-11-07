@@ -36,7 +36,7 @@ public sealed partial class MainWindow
             return null;
         }
 
-        _chat.AddNotice(Strings.Format(Strings.NoticeConnecting, connection.Name));
+        ConnectNotice(Strings.Format(Strings.NoticeConnecting, connection.Name));
         try
         {
             var (session, shared) = await LogInAsync(connection, config, host, jumps).ConfigureAwait(true);
@@ -46,7 +46,7 @@ public sealed partial class MainWindow
         catch (Exception exception) when (exception is SshAuthenticationException or SshDisconnectedException or SshProtocolException or SshChannelException
             or SocketException or IOException or TimeoutException or OperationCanceledException)
         {
-            _chat.AddNotice(Strings.Format(Strings.NoticeConnectFailed, connection.Name, exception.Message));
+            ConnectNotice(Strings.Format(Strings.NoticeConnectFailed, connection.Name, exception.Message));
             return null;
         }
     }
@@ -58,7 +58,7 @@ public sealed partial class MainWindow
             return;
         }
 
-        _chat.AddNotice(Strings.Format(session.ShellIntegrationNonce is null ? Strings.NoticeRemoteNoIntegration : Strings.NoticeRemoteIntegration, connection.Name));
+        ConnectNotice(Strings.Format(session.ShellIntegrationNonce is null ? Strings.NoticeRemoteNoIntegration : Strings.NoticeRemoteIntegration, connection.Name));
     }
 
     // A split of an SSH tab opens another terminal on the same connection: no second login, and the tab's forwards aren't
@@ -106,7 +106,7 @@ public sealed partial class MainWindow
         foreach (var jump in jumps)
         {
             var hop = config.Resolve(jump.Host);
-            _chat.AddNotice(Strings.Format(Strings.NoticeJumping, connection.Name, jump.Host));
+            ConnectNotice(Strings.Format(Strings.NoticeJumping, connection.Name, jump.Host));
             via = await LogInClientAsync(jump.Host, hop, hop.HostName, jump.Port ?? hop.Port, jump.User ?? hop.User, via).ConfigureAwait(true);
         }
 

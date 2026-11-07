@@ -26,6 +26,8 @@ public sealed class AgentEventArgs(AgentEventKind kind, string text) : EventArgs
 
     public PlanStepState StepState { get; init; }
 
+    public Skills.RolloutProgress? Rollout { get; init; }
+
     // The file a memory or host documentation change was written to.
     public string? Path { get; init; }
 }

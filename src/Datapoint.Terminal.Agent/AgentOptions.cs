@@ -10,4 +10,7 @@ public sealed record AgentOptions
     public int MaxStepsPerTask { get; init; } = 50;
 
     public int MaxOutputTokens { get; init; } = 16_000;
+
+    // How often a rollout's health check runs on a host, and tries to reach one that went away.
+    public TimeSpan HealthCheckInterval { get; init; } = TimeSpan.FromSeconds(10);
 }

@@ -82,6 +82,11 @@ public sealed partial class TerminalAgent
             return PlanCheck.None;
         }
 
+        if (RolloutProblem(terminal) is { } rollout)
+        {
+            return new PlanCheck(rollout, IsOutside: false, Step: null);
+        }
+
         if (_plan is null)
         {
             return terminal.Mode == ApprovalMode.Auto

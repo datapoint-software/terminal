@@ -385,6 +385,7 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
         _agent!.ClearConversation();
         Items.Clear();
         ActivePlan = null;
+        ActiveRollout = null;
         Cleared?.Invoke();
     }
 
@@ -443,6 +444,9 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
             case AgentEventKind.PlanApproved:
                 ShowPlan(e);
                 break;
+            case AgentEventKind.RolloutChanged:
+                ShowRollout(e);
+                break;
             case AgentEventKind.CommandStarted or AgentEventKind.CommandFinished:
                 MarkPlanStep(e);
                 ShowCommand(e);
@@ -499,6 +503,39 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
         var progress = new PlanProgressViewModel(plan);
         Items.Add(new ChatItemViewModel(ChatItemKind.Plan, plan.Summary) { Terminal = e.Terminal, Plan = progress });
         ActivePlan = progress;
+    }
+
+    // A skill's rollout, pinned above the conversation while it runs; it can outlast the task that started it.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasActiveRollout))]
+    public partial RolloutProgressViewModel? ActiveRollout { get; private set; }
+
+    public bool HasActiveRollout => ActiveRollout is not null;
+
+    private void ShowRollout(AgentEventArgs e)
+    {
+        if (e.Rollout is not { } progress)
+        {
+            return;
+        }
+
+        if (ActiveRollout is { } active && active.Id == progress.Id)
+        {
+            active.Update(progress);
+        }
+        else
+        {
+            _streaming = null;
+            ActiveRollout = new RolloutProgressViewModel(progress, isPaused => _agent?.PauseRollout(isPaused), () => _agent?.StopRollout());
+            Items.Add(new ChatItemViewModel(ChatItemKind.Rollout, progress.Title) { Rollout = ActiveRollout });
+        }
+
+        if (!progress.IsOver)
+        {
+            return;
+        }
+
+        ActiveRollout = null;
     }
 
     private void MarkPlanStep(AgentEventArgs e)

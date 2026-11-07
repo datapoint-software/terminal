@@ -10,7 +10,7 @@ public sealed partial class MainWindow
 {
     IReadOnlyList<AgentConnection> ITerminalOpener.Connections =>
     [
-        new AgentConnection(Strings.TabLocal, Environment: null, _settings.Current.DefaultApprovalMode),
+        new AgentConnection(Strings.TabLocal, Environment: null, _settings.Current.DefaultApprovalMode) { IsLocalShell = true },
         .. Connections.Select(connection => new AgentConnection(connection.Name, connection.Environment, DefaultModeFor(connection), connection.Container?.Describe()) { Labels = connection.Labels ?? [] }),
     ];
 
@@ -34,5 +34,41 @@ public sealed partial class MainWindow
         }
 
         return (await OpenConnectionAsync(connection, select: false).ConfigureAwait(true))?.Name;
+    }
+
+    private bool _isReconnecting;
+
+    Task<string?> ITerminalOpener.ReconnectAsync(string connection, CancellationToken cancellationToken) =>
+        Dispatcher.UIThread.InvokeAsync(() => ReconnectForAgentAsync(connection));
+
+    // A host coming back from a reboot during a rollout is tried every few seconds, so the attempts that fail stay out of the
+    // chat; prompts, e.g. for a password, still show, since only the user can answer them.
+    private async Task<string?> ReconnectForAgentAsync(string name)
+    {
+        await ReviewConnectionsAsync(reload: true).ConfigureAwait(true);
+        if (Connections.FirstOrDefault(item => string.Equals(item.Name, name, StringComparison.OrdinalIgnoreCase)) is not { } connection)
+        {
+            return null;
+        }
+
+        _isReconnecting = true;
+        try
+        {
+            return (await OpenConnectionAsync(connection, select: false).ConfigureAwait(true))?.Name;
+        }
+        finally
+        {
+            _isReconnecting = false;
+        }
+    }
+
+    private void ConnectNotice(string text)
+    {
+        if (_isReconnecting)
+        {
+            return;
+        }
+
+        _chat.AddNotice(text);
     }
 }

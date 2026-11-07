@@ -29,6 +29,8 @@ public sealed partial class ChatItemViewModel(ChatItemKind kind, string text) : 
     // For an approved plan, its progress, shown here once it's no longer pinned above the conversation.
     public PlanProgressViewModel? Plan { get; init; }
 
+    public RolloutProgressViewModel? Rollout { get; init; }
+
     [ObservableProperty]
     public partial string Text { get; set; } = text;
 

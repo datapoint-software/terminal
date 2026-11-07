@@ -5,4 +5,7 @@ namespace Datapoint.Terminal.Agent;
 public sealed record AgentConnection(string Name, string? Environment, ApprovalMode Mode, string? Place = null)
 {
     public IReadOnlyList<string> Labels { get; init => field = value ?? []; } = [];
+
+    // A shell on the user's own machine rather than one of the workspace's hosts, so no skill runs there.
+    public bool IsLocalShell { get; init; }
 }

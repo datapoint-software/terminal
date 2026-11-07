@@ -15,4 +15,7 @@ public enum ProposalKind
 
     // Command holds the diff to approve; the change is applied as the user sees it, with a backup first.
     EditFile,
+
+    // Command holds the rollout of a skill: its hosts, in order, and the health check; Purpose the skill's title and description. Nothing to edit.
+    Rollout,
 }

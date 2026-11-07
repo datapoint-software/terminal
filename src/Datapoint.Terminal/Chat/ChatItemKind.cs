@@ -9,6 +9,8 @@ public enum ChatItemKind
 
     Plan,
 
+    Rollout,
+
     // A question the agent asked, kept as a quiet line once it's answered.
     Asked,
 }

@@ -1344,6 +1344,82 @@ public static class Strings
 
     public static string And => Get(nameof(And));
 
+    public static string ApprovalHeadingRollout => Get(nameof(ApprovalHeadingRollout));
+
+    public static string ApprovalStartRollout => Get(nameof(ApprovalStartRollout));
+
+    public static string ApprovalRiskRollout => Get(nameof(ApprovalRiskRollout));
+
+    public static string ApprovalRolloutHosts => Get(nameof(ApprovalRolloutHosts));
+
+    public static string ApprovalRolloutHostsEnvironment => Get(nameof(ApprovalRolloutHostsEnvironment));
+
+    public static string RolloutCaption => Get(nameof(RolloutCaption));
+
+    public static string RolloutHeading => Get(nameof(RolloutHeading));
+
+    public static string RolloutOneHost => Get(nameof(RolloutOneHost));
+
+    public static string RolloutHosts => Get(nameof(RolloutHosts));
+
+    public static string RolloutOneByOne => Get(nameof(RolloutOneByOne));
+
+    public static string RolloutInBatches => Get(nameof(RolloutInBatches));
+
+    public static string RolloutAllAtOnce => Get(nameof(RolloutAllAtOnce));
+
+    public static string RolloutHealthCheck => Get(nameof(RolloutHealthCheck));
+
+    public static string RolloutNoHealthCheck => Get(nameof(RolloutNoHealthCheck));
+
+    public static string RolloutPauseAfter => Get(nameof(RolloutPauseAfter));
+
+    public static string RolloutResume => Get(nameof(RolloutResume));
+
+    public static string RolloutStop => Get(nameof(RolloutStop));
+
+    public static string RolloutStopHelp => Get(nameof(RolloutStopHelp));
+
+    public static string RolloutPausedAfter => Get(nameof(RolloutPausedAfter));
+
+    public static string RolloutShowHosts => Get(nameof(RolloutShowHosts));
+
+    public static string RolloutHideHosts => Get(nameof(RolloutHideHosts));
+
+    public static string RolloutHostWaiting => Get(nameof(RolloutHostWaiting));
+
+    public static string RolloutHostNext => Get(nameof(RolloutHostNext));
+
+    public static string RolloutHostWorking => Get(nameof(RolloutHostWorking));
+
+    public static string RolloutHostChecking => Get(nameof(RolloutHostChecking));
+
+    public static string RolloutHostReconnecting => Get(nameof(RolloutHostReconnecting));
+
+    public static string RolloutHostDone => Get(nameof(RolloutHostDone));
+
+    public static string RolloutHostDoneIn => Get(nameof(RolloutHostDoneIn));
+
+    public static string RolloutHostFailed => Get(nameof(RolloutHostFailed));
+
+    public static string RolloutHostSkipped => Get(nameof(RolloutHostSkipped));
+
+    public static string RolloutHealthyOf => Get(nameof(RolloutHealthyOf));
+
+    public static string RolloutHostAccessible => Get(nameof(RolloutHostAccessible));
+
+    public static string RolloutCompleted => Get(nameof(RolloutCompleted));
+
+    public static string RolloutEndedFailed => Get(nameof(RolloutEndedFailed));
+
+    public static string RolloutEndedStopped => Get(nameof(RolloutEndedStopped));
+
+    public static string RolloutProgressText => Get(nameof(RolloutProgressText));
+
+    public static string RolloutMinutes => Get(nameof(RolloutMinutes));
+
+    public static string RolloutSeconds => Get(nameof(RolloutSeconds));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

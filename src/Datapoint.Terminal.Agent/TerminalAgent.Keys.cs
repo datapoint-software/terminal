@@ -38,6 +38,11 @@ public sealed partial class TerminalAgent
             return "Not sent: " + problem;
         }
 
+        if (RolloutProblem(terminal) is { } waiting)
+        {
+            return "Not sent: " + waiting;
+        }
+
         if (KeysProblem(terminal, keys, out var parts) is { } invalid)
         {
             return "Not sent: " + invalid;

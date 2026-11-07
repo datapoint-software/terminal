@@ -74,6 +74,72 @@
         </StackPanel>
       </Border>
     </DataTemplate>
+
+    <!-- A skill's rollout: each host's state, the health check the application runs, then Pause and Stop while it goes. -->
+    <DataTemplate DataType="chat:RolloutProgressViewModel">
+      <Border Classes="plan">
+        <StackPanel>
+          <Button Classes="plan-header" Command="{Binding ToggleCommand}"
+                  AutomationProperties.Name="{Binding HeaderText}" AutomationProperties.HelpText="{Binding ToggleHelp}">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+              <StackPanel Spacing="1">
+                <TextBlock Classes="secondary" FontWeight="SemiBold" Text="{x:Static res:Strings.RolloutCaption}" IsVisible="{Binding IsExpanded}" />
+                <TextBlock Text="{Binding HeaderText}" FontWeight="SemiBold" TextWrapping="Wrap" />
+              </StackPanel>
+              <Path Grid.Column="1" Data="{StaticResource ChevronGlyph}" Stroke="{DynamicResource SecondaryLabelBrush}" StrokeThickness="1.5"
+                    Width="16" Height="16" VerticalAlignment="Center" RenderTransformOrigin="50%,50%">
+                <Path.RenderTransform>
+                  <RotateTransform Angle="{Binding ChevronAngle}" />
+                </Path.RenderTransform>
+              </Path>
+            </Grid>
+          </Button>
+          <StackPanel Spacing="10" Margin="12,0,12,12" IsVisible="{Binding IsExpanded}">
+            <Border Classes="rollout-hosts">
+              <ItemsControl ItemsSource="{Binding Hosts}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="chat:RolloutHostViewModel">
+                    <Border Classes="rollout-host" Classes.first="{Binding IsFirst}">
+                      <Grid ColumnDefinitions="16,*" ColumnSpacing="10" Focusable="True" AutomationProperties.Name="{Binding AccessibleName}">
+                        <Panel Classes="mark" VerticalAlignment="Top" Margin="0,1,0,0" Classes.running="{Binding IsRunning}"
+                               Classes.succeeded="{Binding IsSucceeded}" Classes.failed="{Binding IsFailed}">
+                          <Ellipse Classes="ring" />
+                          <Ellipse Classes="dot" Width="6" Height="6" />
+                          <Path Classes="check" Data="{StaticResource CheckGlyph}" />
+                          <Path Classes="cross" Data="{StaticResource CrossGlyph}" />
+                        </Panel>
+                        <StackPanel Grid.Column="1" Spacing="1">
+                          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                            <TextBlock Classes="step-title" Classes.pending="{Binding IsWaiting}" Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                            <TextBlock Grid.Column="1" Classes="secondary" Text="{Binding StateText}" />
+                          </Grid>
+                          <TextBlock Classes="secondary" Text="{Binding Detail}" TextWrapping="Wrap" IsVisible="{Binding HasDetail}" />
+                          <ProgressBar Classes="plan" Minimum="0" Maximum="100" Value="{Binding HealthPercent}" Margin="0,4,0,0"
+                                       IsVisible="{Binding IsCheckingHealth}" />
+                        </StackPanel>
+                      </Grid>
+                    </Border>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </Border>
+            <StackPanel Spacing="4" IsVisible="{Binding HasHealthCheck}">
+              <TextBlock Classes="secondary" FontWeight="SemiBold" Text="{x:Static res:Strings.RolloutHealthCheck}" />
+              <Border Classes="code">
+                <SelectableTextBlock Classes="mono" Text="{Binding HealthCheck}" TextWrapping="Wrap" />
+              </Border>
+            </StackPanel>
+            <TextBlock Classes="secondary" Text="{x:Static res:Strings.RolloutNoHealthCheck}" TextWrapping="Wrap" IsVisible="{Binding HasNoHealthCheck}" />
+            <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding IsRunning}">
+              <Button Content="{Binding PauseText}" Command="{Binding PauseCommand}" />
+              <Button Classes="plain danger" Content="{x:Static res:Strings.RolloutStop}" Command="{Binding StopCommand}"
+                      AutomationProperties.HelpText="{x:Static res:Strings.RolloutStopHelp}" ToolTip.Tip="{x:Static res:Strings.RolloutStopHelp}" />
+              <TextBlock Classes="secondary" Text="{Binding StatusText}" VerticalAlignment="Center" />
+            </StackPanel>
+          </StackPanel>
+        </StackPanel>
+      </Border>
+    </DataTemplate>
   </UserControl.DataTemplates>
 
   <UserControl.Styles>
@@ -308,6 +374,20 @@
       <Setter Property="HorizontalContentAlignment" Value="Stretch" />
       <Setter Property="Padding" Value="12,9" />
       <Setter Property="CornerRadius" Value="10" />
+    </Style>
+    <Style Selector="Border.rollout-hosts">
+      <Setter Property="Background" Value="{DynamicResource WindowBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
+      <Setter Property="BorderThickness" Value="0.5" />
+      <Setter Property="CornerRadius" Value="8" />
+    </Style>
+    <Style Selector="Border.rollout-host">
+      <Setter Property="Padding" Value="10,8" />
+      <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
+      <Setter Property="BorderThickness" Value="0,1,0,0" />
+    </Style>
+    <Style Selector="Border.rollout-host.first">
+      <Setter Property="BorderThickness" Value="0" />
     </Style>
     <Style Selector="TextBlock.step-title.pending">
       <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
@@ -577,6 +657,7 @@
 
     <!-- The plan in progress, pinned so it stays in view while the conversation scrolls. -->
     <ContentControl DockPanel.Dock="Top" Content="{Binding ActivePlan}" IsVisible="{Binding HasActivePlan}" Margin="12,8,12,4" />
+    <ContentControl DockPanel.Dock="Top" Content="{Binding ActiveRollout}" IsVisible="{Binding HasActiveRollout}" Margin="12,8,12,4" />
 
     <!-- The conversation. -->
     <ScrollViewer x:Name="Scroller" Padding="16,8">
@@ -596,6 +677,7 @@
               </Border>
               <!-- An approved plan, once its task is over; while it runs, it's pinned above the conversation. -->
               <ContentControl Content="{Binding Plan}" Margin="0,6" IsVisible="{Binding Plan.IsInConversation, FallbackValue=False}" />
+              <ContentControl Content="{Binding Rollout}" Margin="0,6" IsVisible="{Binding Rollout.IsInConversation, FallbackValue=False}" />
               <!-- A question the agent asked, kept quiet once answered; the answer follows as the user's message. -->
               <SelectableTextBlock Classes="secondary" Text="{Binding Text}" TextWrapping="Wrap" Margin="0,8,0,0" IsVisible="{Binding IsAsked}" />
               <StackPanel Margin="12,6" Spacing="4" IsVisible="{Binding IsNotice}">

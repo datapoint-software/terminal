@@ -21,4 +21,7 @@ public enum AgentEventKind
     UsageChanged,
 
     PlanApproved,
+
+    // A skill's rollout started or moved on; Rollout holds where it is.
+    RolloutChanged,
 }

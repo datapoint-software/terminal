@@ -2019,4 +2019,118 @@ Fingerprint: {2}</value>
   <data name="And" xml:space="preserve">
     <value>and</value>
   </data>
+  <data name="ApprovalHeadingRollout" xml:space="preserve">
+    <value>The agent proposes this rollout</value>
+  </data>
+  <data name="ApprovalStartRollout" xml:space="preserve">
+    <value>Start Rollout</value>
+  </data>
+  <data name="ApprovalRiskRollout" xml:space="preserve">
+    <value>The agent works only on the hosts whose turn it is; the application checks each one before going on.</value>
+  </data>
+  <data name="ApprovalRolloutHosts" xml:space="preserve">
+    <value>On {0}</value>
+  </data>
+  <data name="ApprovalRolloutHostsEnvironment" xml:space="preserve">
+    <value>On {0} ({1})</value>
+  </data>
+  <data name="RolloutCaption" xml:space="preserve">
+    <value>Rollout</value>
+  </data>
+  <data name="RolloutHeading" xml:space="preserve">
+    <value>{0} · {1}</value>
+  </data>
+  <data name="RolloutOneHost" xml:space="preserve">
+    <value>1 host</value>
+  </data>
+  <data name="RolloutHosts" xml:space="preserve">
+    <value>{0} hosts</value>
+  </data>
+  <data name="RolloutOneByOne" xml:space="preserve">
+    <value>{0}, one at a time</value>
+  </data>
+  <data name="RolloutInBatches" xml:space="preserve">
+    <value>{0}, {1} at a time</value>
+  </data>
+  <data name="RolloutAllAtOnce" xml:space="preserve">
+    <value>{0}, all at once</value>
+  </data>
+  <data name="RolloutHealthCheck" xml:space="preserve">
+    <value>Health check</value>
+  </data>
+  <data name="RolloutNoHealthCheck" xml:space="preserve">
+    <value>No health check: each batch starts when the agent reports the last one done.</value>
+  </data>
+  <data name="RolloutPauseAfter" xml:space="preserve">
+    <value>Pause After {0}</value>
+  </data>
+  <data name="RolloutResume" xml:space="preserve">
+    <value>Resume</value>
+  </data>
+  <data name="RolloutStop" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="RolloutStopHelp" xml:space="preserve">
+    <value>Stop the rollout: hosts not yet started are skipped</value>
+  </data>
+  <data name="RolloutPausedAfter" xml:space="preserve">
+    <value>Paused after {0}</value>
+  </data>
+  <data name="RolloutShowHosts" xml:space="preserve">
+    <value>Show the rollout's hosts</value>
+  </data>
+  <data name="RolloutHideHosts" xml:space="preserve">
+    <value>Hide the rollout's hosts</value>
+  </data>
+  <data name="RolloutHostWaiting" xml:space="preserve">
+    <value>Not started</value>
+  </data>
+  <data name="RolloutHostNext" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="RolloutHostWorking" xml:space="preserve">
+    <value>In progress</value>
+  </data>
+  <data name="RolloutHostChecking" xml:space="preserve">
+    <value>Checking health</value>
+  </data>
+  <data name="RolloutHostReconnecting" xml:space="preserve">
+    <value>Reconnecting</value>
+  </data>
+  <data name="RolloutHostDone" xml:space="preserve">
+    <value>Done</value>
+  </data>
+  <data name="RolloutHostDoneIn" xml:space="preserve">
+    <value>Done · {0}</value>
+  </data>
+  <data name="RolloutHostFailed" xml:space="preserve">
+    <value>Failed</value>
+  </data>
+  <data name="RolloutHostSkipped" xml:space="preserve">
+    <value>Skipped</value>
+  </data>
+  <data name="RolloutHealthyOf" xml:space="preserve">
+    <value>Healthy for {0} of {1}</value>
+  </data>
+  <data name="RolloutHostAccessible" xml:space="preserve">
+    <value>{0}: {1}</value>
+  </data>
+  <data name="RolloutCompleted" xml:space="preserve">
+    <value>{0}: done on {1} of {2} hosts</value>
+  </data>
+  <data name="RolloutEndedFailed" xml:space="preserve">
+    <value>{0}: stopped after a failure, {1} of {2} hosts done</value>
+  </data>
+  <data name="RolloutEndedStopped" xml:space="preserve">
+    <value>{0}: stopped, {1} of {2} hosts done</value>
+  </data>
+  <data name="RolloutProgressText" xml:space="preserve">
+    <value>Batch {0} of {1}</value>
+  </data>
+  <data name="RolloutMinutes" xml:space="preserve">
+    <value>{0} min</value>
+  </data>
+  <data name="RolloutSeconds" xml:space="preserve">
+    <value>{0} s</value>
+  </data>
 </root>
