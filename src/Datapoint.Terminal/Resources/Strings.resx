@@ -2220,4 +2220,10 @@ Fingerprint: {2}</value>
   <data name="NoticeWorkspaceReadOnlyNotRemoved" xml:space="preserve">
     <value>{0} wasn't removed: this workspace is read-only.</value>
   </data>
+  <data name="AppearanceReduceMotion" xml:space="preserve">
+    <value>Reduce motion</value>
+  </data>
+  <data name="AppearanceReduceMotionHint" xml:space="preserve">
+    <value>Menus, dialogs and cards appear and close without animating. They also do while your system asks to reduce motion.</value>
+  </data>
 </root>

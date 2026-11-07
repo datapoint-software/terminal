@@ -48,6 +48,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         Themes = settings.Themes;
         CustomThemeId = settings.Themes.Any(theme => string.Equals(theme.Id, settings.CustomThemeId, StringComparison.Ordinal)) ? settings.CustomThemeId : null;
         MatchWindowToTheme = settings.MatchWindowToTheme;
+        ReduceMotion = settings.ReduceMotion;
         TerminalFontSize = settings.TerminalFontSize is >= 8 and <= 40 ? settings.TerminalFontSize : 14;
         SelectedProviderId = settings.SelectedProvider?.Id;
         foreach (var account in settings.Providers)
@@ -117,6 +118,8 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     public bool MatchWindowToTheme { get; private set; }
 
+    public bool ReduceMotion { get; private set; }
+
     // The colours terminals use now: a chosen custom theme, or the built-in light or dark one.
     public Themes.ColorTheme ActiveTheme(bool systemIsDark) =>
         Themes.FirstOrDefault(theme => string.Equals(theme.Id, CustomThemeId, StringComparison.Ordinal))
@@ -157,6 +160,12 @@ public sealed partial class SettingsViewModel : ObservableObject
     public void SetMatchWindowToTheme(bool match)
     {
         MatchWindowToTheme = match;
+        SetAppearance(TerminalTheme, TerminalFont, TerminalFontSize);
+    }
+
+    public void SetReduceMotion(bool reduce)
+    {
+        ReduceMotion = reduce;
         SetAppearance(TerminalTheme, TerminalFont, TerminalFontSize);
     }
 
@@ -207,6 +216,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         Themes = Themes,
         CustomThemeId = CustomThemeId,
         MatchWindowToTheme = MatchWindowToTheme,
+        ReduceMotion = ReduceMotion,
     };
 
     public IReadOnlyList<WorkspaceConnection>? ConfirmedFor(string folder) =>

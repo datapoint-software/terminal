@@ -99,5 +99,14 @@
       </StackPanel>
     </Border>
     <TextBlock Classes="secondary note" Text="{x:Static res:Strings.AppearanceMatchWindowHint}" />
+
+    <Border Classes="group" Margin="0,18,0,0">
+      <Grid Classes="row" ColumnDefinitions="*,Auto">
+        <TextBlock Text="{x:Static res:Strings.AppearanceReduceMotion}" TextWrapping="Wrap" />
+        <ToggleSwitch Grid.Column="1" IsChecked="{Binding ReduceMotion}" OnContent="{x:Null}" OffContent="{x:Null}"
+                      AutomationProperties.Name="{x:Static res:Strings.AppearanceReduceMotion}" />
+      </Grid>
+    </Border>
+    <TextBlock Classes="secondary note" Text="{x:Static res:Strings.AppearanceReduceMotionHint}" />
   </StackPanel>
 </UserControl>

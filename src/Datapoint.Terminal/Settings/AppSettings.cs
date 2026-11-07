@@ -57,6 +57,9 @@ public sealed record AppSettings
     // The window's own colours follow the terminal theme's background and text.
     public bool MatchWindowToTheme { get; init; }
 
+    // Overlays and cards appear without animating; the system's own reduce motion setting does the same.
+    public bool ReduceMotion { get; init; }
+
     // How long conversation history is kept, in days; null keeps it forever (product decision 52).
     public int? HistoryDays { get; init; }
 

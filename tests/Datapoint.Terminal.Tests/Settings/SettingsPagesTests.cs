@@ -53,6 +53,20 @@ public sealed class SettingsPagesTests : IDisposable
     }
 
     [AvaloniaFact]
+    public void Keeps_reduce_motion_when_turned_on_in_appearance()
+    {
+        var settings = Create();
+        var window = Show(settings, page: 1);
+        var toggle = window.FindControl<AppearancePage>("AppearancePage")!.GetLogicalDescendants().OfType<ToggleSwitch>()
+            .Single(item => string.Equals(Avalonia.Automation.AutomationProperties.GetName(item), Datapoint.Terminal.Resources.Strings.AppearanceReduceMotion, StringComparison.Ordinal));
+
+        toggle.IsChecked = true;
+
+        Assert.True(settings.ReduceMotion);
+        Assert.True(new SettingsStore(Path.Combine(_folder, "settings.json")).Load().ReduceMotion);
+    }
+
+    [AvaloniaFact]
     public void Shows_what_each_connection_keeps_in_the_workspace()
     {
         var window = Show(Create(), page: 2);

@@ -1478,6 +1478,10 @@ public static class Strings
 
     public static string NoticeWorkspaceReadOnlyNotRemoved => Get(nameof(NoticeWorkspaceReadOnlyNotRemoved));
 
+    public static string AppearanceReduceMotion => Get(nameof(AppearanceReduceMotion));
+
+    public static string AppearanceReduceMotionHint => Get(nameof(AppearanceReduceMotionHint));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

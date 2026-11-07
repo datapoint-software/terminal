@@ -41,6 +41,9 @@ public sealed partial class AppearanceViewModel : ObservableObject
     [ObservableProperty]
     public partial bool MatchWindow { get; set; }
 
+    [ObservableProperty]
+    public partial bool ReduceMotion { get; set; }
+
     // The theme Edit Colors starts from: the chosen one.
     public ColorTheme CurrentTheme => _settings.ActiveTheme(WindowColors.IsSystemDark);
 
@@ -104,6 +107,16 @@ public sealed partial class AppearanceViewModel : ObservableObject
         _settings.SetMatchWindowToTheme(value);
     }
 
+    partial void OnReduceMotionChanged(bool value)
+    {
+        if (_isLoading)
+        {
+            return;
+        }
+
+        _settings.SetReduceMotion(value);
+    }
+
     private void Load()
     {
         _isLoading = true;
@@ -129,6 +142,7 @@ public sealed partial class AppearanceViewModel : ObservableObject
         SelectedFont = _settings.TerminalFont is { } font && Fonts.Contains(font, StringComparer.OrdinalIgnoreCase) ? font : Strings.AppearanceFontDefault;
         SelectedSize = Math.Clamp((int)Math.Round(_settings.TerminalFontSize, MidpointRounding.AwayFromZero) - 9, 0, Sizes.Count - 1);
         MatchWindow = _settings.MatchWindowToTheme;
+        ReduceMotion = _settings.ReduceMotion;
         _isLoading = false;
     }
 
