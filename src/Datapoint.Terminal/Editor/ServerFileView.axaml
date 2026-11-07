@@ -3,33 +3,10 @@
              xmlns:ed="clr-namespace:Datapoint.Terminal.Editor"
              xmlns:ae="using:AvaloniaEdit"
              xmlns:res="clr-namespace:Datapoint.Terminal.Resources"
+             xmlns:c="clr-namespace:Datapoint.Terminal.Components"
              x:Class="Datapoint.Terminal.Editor.ServerFileView"
              x:DataType="ed:ServerFileViewModel"
              Background="{DynamicResource WindowBrush}">
-  <UserControl.Styles>
-    <Style Selector="Border.badge">
-      <Setter Property="Background" Value="{DynamicResource FillBrush}" />
-      <Setter Property="CornerRadius" Value="4" />
-      <Setter Property="Padding" Value="6,1" />
-      <Setter Property="VerticalAlignment" Value="Center" />
-    </Style>
-    <Style Selector="Border.badge > TextBlock">
-      <Setter Property="FontSize" Value="11" />
-      <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
-    </Style>
-    <Style Selector="Border.badge.production">
-      <Setter Property="Background" Value="{DynamicResource DangerBrush}" />
-    </Style>
-    <Style Selector="Border.badge.production > TextBlock">
-      <Setter Property="Foreground" Value="White" />
-      <Setter Property="FontWeight" Value="SemiBold" />
-    </Style>
-    <Style Selector="TextBlock.status">
-      <Setter Property="FontSize" Value="11" />
-      <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
-      <Setter Property="VerticalAlignment" Value="Center" />
-    </Style>
-  </UserControl.Styles>
 
   <DockPanel>
     <!-- Where the file is, as a host document's header shows its host. -->
@@ -40,21 +17,19 @@
           <Button Classes="primary" Content="{x:Static res:Strings.HostFileReviewSave}" Command="{Binding SaveCommand}" />
         </StackPanel>
         <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-          <Border Classes="badge" Classes.production="{Binding IsProduction}" IsVisible="{Binding HasEnvironment}">
-            <TextBlock Text="{Binding Environment}" />
-          </Border>
-          <TextBlock Text="{Binding Place}" FontFamily="{StaticResource MonoFont}" FontSize="12" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-          <TextBlock Classes="status" Text="{x:Static res:Strings.HostFileNeedsSudo}" IsVisible="{Binding NeedsSudo}" />
+          <c:Badge Text="{Binding Environment}" Classes.danger="{Binding IsProduction}" IsVisible="{Binding HasEnvironment}" />
+          <TextBlock Text="{Binding Place}" Classes="mono" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+          <TextBlock Classes="secondary" VerticalAlignment="Center" Text="{x:Static res:Strings.HostFileNeedsSudo}" IsVisible="{Binding NeedsSudo}" />
         </StackPanel>
       </DockPanel>
     </Border>
     <Border DockPanel.Dock="Bottom" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,1,0,0">
       <DockPanel Margin="14,4">
-        <TextBlock DockPanel.Dock="Right" Classes="status" Text="{Binding StatusRight}" />
-        <TextBlock Classes="status" Text="{Binding StatusLeft}" TextTrimming="CharacterEllipsis" />
+        <TextBlock DockPanel.Dock="Right" Classes="secondary" VerticalAlignment="Center" Text="{Binding StatusRight}" />
+        <TextBlock Classes="secondary" VerticalAlignment="Center" Text="{Binding StatusLeft}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
       </DockPanel>
     </Border>
-    <ae:TextEditor x:Name="Editor" ShowLineNumbers="True" FontFamily="{StaticResource MonoFont}" FontSize="13"
+    <ae:TextEditor x:Name="Editor" ShowLineNumbers="True" FontFamily="{StaticResource MonoFont}" FontSize="{StaticResource BodySize}"
                    Background="{DynamicResource WindowBrush}" Foreground="{DynamicResource LabelBrush}"
                    LineNumbersForeground="{DynamicResource DisabledLabelBrush}"
                    HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"

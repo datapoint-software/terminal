@@ -28,9 +28,9 @@ public sealed partial class OpenHostFileWindow : Window
         InitializeComponent();
         Title = Strings.Format(Strings.HostFileOpenTitle, host);
         Heading.Text = Title;
-        BadgeText.Text = environment;
+        Badge.Text = environment;
         Badge.IsVisible = environment is not null;
-        Badge.Classes.Set("production", Agent.EnvironmentLabels.IsProduction(environment));
+        Badge.Classes.Set("danger", Agent.EnvironmentLabels.IsProduction(environment));
         PathBox.Text = start;
         PathBox.TextChanged += (_, _) =>
         {

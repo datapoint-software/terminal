@@ -7,46 +7,20 @@
         WindowStartupLocation="CenterOwner" ShowInTaskbar="False"
         Background="{DynamicResource GroupedBackgroundBrush}">
   <Window.Styles>
-    <Style Selector="TextBlock.secondary">
-      <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
-      <Setter Property="FontSize" Value="{StaticResource CaptionSize}" />
-      <Setter Property="TextWrapping" Value="Wrap" />
-    </Style>
-    <Style Selector="TextBlock.danger">
-      <Setter Property="Foreground" Value="{DynamicResource DangerBrush}" />
-    </Style>
-    <Style Selector="Border.group">
-      <Setter Property="Background" Value="{DynamicResource CardBrush}" />
-      <Setter Property="CornerRadius" Value="10" />
-      <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
-      <Setter Property="BorderThickness" Value="0.5" />
-    </Style>
-    <Style Selector="Grid.row">
-      <Setter Property="MinHeight" Value="44" />
-      <Setter Property="Margin" Value="14,6" />
-    </Style>
-    <Style Selector="Grid.row > :is(Control)">
-      <Setter Property="VerticalAlignment" Value="Center" />
-    </Style>
-    <Style Selector="Rectangle.hairline">
-      <Setter Property="Height" Value="1" />
-      <Setter Property="Fill" Value="{DynamicResource SeparatorBrush}" />
-      <Setter Property="Margin" Value="14,0,0,0" />
-    </Style>
     <!-- An SSH config alias: a small rounded chip that fills in the form. -->
     <Style Selector="Button.chip">
       <Setter Property="Background" Value="{DynamicResource CardBrush}" />
       <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
       <Setter Property="BorderThickness" Value="0.5" />
-      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="CornerRadius" Value="{StaticResource CardRadius}" />
       <Setter Property="Padding" Value="10,3" />
       <Setter Property="MinHeight" Value="0" />
-      <Setter Property="FontSize" Value="12" />
+      <Setter Property="FontSize" Value="{StaticResource SmallSize}" />
     </Style>
   </Window.Styles>
 
   <StackPanel Margin="24,20">
-    <TextBlock Text="{x:Static res:Strings.NewHostTitle}" FontSize="15" FontWeight="SemiBold" />
+    <TextBlock Classes="dialogTitle" Text="{x:Static res:Strings.NewHostTitle}" />
     <TextBlock Classes="secondary" Margin="0,2,0,14" Text="{x:Static res:Strings.NewHostCaption}" />
     <Border Classes="group">
       <StackPanel>
@@ -65,7 +39,7 @@
           <TextBlock Text="{x:Static res:Strings.NewHostUser}" />
           <Grid Grid.Column="1" ColumnDefinitions="*,Auto,72">
             <TextBox x:Name="UserBox" MaxLength="64" AutomationProperties.Name="{x:Static res:Strings.NewHostUser}" />
-            <TextBlock Grid.Column="1" Classes="secondary" FontSize="13" Margin="12,0,8,0" VerticalAlignment="Center"
+            <TextBlock Grid.Column="1" Classes="quiet" Margin="12,0,8,0" VerticalAlignment="Center"
                        Text="{x:Static res:Strings.NewHostPort}" />
             <TextBox x:Name="PortBox" Grid.Column="2" MaxLength="5" PlaceholderText="22" FontFamily="{StaticResource MonoFont}"
                      AutomationProperties.Name="{x:Static res:Strings.NewHostPort}" />
@@ -88,10 +62,10 @@
     <TextBlock x:Name="ProductionNote" Classes="secondary" Margin="4,6,4,0" IsVisible="False"
                Text="{x:Static res:Strings.NewHostProductionNote}" />
     <WrapPanel x:Name="LabelPanel" Margin="4,10,0,0" ItemSpacing="6" LineSpacing="6" IsVisible="False">
-      <TextBlock Classes="secondary" FontSize="12" Margin="0,0,4,0" VerticalAlignment="Center" Text="{x:Static res:Strings.NewHostLabelsUsed}" />
+      <TextBlock Classes="secondary" Margin="0,0,4,0" VerticalAlignment="Center" Text="{x:Static res:Strings.NewHostLabelsUsed}" />
     </WrapPanel>
     <WrapPanel x:Name="AliasPanel" Margin="4,10,0,0" ItemSpacing="6" LineSpacing="6" IsVisible="False">
-      <TextBlock Classes="secondary" FontSize="12" Margin="0,0,4,0" VerticalAlignment="Center" Text="{x:Static res:Strings.NewHostFromConfig}" />
+      <TextBlock Classes="secondary" Margin="0,0,4,0" VerticalAlignment="Center" Text="{x:Static res:Strings.NewHostFromConfig}" />
     </WrapPanel>
     <TextBlock x:Name="Problem" Classes="secondary danger" Margin="4,10,4,0" IsVisible="False" />
     <DockPanel Margin="4,20,0,0">

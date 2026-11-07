@@ -56,6 +56,8 @@ public sealed partial class TerminalTab : ObservableObject
 
     public bool HasEnvironment => Environment is not null;
 
+    public bool IsProduction => Agent.EnvironmentLabels.IsProduction(Environment);
+
     [ObservableProperty]
     public partial string ShellTitle { get; set; } = string.Empty;
 

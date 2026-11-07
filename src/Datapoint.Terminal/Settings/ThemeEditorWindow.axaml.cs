@@ -64,7 +64,8 @@ public sealed partial class ThemeEditorWindow : Window
 
     private Grid Row(string label, int? value)
     {
-        var swatch = new Border { Width = 22, Height = 22, CornerRadius = new Avalonia.CornerRadius(5), BorderThickness = new Avalonia.Thickness(0.5), BorderBrush = Brushes.Gray };
+        var swatch = new Border { Width = 22, Height = 22, CornerRadius = new Avalonia.CornerRadius(4), BorderThickness = new Avalonia.Thickness(0.5) };
+        swatch.Bind(Border.BorderBrushProperty, swatch.GetResourceObservable("SeparatorBrush"));
         var box = new TextBox { Text = value is { } color ? AppearanceViewModel.Hex(color) : string.Empty, FontFamily = Preview.FontFamily, Width = 100 };
         Avalonia.Automation.AutomationProperties.SetName(box, label);
         box.TextChanged += (_, _) =>

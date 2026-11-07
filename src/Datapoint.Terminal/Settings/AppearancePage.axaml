@@ -8,14 +8,14 @@
     <Style Selector="ListBox.themes ListBoxItem">
       <Setter Property="Padding" Value="0" />
       <Setter Property="Margin" Value="0,0,10,10" />
-      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="CornerRadius" Value="{StaticResource CardRadius}" />
       <Setter Property="BorderThickness" Value="2" />
       <Setter Property="BorderBrush" Value="Transparent" />
       <Setter Property="Width" Value="166" />
     </Style>
     <Style Selector="ListBox.themes ListBoxItem /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="Transparent" />
-      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="CornerRadius" Value="{StaticResource CardRadius}" />
     </Style>
     <Style Selector="ListBox.themes ListBoxItem:selected">
       <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
@@ -24,12 +24,12 @@
       <Setter Property="BorderBrush" Value="{DynamicResource AccentTextBrush}" />
     </Style>
     <Style Selector="TextBlock.preview">
-      <Setter Property="FontFamily" Value="{DynamicResource MonoFont}" />
-      <Setter Property="FontSize" Value="11" />
+      <Setter Property="FontFamily" Value="{StaticResource MonoFont}" />
+      <Setter Property="FontSize" Value="{StaticResource CaptionSize}" />
     </Style>
   </UserControl.Styles>
 
-  <StackPanel>
+  <StackPanel Classes="form">
     <TextBlock Classes="heading" Text="{x:Static res:Strings.AppearanceThemeHeading}" />
     <ListBox x:Name="ThemeList" Classes="themes" Background="Transparent" ItemsSource="{Binding Themes}" SelectedItem="{Binding SelectedTheme}"
              AutomationProperties.Name="{x:Static res:Strings.AppearanceThemeHeading}">
@@ -40,7 +40,7 @@
       </ListBox.ItemsPanel>
       <ListBox.ItemTemplate>
         <DataTemplate x:DataType="settings:ThemeCard">
-          <Border CornerRadius="8" ClipToBounds="True" Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0.5"
+          <Border Classes="inset" ClipToBounds="True"
                   AutomationProperties.Name="{Binding AccessibleName}">
             <Border.ContextMenu>
               <ContextMenu IsVisible="{Binding IsCustom}">
@@ -62,7 +62,7 @@
                 </StackPanel>
               </Border>
               <StackPanel Orientation="Horizontal" Spacing="6" Margin="10,6">
-                <TextBlock Text="{Binding Name}" FontSize="12" TextTrimming="CharacterEllipsis" MaxWidth="120" />
+                <TextBlock Text="{Binding Name}" FontSize="{StaticResource SmallSize}" TextTrimming="CharacterEllipsis" MaxWidth="120" />
                 <TextBlock Text="{Binding Note}" Classes="secondary" IsVisible="{Binding HasNote}" VerticalAlignment="Center" />
               </StackPanel>
             </StackPanel>
@@ -98,6 +98,6 @@
         </Grid>
       </StackPanel>
     </Border>
-    <TextBlock Classes="secondary" Text="{x:Static res:Strings.AppearanceMatchWindowHint}" Margin="4,-12,4,0" />
+    <TextBlock Classes="secondary note" Text="{x:Static res:Strings.AppearanceMatchWindowHint}" />
   </StackPanel>
 </UserControl>

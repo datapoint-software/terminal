@@ -5,6 +5,7 @@
         xmlns:shell="clr-namespace:Datapoint.Terminal.Shell"
         xmlns:ed="clr-namespace:Datapoint.Terminal.Editor"
         xmlns:res="clr-namespace:Datapoint.Terminal.Resources"
+        xmlns:c="clr-namespace:Datapoint.Terminal.Components"
         xmlns:controls="clr-namespace:Datapoint.Terminal.Controls;assembly=Datapoint.Terminal.Controls"
         x:Class="Datapoint.Terminal.Shell.MainWindow"
         x:DataType="shell:MainWindow"
@@ -31,9 +32,9 @@
     <Style Selector="ListBox.tabs ListBoxItem">
       <Setter Property="Padding" Value="10,0,4,0" />
       <Setter Property="MinHeight" Value="0" />
-      <Setter Property="Height" Value="28" />
-      <Setter Property="CornerRadius" Value="6" />
-      <Setter Property="FontSize" Value="12" />
+      <Setter Property="Height" Value="{StaticResource RowHeight}" />
+      <Setter Property="CornerRadius" Value="{StaticResource ControlRadius}" />
+      <Setter Property="FontSize" Value="{StaticResource SmallSize}" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
     <Style Selector="ListBox#Tabs ListBoxItem" x:DataType="shell:TerminalTab">
@@ -45,7 +46,7 @@
       <Setter Property="ToolTip.Tip" Value="{Binding ToolTip}" />
     </Style>
     <Style Selector="ListBox.tabs ListBoxItem /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="CornerRadius" Value="{StaticResource ControlRadius}" />
       <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
     </Style>
     <Style Selector="ListBox.tabs ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
@@ -115,9 +116,7 @@
                     <Ellipse Fill="{DynamicResource WaitingBrush}" IsVisible="{Binding AgentNeedsUser}" />
                   </Panel>
                   <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
-                  <Border IsVisible="{Binding HasEnvironment}" Background="{DynamicResource FillBrush}" CornerRadius="4" Padding="5,1" VerticalAlignment="Center">
-                    <TextBlock Text="{Binding Environment}" FontSize="10" Foreground="{DynamicResource SecondaryLabelBrush}" />
-                  </Border>
+                  <c:Badge Text="{Binding Environment}" IsVisible="{Binding HasEnvironment}" Classes.danger="{Binding IsProduction}" />
                   <Button Classes="icon tabclose" Command="{Binding CloseCommand}" VerticalAlignment="Center"
                           AutomationProperties.Name="{Binding CloseName}" ToolTip.Tip="{Binding CloseName}">
                     <PathIcon Data="{StaticResource CloseGlyph}" />
@@ -159,7 +158,7 @@
           <Button x:Name="FindOlder" DockPanel.Dock="Right" Content="{x:Static res:Strings.FindOlder}" Margin="4,0,0,0" />
           <ToggleButton x:Name="FindPattern" DockPanel.Dock="Right" Content=".*" FontFamily="{DynamicResource MonoFont}" Margin="4,0,0,0"
                         ToolTip.Tip="{x:Static res:Strings.FindPattern}" AutomationProperties.Name="{x:Static res:Strings.FindPattern}" />
-          <TextBlock x:Name="FindStatus" DockPanel.Dock="Right" VerticalAlignment="Center" Margin="8,0" Foreground="{DynamicResource SecondaryLabelBrush}" />
+          <TextBlock x:Name="FindStatus" DockPanel.Dock="Right" Classes="quiet" VerticalAlignment="Center" Margin="8,0" />
           <TextBox x:Name="FindBox" PlaceholderText="{x:Static res:Strings.FindPlaceholder}" AutomationProperties.Name="{x:Static res:Strings.FindPlaceholder}" />
         </DockPanel>
       </Border>

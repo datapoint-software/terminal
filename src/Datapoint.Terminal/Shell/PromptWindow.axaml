@@ -6,11 +6,11 @@
         WindowStartupLocation="CenterOwner" ShowInTaskbar="False"
         Background="{DynamicResource GroupedBackgroundBrush}">
   <StackPanel Margin="20" Spacing="12">
-    <TextBlock x:Name="Heading" FontWeight="SemiBold" FontSize="14" TextWrapping="Wrap" />
+    <TextBlock x:Name="Heading" Classes="dialogTitle" />
     <TextBlock x:Name="Message" TextWrapping="Wrap" />
     <Border x:Name="ServerBox" Classes="code" IsVisible="False">
       <StackPanel Spacing="4">
-        <TextBlock Classes="secondary" FontSize="11" Text="{x:Static res:Strings.PromptFromServer}" />
+        <TextBlock Classes="secondary" Text="{x:Static res:Strings.PromptFromServer}" />
         <SelectableTextBlock x:Name="ServerText" TextWrapping="Wrap" />
       </StackPanel>
     </Border>

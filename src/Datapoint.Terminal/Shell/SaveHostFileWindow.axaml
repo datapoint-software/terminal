@@ -1,54 +1,29 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:res="clr-namespace:Datapoint.Terminal.Resources"
+        xmlns:c="clr-namespace:Datapoint.Terminal.Components"
         x:Class="Datapoint.Terminal.Shell.SaveHostFileWindow"
         Width="600" SizeToContent="Height" CanResize="False"
         WindowStartupLocation="CenterOwner" ShowInTaskbar="False"
         Background="{DynamicResource GroupedBackgroundBrush}">
-  <Window.Styles>
-    <Style Selector="TextBlock.secondary">
-      <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
-      <Setter Property="FontSize" Value="{StaticResource CaptionSize}" />
-      <Setter Property="TextWrapping" Value="Wrap" />
-    </Style>
-    <Style Selector="Border.badge">
-      <Setter Property="Background" Value="{DynamicResource FillBrush}" />
-      <Setter Property="CornerRadius" Value="4" />
-      <Setter Property="Padding" Value="6,1" />
-      <Setter Property="VerticalAlignment" Value="Center" />
-    </Style>
-    <Style Selector="Border.badge > TextBlock">
-      <Setter Property="FontSize" Value="11" />
-      <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
-    </Style>
-    <Style Selector="Border.badge.production">
-      <Setter Property="Background" Value="{DynamicResource DangerBrush}" />
-    </Style>
-    <Style Selector="Border.badge.production > TextBlock">
-      <Setter Property="Foreground" Value="White" />
-      <Setter Property="FontWeight" Value="SemiBold" />
-    </Style>
-  </Window.Styles>
 
   <StackPanel Margin="24,20">
     <StackPanel Orientation="Horizontal" Spacing="8">
-      <TextBlock x:Name="Heading" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" />
-      <Border x:Name="Badge" Classes="badge" IsVisible="False">
-        <TextBlock x:Name="BadgeText" />
-      </Border>
+      <TextBlock x:Name="Heading" Classes="dialogTitle" VerticalAlignment="Center" />
+      <c:Badge x:Name="Badge" IsVisible="False" />
     </StackPanel>
     <TextBlock x:Name="Summary" Classes="secondary" Margin="0,2,0,12" />
-    <Border Background="{DynamicResource CardBrush}" CornerRadius="8" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0.5">
+    <Border Classes="inset">
       <ScrollViewer MaxHeight="260" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-        <SelectableTextBlock x:Name="Diff" FontFamily="{StaticResource MonoFont}" FontSize="12.5" Margin="12,8" />
+        <SelectableTextBlock x:Name="Diff" Classes="mono" Margin="12,8" />
       </ScrollViewer>
     </Border>
-    <Border x:Name="ProductionNote" IsVisible="False" Background="{DynamicResource WarningFillBrush}" CornerRadius="8" Padding="12,8" Margin="0,12,0,0">
-      <TextBlock x:Name="ProductionText" Foreground="{DynamicResource WarningTextBrush}" FontSize="12" TextWrapping="Wrap" />
+    <Border x:Name="ProductionNote" Classes="callout" IsVisible="False" Margin="0,12,0,0">
+      <TextBlock x:Name="ProductionText" />
     </Border>
     <TextBlock x:Name="CommandNote" Classes="secondary" Margin="0,12,0,4" />
-    <Border Classes="code" Background="{DynamicResource CodeBrush}" CornerRadius="6" Padding="10,6">
-      <SelectableTextBlock x:Name="Command" FontFamily="{StaticResource MonoFont}" FontSize="12" TextWrapping="Wrap" />
+    <Border Classes="code">
+      <SelectableTextBlock x:Name="Command" Classes="mono" TextWrapping="Wrap" />
     </Border>
     <DockPanel Margin="0,18,0,0">
       <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="8">

@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:side="clr-namespace:Datapoint.Terminal.Sidebar"
              xmlns:res="clr-namespace:Datapoint.Terminal.Resources"
+             xmlns:c="clr-namespace:Datapoint.Terminal.Components"
              x:Class="Datapoint.Terminal.Sidebar.SidebarView"
              x:DataType="side:SidebarViewModel"
              AutomationProperties.Name="{x:Static res:Strings.SidebarLabel}">
@@ -16,74 +17,6 @@
     <StreamGeometry x:Key="AddGlyph">M8,3 L8,13 M3,8 L13,8</StreamGeometry>
   </UserControl.Resources>
   <UserControl.Styles>
-    <Style Selector="Path.glyph">
-      <Setter Property="Width" Value="16" />
-      <Setter Property="Height" Value="16" />
-      <Setter Property="Stroke" Value="{DynamicResource SecondaryLabelBrush}" />
-      <Setter Property="StrokeThickness" Value="1.25" />
-      <Setter Property="StrokeLineCap" Value="Round" />
-      <Setter Property="StrokeJoin" Value="Round" />
-      <Setter Property="VerticalAlignment" Value="Center" />
-    </Style>
-    <Style Selector="TextBlock.section">
-      <Setter Property="FontSize" Value="11" />
-      <Setter Property="FontWeight" Value="SemiBold" />
-      <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
-      <Setter Property="VerticalAlignment" Value="Center" />
-    </Style>
-    <Style Selector="TextBlock.quiet">
-      <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
-    </Style>
-    <Style Selector="TextBlock.count">
-      <Setter Property="FontSize" Value="12" />
-      <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
-      <Setter Property="VerticalAlignment" Value="Center" />
-    </Style>
-
-    <!-- Rows: 28 high, rounded, the selection a tint of the accent. -->
-    <Style Selector="ListBox.source">
-      <Setter Property="Background" Value="Transparent" />
-      <Setter Property="BorderThickness" Value="0" />
-      <Setter Property="Padding" Value="0" />
-    </Style>
-    <Style Selector="ListBox.source ListBoxItem">
-      <Setter Property="Padding" Value="8,0" />
-      <Setter Property="MinHeight" Value="28" />
-      <Setter Property="Height" Value="28" />
-      <Setter Property="CornerRadius" Value="6" />
-      <Setter Property="VerticalContentAlignment" Value="Center" />
-    </Style>
-    <Style Selector="ListBox.source ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource FillBrush}" />
-    </Style>
-    <Style Selector="ListBox.source ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource AccentTintBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
-    </Style>
-
-    <Style Selector="Button.row">
-      <Setter Property="Background" Value="Transparent" />
-      <Setter Property="BorderThickness" Value="0" />
-      <Setter Property="HorizontalAlignment" Value="Stretch" />
-      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-      <Setter Property="Padding" Value="8,0" />
-      <Setter Property="Height" Value="28" />
-      <Setter Property="CornerRadius" Value="6" />
-    </Style>
-    <Style Selector="Button.row:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource FillBrush}" />
-    </Style>
-    <Style Selector="Button.mini">
-      <Setter Property="Background" Value="Transparent" />
-      <Setter Property="BorderThickness" Value="0" />
-      <Setter Property="Padding" Value="4" />
-      <Setter Property="Width" Value="24" />
-      <Setter Property="Height" Value="24" />
-      <Setter Property="CornerRadius" Value="6" />
-    </Style>
-    <Style Selector="Button.mini:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource FillBrush}" />
-    </Style>
     <!-- The environment mark, set on the host's glyph. -->
     <Style Selector="Ellipse.environment">
       <Setter Property="Width" Value="7" />
@@ -94,44 +27,18 @@
       <Setter Property="Stroke" Value="{DynamicResource PaneBrush}" />
       <Setter Property="StrokeThickness" Value="1" />
     </Style>
-    <Style Selector="Button.switcher">
-      <Setter Property="Background" Value="Transparent" />
-      <Setter Property="BorderThickness" Value="0" />
-      <Setter Property="HorizontalAlignment" Value="Stretch" />
-      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-      <Setter Property="Padding" Value="8,6" />
-      <Setter Property="CornerRadius" Value="8" />
-    </Style>
-    <Style Selector="Button.switcher:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource FillBrush}" />
-    </Style>
-    <Style Selector="Border.badge">
-      <Setter Property="Width" Value="28" />
-      <Setter Property="Height" Value="28" />
-      <Setter Property="CornerRadius" Value="7" />
-      <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
-    </Style>
-    <Style Selector="Border.badge > TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
-      <Setter Property="FontSize" Value="11" />
-      <Setter Property="FontWeight" Value="SemiBold" />
-      <Setter Property="HorizontalAlignment" Value="Center" />
-      <Setter Property="VerticalAlignment" Value="Center" />
-    </Style>
   </UserControl.Styles>
 
   <DockPanel Background="{DynamicResource PaneBrush}">
     <!-- The workspace switcher: the workspace in this window, and a menu of the others. -->
     <StackPanel DockPanel.Dock="Top">
-      <Button x:Name="SwitcherButton" Classes="switcher" Margin="8,10,8,8" AutomationProperties.Name="{Binding WorkspaceAccessibleName}"
+      <Button x:Name="SwitcherButton" Classes="row" Padding="8,6" CornerRadius="{StaticResource BlockRadius}" Margin="8,10,8,8" AutomationProperties.Name="{Binding WorkspaceAccessibleName}"
               ToolTip.Tip="{Binding WorkspaceFolder}">
         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
-          <Border Classes="badge">
-            <TextBlock Text="{Binding WorkspaceInitials}" />
-          </Border>
+          <c:Avatar Text="{Binding WorkspaceInitials}" />
           <StackPanel Grid.Column="1" VerticalAlignment="Center">
             <TextBlock Text="{Binding WorkspaceName}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-            <TextBlock Classes="quiet" FontSize="12" Text="{Binding WorkspaceDetail}" TextTrimming="CharacterEllipsis" />
+            <TextBlock Classes="secondary" Text="{Binding WorkspaceDetail}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
           </StackPanel>
           <Path Grid.Column="2" Classes="glyph" Data="{StaticResource UpDownGlyph}" />
         </Grid>
@@ -154,12 +61,12 @@
         <!-- Hosts: the workspace's connections, then a quiet line for the user's other SSH hosts. -->
         <Grid ColumnDefinitions="*,Auto" Margin="8,0,0,4" Height="24">
           <TextBlock Classes="section" Text="{x:Static res:Strings.SidebarHosts}" />
-          <Button Grid.Column="1" Classes="mini" Command="{Binding NewHostCommand}"
+          <Button Grid.Column="1" Classes="icon small" Command="{Binding NewHostCommand}"
                   ToolTip.Tip="{x:Static res:Strings.NewHostTitle}" AutomationProperties.Name="{x:Static res:Strings.NewHostTitle}">
             <Path Classes="glyph" Data="{StaticResource AddGlyph}" />
           </Button>
         </Grid>
-        <TextBlock Classes="quiet" FontSize="12" Text="{x:Static res:Strings.SidebarNoHosts}" IsVisible="{Binding !HasHosts}" Margin="8,2,8,4" TextWrapping="Wrap" />
+        <TextBlock Classes="secondary" Text="{x:Static res:Strings.SidebarNoHosts}" IsVisible="{Binding !HasHosts}" Margin="8,2,8,4" />
         <ListBox x:Name="HostList" Classes="source" ItemsSource="{Binding Hosts}" SelectedItem="{Binding SelectedHost}" SelectionMode="Single"
                  AutomationProperties.Name="{x:Static res:Strings.SidebarHosts}">
           <ListBox.ItemTemplate>
@@ -184,7 +91,7 @@
                   <Ellipse Classes="environment" Fill="{DynamicResource AccentBrush}" IsVisible="{Binding IsOtherEnvironment}" />
                 </Panel>
                 <TextBlock Grid.Column="1" Text="{Binding Name}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
-                <TextBlock Grid.Column="2" Classes="count" Text="{Binding OpenText}" IsVisible="{Binding IsOpen}" />
+                <TextBlock Grid.Column="2" Classes="secondary" VerticalAlignment="Center" Text="{Binding OpenText}" IsVisible="{Binding IsOpen}" />
               </Grid>
             </DataTemplate>
           </ListBox.ItemTemplate>
@@ -197,13 +104,13 @@
                 <RotateTransform Angle="{Binding OtherHostsChevronAngle}" />
               </Path.RenderTransform>
             </Path>
-            <TextBlock Classes="quiet" FontSize="12" Text="{Binding OtherHostsText}" VerticalAlignment="Center" />
+            <TextBlock Classes="secondary" Text="{Binding OtherHostsText}" VerticalAlignment="Center" />
           </StackPanel>
         </Button>
         <ItemsControl ItemsSource="{Binding OtherHosts}" IsVisible="{Binding IsOtherHostsExpanded}">
           <ItemsControl.ItemTemplate>
             <DataTemplate x:DataType="side:SshHostItemViewModel">
-              <Grid ColumnDefinitions="16,*,Auto" ColumnSpacing="8" Height="28" Margin="8,0,0,0">
+              <Grid ColumnDefinitions="16,*,Auto" ColumnSpacing="8" Height="{StaticResource RowHeight}" Margin="8,0,0,0">
                 <Path Classes="glyph" Data="{StaticResource ServerGlyph}" Opacity="0.6" />
                 <TextBlock Grid.Column="1" Classes="quiet" Text="{Binding Alias}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
                 <Button Grid.Column="2" Classes="plain" Content="{x:Static res:Strings.SidebarAdd}" Command="{Binding AddCommand}"
@@ -215,7 +122,7 @@
 
         <!-- Skills: saved by the agent, opened here. -->
         <TextBlock Classes="section" Margin="8,18,0,4" Height="24" Text="{x:Static res:Strings.SidebarSkills}" />
-        <TextBlock Classes="quiet" FontSize="12" Text="{x:Static res:Strings.SidebarNoSkills}" IsVisible="{Binding !HasSkills}" Margin="8,2,8,4" TextWrapping="Wrap" />
+        <TextBlock Classes="secondary" Text="{x:Static res:Strings.SidebarNoSkills}" IsVisible="{Binding !HasSkills}" Margin="8,2,8,4" />
         <ListBox x:Name="SkillList" Classes="source" ItemsSource="{Binding Skills}" SelectedItem="{Binding SelectedSkill}" SelectionMode="Single"
                  AutomationProperties.Name="{x:Static res:Strings.SidebarSkills}">
           <ListBox.ItemTemplate>

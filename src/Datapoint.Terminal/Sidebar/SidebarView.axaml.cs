@@ -60,17 +60,12 @@ public sealed partial class SidebarView : UserControl
         return item;
     }
 
-    // The menu opens in a popup, outside this view's styles, so its rows are styled here.
     private static Grid WorkspaceRow(WorkspaceSwitchItem workspace)
     {
-        var initials = new TextBlock { Text = workspace.Initials, FontSize = 11, FontWeight = FontWeight.SemiBold, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
-        initials.Bind(TextBlock.ForegroundProperty, initials.GetResourceObservable("OnAccentBrush"));
-        var badge = new Border { Width = 28, Height = 28, CornerRadius = new CornerRadius(7), Child = initials };
-        badge.Bind(Border.BackgroundProperty, badge.GetResourceObservable("AccentBrush"));
-        var detail = new TextBlock { Text = workspace.Detail, FontSize = 12 };
-        detail.Bind(TextBlock.ForegroundProperty, detail.GetResourceObservable("SecondaryLabelBrush"));
+        var badge = new Components.Avatar { Text = workspace.Initials };
+        var detail = new TextBlock { Text = workspace.Detail, TextWrapping = TextWrapping.NoWrap, Classes = { "secondary" } };
         var text = new StackPanel { VerticalAlignment = VerticalAlignment.Center, [Grid.ColumnProperty] = 1 };
-        text.Children.Add(new TextBlock { Text = workspace.Name, FontWeight = FontWeight.SemiBold });
+        text.Children.Add(new TextBlock { Text = workspace.Name, Classes = { "title" } });
         text.Children.Add(detail);
         return new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*"), ColumnSpacing = 10, MinWidth = 220, Children = { badge, text } };
     }

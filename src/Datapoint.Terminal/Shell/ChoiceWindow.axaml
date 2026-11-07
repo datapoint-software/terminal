@@ -5,7 +5,7 @@
         WindowStartupLocation="CenterOwner" ShowInTaskbar="False"
         Background="{DynamicResource GroupedBackgroundBrush}">
   <StackPanel Margin="20" Spacing="12">
-    <TextBlock x:Name="Heading" FontWeight="SemiBold" FontSize="14" TextWrapping="Wrap" />
+    <TextBlock x:Name="Heading" Classes="dialogTitle" />
     <TextBlock x:Name="Message" TextWrapping="Wrap" />
     <Border x:Name="DetailsBox" Classes="code" IsVisible="False">
       <ScrollViewer MaxHeight="320">

@@ -27,9 +27,9 @@ public sealed partial class SaveHostFileWindow : Window
         ArgumentNullException.ThrowIfNull(diff);
         Title = Strings.Format(Strings.HostFileSaveTitle, file.FileName, file.Host);
         Heading.Text = Title;
-        BadgeText.Text = file.Environment;
+        Badge.Text = file.Environment;
         Badge.IsVisible = file.HasEnvironment;
-        Badge.Classes.Set("production", file.IsProduction);
+        Badge.Classes.Set("danger", file.IsProduction);
         var changed = ChangedLines(diff);
         Summary.Text = changed == 1 ? Strings.Format(Strings.HostFileLineChanged, file.Path) : Strings.Format(Strings.HostFileLinesChanged, changed, file.Path);
         ShowDiff(diff);

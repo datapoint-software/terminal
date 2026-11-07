@@ -87,6 +87,7 @@ public sealed partial class HistoryWindow : Window
             Content = new StackPanel
             {
                 Spacing = 2,
+                Margin = new Avalonia.Thickness(0, 6),
                 Children =
                 {
                     new TextBlock { Text = title, TextTrimming = TextTrimming.CharacterEllipsis, MaxLines = 2, TextWrapping = TextWrapping.Wrap },

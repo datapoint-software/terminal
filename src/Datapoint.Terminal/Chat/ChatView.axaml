@@ -4,6 +4,7 @@
              xmlns:chat="clr-namespace:Datapoint.Terminal.Chat"
              xmlns:md="clr-namespace:Datapoint.Terminal.Markdown"
              xmlns:res="clr-namespace:Datapoint.Terminal.Resources"
+             xmlns:c="clr-namespace:Datapoint.Terminal.Components"
              x:Class="Datapoint.Terminal.Chat.ChatView"
              x:DataType="chat:ChatViewModel"
              Background="{DynamicResource PaneBrush}">
@@ -22,9 +23,9 @@
   <UserControl.DataTemplates>
     <!-- An approved plan's progress: a header that folds it, then a bar, where it's at, and each step's mark. -->
     <DataTemplate DataType="chat:PlanProgressViewModel">
-      <Border Classes="plan">
+      <Border Classes="group">
         <StackPanel>
-          <Button Classes="plan-header" Command="{Binding ToggleCommand}"
+          <Button Classes="row" Padding="12,9" CornerRadius="{StaticResource CardRadius}" Command="{Binding ToggleCommand}"
                   AutomationProperties.Name="{Binding HeaderText}" AutomationProperties.HelpText="{Binding ToggleHelp}">
             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
               <Panel Classes="mark" IsVisible="{Binding IsFolded}" Classes.running="{Binding MarkIsRunning}"
@@ -77,9 +78,9 @@
 
     <!-- A skill's rollout: each host's state, the health check the application runs, then Pause and Stop while it goes. -->
     <DataTemplate DataType="chat:RolloutProgressViewModel">
-      <Border Classes="plan">
+      <Border Classes="group">
         <StackPanel>
-          <Button Classes="plan-header" Command="{Binding ToggleCommand}"
+          <Button Classes="row" Padding="12,9" CornerRadius="{StaticResource CardRadius}" Command="{Binding ToggleCommand}"
                   AutomationProperties.Name="{Binding HeaderText}" AutomationProperties.HelpText="{Binding ToggleHelp}">
             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
               <StackPanel Spacing="1">
@@ -95,11 +96,11 @@
             </Grid>
           </Button>
           <StackPanel Spacing="10" Margin="12,0,12,12" IsVisible="{Binding IsExpanded}">
-            <Border Classes="rollout-hosts">
+            <Border Classes="list">
               <ItemsControl ItemsSource="{Binding Hosts}">
                 <ItemsControl.ItemTemplate>
                   <DataTemplate x:DataType="chat:RolloutHostViewModel">
-                    <Border Classes="rollout-host" Classes.first="{Binding IsFirst}">
+                    <Border Classes="listItem" Classes.first="{Binding IsFirst}">
                       <Grid ColumnDefinitions="16,*" ColumnSpacing="10" Focusable="True" AutomationProperties.Name="{Binding AccessibleName}">
                         <Panel Classes="mark" VerticalAlignment="Top" Margin="0,1,0,0" Classes.running="{Binding IsRunning}"
                                Classes.succeeded="{Binding IsSucceeded}" Classes.failed="{Binding IsFailed}">
@@ -143,16 +144,9 @@
   </UserControl.DataTemplates>
 
   <UserControl.Styles>
-    <Style Selector="TextBlock.title">
-      <Setter Property="FontWeight" Value="SemiBold" />
-    </Style>
     <Style Selector="Border.code.highlight">
       <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
       <Setter Property="BorderThickness" Value="2" />
-    </Style>
-    <Style Selector="TextBlock.secondary, SelectableTextBlock.secondary">
-      <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
-      <Setter Property="FontSize" Value="{StaticResource CaptionSize}" />
     </Style>
 
     <!-- Status dot: grey when idle, accent while working, orange when it needs you, red when stopped. -->
@@ -181,25 +175,15 @@
     <Style Selector="Border.composer:focus-within">
       <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
     </Style>
-    <Style Selector="TextBox.bare">
-      <Setter Property="Background" Value="Transparent" />
-      <Setter Property="BorderThickness" Value="0" />
-      <Setter Property="Padding" Value="12,10,6,10" />
-      <Setter Property="MinHeight" Value="38" />
-    </Style>
-    <Style Selector="TextBox.bare /template/ Border#PART_BorderElement, TextBox.bare:pointerover /template/ Border#PART_BorderElement, TextBox.bare:focus /template/ Border#PART_BorderElement, TextBox.bare:disabled /template/ Border#PART_BorderElement">
-      <Setter Property="Background" Value="Transparent" />
-      <Setter Property="BorderThickness" Value="0" />
-    </Style>
     <Style Selector="ComboBox.menu">
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="BorderThickness" Value="0" />
       <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
-      <Setter Property="FontSize" Value="12" />
+      <Setter Property="FontSize" Value="{StaticResource SmallSize}" />
       <Setter Property="Padding" Value="10,2,0,2" />
       <Setter Property="MinHeight" Value="22" />
       <Setter Property="MinWidth" Value="0" />
-      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="CornerRadius" Value="{StaticResource ControlRadius}" />
     </Style>
     <Style Selector="ComboBox.menu /template/ Border#Background">
       <Setter Property="Background" Value="Transparent" />
@@ -232,14 +216,6 @@
       <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
     </Style>
 
-    <!-- The agent's choices: one bordered list of rows, each with its number key, label and a line on what it does. The
-         recommended one is tinted and tagged; "Something else…" is quieter. -->
-    <Style Selector="Border.choices">
-      <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
-      <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="CornerRadius" Value="8" />
-      <Setter Property="ClipToBounds" Value="True" />
-    </Style>
     <Style Selector="Button.choice">
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
@@ -262,14 +238,14 @@
     <Style Selector="Border.key">
       <Setter Property="Width" Value="18" />
       <Setter Property="Height" Value="18" />
-      <Setter Property="CornerRadius" Value="5" />
+      <Setter Property="CornerRadius" Value="{StaticResource SmallRadius}" />
       <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="VerticalAlignment" Value="Top" />
       <Setter Property="Margin" Value="0,1,0,0" />
     </Style>
     <Style Selector="Border.key TextBlock">
-      <Setter Property="FontSize" Value="11" />
+      <Setter Property="FontSize" Value="{StaticResource CaptionSize}" />
       <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
       <Setter Property="HorizontalAlignment" Value="Center" />
       <Setter Property="VerticalAlignment" Value="Center" />
@@ -279,16 +255,6 @@
     </Style>
     <Style Selector="Button.choice.recommended Border.key TextBlock">
       <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
-    </Style>
-    <Style Selector="Border.tag">
-      <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
-      <Setter Property="CornerRadius" Value="6" />
-      <Setter Property="Padding" Value="6,1" />
-    </Style>
-    <Style Selector="Border.tag TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
-      <Setter Property="FontSize" Value="11" />
-      <Setter Property="FontWeight" Value="SemiBold" />
     </Style>
 
     <!-- Plans. A step's mark: an empty ring before it runs, a ring and dot while it runs, a tick or a cross after. -->
@@ -341,53 +307,21 @@
       <Setter Property="VerticalAlignment" Value="Top" />
     </Style>
     <Style Selector="Border.number TextBlock">
-      <Setter Property="FontSize" Value="11" />
+      <Setter Property="FontSize" Value="{StaticResource CaptionSize}" />
       <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
       <Setter Property="HorizontalAlignment" Value="Center" />
       <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
     <Style Selector="Border.warning">
       <Setter Property="Background" Value="{DynamicResource WarningFillBrush}" />
-      <Setter Property="CornerRadius" Value="6" />
-      <Setter Property="Padding" Value="7,1" />
+      <Setter Property="CornerRadius" Value="{StaticResource SmallRadius}" />
+      <Setter Property="Padding" Value="6,1" />
       <Setter Property="HorizontalAlignment" Value="Left" />
       <Setter Property="Margin" Value="0,2,0,0" />
     </Style>
     <Style Selector="Border.warning TextBlock">
       <Setter Property="Foreground" Value="{DynamicResource WarningTextBrush}" />
       <Setter Property="FontSize" Value="{StaticResource CaptionSize}" />
-    </Style>
-    <Style Selector="Border.rollback">
-      <Setter Property="Background" Value="{DynamicResource CodeBrush}" />
-      <Setter Property="CornerRadius" Value="8" />
-      <Setter Property="Padding" Value="10,8" />
-    </Style>
-    <Style Selector="Border.plan">
-      <Setter Property="Background" Value="{DynamicResource CardBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
-      <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="CornerRadius" Value="10" />
-    </Style>
-    <Style Selector="Button.plan-header">
-      <Setter Property="Background" Value="Transparent" />
-      <Setter Property="HorizontalAlignment" Value="Stretch" />
-      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-      <Setter Property="Padding" Value="12,9" />
-      <Setter Property="CornerRadius" Value="10" />
-    </Style>
-    <Style Selector="Border.rollout-hosts">
-      <Setter Property="Background" Value="{DynamicResource WindowBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
-      <Setter Property="BorderThickness" Value="0.5" />
-      <Setter Property="CornerRadius" Value="8" />
-    </Style>
-    <Style Selector="Border.rollout-host">
-      <Setter Property="Padding" Value="10,8" />
-      <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
-      <Setter Property="BorderThickness" Value="0,1,0,0" />
-    </Style>
-    <Style Selector="Border.rollout-host.first">
-      <Setter Property="BorderThickness" Value="0" />
     </Style>
     <Style Selector="TextBlock.step-title.pending">
       <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
@@ -403,13 +337,6 @@
       <Setter Property="Background" Value="{DynamicResource SeparatorBrush}" />
     </Style>
 
-    <Style Selector="Border.card">
-      <Setter Property="Background" Value="{DynamicResource CardBrush}" />
-      <Setter Property="CornerRadius" Value="10" />
-      <Setter Property="Padding" Value="14,12" />
-      <Setter Property="BoxShadow" Value="{DynamicResource CardShadow}" />
-      <Setter Property="Margin" Value="0,0,0,10" />
-    </Style>
   </UserControl.Styles>
 
   <DockPanel>
@@ -500,7 +427,7 @@
               </ItemsControl.ItemTemplate>
             </ItemsControl>
           </ScrollViewer>
-          <Border Classes="rollback" IsVisible="{Binding HasRollback}">
+          <Border Classes="code" IsVisible="{Binding HasRollback}">
             <StackPanel Spacing="2">
               <TextBlock Text="{x:Static res:Strings.PlanRollbackTitle}" FontWeight="SemiBold" />
               <md:MarkdownView Text="{Binding Rollback}" />
@@ -535,7 +462,7 @@
               <SelectableTextBlock Text="{Binding Text}" FontWeight="SemiBold" TextWrapping="Wrap" />
             </StackPanel>
           </ScrollViewer>
-          <Border Classes="choices" IsVisible="{Binding IsChoosing}">
+          <Border Classes="list" IsVisible="{Binding IsChoosing}">
             <ItemsControl ItemsSource="{Binding Rows}" Margin="0,-1,0,0">
               <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="chat:QuestionRowViewModel">
@@ -551,9 +478,8 @@
                       <StackPanel Grid.Column="1" Spacing="1">
                         <Grid ColumnDefinitions="*,Auto">
                           <TextBlock Classes="label" Text="{Binding Label}" TextWrapping="Wrap" VerticalAlignment="Center" />
-                          <Border Grid.Column="1" Classes="tag" IsVisible="{Binding IsRecommended}" Margin="8,0,0,0" VerticalAlignment="Top">
-                            <TextBlock Text="{x:Static res:Strings.QuestionRecommended}" />
-                          </Border>
+                          <c:Badge Grid.Column="1" Classes="accent" Text="{x:Static res:Strings.QuestionRecommended}" IsVisible="{Binding IsRecommended}"
+                                   Margin="8,0,0,0" VerticalAlignment="Top" />
                         </Grid>
                         <TextBlock Classes="secondary" Text="{Binding Description}" TextWrapping="Wrap" IsVisible="{Binding HasDescription}" />
                       </StackPanel>
@@ -598,7 +524,7 @@
       <!-- Composer: a rounded field with the send button inside, and quiet menus for the model and approval under it. -->
       <Border Classes="composer">
         <Grid ColumnDefinitions="*,Auto">
-          <TextBox x:Name="DraftBox" Classes="bare" Text="{Binding Draft}" PlaceholderText="{Binding DraftPlaceholder}"
+          <TextBox x:Name="DraftBox" Classes="bare" Padding="12,10,6,10" MinHeight="38" Text="{Binding Draft}" PlaceholderText="{Binding DraftPlaceholder}"
                    TextWrapping="Wrap" MaxHeight="160" VerticalContentAlignment="Center" IsEnabled="{Binding HasAgent}"
                    AutomationProperties.Name="{x:Static res:Strings.ChatInputPlaceholder}">
             <TextBox.KeyBindings>
@@ -630,7 +556,7 @@
             <DataTemplate x:DataType="chat:ModelChoice">
               <StackPanel>
                 <TextBlock Text="{Binding Name}" />
-                <TextBlock Classes="secondary" FontSize="11" Text="{Binding Provider}" IsVisible="{Binding HasProvider}" />
+                <TextBlock Classes="secondary" Text="{Binding Provider}" IsVisible="{Binding HasProvider}" />
               </StackPanel>
             </DataTemplate>
           </ComboBox.ItemTemplate>
@@ -646,7 +572,7 @@
             <DataTemplate x:DataType="chat:ModeOption">
               <StackPanel MaxWidth="240" Margin="0,2">
                 <TextBlock Text="{Binding Label}" />
-                <TextBlock Classes="secondary" FontSize="11" Text="{Binding Help}" TextWrapping="Wrap" />
+                <TextBlock Classes="secondary" Text="{Binding Help}" TextWrapping="Wrap" />
               </StackPanel>
             </DataTemplate>
           </ComboBox.ItemTemplate>

@@ -19,38 +19,6 @@
   </Window.Resources>
 
   <Window.Styles>
-    <Style Selector="TextBlock.heading">
-      <Setter Property="FontWeight" Value="SemiBold" />
-      <Setter Property="Margin" Value="4,0,0,6" />
-    </Style>
-    <Style Selector="TextBlock.secondary">
-      <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
-      <Setter Property="FontSize" Value="{StaticResource CaptionSize}" />
-      <Setter Property="TextWrapping" Value="Wrap" />
-    </Style>
-    <Style Selector="TextBlock.danger">
-      <Setter Property="Foreground" Value="{DynamicResource DangerBrush}" />
-    </Style>
-    <!-- Grouped rows, as in macOS settings: a white box, a label on the left, the control on the right, hairlines between. -->
-    <Style Selector="Border.group">
-      <Setter Property="Background" Value="{DynamicResource CardBrush}" />
-      <Setter Property="CornerRadius" Value="10" />
-      <Setter Property="Margin" Value="0,0,0,18" />
-      <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
-      <Setter Property="BorderThickness" Value="0.5" />
-    </Style>
-    <Style Selector="Grid.row">
-      <Setter Property="MinHeight" Value="44" />
-      <Setter Property="Margin" Value="14,6" />
-    </Style>
-    <Style Selector="Grid.row > :is(Control)">
-      <Setter Property="VerticalAlignment" Value="Center" />
-    </Style>
-    <Style Selector="Rectangle.hairline">
-      <Setter Property="Height" Value="1" />
-      <Setter Property="Fill" Value="{DynamicResource SeparatorBrush}" />
-      <Setter Property="Margin" Value="14,0,0,0" />
-    </Style>
     <!-- The pages, as a macOS settings window shows them: icons with names along the top. -->
     <Style Selector="ListBox.toolbar">
       <Setter Property="Background" Value="Transparent" />
@@ -64,11 +32,11 @@
     <Style Selector="ListBox.toolbar ListBoxItem">
       <Setter Property="Width" Value="84" />
       <Setter Property="Padding" Value="0,6" />
-      <Setter Property="CornerRadius" Value="7" />
+      <Setter Property="CornerRadius" Value="{StaticResource ControlRadius}" />
       <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
     </Style>
     <Style Selector="ListBox.toolbar ListBoxItem /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="CornerRadius" Value="7" />
+      <Setter Property="CornerRadius" Value="{StaticResource ControlRadius}" />
     </Style>
     <Style Selector="ListBox.toolbar ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource FillBrush}" />
@@ -80,26 +48,6 @@
     </Style>
     <Style Selector="ListBox.toolbar ListBoxItem:selected:focus /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource FillHoverBrush}" />
-    </Style>
-    <Style Selector="ListBox.sidebar">
-      <Setter Property="Background" Value="Transparent" />
-    </Style>
-    <Style Selector="ListBox.sidebar ListBoxItem">
-      <Setter Property="Padding" Value="10,6" />
-      <Setter Property="Margin" Value="8,1" />
-      <Setter Property="CornerRadius" Value="6" />
-    </Style>
-    <Style Selector="ListBox.sidebar ListBoxItem /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="CornerRadius" Value="6" />
-    </Style>
-    <Style Selector="ListBox.sidebar ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource FillBrush}" />
-    </Style>
-    <Style Selector="ListBox.sidebar ListBoxItem:selected:focus /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource FillHoverBrush}" />
-    </Style>
-    <Style Selector="ListBox.sidebar ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource FillBrush}" />
     </Style>
   </Window.Styles>
 
@@ -145,7 +93,7 @@
   <Grid x:Name="ProvidersPage" ColumnDefinitions="230,1,*">
     <!-- Sidebar: the providers, with add and remove at the bottom. -->
     <DockPanel Background="{DynamicResource PaneBrush}">
-      <TextBlock DockPanel.Dock="Top" Classes="secondary" FontWeight="SemiBold" Margin="18,16,0,8" Text="{x:Static res:Strings.SettingsProviders}" />
+      <TextBlock DockPanel.Dock="Top" Classes="section" Margin="18,16,0,8" Text="{x:Static res:Strings.SettingsProviders}" />
       <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="2" Margin="10,8">
         <Button Classes="icon" Command="{Binding AddCommand}" ToolTip.Tip="{x:Static res:Strings.SettingsAdd}"
                 AutomationProperties.Name="{x:Static res:Strings.SettingsAdd}">
@@ -156,11 +104,11 @@
           <PathIcon Data="{StaticResource MinusGlyph}" />
         </Button>
       </StackPanel>
-      <ListBox Classes="sidebar" ItemsSource="{Binding Providers}" SelectedItem="{Binding Selected}"
+      <ListBox Classes="source" Margin="8,0" ItemsSource="{Binding Providers}" SelectedItem="{Binding Selected}"
                AutomationProperties.Name="{x:Static res:Strings.SettingsProviders}">
         <ListBox.ItemTemplate>
           <DataTemplate x:DataType="settings:ProviderViewModel">
-            <Grid ColumnDefinitions="*,Auto">
+            <Grid ColumnDefinitions="*,Auto" Margin="2,6">
               <StackPanel>
                 <TextBlock Text="{Binding Name}" FontWeight="Medium" TextTrimming="CharacterEllipsis" />
                 <TextBlock Classes="secondary" Text="{Binding Model}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
@@ -182,7 +130,7 @@
     </StackPanel>
 
     <ScrollViewer Grid.Column="2" IsVisible="{Binding HasSelection}">
-      <StackPanel Margin="28,24" MaxWidth="560" DataContext="{Binding Selected}" x:DataType="settings:ProviderViewModel">
+      <StackPanel Classes="form" Margin="28,22" MaxWidth="560" DataContext="{Binding Selected}" x:DataType="settings:ProviderViewModel">
         <!-- Which provider, and which model. -->
         <Border Classes="group">
           <StackPanel>
@@ -270,8 +218,7 @@
                 <Button Grid.Column="1" Margin="8,0,0,0" Content="{x:Static res:Strings.ProviderKeySave}" Command="{Binding SaveKeyCommand}" />
               </Grid>
               <Grid Grid.Column="1" ColumnDefinitions="*,Auto,Auto" IsVisible="{Binding !ShowKeyEntry}">
-                <TextBlock Text="••••••••••••••••" VerticalAlignment="Center" IsVisible="{Binding HasSavedKey}"
-                           Foreground="{DynamicResource SecondaryLabelBrush}" />
+                <TextBlock Classes="quiet" Text="••••••••••••••••" VerticalAlignment="Center" IsVisible="{Binding HasSavedKey}" />
                 <Button Grid.Column="1" Margin="8,0,0,0" Content="{x:Static res:Strings.ProviderKeyReplace}" Command="{Binding ReplaceKeyCommand}"
                         IsVisible="{Binding HasSavedKey}" />
                 <Button Grid.Column="2" Margin="8,0,0,0" Content="{x:Static res:Strings.ProviderKeyRemove}" Command="{Binding RemoveKeyCommand}"
@@ -280,7 +227,7 @@
             </Grid>
           </StackPanel>
         </Border>
-        <TextBlock Classes="secondary" Text="{Binding KeyStatus}" Margin="4,-10,0,18" IsVisible="{Binding KeyStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        <TextBlock Classes="secondary note" Text="{Binding KeyStatus}" IsVisible="{Binding KeyStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
         <!-- Where the conversation goes, and whether it works. -->
         <TextBlock Classes="secondary" Text="{Binding Privacy}" Margin="4,0,0,12" />

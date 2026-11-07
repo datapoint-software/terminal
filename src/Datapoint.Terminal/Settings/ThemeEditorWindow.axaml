@@ -9,7 +9,7 @@
         Background="{DynamicResource GroupedBackgroundBrush}">
   <DockPanel Margin="20">
     <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" Margin="0,16,0,0">
-      <TextBlock x:Name="Problem" VerticalAlignment="Center" Foreground="{DynamicResource DangerBrush}" FontSize="{StaticResource CaptionSize}"
+      <TextBlock x:Name="Problem" Classes="secondary danger" VerticalAlignment="Center"
                  AutomationProperties.LiveSetting="Polite" />
       <Button x:Name="CancelButton" Content="{x:Static res:Strings.Cancel}" IsCancel="True" />
       <Button x:Name="SaveButton" Classes="primary" Content="{x:Static res:Strings.ThemeEditorSave}" IsDefault="True" />
@@ -22,7 +22,7 @@
       <ScrollViewer>
         <StackPanel x:Name="Rows" Spacing="4" />
       </ScrollViewer>
-      <Border Grid.Column="2" CornerRadius="8" ClipToBounds="True" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0.5">
+      <Border Grid.Column="2" Classes="inset" ClipToBounds="True">
         <controls:TerminalView x:Name="Preview" Padding="10,8" Focusable="False" IsHitTestVisible="False" />
       </Border>
     </Grid>
