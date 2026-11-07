@@ -15,4 +15,6 @@ public enum AgentEventKind
     StatusChanged,
 
     MemoryChanged,
+
+    HostDocsChanged,
 }

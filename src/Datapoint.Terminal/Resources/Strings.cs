@@ -462,6 +462,8 @@ public static class Strings
 
     public static string MemoryOpen => Get(nameof(MemoryOpen));
 
+    public static string HostDocsOpen => Get(nameof(HostDocsOpen));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

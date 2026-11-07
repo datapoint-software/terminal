@@ -302,9 +302,10 @@ public sealed partial class TerminalAgent : IDisposable
             ? "[No terminals are open.]\n"
             : "[Open terminals: " + string.Join(", ", terminals.Select(item => Named(item.Name, item.Environment))) + "]\n";
         var connections = TerminalOpener?.Connections ?? [];
-        return connections.Count == 0
-            ? open
-            : open + "[Connections open_terminal can open: " + string.Join(", ", connections.Select(item => Named(item.Name, item.Environment))) + "]\n";
+        var openable = connections.Count == 0
+            ? string.Empty
+            : "[Connections open_terminal can open: " + string.Join(", ", connections.Select(item => Named(item.Name, item.Environment))) + "]\n";
+        return open + openable + DescribeHostDocs();
     }
 
     private static string Named(string name, string? environment) => $"\"{name}\"" + (environment is null ? string.Empty : $" ({environment})");

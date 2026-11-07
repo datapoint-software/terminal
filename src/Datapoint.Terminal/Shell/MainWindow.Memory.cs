@@ -2,8 +2,10 @@ using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using Datapoint.Terminal.Agent;
+using Datapoint.Terminal.Agent.Hosts;
 using Datapoint.Terminal.Agent.Memory;
 using Datapoint.Terminal.Agent.Projects;
+using Datapoint.Terminal.Agent.Projects.Ignore;
 using Datapoint.Terminal.Resources;
 
 namespace Datapoint.Terminal.Shell;
@@ -13,6 +15,12 @@ public sealed partial class MainWindow
 {
     // A read-only window would race the window that holds the project's lock, so only the global memory is written from it.
     private AgentMemory CreateMemory() => new(GlobalMemoryPath, Project.IsReadOnly ? null : ProjectMemoryPath);
+
+    // Product decision 89: documentation for each connection, in the project's hosts/ folder.
+    private HostDocsFolder CreateHostDocs() => new(
+        Path.Combine(Project.Folder, "hosts"),
+        path => TerminalIgnore.IsIgnored(path, Project.Folder, ProjectFolders.Home),
+        CanWrite: !Project.IsReadOnly);
 
     private void AddMemoryItems(NativeMenu file)
     {
@@ -74,11 +82,18 @@ public sealed partial class MainWindow
 
     private void OnMemoryEvent(object? sender, AgentEventArgs e)
     {
-        if (e.Kind != AgentEventKind.MemoryChanged || e.Path is not { } path)
+        if (e.Path is not { } path)
         {
             return;
         }
 
-        Dispatcher.UIThread.Post(() => _chat.AddNotice(e.Text ?? string.Empty, Strings.MemoryOpen, () => OpenMemory(path)));
+        if (e.Kind == AgentEventKind.MemoryChanged)
+        {
+            Dispatcher.UIThread.Post(() => _chat.AddNotice(e.Text, Strings.MemoryOpen, () => OpenMemory(path)));
+        }
+        else if (e.Kind == AgentEventKind.HostDocsChanged)
+        {
+            Dispatcher.UIThread.Post(() => _chat.AddNotice(e.Text, Strings.HostDocsOpen, () => _ = Launcher.LaunchFileInfoAsync(new FileInfo(path))));
+        }
     }
 }

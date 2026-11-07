@@ -146,6 +146,7 @@ public sealed partial class MainWindow : Window, ITerminalOpener
                     TerminalOpener = this,
                     IgnoredFileCheck = FindIgnoredFile,
                     Memory = CreateMemory(),
+                    HostDocs = CreateHostDocs(),
                 };
                 _agent.EventRaised += OnMemoryEvent;
                 _agent.EventRaised += OnAgentEvent;

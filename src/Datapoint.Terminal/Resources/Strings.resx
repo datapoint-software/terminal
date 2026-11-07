@@ -698,4 +698,7 @@ git rm -r --cached .terminal</value>
   <data name="MemoryOpen" xml:space="preserve">
     <value>Open memory</value>
   </data>
+  <data name="HostDocsOpen" xml:space="preserve">
+    <value>Open documentation</value>
+  </data>
 </root>
