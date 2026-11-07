@@ -18,6 +18,7 @@
     <StyleInclude Source="avares://Datapoint.Terminal/Styles/Controls.axaml" />
     <StyleInclude Source="avares://Datapoint.Terminal/Styles/Text.axaml" />
     <StyleInclude Source="avares://Datapoint.Terminal/Styles/Surfaces.axaml" />
+    <StyleInclude Source="avares://Datapoint.Terminal/Styles/Overlays.axaml" />
   </Application.Styles>
   <!-- macOS application menu: Settings… with Cmd+, as every Mac app has. -->
   <NativeMenu.Menu>

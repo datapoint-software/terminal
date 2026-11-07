@@ -121,9 +121,17 @@ public sealed class SidebarTests : IDisposable
 
         var menu = view.BuildSwitcherMenu()!;
         Assert.Equal(7, menu.Items.Count);
-        Assert.IsType<Avalonia.Controls.Shapes.Path>(Assert.IsType<MenuItem>(menu.Items[0]).Icon);
-        Assert.Null(Assert.IsType<MenuItem>(menu.Items[1]).Icon);
+        Assert.Single(Assert.IsType<Grid>(Assert.IsType<MenuItem>(menu.Items[0]).Header).Children.OfType<Avalonia.Controls.Shapes.Path>());
+        Assert.Empty(Assert.IsType<Grid>(Assert.IsType<MenuItem>(menu.Items[1]).Header).Children.OfType<Avalonia.Controls.Shapes.Path>());
         Assert.False(Assert.IsType<MenuItem>(menu.Items[3]).IsEnabled);
+
+        // Headless popups draw in the window's overlay, so the window is widened to show the whole menu.
+        window.Width = 420;
+        menu.ShowAt(view.SwitcherButton);
+        Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+        using var menuFrame = window.CaptureRenderedFrame();
+        menuFrame?.Save("rendered/sidebar-switcher.png", new PngBitmapEncoderOptions());
+        menu.Hide();
     }
 
     [AvaloniaFact]

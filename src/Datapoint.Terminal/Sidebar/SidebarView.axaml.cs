@@ -36,7 +36,7 @@ public sealed partial class SidebarView : UserControl
         var menu = new MenuFlyout { Placement = PlacementMode.BottomEdgeAlignedLeft };
         foreach (var workspace in model.ListWorkspaces?.Invoke() ?? [])
         {
-            var item = new MenuItem { Header = WorkspaceRow(workspace), Icon = workspace.IsCurrent ? CheckMark() : null };
+            var item = new MenuItem { Header = WorkspaceRow(workspace) };
             AutomationProperties.SetName(item, $"{workspace.Name}, {workspace.Detail}");
             item.Click += (_, _) => model.WorkspaceChosen?.Invoke(workspace);
             menu.Items.Add(item);
@@ -67,7 +67,17 @@ public sealed partial class SidebarView : UserControl
         var text = new StackPanel { VerticalAlignment = VerticalAlignment.Center, [Grid.ColumnProperty] = 1 };
         text.Children.Add(new TextBlock { Text = workspace.Name, Classes = { "title" } });
         text.Children.Add(detail);
-        return new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*"), ColumnSpacing = 10, MinWidth = 220, Children = { badge, text } };
+        // The current workspace's check sits at the end of its row, so the other rows don't keep an empty column for it.
+        var row = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto"), ColumnSpacing = 10, MinWidth = 220, Children = { badge, text } };
+        if (workspace.IsCurrent)
+        {
+            var check = CheckMark();
+            check.VerticalAlignment = VerticalAlignment.Center;
+            Grid.SetColumn(check, 2);
+            row.Children.Add(check);
+        }
+
+        return row;
     }
 
     private static Avalonia.Controls.Shapes.Path CheckMark()
