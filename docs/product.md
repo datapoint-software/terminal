@@ -215,3 +215,5 @@ Features agreed while brainstorming, beyond the core concepts above. All of them
 
 ## Open questions
 
+
+None at the moment.
