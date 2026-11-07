@@ -12,6 +12,7 @@
   </Application.Resources>
   <Application.Styles>
     <FluentTheme />
+    <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
     <StyleInclude Source="avares://Datapoint.Terminal/Styles/Controls.axaml" />
   </Application.Styles>
   <!-- macOS application menu: Settings… with Cmd+, as every Mac app has. -->

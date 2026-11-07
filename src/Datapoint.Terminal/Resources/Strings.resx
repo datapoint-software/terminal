@@ -1712,4 +1712,139 @@ git rm -r --cached .terminal</value>
   <data name="NewHostReadOnly" xml:space="preserve">
     <value>This project's settings can't be changed here, so hosts can't be added.</value>
   </data>
+  <data name="HostFileMenu" xml:space="preserve">
+    <value>Open File on Host…</value>
+  </data>
+  <data name="HostFileOpenTitle" xml:space="preserve">
+    <value>Open a File on {0}</value>
+  </data>
+  <data name="HostFileOpenHint" xml:space="preserve">
+    <value>Starts in the folder the terminal is in. Tab completes, ↑↓ choose.</value>
+  </data>
+  <data name="HostFileOpenPath" xml:space="preserve">
+    <value>Path</value>
+  </data>
+  <data name="HostFileOpenNote" xml:space="preserve">
+    <value>Read over this tab's connection. The agent sees it only if you ask.</value>
+  </data>
+  <data name="HostFileOpen" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="HostFileOpenFolderProblem" xml:space="preserve">
+    <value>Can't list {0}: {1}</value>
+  </data>
+  <data name="HostFileNoFiles" xml:space="preserve">
+    <value>Opening files isn't available in this tab: it has no access to its machine's files.</value>
+  </data>
+  <data name="HostFileCantOpen" xml:space="preserve">
+    <value>Can't open {0}: {1}</value>
+  </data>
+  <data name="HostFileTooLarge" xml:space="preserve">
+    <value>it's larger than 1 MB, too large to edit here.</value>
+  </data>
+  <data name="HostFileBinary" xml:space="preserve">
+    <value>it isn't text.</value>
+  </data>
+  <data name="HostFileNotUtf8" xml:space="preserve">
+    <value>it isn't UTF-8 text.</value>
+  </data>
+  <data name="HostFileMissing" xml:space="preserve">
+    <value>there's no such file.</value>
+  </data>
+  <data name="HostFileTabName" xml:space="preserve">
+    <value>{0} — {1}</value>
+  </data>
+  <data name="HostFileTabUnsaved" xml:space="preserve">
+    <value>{0}, not saved</value>
+  </data>
+  <data name="HostFileNeedsSudo" xml:space="preserve">
+    <value>saving needs sudo</value>
+  </data>
+  <data name="HostFileRevert" xml:space="preserve">
+    <value>Revert</value>
+  </data>
+  <data name="HostFileReviewSave" xml:space="preserve">
+    <value>Review &amp; Save…</value>
+  </data>
+  <data name="HostFileEdited" xml:space="preserve">
+    <value>Edited · not saved</value>
+  </data>
+  <data name="HostFileSaving" xml:space="preserve">
+    <value>Saving: finish in the {0} terminal.</value>
+  </data>
+  <data name="HostFileSaved" xml:space="preserve">
+    <value>Saved</value>
+  </data>
+  <data name="HostFileNotConfirmed" xml:space="preserve">
+    <value>Not saved yet: check the {0} terminal, then save again.</value>
+  </data>
+  <data name="HostFilePlainText" xml:space="preserve">
+    <value>Plain text</value>
+  </data>
+  <data name="HostFileCaret" xml:space="preserve">
+    <value>Ln {0}, Col {1}</value>
+  </data>
+  <data name="HostFileStatus" xml:space="preserve">
+    <value>{0}  ·  UTF-8  ·  {1}  ·  {2}</value>
+  </data>
+  <data name="HostFileSaveTitle" xml:space="preserve">
+    <value>Save {0} on {1}?</value>
+  </data>
+  <data name="HostFileLinesChanged" xml:space="preserve">
+    <value>{0} lines changed in {1}</value>
+  </data>
+  <data name="HostFileLineChanged" xml:space="preserve">
+    <value>1 line changed in {0}</value>
+  </data>
+  <data name="HostFileProductionNote" xml:space="preserve">
+    <value>{0} is production. The change takes effect when the program using the file reads it again; nothing is restarted or reloaded for you.</value>
+  </data>
+  <data name="HostFileCommandNote" xml:space="preserve">
+    <value>Typed into the {0} terminal, where you'll see it run:</value>
+  </data>
+  <data name="HostFileSudoNote" xml:space="preserve">
+    <value>sudo asks for your password there.</value>
+  </data>
+  <data name="HostFileBackupNote" xml:space="preserve">
+    <value>Keeps the current file as {0}.</value>
+  </data>
+  <data name="HostFileSaveOn" xml:space="preserve">
+    <value>Save on {0}</value>
+  </data>
+  <data name="HostFileBusy" xml:space="preserve">
+    <value>Can't save now: in the {0} terminal, {1}. Save again once it's back at a prompt.</value>
+  </data>
+  <data name="HostFileNoTerminal" xml:space="preserve">
+    <value>Can't save: the {0} terminal this file was opened from is closed. Open the file again from a new tab.</value>
+  </data>
+  <data name="HostFileChangedTitle" xml:space="preserve">
+    <value>{0} changed on {1}</value>
+  </data>
+  <data name="HostFileChangedMessage" xml:space="preserve">
+    <value>Someone or something changed the file since you opened it. Saving now would replace their change.</value>
+  </data>
+  <data name="HostFileReload" xml:space="preserve">
+    <value>Discard Mine and Reload</value>
+  </data>
+  <data name="HostFileSaveAnyway" xml:space="preserve">
+    <value>Save Mine Anyway</value>
+  </data>
+  <data name="HostFileSavedNotice" xml:space="preserve">
+    <value>Saved {0} on {1}. Backup: {2}. To undo: {3}</value>
+  </data>
+  <data name="HostFileCreatedNotice" xml:space="preserve">
+    <value>Saved {0} on {1}.</value>
+  </data>
+  <data name="HostFileUnsavedTitle" xml:space="preserve">
+    <value>Close {0} without saving?</value>
+  </data>
+  <data name="HostFileUnsavedMessage" xml:space="preserve">
+    <value>Your changes to {0} on {1} haven't been saved.</value>
+  </data>
+  <data name="HostFileDiscard" xml:space="preserve">
+    <value>Close Without Saving</value>
+  </data>
+  <data name="HostFileUnsavedReason" xml:space="preserve">
+    <value>changes not saved</value>
+  </data>
 </root>

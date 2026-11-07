@@ -7,7 +7,7 @@ namespace Datapoint.Terminal.Editor;
 
 // A Markdown file open in the editor (product decision 98): blocks shown rendered, one edited at a time as Markdown, saved as
 // the user types. The window decides when a save happens; this says when one is due.
-public sealed partial class DocumentViewModel : ObservableObject
+public sealed partial class DocumentViewModel : ObservableObject, IOpenDocument
 {
     private const double BlockGap = 12;
     private const double ListGap = 3;
@@ -41,6 +41,11 @@ public sealed partial class DocumentViewModel : ObservableObject
     public string Path => _file.Path;
 
     public string Name => System.IO.Path.GetFileName(Path);
+
+    public string ToolTip => Path;
+
+    // Saved as the user types.
+    public bool IsUnsaved => false;
 
     public ObservableCollection<BlockViewModel> Blocks { get; } = [];
 

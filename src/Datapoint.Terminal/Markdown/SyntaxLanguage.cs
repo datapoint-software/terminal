@@ -59,6 +59,14 @@ internal sealed class SyntaxLanguage
         "true false",
         key: @"^[ \t]*\[[^\]\n]*\]|^[ \t]*[\w.\-]+(?=[ \t]*=)");
 
+    // Server configuration written as a directive and its arguments per line: nginx, Apache, ssh_config, HAProxy.
+    private static readonly SyntaxLanguage s_directives = new(
+        HashComment,
+        DoubleQuoted + "|" + SingleQuoted,
+        @"\$\{[^}\n]*\}|\$[A-Za-z_]\w*",
+        "on off yes no",
+        key: @"^[ \t]*(?:</?)?[A-Za-z_][\w.\-]*");
+
     private static readonly SyntaxLanguage s_sql = new(
         @"--[^\n]*|/\*[\s\S]*?\*/",
         @"'(?:''|[^'])*'",
@@ -107,6 +115,7 @@ internal sealed class SyntaxLanguage
         Add(names, s_json, "json jsonc json5");
         Add(names, s_yaml, "yaml yml");
         Add(names, s_settings, "toml ini cfg conf properties env dotenv");
+        Add(names, s_directives, "nginx apache apacheconf httpd sshconfig ssh_config sshd_config haproxy");
         Add(names, s_sql, "sql mysql postgres postgresql psql sqlite");
         Add(names, s_docker, "dockerfile docker containerfile");
         Add(names, s_markup, "xml html htm svg xaml axaml plist csproj");

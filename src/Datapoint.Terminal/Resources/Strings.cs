@@ -1138,6 +1138,96 @@ public static class Strings
 
     public static string NewHostReadOnly => Get(nameof(NewHostReadOnly));
 
+    public static string HostFileMenu => Get(nameof(HostFileMenu));
+
+    public static string HostFileOpenTitle => Get(nameof(HostFileOpenTitle));
+
+    public static string HostFileOpenHint => Get(nameof(HostFileOpenHint));
+
+    public static string HostFileOpenPath => Get(nameof(HostFileOpenPath));
+
+    public static string HostFileOpenNote => Get(nameof(HostFileOpenNote));
+
+    public static string HostFileOpen => Get(nameof(HostFileOpen));
+
+    public static string HostFileOpenFolderProblem => Get(nameof(HostFileOpenFolderProblem));
+
+    public static string HostFileNoFiles => Get(nameof(HostFileNoFiles));
+
+    public static string HostFileCantOpen => Get(nameof(HostFileCantOpen));
+
+    public static string HostFileTooLarge => Get(nameof(HostFileTooLarge));
+
+    public static string HostFileBinary => Get(nameof(HostFileBinary));
+
+    public static string HostFileNotUtf8 => Get(nameof(HostFileNotUtf8));
+
+    public static string HostFileMissing => Get(nameof(HostFileMissing));
+
+    public static string HostFileTabName => Get(nameof(HostFileTabName));
+
+    public static string HostFileTabUnsaved => Get(nameof(HostFileTabUnsaved));
+
+    public static string HostFileNeedsSudo => Get(nameof(HostFileNeedsSudo));
+
+    public static string HostFileRevert => Get(nameof(HostFileRevert));
+
+    public static string HostFileReviewSave => Get(nameof(HostFileReviewSave));
+
+    public static string HostFileEdited => Get(nameof(HostFileEdited));
+
+    public static string HostFileSaving => Get(nameof(HostFileSaving));
+
+    public static string HostFileSaved => Get(nameof(HostFileSaved));
+
+    public static string HostFileNotConfirmed => Get(nameof(HostFileNotConfirmed));
+
+    public static string HostFilePlainText => Get(nameof(HostFilePlainText));
+
+    public static string HostFileCaret => Get(nameof(HostFileCaret));
+
+    public static string HostFileStatus => Get(nameof(HostFileStatus));
+
+    public static string HostFileSaveTitle => Get(nameof(HostFileSaveTitle));
+
+    public static string HostFileLinesChanged => Get(nameof(HostFileLinesChanged));
+
+    public static string HostFileLineChanged => Get(nameof(HostFileLineChanged));
+
+    public static string HostFileProductionNote => Get(nameof(HostFileProductionNote));
+
+    public static string HostFileCommandNote => Get(nameof(HostFileCommandNote));
+
+    public static string HostFileSudoNote => Get(nameof(HostFileSudoNote));
+
+    public static string HostFileBackupNote => Get(nameof(HostFileBackupNote));
+
+    public static string HostFileSaveOn => Get(nameof(HostFileSaveOn));
+
+    public static string HostFileBusy => Get(nameof(HostFileBusy));
+
+    public static string HostFileNoTerminal => Get(nameof(HostFileNoTerminal));
+
+    public static string HostFileChangedTitle => Get(nameof(HostFileChangedTitle));
+
+    public static string HostFileChangedMessage => Get(nameof(HostFileChangedMessage));
+
+    public static string HostFileReload => Get(nameof(HostFileReload));
+
+    public static string HostFileSaveAnyway => Get(nameof(HostFileSaveAnyway));
+
+    public static string HostFileSavedNotice => Get(nameof(HostFileSavedNotice));
+
+    public static string HostFileCreatedNotice => Get(nameof(HostFileCreatedNotice));
+
+    public static string HostFileUnsavedTitle => Get(nameof(HostFileUnsavedTitle));
+
+    public static string HostFileUnsavedMessage => Get(nameof(HostFileUnsavedMessage));
+
+    public static string HostFileDiscard => Get(nameof(HostFileDiscard));
+
+    public static string HostFileUnsavedReason => Get(nameof(HostFileUnsavedReason));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

@@ -244,9 +244,10 @@ public sealed partial class MainWindow
 
     // The tabs that closing would cut off, one line each, for the question asked before closing a window or quitting.
     public IReadOnlyList<string> BusyTabs(bool withProject) => [.. _tabs
-        .Select(tab => (tab, reason: tab.BusyReason))
+        .Select(tab => (label: tab.Label, reason: tab.BusyReason))
+        .Concat(UnsavedHostFiles.Select(file => (label: file.Name, reason: (string?)Strings.HostFileUnsavedReason)))
         .Where(item => item.reason is not null)
-        .Select(item => Strings.Format(Strings.CloseTabLine, withProject ? $"{Project.Name} › {item.tab.Label}" : item.tab.Label, item.reason))];
+        .Select(item => Strings.Format(Strings.CloseTabLine, withProject ? $"{Project.Name} › {item.label}" : item.label, item.reason))];
 
     // Set when quitting was confirmed for all windows at once.
     public void AllowClose() => _isCloseConfirmed = true;

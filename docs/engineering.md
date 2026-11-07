@@ -17,6 +17,7 @@ American English everywhere: our own names in code, documentation, commit messag
 | Platform | .NET 10 (long-term support) and C# 14 | MIT |
 | User interface | [Avalonia](https://avaloniaui.net/) 12.1 with `Avalonia.Skia` and `Avalonia.HarfBuzz` | MIT |
 | View models | [CommunityToolkit.Mvvm](https://github.com/CommunityToolkit/dotnet) | MIT |
+| Text editor (files on hosts) | [AvaloniaEdit](https://github.com/AvaloniaUI/AvaloniaEdit) 12.0, coloured by our own highlighter | MIT |
 | Terminal emulator | Our own (see [Terminal emulator](#terminal-emulator)) | |
 | Pseudo-terminals | [Porta.Pty](https://github.com/tomlm/Porta.Pty), and Microsoft's out-of-box ConPTY on Windows (see [Pseudo-terminals](#pseudo-terminals)) | MIT |
 | SSH | Our own implementation of the protocol, on vetted cryptography (see [SSH](#ssh)) | |

@@ -1,0 +1,73 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:res="clr-namespace:Datapoint.Terminal.Resources"
+        xmlns:shell="clr-namespace:Datapoint.Terminal.Shell"
+        x:Class="Datapoint.Terminal.Shell.OpenHostFileWindow"
+        Width="540" SizeToContent="Height" CanResize="False"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False"
+        Background="{DynamicResource GroupedBackgroundBrush}">
+  <Window.Styles>
+    <Style Selector="TextBlock.secondary">
+      <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
+      <Setter Property="FontSize" Value="{StaticResource CaptionSize}" />
+      <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+    <Style Selector="TextBlock.danger">
+      <Setter Property="Foreground" Value="{DynamicResource DangerBrush}" />
+    </Style>
+    <Style Selector="Border.badge">
+      <Setter Property="Background" Value="{DynamicResource FillBrush}" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="Padding" Value="6,1" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Border.badge > TextBlock">
+      <Setter Property="FontSize" Value="11" />
+      <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
+    </Style>
+    <Style Selector="Border.badge.production">
+      <Setter Property="Background" Value="{DynamicResource DangerBrush}" />
+    </Style>
+    <Style Selector="Border.badge.production > TextBlock">
+      <Setter Property="Foreground" Value="White" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="TextBlock.folder">
+      <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
+    </Style>
+    <Style Selector="ListBox#EntryList ListBoxItem">
+      <Setter Property="Padding" Value="10,4" />
+      <Setter Property="MinHeight" Value="0" />
+      <Setter Property="CornerRadius" Value="5" />
+    </Style>
+  </Window.Styles>
+
+  <StackPanel Margin="24,20">
+    <StackPanel Orientation="Horizontal" Spacing="8">
+      <TextBlock x:Name="Heading" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" />
+      <Border x:Name="Badge" Classes="badge" IsVisible="False">
+        <TextBlock x:Name="BadgeText" />
+      </Border>
+    </StackPanel>
+    <TextBlock Classes="secondary" Margin="0,2,0,12" Text="{x:Static res:Strings.HostFileOpenHint}" />
+    <TextBox x:Name="PathBox" FontFamily="{StaticResource MonoFont}" AutomationProperties.Name="{x:Static res:Strings.HostFileOpenPath}" />
+    <Border Background="{DynamicResource CardBrush}" CornerRadius="8" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0.5"
+            Padding="4" Margin="0,8,0,0" Height="220">
+      <ListBox x:Name="EntryList" Background="Transparent" Focusable="False" AutomationProperties.Name="{x:Static res:Strings.HostFileOpenPath}">
+        <ListBox.ItemTemplate>
+          <DataTemplate x:DataType="shell:HostEntryItem">
+            <TextBlock Text="{Binding Display}" Classes.folder="{Binding Entry.IsFolder}" FontFamily="{StaticResource MonoFont}" FontSize="12.5" />
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+    </Border>
+    <TextBlock x:Name="Problem" Classes="secondary danger" Margin="0,8,0,0" IsVisible="False" />
+    <DockPanel Margin="0,16,0,0">
+      <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="8">
+        <Button x:Name="CancelButton" Content="{x:Static res:Strings.Cancel}" />
+        <Button x:Name="OpenButton" Classes="primary" Content="{x:Static res:Strings.HostFileOpen}" />
+      </StackPanel>
+      <TextBlock Classes="secondary" VerticalAlignment="Center" Margin="0,0,12,0" Text="{x:Static res:Strings.HostFileOpenNote}" />
+    </DockPanel>
+  </StackPanel>
+</Window>

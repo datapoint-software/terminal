@@ -8,23 +8,13 @@ namespace Datapoint.Terminal.Shell;
 // connection and whatever still runs over it.
 internal static class TabBusy
 {
-    public static string? Reason(TerminalState? state, bool isRemote, bool isAgentActing)
-    {
-        if (isAgentActing)
-        {
-            return Strings.BusyAgent;
-        }
+    public static string? Reason(TerminalState? state, bool isRemote, bool isAgentActing) =>
+        ForTyping(state, isAgentActing) ?? (isRemote ? Strings.BusyRemote : null);
 
-        if (state is { IsAlternateScreen: true })
-        {
-            return Strings.BusyFullScreen;
-        }
-
-        if (state is { HasShellIntegration: true, IsAtPrompt: false })
-        {
-            return Strings.BusyCommand;
-        }
-
-        return isRemote ? Strings.BusyRemote : null;
-    }
+    // Why a command typed into the terminal now wouldn't reach the shell; null when it's at a prompt, or can't tell.
+    public static string? ForTyping(TerminalState? state, bool isAgentActing) =>
+        isAgentActing ? Strings.BusyAgent
+        : state is { IsAlternateScreen: true } ? Strings.BusyFullScreen
+        : state is { HasShellIntegration: true, IsAtPrompt: false } ? Strings.BusyCommand
+        : null;
 }

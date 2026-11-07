@@ -7,10 +7,15 @@ internal static class SyntaxHighlighter
     // Longer code is shown uncoloured, so a huge reply can't stall the window.
     public const int MaxLength = 50_000;
 
-    public static IReadOnlyList<(string Text, SyntaxKind Kind)> Highlight(string code, string? info)
+    // The editor shows whole files, so it allows more, and colours them away from the window's thread.
+    public const int MaxFileLength = 512 * 1024;
+
+    public static IReadOnlyList<(string Text, SyntaxKind Kind)> Highlight(string code, string? info) => Highlight(code, info, MaxLength);
+
+    public static IReadOnlyList<(string Text, SyntaxKind Kind)> Highlight(string code, string? info, int maxLength)
     {
         var name = info?.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? string.Empty;
-        if (code.Length > MaxLength)
+        if (code.Length > maxLength)
         {
             return [(code, SyntaxKind.Plain)];
         }

@@ -40,9 +40,9 @@
       <Setter Property="AutomationProperties.Name" Value="{Binding AccessibleName}" />
       <Setter Property="ToolTip.Tip" Value="{Binding ToolTip}" />
     </Style>
-    <Style Selector="ListBox#DocumentTabs ListBoxItem" x:DataType="ed:DocumentViewModel">
+    <Style Selector="ListBox#DocumentTabs ListBoxItem" x:DataType="ed:IOpenDocument">
       <Setter Property="AutomationProperties.Name" Value="{Binding AccessibleName}" />
-      <Setter Property="ToolTip.Tip" Value="{Binding Path}" />
+      <Setter Property="ToolTip.Tip" Value="{Binding ToolTip}" />
     </Style>
     <Style Selector="ListBox.tabs ListBoxItem /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="CornerRadius" Value="6" />
@@ -130,8 +130,9 @@
                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                    AutomationProperties.Name="{x:Static res:Strings.DocumentTabsName}">
             <ListBox.ItemTemplate>
-              <DataTemplate x:DataType="ed:DocumentViewModel">
+              <DataTemplate x:DataType="ed:IOpenDocument">
                 <StackPanel Orientation="Horizontal" Spacing="6">
+                  <Ellipse Width="7" Height="7" Fill="{DynamicResource LabelBrush}" IsVisible="{Binding IsUnsaved}" VerticalAlignment="Center" />
                   <Path Data="{StaticResource DocumentTabGlyph}" Width="12" Height="12" Stretch="Uniform" VerticalAlignment="Center"
                         Stroke="{DynamicResource SecondaryLabelBrush}" StrokeThickness="1.25" StrokeJoin="Round" />
                   <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />

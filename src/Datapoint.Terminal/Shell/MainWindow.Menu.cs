@@ -74,6 +74,7 @@ public sealed partial class MainWindow
         terminal.Add(new NativeMenuItemSeparator());
         AddExplainItems(terminal);
         terminal.Add(new NativeMenuItemSeparator());
+        terminal.Add(Item(Strings.HostFileMenu, Shortcut(Key.P, shift: true), () => _ = OpenHostFileAsync()));
         terminal.Add(Item(Strings.MenuUploadFile, null, () => _ = UploadFileAsync()));
         terminal.Add(Item(Strings.MenuDownloadFile, null, () => _ = DownloadFileAsync()));
         terminal.Add(new NativeMenuItemSeparator());

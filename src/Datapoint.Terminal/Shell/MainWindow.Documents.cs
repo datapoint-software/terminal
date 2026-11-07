@@ -16,7 +16,7 @@ public sealed partial class MainWindow
 {
     private static readonly string[] s_markdownExtensions = [".md", ".markdown", ".mdown", ".mkd"];
 
-    private readonly ObservableCollection<DocumentViewModel> _documents = [];
+    private readonly ObservableCollection<IOpenDocument> _documents = [];
     private readonly Dictionary<DocumentViewModel, DocumentTab> _documentTabs = [];
     private NativeMenuItem? _showMarkdownItem;
 
@@ -46,7 +46,7 @@ public sealed partial class MainWindow
 
     private void OpenProjectFile(string path)
     {
-        if (_documents.FirstOrDefault(document => string.Equals(document.Path, path, StringComparison.Ordinal)) is { } open)
+        if (_documents.OfType<DocumentViewModel>().FirstOrDefault(document => string.Equals(document.Path, path, StringComparison.Ordinal)) is { } open)
         {
             DocumentTabs.SelectedItem = open;
             return;
@@ -80,9 +80,15 @@ public sealed partial class MainWindow
     private void ShowSelectedDocument()
     {
         var shown = ShownDocument;
-        DocumentHost.Content = shown?.View;
-        DocumentHost.IsVisible = shown is not null;
-        Tabs.Classes.Set("behind", shown is not null);
+        var hostFile = ShownHostFile;
+        DocumentHost.Content = (Control?)shown?.View ?? hostFile;
+        DocumentHost.IsVisible = DocumentHost.Content is not null;
+        Tabs.Classes.Set("behind", DocumentHost.Content is not null);
+        if (hostFile is not null)
+        {
+            Dispatcher.UIThread.Post(hostFile.FocusText, DispatcherPriority.Background);
+        }
+
         _showMarkdownItem?.IsEnabled = shown is { Document.CanShowMarkdown: true };
         _showMarkdownItem?.IsChecked = shown?.Document.IsSourceMode == true;
         if (shown is null)
@@ -119,11 +125,17 @@ public sealed partial class MainWindow
             return;
         }
 
+        _documentTabs.Remove(document);
+        tab.Dispose();
+        RemoveFromStrip(document);
+    }
+
+    // The tab beside a closed one comes to the front, or the terminals when it was the last.
+    private void RemoveFromStrip(IOpenDocument document)
+    {
         var index = _documents.IndexOf(document);
         var wasShown = ReferenceEquals(DocumentTabs.SelectedItem, document);
         _documents.Remove(document);
-        _documentTabs.Remove(document);
-        tab.Dispose();
         if (!wasShown)
         {
             return;
@@ -144,6 +156,12 @@ public sealed partial class MainWindow
         if (DocumentTabs.SelectedItem is DocumentViewModel document)
         {
             CloseDocument(document);
+            return;
+        }
+
+        if (DocumentTabs.SelectedItem is ServerFileViewModel file)
+        {
+            CloseHostFile(file);
             return;
         }
 
@@ -171,7 +189,7 @@ public sealed partial class MainWindow
 
     private void RefreshDocumentHosts()
     {
-        foreach (var host in _documents.Select(document => document.Host).OfType<HostHeaderViewModel>())
+        foreach (var host in _documents.OfType<DocumentViewModel>().Select(document => document.Host).OfType<HostHeaderViewModel>())
         {
             host.OpenText = OpenTextFor(host.Name);
         }
