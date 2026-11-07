@@ -602,4 +602,7 @@ git rm -r --cached .terminal</value>
   <data name="MarkdownLinkName" xml:space="preserve">
     <value>Link: {0}, to {1}</value>
   </data>
+  <data name="WindowTitleNeedsUser" xml:space="preserve">
+    <value>Waiting for you — {0}</value>
+  </data>
 </root>

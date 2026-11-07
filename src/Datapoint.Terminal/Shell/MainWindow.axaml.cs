@@ -38,6 +38,7 @@ public sealed partial class MainWindow : Window
         _chat.SettingsRequested = windows.OpenSettings;
         _chat.ModelChosen = choice => _settings.Choose(choice.ProviderId, choice.Model);
         Chat.DataContext = _chat;
+        _chat.PropertyChanged += OnChatPropertyChanged;
         DataContext = this;
         Tabs.SelectionChanged += (_, _) => ShowSelectedTab();
         Tabs.AddHandler(PointerReleasedEvent, (_, _) => SelectedTab?.View.Focus(), Avalonia.Interactivity.RoutingStrategies.Bubble, handledEventsToo: true);
@@ -102,9 +103,7 @@ public sealed partial class MainWindow : Window
 
     private void OnProjectsChanged(object? sender, EventArgs e) => FillRecentMenu();
 
-    private void UpdateTitle() => Title = SelectedTab is not { ShellTitle: { Length: > 0 } shellTitle }
-        ? Strings.Format(Strings.WindowTitle, Project.Name)
-        : Strings.Format(Strings.WindowTitle, Strings.Format(Strings.WindowTitleWithShell, Project.Name, shellTitle));
+    private void UpdateTitle() => Title = WindowTitles.For(Project.Name, SelectedTab?.ShellTitle, _chat.NeedsUser);
 
     private void ApplySettings()
     {
