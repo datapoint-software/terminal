@@ -10,4 +10,7 @@
     <PackageReference Include="Anthropic" />
     <PackageReference Include="Microsoft.Data.Sqlite" />
   </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Datapoint.Terminal.Agent.Tests" />
+  </ItemGroup>
 </Project>
