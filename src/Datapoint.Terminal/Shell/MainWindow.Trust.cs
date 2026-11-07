@@ -105,7 +105,7 @@ public sealed partial class MainWindow
         var read = InstructionFiles.Read([.. paths.Except(ignored, WorkspaceFolders.Comparer)]);
         var isOwn = (InstructionFile file) => WorkspaceFolders.AreSame(file.Path, global ?? string.Empty);
         var changes = _windows.InstructionSnapshots.Update(read.Where(isOwn), _redactor);
-        List<InstructionFile> files = [.. read.Select(file => isOwn(file) ? file : ReviewedInstruction(file, trust is { IsTrusted: true } && trust.Covers(file.Path)))];
+        var files = WorkspaceInstructionsToUse(read, isOwn, trust);
         var (reviewed, skipped) = await ReviewSecretsAsync(files, cancellationToken).ConfigureAwait(false);
         var (memory, ignoredMemory, skippedMemory) = await LoadMemoryAsync(cancellationToken).ConfigureAwait(false);
         ignored.AddRange(ignoredMemory);
@@ -130,6 +130,11 @@ public sealed partial class MainWindow
         });
         return instructions;
     }
+
+    // The user's own file as it is; the workspace's as reviewed, and neither version of one a sync service left two of.
+    private List<InstructionFile> WorkspaceInstructionsToUse(IEnumerable<InstructionFile> read, Func<InstructionFile, bool> isOwn, WorkspaceTrustRecord? trust) =>
+        [.. read.Where(file => isOwn(file) || !HasConflict(file.Path))
+            .Select(file => isOwn(file) ? file : ReviewedInstruction(file, trust is { IsTrusted: true } && trust.Covers(file.Path)))];
 
     private static string GlobalMemoryPath => MemoryLocation.Global;
 

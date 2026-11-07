@@ -1450,6 +1450,22 @@ public static class Strings
 
     public static string NoticeChangeKept => Get(nameof(NoticeChangeKept));
 
+    public static string NoticeConflict => Get(nameof(NoticeConflict));
+
+    public static string ConflictAction => Get(nameof(ConflictAction));
+
+    public static string ConflictTitle => Get(nameof(ConflictTitle));
+
+    public static string ConflictMessage => Get(nameof(ConflictMessage));
+
+    public static string ConflictDetails => Get(nameof(ConflictDetails));
+
+    public static string ConflictKeep => Get(nameof(ConflictKeep));
+
+    public static string ConflictKeepBoth => Get(nameof(ConflictKeepBoth));
+
+    public static string NoticeConflictSettled => Get(nameof(NoticeConflictSettled));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

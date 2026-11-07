@@ -51,6 +51,11 @@ public sealed partial class MainWindow
     // Called from the agent's thread as well as the window's.
     private string? ReviewedSkill(string path, string text)
     {
+        if (HasConflict(path))
+        {
+            return null;
+        }
+
         if (Workspace.IsDefault || !Accepted.IsKnown(SkillsPath, _redactor))
         {
             return text;

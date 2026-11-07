@@ -18,7 +18,10 @@ public static class LineDiff
         return Format(lines);
     }
 
-    private static string[] Lines(string text) => text.Replace("\r\n", "\n", StringComparison.Ordinal).TrimEnd('\n').Split('\n');
+    // Each line of before and after, in order, marked ' ' when kept, '-' when removed and '+' when added.
+    internal static List<(char Kind, string Text)> Script(string[] before, string[] after) => Compare(before, after);
+
+    internal static string[] Lines(string text) => text.Replace("\r\n", "\n", StringComparison.Ordinal).TrimEnd('\n').Split('\n');
 
     private static List<(char Kind, string Text)> Compare(string[] old, string[] now)
     {

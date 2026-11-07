@@ -2178,4 +2178,28 @@ Fingerprint: {2}</value>
   <data name="NoticeChangeKept" xml:space="preserve">
     <value>Put your version of {0} back.</value>
   </data>
+  <data name="NoticeConflict" xml:space="preserve">
+    <value>{0} has two versions from a sync conflict. The agent uses neither until you settle it.</value>
+  </data>
+  <data name="ConflictAction" xml:space="preserve">
+    <value>Settle…</value>
+  </data>
+  <data name="ConflictTitle" xml:space="preserve">
+    <value>Settle the conflict in {0}</value>
+  </data>
+  <data name="ConflictMessage" xml:space="preserve">
+    <value>A sync service kept two versions, since the file changed in two places at once. Choose one, or keep both changes when they're to different lines. The version you don't keep is moved to the application's data folder, not deleted.</value>
+  </data>
+  <data name="ConflictDetails" xml:space="preserve">
+    <value>How {1} differs from {0}:</value>
+  </data>
+  <data name="ConflictKeep" xml:space="preserve">
+    <value>Keep {0}</value>
+  </data>
+  <data name="ConflictKeepBoth" xml:space="preserve">
+    <value>Keep Both Changes</value>
+  </data>
+  <data name="NoticeConflictSettled" xml:space="preserve">
+    <value>Settled {0}. The other version is kept in {1}.</value>
+  </data>
 </root>
