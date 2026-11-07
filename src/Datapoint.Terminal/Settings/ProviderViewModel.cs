@@ -26,6 +26,8 @@ public sealed partial class ProviderViewModel : ObservableObject
         IsLocal = account.IsLocal;
         ContextWindow = account.ContextWindow?.ToString(System.Globalization.CultureInfo.CurrentCulture) ?? string.Empty;
         OutputLimit = account.OutputLimit?.ToString(System.Globalization.CultureInfo.CurrentCulture) ?? string.Empty;
+        InputPrice = account.InputPrice?.ToString(System.Globalization.CultureInfo.CurrentCulture) ?? string.Empty;
+        OutputPrice = account.OutputPrice?.ToString(System.Globalization.CultureInfo.CurrentCulture) ?? string.Empty;
         RefreshKeyState();
         _isLoaded = true;
     }
@@ -56,6 +58,18 @@ public sealed partial class ProviderViewModel : ObservableObject
 
     [ObservableProperty]
     public partial string OutputLimit { get; set; }
+
+    [ObservableProperty]
+    public partial string InputPrice { get; set; }
+
+    [ObservableProperty]
+    public partial string OutputPrice { get; set; }
+
+    // In the user's own number format, as typed.
+    internal static decimal? Price(string text) =>
+        decimal.TryParse(text.Trim(), System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.CurrentCulture, out var value) && value >= 0
+            ? value
+            : null;
 
     public string OutputLimitHint => Strings.Format(Strings.ProviderOutputLimitHint, OutputLimits.For(Number(ContextWindow), null));
 
@@ -113,6 +127,8 @@ public sealed partial class ProviderViewModel : ObservableObject
         IsLocal = IsCompatible && IsLocal,
         ContextWindow = Number(ContextWindow),
         OutputLimit = Number(OutputLimit),
+        InputPrice = Price(InputPrice),
+        OutputPrice = Price(OutputPrice),
     };
 
     internal void NotifyActiveChanged() => OnPropertyChanged(nameof(IsActive));
@@ -150,6 +166,10 @@ public sealed partial class ProviderViewModel : ObservableObject
     partial void OnContextWindowChanged(string value) => Changed();
 
     partial void OnOutputLimitChanged(string value) => Changed();
+
+    partial void OnInputPriceChanged(string value) => Changed();
+
+    partial void OnOutputPriceChanged(string value) => Changed();
 
     [RelayCommand(CanExecute = nameof(CanSaveKey))]
     private void SaveKey()

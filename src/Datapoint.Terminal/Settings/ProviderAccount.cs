@@ -24,6 +24,13 @@ public sealed record ProviderAccount
     // In characters; null uses the limit worked out from the context window.
     public int? OutputLimit { get; init; }
 
+    // In US dollars per million tokens, as the user's provider charges; optional, for the cost estimate.
+    public decimal? InputPrice { get; init; }
+
+    public decimal? OutputPrice { get; init; }
+
+    public Agent.Usage.TokenPrice? ToPrice() => InputPrice is { } input && OutputPrice is { } output ? new(input, output) : null;
+
     public static string NewId() => Guid.NewGuid().ToString("N");
 
     public ProviderSettings ToProviderSettings() => new()

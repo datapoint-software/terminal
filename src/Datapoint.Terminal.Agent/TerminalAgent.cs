@@ -55,6 +55,11 @@ public sealed partial class TerminalAgent : IDisposable
     // Raised on a background thread.
     public event EventHandler<AgentEventArgs>? EventRaised;
 
+    public Usage.UsageMeter Usage { get; } = new();
+
+    // The terminal the agent last worked in, which a request that names none is counted against.
+    private string? _usageTerminal;
+
     public IReadOnlyList<AgentTerminal> Terminals
     {
         get
@@ -203,6 +208,12 @@ public sealed partial class TerminalAgent : IDisposable
     {
         for (var step = 0; step < _options.MaxStepsPerTask; step++)
         {
+            if (Usage.IsOverBudget)
+            {
+                Raise(new AgentEventArgs(AgentEventKind.Notice, "This session reached its spending limit, so I stopped before asking the AI provider again. Raise or remove the limit to go on."));
+                return;
+            }
+
             SetStatus(AgentStatus.Thinking);
             var response = await GetResponseAsync(cancellationToken).ConfigureAwait(false);
             _history.AddMessages(response);
@@ -212,6 +223,7 @@ public sealed partial class TerminalAgent : IDisposable
             }
 
             var calls = response.Messages.SelectMany(item => item.Contents).OfType<FunctionCallContent>().ToList();
+            RecordUsage(response, calls);
             if (calls.Count == 0)
             {
                 return;
@@ -253,6 +265,15 @@ public sealed partial class TerminalAgent : IDisposable
         }
 
         return updates.ToChatResponse();
+    }
+
+    private void RecordUsage(ChatResponse response, List<FunctionCallContent> calls)
+    {
+        _usageTerminal = calls.Select(call => call.Arguments?.TryGetValue("terminal", out var name) == true ? name?.ToString() : null)
+            .FirstOrDefault(name => name is not null && Terminals.Any(terminal => string.Equals(terminal.Name, name, StringComparison.Ordinal)))
+            ?? _usageTerminal;
+        Usage.Record(_usageTerminal, response.Usage?.InputTokenCount, response.Usage?.OutputTokenCount);
+        Raise(new AgentEventArgs(AgentEventKind.UsageChanged, string.Empty));
     }
 
     // Kept so the model knows what the user already saw of an interrupted reply.

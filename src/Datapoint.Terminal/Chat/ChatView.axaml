@@ -242,7 +242,11 @@
         </Grid>
       </Border>
 
-      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="2" Margin="0,6,-4,0">
+      <Grid ColumnDefinitions="*,Auto" Margin="0,6,-4,0">
+      <TextBlock Classes="secondary" Text="{Binding UsageSummary}" IsVisible="{Binding HasUsage}" VerticalAlignment="Center"
+                 TextTrimming="CharacterEllipsis" Margin="4,0,8,0" ToolTip.Tip="{Binding UsageDetail}" Focusable="True"
+                 AutomationProperties.Name="{Binding UsageSummary}" AutomationProperties.HelpText="{Binding UsageDetail}" />
+      <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="2">
         <ComboBox Classes="menu" ItemsSource="{Binding ModelChoices}" SelectedItem="{Binding SelectedModel}"
                   IsVisible="{Binding HasModelChoices}" ToolTip.Tip="{x:Static res:Strings.ChatModel}"
                   AutomationProperties.Name="{x:Static res:Strings.ChatModel}">
@@ -277,6 +281,7 @@
           </ComboBox.ItemTemplate>
         </ComboBox>
       </StackPanel>
+      </Grid>
     </StackPanel>
 
     <!-- The conversation. -->

@@ -84,6 +84,7 @@ public sealed partial class MainWindow
             notifications.IsChecked = _settings.Notifications;
         };
         view.Add(notifications);
+        view.Add(Item(Strings.MenuSpendingLimit, null, () => _ = SetSpendingLimitAsync()));
     }
 
     // Listed when the menu opens, so fonts installed meanwhile show up.

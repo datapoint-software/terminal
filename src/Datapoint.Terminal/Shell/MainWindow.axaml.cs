@@ -142,6 +142,7 @@ public sealed partial class MainWindow : Window, ITerminalOpener
             return;
         }
 
+        ApplyUsageSettings(provider);
         var signature = string.Join('|', provider.Id, provider.Kind, provider.Model, provider.Endpoint, key?.GetHashCode(StringComparison.Ordinal));
         if (string.Equals(signature, _clientSignature, StringComparison.Ordinal) && _chat.IsConnected)
         {
@@ -175,6 +176,7 @@ public sealed partial class MainWindow : Window, ITerminalOpener
                 _agent.EventRaised += OnAgentEvent;
                 _agent.EventRaised += OnHistoryEvent;
                 _agent.EventRaised += OnRecordingEvent;
+                ApplyUsageSettings(provider);
                 foreach (var tab in _tabs.Where(tab => tab.AgentTerminal is not null))
                 {
                     _agent.AddTerminal(tab.AgentTerminal!);

@@ -44,6 +44,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         ChatSide = settings.ChatSide;
         Notifications = settings.Notifications;
         RecordSessions = settings.RecordSessions;
+        SpendingLimit = settings.SpendingLimit;
         TerminalTheme = settings.TerminalTheme;
         TerminalFont = settings.TerminalFont;
         TerminalFontSize = settings.TerminalFontSize;
@@ -99,6 +100,14 @@ public sealed partial class SettingsViewModel : ObservableObject
         SaveProjectData();
     }
 
+    public decimal? SpendingLimit { get; private set; }
+
+    public void SetSpendingLimit(decimal? limit)
+    {
+        SpendingLimit = limit;
+        SaveProjectData();
+    }
+
     public string? TerminalFont { get; private set; }
 
     public double TerminalFontSize { get; private set; }
@@ -147,6 +156,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         ChatSide = ChatSide,
         Notifications = Notifications,
         RecordSessions = RecordSessions,
+        SpendingLimit = SpendingLimit,
         TerminalTheme = TerminalTheme,
         TerminalFont = TerminalFont,
         TerminalFontSize = TerminalFontSize,

@@ -44,6 +44,9 @@ public sealed record AppSettings
     // Session recordings in each project's .terminal/recordings, kept as long as its history (product decision 45).
     public bool RecordSessions { get; init; } = true;
 
+    // In US dollars per window session; null for no limit.
+    public decimal? SpendingLimit { get; init; }
+
     public Shell.TerminalTheme TerminalTheme { get; init; } = Shell.TerminalTheme.Dark;
 
     // Null uses the default list of monospace fonts.

@@ -1154,4 +1154,52 @@ git rm -r --cached .terminal</value>
   <data name="FixCommandDraft" xml:space="preserve">
     <value>This command failed. Explain why, and fix it if you can.</value>
   </data>
+  <data name="ProviderInputPrice" xml:space="preserve">
+    <value>Input price (US$ per million tokens)</value>
+  </data>
+  <data name="ProviderOutputPrice" xml:space="preserve">
+    <value>Output price (US$ per million tokens)</value>
+  </data>
+  <data name="ProviderPriceHint" xml:space="preserve">
+    <value>Optional, from your provider's price list</value>
+  </data>
+  <data name="UsageSession" xml:space="preserve">
+    <value>This session: {0} tokens</value>
+  </data>
+  <data name="UsageCost" xml:space="preserve">
+    <value>(about {0})</value>
+  </data>
+  <data name="UsageLimit" xml:space="preserve">
+    <value>· limit {0}</value>
+  </data>
+  <data name="UsageUnreported" xml:space="preserve">
+    <value>· {0} requests without token counts</value>
+  </data>
+  <data name="UsageTerminal" xml:space="preserve">
+    <value>{0}: {1} tokens</value>
+  </data>
+  <data name="MenuSpendingLimit" xml:space="preserve">
+    <value>Spending Limit…</value>
+  </data>
+  <data name="SpendingLimitTitle" xml:space="preserve">
+    <value>Spending limit</value>
+  </data>
+  <data name="SpendingLimitMessage" xml:space="preserve">
+    <value>The agent stops before asking the AI provider again once this window's session has cost this much, in US dollars, as estimated from the prices in Settings. Leave it empty for no limit.</value>
+  </data>
+  <data name="SpendingLimitNeedsPrices" xml:space="preserve">
+    <value>Enter your provider's prices in Settings first: without them the cost can't be estimated, and the limit doesn't apply.</value>
+  </data>
+  <data name="SpendingLimitLabel" xml:space="preserve">
+    <value>Limit in US dollars</value>
+  </data>
+  <data name="NoticeSpendingLimitUnreadable" xml:space="preserve">
+    <value>That limit isn't a number, so it wasn't changed.</value>
+  </data>
+  <data name="NoticeSpendingLimitSet" xml:space="preserve">
+    <value>The agent now stops once this session has cost about {0}.</value>
+  </data>
+  <data name="NoticeSpendingLimitRemoved" xml:space="preserve">
+    <value>The spending limit is off.</value>
+  </data>
 </root>

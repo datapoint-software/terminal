@@ -766,6 +766,38 @@ public static class Strings
 
     public static string FixCommandDraft => Get(nameof(FixCommandDraft));
 
+    public static string ProviderInputPrice => Get(nameof(ProviderInputPrice));
+
+    public static string ProviderOutputPrice => Get(nameof(ProviderOutputPrice));
+
+    public static string ProviderPriceHint => Get(nameof(ProviderPriceHint));
+
+    public static string UsageSession => Get(nameof(UsageSession));
+
+    public static string UsageCost => Get(nameof(UsageCost));
+
+    public static string UsageLimit => Get(nameof(UsageLimit));
+
+    public static string UsageUnreported => Get(nameof(UsageUnreported));
+
+    public static string UsageTerminal => Get(nameof(UsageTerminal));
+
+    public static string MenuSpendingLimit => Get(nameof(MenuSpendingLimit));
+
+    public static string SpendingLimitTitle => Get(nameof(SpendingLimitTitle));
+
+    public static string SpendingLimitMessage => Get(nameof(SpendingLimitMessage));
+
+    public static string SpendingLimitNeedsPrices => Get(nameof(SpendingLimitNeedsPrices));
+
+    public static string SpendingLimitLabel => Get(nameof(SpendingLimitLabel));
+
+    public static string NoticeSpendingLimitUnreadable => Get(nameof(NoticeSpendingLimitUnreadable));
+
+    public static string NoticeSpendingLimitSet => Get(nameof(NoticeSpendingLimitSet));
+
+    public static string NoticeSpendingLimitRemoved => Get(nameof(NoticeSpendingLimitRemoved));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

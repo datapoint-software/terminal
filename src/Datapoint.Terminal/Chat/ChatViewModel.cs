@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Datapoint.Terminal.Agent;
+using Datapoint.Terminal.Agent.Usage;
 using Datapoint.Terminal.Resources;
 using Datapoint.Terminal.Shell;
 
@@ -143,6 +144,30 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
 
         var terminals = string.Join(", ", pending.Select(item => Strings.Format(Strings.PendingOutputTerminal, item.Terminal, item.Lines)));
         PendingOutputText = Strings.Format(Strings.PendingOutput, terminals) + (pending.Any(item => item.IsCut) ? " " + Strings.PendingOutputCut : string.Empty);
+    }
+
+    // Product decision 49: what this session has cost so far, per terminal in the tooltip.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasUsage))]
+    public partial string UsageSummary { get; private set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string UsageDetail { get; private set; } = string.Empty;
+
+    public bool HasUsage => UsageSummary.Length > 0;
+
+    public void RefreshUsage()
+    {
+        var usage = _agent?.Usage;
+        if (usage is null || usage.Session.Requests == 0)
+        {
+            UsageSummary = usage?.Budget is { } limit ? UsageText.Summary(UsageTotal.Empty, limit) : string.Empty;
+            UsageDetail = string.Empty;
+            return;
+        }
+
+        UsageSummary = UsageText.Summary(usage.Session, usage.Budget);
+        UsageDetail = UsageText.PerTerminal(usage.Terminals);
     }
 
     // Explain and fix (product.md): part of a terminal that goes with the next message, said before it's sent like new output.
@@ -373,6 +398,9 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
                 break;
             case AgentEventKind.StatusChanged:
                 SetStatus(e.Status);
+                break;
+            case AgentEventKind.UsageChanged:
+                RefreshUsage();
                 break;
         }
     }

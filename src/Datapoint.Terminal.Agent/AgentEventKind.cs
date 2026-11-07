@@ -17,4 +17,6 @@ public enum AgentEventKind
     MemoryChanged,
 
     HostDocsChanged,
+
+    UsageChanged,
 }
