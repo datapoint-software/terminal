@@ -2,6 +2,9 @@ namespace Datapoint.Terminal.Agent;
 
 public sealed record AgentPlan(string Summary, IReadOnlyList<AgentPlanStep> Steps, string Rollback)
 {
+    // A few words naming the task, e.g. "Update web1", for the card's heading and the progress while the plan runs.
+    public string? Title { get; init; }
+
     // The plan as plain text, for the approval history and anything that can't show the steps themselves.
     public string Text =>
         string.Join('\n', Steps.Select((step, index) => $"{index + 1}. {step.Command}" + (step.Purpose.Length == 0 ? string.Empty : ": " + step.Purpose)))

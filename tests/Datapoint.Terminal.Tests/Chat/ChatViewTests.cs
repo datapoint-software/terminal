@@ -121,7 +121,9 @@ public sealed class ChatViewTests
                 new AgentPlanStep("docker node update --availability active $(docker info -f '{{.Swarm.NodeID}}')", "Let the node take work again"),
             ],
             "Run `docker node update --availability active` to bring the node back, and reinstall the previous packages from `/var/cache/apt/archives`.");
-        _ = chat.RequestApprovalAsync(new CommandProposal(plan.Text, plan.Summary, CommandRisk.Changes, "Local") { Kind = ProposalKind.Plan, Plan = plan }, CancellationToken.None);
+        _ = chat.RequestApprovalAsync(
+            new CommandProposal(plan.Text, plan.Summary, CommandRisk.Changes, "Local") { Kind = ProposalKind.Plan, Plan = plan with { Title = "Update swarm-a" }, Session = "ssh session to root@swarm-a" },
+            CancellationToken.None);
         var window = new Window { Width = 420, Height = 900, Content = new ChatView { DataContext = chat } };
         window.Show();
 
@@ -130,30 +132,64 @@ public sealed class ChatViewTests
         Directory.CreateDirectory("rendered");
         frame?.Save("rendered/chat-plan.png", new PngBitmapEncoderOptions());
 
-        var reboot = chat.Approval!.PlanSteps[3];
+        Assert.Equal("In Local · ssh session to root@swarm-a", chat.Approval!.TerminalText);
+        Assert.Equal("Plan: Update swarm-a", chat.Approval.Heading);
+        Assert.Equal("5 steps · 1 ends the SSH session", chat.Approval.StepCountText);
+        var reboot = chat.Approval.PlanSteps[3];
         Assert.Equal(["Ends the SSH session"], reboot.Warnings);
         var run = window.GetVisualDescendants().OfType<Button>().Single(button => Equals(button.Content, chat.Approval.RunLabel));
         Assert.InRange(run.TranslatePoint(new Point(0, run.Bounds.Height), window)!.Value.Y, 0, window.Height);
     }
 
     [AvaloniaFact]
-    public void Ticks_off_an_approved_plans_steps()
+    public void Pins_an_approved_plan_and_folds_it_into_the_conversation_when_the_task_ends()
     {
         using var chat = new ChatViewModel(new ImmediateUiThread());
-        var plan = new AgentPlan("Update", [new AgentPlanStep("apt-get update", "Refresh the package lists"), new AgentPlanStep("apt-get -y upgrade", "Install the updates"), new AgentPlanStep("sudo reboot", "Start the new kernel")], "None.");
+        var plan = new AgentPlan(
+            "Drain the node, install the updates, reboot, then make it active again.",
+            [
+                new AgentPlanStep("docker node ls", "Check the swarm is healthy"),
+                new AgentPlanStep("docker node update --availability drain web1", "Move this node's tasks away"),
+                new AgentPlanStep("apt-get -y upgrade", "Install all updates"),
+                new AgentPlanStep("reboot", "Start the new kernel"),
+                new AgentPlanStep("docker node update --availability active web1", "Make the node active again"),
+            ],
+            "None.")
+        { Title = "Update swarm-a" };
 
-        chat.Show(new AgentEventArgs(AgentEventKind.PlanApproved, "Update the server") { Plan = plan });
-        chat.Show(new AgentEventArgs(AgentEventKind.CommandFinished, "Finished") { PlanStep = 1, StepState = PlanStepState.Succeeded });
-        chat.Show(new AgentEventArgs(AgentEventKind.CommandFinished, "Finished") { PlanStep = 2, StepState = PlanStepState.Failed });
-        chat.Show(new AgentEventArgs(AgentEventKind.CommandStarted, "Start the new kernel") { PlanStep = 3, StepState = PlanStepState.Running, Command = "sudo reboot" });
-        var window = new Window { Width = 420, Height = 500, Content = new ChatView { DataContext = chat } };
+        chat.Show(new AgentEventArgs(AgentEventKind.PlanApproved, plan.Summary) { Plan = plan, Terminal = "Local" });
+        chat.Show(new AgentEventArgs(AgentEventKind.CommandFinished, "Finished") { PlanStep = 1, StepState = PlanStepState.Succeeded, ExitCode = 0 });
+        chat.Show(new AgentEventArgs(AgentEventKind.CommandFinished, "Finished") { PlanStep = 2, StepState = PlanStepState.Succeeded, ExitCode = 0 });
+        chat.Show(new AgentEventArgs(AgentEventKind.CommandFinished, "Finished") { PlanStep = 3, StepState = PlanStepState.Failed, ExitCode = 100 });
+        chat.Show(new AgentEventArgs(AgentEventKind.CommandStarted, "Start the new kernel") { PlanStep = 4, StepState = PlanStepState.Running, Command = "reboot", Terminal = "Local" });
+        var window = new Window { Width = 420, Height = 520, Content = new ChatView { DataContext = chat } };
         window.Show();
         Avalonia.Threading.Dispatcher.UIThread.RunJobs();
-        using var frame = window.CaptureRenderedFrame();
-        frame?.Save("rendered/chat-plan-progress.png", new PngBitmapEncoderOptions());
+        Directory.CreateDirectory("rendered");
+        using (var frame = window.CaptureRenderedFrame())
+        {
+            frame?.Save("rendered/chat-plan-pinned.png", new PngBitmapEncoderOptions());
+        }
 
-        var item = Assert.Single(chat.Items, item => item.IsPlan);
-        Assert.Equal([PlanStepState.Succeeded, PlanStepState.Failed, PlanStepState.Running], item.Steps.Select(step => step.State));
-        Assert.Equal("Step 2, failed: Install the updates", item.Steps[1].AccessibleName);
+        var active = chat.ActivePlan!;
+        Assert.Equal("Step 4 of 5 · 1 failed", active.StatusText);
+        Assert.Equal("Exit code 100", active.Steps[2].Detail);
+        Assert.Equal("Step 4 · Local · Start the new kernel", chat.Items[^1].Detail);
+        Assert.False(Assert.Single(chat.Items, item => item.IsPlan).Plan!.IsInConversation);
+
+        active.ToggleCommand.Execute(null);
+        Assert.Equal("Step 4 of 5 · Start the new kernel", active.HeaderText);
+
+        chat.Show(new AgentEventArgs(AgentEventKind.StatusChanged, string.Empty) { Status = AgentStatus.Idle });
+        Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+        using (var frame = window.CaptureRenderedFrame())
+        {
+            frame?.Save("rendered/chat-plan-ended.png", new PngBitmapEncoderOptions());
+        }
+
+        Assert.Null(chat.ActivePlan);
+        Assert.True(active.IsInConversation);
+        Assert.Equal("Plan stopped · 2 of 5 done, 1 failed", active.HeaderText);
+        Assert.Equal("Step 3, failed: Install all updates", active.Steps[2].AccessibleName);
     }
 }

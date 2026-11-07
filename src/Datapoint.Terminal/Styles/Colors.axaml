@@ -24,6 +24,9 @@
       <SolidColorBrush x:Key="IdleBrush" Color="#AEAEB2" />
       <SolidColorBrush x:Key="WaitingBrush" Color="#FF9500" />
       <SolidColorBrush x:Key="StoppedBrush" Color="#FF3B30" />
+      <!-- A warning tag: dark amber text on a pale amber fill, about 7:1. -->
+      <SolidColorBrush x:Key="WarningFillBrush" Color="#FFF1D6" />
+      <SolidColorBrush x:Key="WarningTextBrush" Color="#8A4B00" />
       <!-- Code: after Xcode's default themes. -->
       <SolidColorBrush x:Key="SyntaxKeywordBrush" Color="#9B2393" />
       <SolidColorBrush x:Key="SyntaxStringBrush" Color="#C41A16" />
@@ -56,6 +59,8 @@
       <SolidColorBrush x:Key="IdleBrush" Color="#636366" />
       <SolidColorBrush x:Key="WaitingBrush" Color="#FF9F0A" />
       <SolidColorBrush x:Key="StoppedBrush" Color="#FF453A" />
+      <SolidColorBrush x:Key="WarningFillBrush" Color="#3D2C0D" />
+      <SolidColorBrush x:Key="WarningTextBrush" Color="#FFCC66" />
       <SolidColorBrush x:Key="SyntaxKeywordBrush" Color="#FF7AB2" />
       <SolidColorBrush x:Key="SyntaxStringBrush" Color="#FF8170" />
       <SolidColorBrush x:Key="SyntaxCommentBrush" Color="#8E9AA6" />

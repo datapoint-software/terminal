@@ -9,6 +9,9 @@ public sealed record CommandProposal(string Command, string Purpose, CommandRisk
     // For a plan, its steps and rollback; Command then holds the same plan as text.
     public AgentPlan? Plan { get; init; }
 
+    // A session opened inside the terminal, e.g. "ssh session to web1", where the command will actually run.
+    public string? Session { get; init; }
+
     // A file listed in .terminalignore that the command names, which is why it asks even in Auto.
     public string? IgnoredFile { get; init; }
 

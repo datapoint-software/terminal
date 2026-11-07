@@ -15,7 +15,6 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
     private TerminalAgent? _agent;
     private ChatItemViewModel? _streaming;
     private ChatItemViewModel? _command;
-    private ChatItemViewModel? _plan;
     private bool _isSettingModels;
 
     public ChatViewModel(IUiThread ui)
@@ -327,7 +326,7 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
     {
         _agent!.ClearConversation();
         Items.Clear();
-        _plan = null;
+        ActivePlan = null;
         Cleared?.Invoke();
     }
 
@@ -414,26 +413,50 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
         _command = new ChatItemViewModel(ChatItemKind.Command, e.Command ?? string.Empty)
         {
             Terminal = e.Terminal,
-            Detail = e.Terminal is null ? e.Text : Strings.Format(Strings.CommandInTerminal, e.Terminal, e.Text),
+            Detail = StepTag(e, e.Terminal is null ? e.Text : Strings.Format(Strings.CommandInTerminal, e.Terminal, e.Text)),
         };
         Items.Add(_command);
     }
 
+    // The plan in progress, pinned above the conversation until the task ends.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasActivePlan))]
+    public partial PlanProgressViewModel? ActivePlan { get; private set; }
+
+    public bool HasActivePlan => ActivePlan is not null;
+
+    // A planned command says which step it is, so it can be matched with the pinned plan.
+    private static string StepTag(AgentEventArgs e, string detail) =>
+        e.PlanStep is { } step ? Strings.Format(Strings.CommandInTerminal, Strings.Format(Strings.PlanStepTag, step), detail) : detail;
+
     private void ShowPlan(AgentEventArgs e)
     {
         _streaming = null;
-        _plan = new ChatItemViewModel(ChatItemKind.Plan, e.Text) { Terminal = e.Terminal, Steps = e.Plan is { } plan ? PlanStepViewModel.For(plan) : [] };
-        Items.Add(_plan);
-    }
-
-    private void MarkPlanStep(AgentEventArgs e)
-    {
-        if (_plan is null || e.PlanStep is not { } number || number < 1 || number > _plan.Steps.Count)
+        if (e.Plan is not { } plan)
         {
             return;
         }
 
-        _plan.Steps[number - 1].State = e.StepState;
+        EndPlan();
+        var progress = new PlanProgressViewModel(plan);
+        Items.Add(new ChatItemViewModel(ChatItemKind.Plan, plan.Summary) { Terminal = e.Terminal, Plan = progress });
+        ActivePlan = progress;
+    }
+
+    private void MarkPlanStep(AgentEventArgs e)
+    {
+        if (e.PlanStep is not { } number)
+        {
+            return;
+        }
+
+        ActivePlan?.Update(number, e.StepState, e.ExitCode);
+    }
+
+    private void EndPlan()
+    {
+        ActivePlan?.End();
+        ActivePlan = null;
     }
 
     private void AppendDelta(string text)
@@ -479,6 +502,12 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
         if (status == AgentStatus.Thinking)
         {
             _streaming = null;
+        }
+
+        // The plan lasts for the task, which is over once the agent stops or is interrupted.
+        if (status is AgentStatus.Idle or AgentStatus.Interrupted)
+        {
+            EndPlan();
         }
 
         Status = status;

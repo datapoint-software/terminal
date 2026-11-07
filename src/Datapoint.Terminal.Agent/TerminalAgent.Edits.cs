@@ -103,6 +103,7 @@ public sealed partial class TerminalAgent
         var proposal = new CommandProposal(diff, purpose, CommandRisk.Changes, edit.Terminal.Name, edit.Terminal.Environment)
         {
             Kind = ProposalKind.EditFile,
+            Session = edit.Terminal.Terminal.GetState().Session,
             PlanStep = plan.Step,
             IsOutsidePlan = plan.IsOutside,
         };

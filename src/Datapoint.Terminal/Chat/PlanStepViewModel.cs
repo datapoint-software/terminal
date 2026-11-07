@@ -37,22 +37,31 @@ public sealed partial class PlanStepViewModel : ObservableObject
     public bool HasWarnings => Warnings.Count > 0;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(Glyph), nameof(IsRunning), nameof(IsSucceeded), nameof(IsFailed), nameof(StateText), nameof(AccessibleName))]
+    [NotifyPropertyChangedFor(nameof(IsRunning), nameof(IsSucceeded), nameof(IsFailed), nameof(IsPending), nameof(IsOver), nameof(StateText), nameof(AccessibleName))]
     public partial PlanStepState State { get; set; }
+
+    // Why a failed step failed, e.g. its exit code.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasDetail))]
+    public partial string Detail { get; set; } = string.Empty;
+
+    public bool HasDetail => Detail.Length > 0;
+
+    public bool IsPending => State == PlanStepState.Pending;
+
+    public bool IsOver => State is PlanStepState.Succeeded or PlanStepState.Failed or PlanStepState.Finished;
+
+    public void Mark(PlanStepState state, int? exitCode)
+    {
+        State = state;
+        Detail = state == PlanStepState.Failed && exitCode is { } code ? Strings.Format(Strings.CommandExitCode, code) : string.Empty;
+    }
 
     public bool IsRunning => State == PlanStepState.Running;
 
-    public bool IsSucceeded => State == PlanStepState.Succeeded;
+    public bool IsSucceeded => State is PlanStepState.Succeeded or PlanStepState.Finished;
 
     public bool IsFailed => State == PlanStepState.Failed;
-
-    public string Glyph => State switch
-    {
-        PlanStepState.Running => "●",
-        PlanStepState.Succeeded or PlanStepState.Finished => "✓",
-        PlanStepState.Failed => "✕",
-        _ => "○",
-    };
 
     public string StateText => State switch
     {

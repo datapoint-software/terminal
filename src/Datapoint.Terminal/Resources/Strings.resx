@@ -945,7 +945,7 @@ git rm -r --cached .terminal</value>
     <value>Approve Plan</value>
   </data>
   <data name="ApprovalRiskPlan" xml:space="preserve">
-    <value>Approving lets the agent start. Steps still ask as the approval mode says, except in Auto; anything outside the plan always asks. The plan ends with the task.</value>
+    <value>Outside the plan, the agent always asks first.</value>
   </data>
   <data name="ApprovalPlanAnyTerminal" xml:space="preserve">
     <value>For this task</value>
@@ -1240,5 +1240,53 @@ git rm -r --cached .terminal</value>
   </data>
   <data name="PlanStepAccessible" xml:space="preserve">
     <value>Step {0}, {1}: {2}</value>
+  </data>
+  <data name="ApprovalHeadingPlanNamed" xml:space="preserve">
+    <value>Plan: {0}</value>
+  </data>
+  <data name="PlanStepCount" xml:space="preserve">
+    <value>{0} steps</value>
+  </data>
+  <data name="PlanStepCountOne" xml:space="preserve">
+    <value>1 step</value>
+  </data>
+  <data name="PlanStepCountWarning" xml:space="preserve">
+    <value>{0} · 1 {1}</value>
+  </data>
+  <data name="PlanStepCountWarnings" xml:space="preserve">
+    <value>{0} · {1} with warnings</value>
+  </data>
+  <data name="PlanProgress" xml:space="preserve">
+    <value>Step {0} of {1}</value>
+  </data>
+  <data name="PlanProgressFailed" xml:space="preserve">
+    <value>Step {0} of {1} · {2} failed</value>
+  </data>
+  <data name="PlanNotStarted" xml:space="preserve">
+    <value>Not started · {0}</value>
+  </data>
+  <data name="PlanFolded" xml:space="preserve">
+    <value>Step {0} of {1} · {2}</value>
+  </data>
+  <data name="PlanFinished" xml:space="preserve">
+    <value>Plan finished · {0} of {1} done</value>
+  </data>
+  <data name="PlanFinishedFailed" xml:space="preserve">
+    <value>Plan finished · {0} of {1} done, {2} failed</value>
+  </data>
+  <data name="PlanStopped" xml:space="preserve">
+    <value>Plan stopped · {0} of {1} done</value>
+  </data>
+  <data name="PlanStoppedFailed" xml:space="preserve">
+    <value>Plan stopped · {0} of {1} done, {2} failed</value>
+  </data>
+  <data name="PlanStepTag" xml:space="preserve">
+    <value>Step {0}</value>
+  </data>
+  <data name="PlanShowSteps" xml:space="preserve">
+    <value>Show the plan's steps</value>
+  </data>
+  <data name="PlanHideSteps" xml:space="preserve">
+    <value>Hide the plan's steps</value>
   </data>
 </root>

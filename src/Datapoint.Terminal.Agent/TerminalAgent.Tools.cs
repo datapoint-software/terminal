@@ -217,6 +217,7 @@ public sealed partial class TerminalAgent
         var proposal = new CommandProposal(command, purpose, risk, terminal.Name, terminal.Environment)
         {
             IgnoredFile = ignored,
+            Session = terminal.Terminal.GetState().Session,
             PlanStep = plan.Step,
             IsOutsidePlan = plan.IsOutside,
             AlsoApproves = canCarry ? SameEnvironment(terminal) : [],

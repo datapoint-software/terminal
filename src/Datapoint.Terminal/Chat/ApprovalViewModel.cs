@@ -21,12 +21,14 @@ public sealed partial class ApprovalViewModel : ObservableObject
         Kind = proposal.Kind;
         PlanSteps = proposal.Plan is { } plan ? PlanStepViewModel.For(plan) : [];
         Rollback = string.IsNullOrWhiteSpace(proposal.Plan?.Rollback) ? null : proposal.Plan.Rollback;
+        PlanTitle = proposal.Plan?.Title;
+        StepCountText = StepCount(PlanSteps);
         IgnoredFile = proposal.IgnoredFile;
         AlsoApprovesText = proposal.AlsoApproves.Count == 0 ? null : Strings.Format(Strings.ApprovalAlsoApproves, string.Join(", ", proposal.AlsoApproves));
         PlanText = proposal.IsOutsidePlan ? Strings.ApprovalOutsidePlan
             : proposal.PlanStep is { } step ? Strings.Format(Strings.ApprovalPlanStep, step)
             : null;
-        TerminalText = (proposal.Kind, proposal.Environment) switch
+        var where = (proposal.Kind, proposal.Environment) switch
         {
             (ProposalKind.Plan, _) when proposal.Terminal.Length == 0 => Strings.ApprovalPlanAnyTerminal,
             (ProposalKind.OpenTerminal, null) => Strings.Format(Strings.ApprovalForConnection, proposal.Terminal),
@@ -34,6 +36,10 @@ public sealed partial class ApprovalViewModel : ObservableObject
             (_, null) => Strings.Format(Strings.ApprovalInTerminal, proposal.Terminal),
             (_, { } environment) => Strings.Format(Strings.ApprovalInTerminalEnvironment, proposal.Terminal, environment),
         };
+
+
+        // Inside a session such as ssh, the command runs on that host, not the tab's own machine.
+        TerminalText = proposal.Session is { } session ? Strings.Format(Strings.CommandInTerminal, where, session) : where;
     }
 
     public ProposalKind Kind { get; }
@@ -44,6 +50,11 @@ public sealed partial class ApprovalViewModel : ObservableObject
     public bool ShowsCommand => !IsPlan;
 
     public IReadOnlyList<PlanStepViewModel> PlanSteps { get; }
+
+    public string? PlanTitle { get; }
+
+    // How many steps, and how many need care, e.g. "5 steps · 1 ends the SSH session".
+    public string StepCountText { get; }
 
     public string? Rollback { get; }
 
@@ -81,7 +92,7 @@ public sealed partial class ApprovalViewModel : ObservableObject
     {
         (ProposalKind.OpenTerminal, _, _) => Strings.ApprovalHeadingOpen,
         (ProposalKind.SendKeys, _, _) => Strings.ApprovalHeadingKeys,
-        (ProposalKind.Plan, _, _) => Strings.ApprovalHeadingPlan,
+        (ProposalKind.Plan, _, _) => PlanTitle is { } title ? Strings.Format(Strings.ApprovalHeadingPlanNamed, title) : Strings.ApprovalHeadingPlan,
         (ProposalKind.EditFile, _, _) => Strings.ApprovalHeadingEdit,
         (_, not null, _) => Strings.ApprovalHeadingIgnored,
         (_, _, CommandRisk.AlwaysAsk) => Strings.ApprovalHeadingTrust,
@@ -117,6 +128,21 @@ public sealed partial class ApprovalViewModel : ObservableObject
 
     [RelayCommand]
     private void Decline() => _decision.TrySetResult(CommandApproval.Reject(Command, string.IsNullOrWhiteSpace(Feedback) ? null : Feedback.Trim()));
+
+    private static string StepCount(IReadOnlyList<PlanStepViewModel> steps)
+    {
+        var count = PlanProgressViewModel.StepCount(steps.Count);
+        var flagged = steps.Where(step => step.HasWarnings).ToList();
+        return flagged.Count switch
+        {
+            0 => count,
+            1 => Strings.Format(Strings.PlanStepCountWarning, count, LowerFirst(flagged[0].Warnings[0])),
+            _ => Strings.Format(Strings.PlanStepCountWarnings, count, flagged.Count),
+        };
+    }
+
+    private static string LowerFirst(string text) =>
+        text.Length > 1 && char.IsUpper(text[0]) && !char.IsUpper(text[1]) ? char.ToLower(text[0], System.Globalization.CultureInfo.CurrentCulture) + text[1..] : text;
 
     private bool CanRun() => !string.IsNullOrWhiteSpace(Command);
 }

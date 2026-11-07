@@ -9,12 +9,72 @@
              Background="{DynamicResource PaneBrush}">
   <UserControl.Resources>
     <!-- Our own simple glyphs, 16 by 16. -->
+    <StreamGeometry x:Key="CheckGlyph">M4.6,8.3 L7,10.6 L11.4,5.6</StreamGeometry>
+    <StreamGeometry x:Key="CrossGlyph">M5.6,5.6 L10.4,10.4 M10.4,5.6 L5.6,10.4</StreamGeometry>
+    <StreamGeometry x:Key="ChevronGlyph">M4,6 L8,10 L12,6</StreamGeometry>
     <StreamGeometry x:Key="SendGlyph">M8,1.5 L13.5,7 L12.1,8.4 L9,5.3 L9,14.5 L7,14.5 L7,5.3 L3.9,8.4 L2.5,7 Z</StreamGeometry>
     <StreamGeometry x:Key="StopGlyph">M3.5,3.5 L12.5,3.5 L12.5,12.5 L3.5,12.5 Z</StreamGeometry>
     <StreamGeometry x:Key="ContinueGlyph">M4.5,2.5 L13,8 L4.5,13.5 Z</StreamGeometry>
     <StreamGeometry x:Key="GearGlyph">M6.9,1.5 L9.1,1.5 L9.4,3.2 C9.9,3.4 10.3,3.6 10.7,3.9 L12.3,3.3 L13.4,5.2 L12.1,6.3 C12.2,6.8 12.2,7.2 12.1,7.7 L13.4,8.8 L12.3,10.7 L10.7,10.1 C10.3,10.4 9.9,10.6 9.4,10.8 L9.1,12.5 L6.9,12.5 L6.6,10.8 C6.1,10.6 5.7,10.4 5.3,10.1 L3.7,10.7 L2.6,8.8 L3.9,7.7 C3.8,7.2 3.8,6.8 3.9,6.3 L2.6,5.2 L3.7,3.3 L5.3,3.9 C5.7,3.6 6.1,3.4 6.6,3.2 Z M8,5.2 C7,5.2 6.2,6 6.2,7 C6.2,8 7,8.8 8,8.8 C9,8.8 9.8,8 9.8,7 C9.8,6 9,5.2 8,5.2 Z</StreamGeometry>
     <StreamGeometry x:Key="ComposeGlyph">M2,3.5 L8.5,3.5 L8.5,5 L3.5,5 L3.5,12.5 L11,12.5 L11,7.5 L12.5,7.5 L12.5,14 L2,14 Z M12.6,1.2 L14.8,3.4 L8.6,9.6 L5.8,10.2 L6.4,7.4 Z</StreamGeometry>
   </UserControl.Resources>
+
+  <UserControl.DataTemplates>
+    <!-- An approved plan's progress: a header that folds it, then a bar, where it's at, and each step's mark. -->
+    <DataTemplate DataType="chat:PlanProgressViewModel">
+      <Border Classes="plan">
+        <StackPanel>
+          <Button Classes="plan-header" Command="{Binding ToggleCommand}"
+                  AutomationProperties.Name="{Binding HeaderText}" AutomationProperties.HelpText="{Binding ToggleHelp}">
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+              <Panel Classes="mark" IsVisible="{Binding IsFolded}" Classes.running="{Binding MarkIsRunning}"
+                     Classes.succeeded="{Binding MarkIsSucceeded}" Classes.failed="{Binding MarkIsFailed}">
+                <Ellipse Classes="ring" />
+                <Ellipse Classes="dot" Width="6" Height="6" />
+                <Path Classes="check" Data="{StaticResource CheckGlyph}" />
+                <Path Classes="cross" Data="{StaticResource CrossGlyph}" />
+              </Panel>
+              <TextBlock Grid.Column="1" Text="{Binding HeaderText}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+              <Path Grid.Column="2" Data="{StaticResource ChevronGlyph}" Stroke="{DynamicResource SecondaryLabelBrush}" StrokeThickness="1.5"
+                    Width="16" Height="16" VerticalAlignment="Center" RenderTransformOrigin="50%,50%">
+                <Path.RenderTransform>
+                  <RotateTransform Angle="{Binding ChevronAngle}" />
+                </Path.RenderTransform>
+              </Path>
+            </Grid>
+          </Button>
+          <StackPanel Spacing="6" Margin="12,0,12,10" IsVisible="{Binding IsExpanded}">
+            <ProgressBar Classes="plan" Minimum="0" Maximum="100" Value="{Binding Percent}" />
+            <TextBlock Classes="secondary" Text="{Binding StatusText}" />
+            <ItemsControl ItemsSource="{Binding Steps}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <StackPanel Spacing="6" />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="chat:PlanStepViewModel">
+                  <Grid ColumnDefinitions="16,*" ColumnSpacing="8" Focusable="True" AutomationProperties.Name="{Binding AccessibleName}">
+                    <Panel Classes="mark" Classes.running="{Binding IsRunning}" Classes.succeeded="{Binding IsSucceeded}" Classes.failed="{Binding IsFailed}">
+                      <Ellipse Classes="ring" />
+                      <Ellipse Classes="dot" Width="6" Height="6" />
+                      <Path Classes="check" Data="{StaticResource CheckGlyph}" />
+                      <Path Classes="cross" Data="{StaticResource CrossGlyph}" />
+                    </Panel>
+                    <StackPanel Grid.Column="1">
+                      <TextBlock Classes="step-title" Classes.pending="{Binding IsPending}" Classes.running="{Binding IsRunning}"
+                                 Text="{Binding Title}" TextWrapping="Wrap" />
+                      <TextBlock Classes="secondary" Text="{Binding Detail}" IsVisible="{Binding HasDetail}" />
+                    </StackPanel>
+                  </Grid>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+        </StackPanel>
+      </Border>
+    </DataTemplate>
+  </UserControl.DataTemplates>
 
   <UserControl.Styles>
     <Style Selector="TextBlock.title">
@@ -128,28 +188,102 @@
       <Setter Property="FontWeight" Value="SemiBold" />
     </Style>
 
-    <!-- Plans: a warning glyph in the waiting colour beside text in the label colour, so the warning keeps its contrast. -->
-    <Style Selector="TextBlock.warning-glyph">
-      <Setter Property="Foreground" Value="{DynamicResource WaitingBrush}" />
+    <!-- Plans. A step's mark: an empty ring before it runs, a ring and dot while it runs, a tick or a cross after. -->
+    <Style Selector="Panel.mark">
+      <Setter Property="Width" Value="16" />
+      <Setter Property="Height" Value="16" />
+      <Setter Property="VerticalAlignment" Value="Top" />
+      <Setter Property="Margin" Value="0,1,0,0" />
+    </Style>
+    <Style Selector="Panel.mark Ellipse.ring">
+      <Setter Property="Stroke" Value="{DynamicResource IdleBrush}" />
+      <Setter Property="StrokeThickness" Value="1.25" />
+    </Style>
+    <Style Selector="Panel.mark Ellipse.dot, Panel.mark Path">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+    <Style Selector="Panel.mark Path">
+      <Setter Property="StrokeThickness" Value="1.6" />
+      <Setter Property="StrokeLineCap" Value="Round" />
+      <Setter Property="StrokeJoin" Value="Round" />
+    </Style>
+    <Style Selector="Panel.mark.running Ellipse.ring">
+      <Setter Property="Stroke" Value="{DynamicResource AccentBrush}" />
+    </Style>
+    <Style Selector="Panel.mark.running Ellipse.dot">
+      <Setter Property="IsVisible" Value="True" />
+      <Setter Property="Fill" Value="{DynamicResource AccentBrush}" />
+    </Style>
+    <Style Selector="Panel.mark.succeeded Ellipse.ring">
+      <Setter Property="Stroke" Value="{DynamicResource SyntaxAddedBrush}" />
+    </Style>
+    <Style Selector="Panel.mark.succeeded Path.check">
+      <Setter Property="IsVisible" Value="True" />
+      <Setter Property="Stroke" Value="{DynamicResource SyntaxAddedBrush}" />
+    </Style>
+    <Style Selector="Panel.mark.failed Ellipse.ring">
+      <Setter Property="Stroke" Value="{DynamicResource DangerBrush}" />
+    </Style>
+    <Style Selector="Panel.mark.failed Path.cross">
+      <Setter Property="IsVisible" Value="True" />
+      <Setter Property="Stroke" Value="{DynamicResource DangerBrush}" />
+    </Style>
+    <!-- A step's number in the approval card, in a hairline circle beside its first line. -->
+    <Style Selector="Border.number">
+      <Setter Property="Width" Value="20" />
+      <Setter Property="Height" Value="20" />
+      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="VerticalAlignment" Value="Top" />
+    </Style>
+    <Style Selector="Border.number TextBlock">
+      <Setter Property="FontSize" Value="11" />
+      <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Border.warning">
+      <Setter Property="Background" Value="{DynamicResource WarningFillBrush}" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Padding" Value="7,1" />
+      <Setter Property="HorizontalAlignment" Value="Left" />
+      <Setter Property="Margin" Value="0,2,0,0" />
+    </Style>
+    <Style Selector="Border.warning TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource WarningTextBrush}" />
+      <Setter Property="FontSize" Value="{StaticResource CaptionSize}" />
+    </Style>
+    <Style Selector="Border.rollback">
+      <Setter Property="Background" Value="{DynamicResource CodeBrush}" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Padding" Value="10,8" />
     </Style>
     <Style Selector="Border.plan">
+      <Setter Property="Background" Value="{DynamicResource CardBrush}" />
       <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="10" />
-      <Setter Property="Padding" Value="12,10" />
-      <Setter Property="Margin" Value="0,6" />
     </Style>
-    <Style Selector="TextBlock.step">
+    <Style Selector="Button.plan-header">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+      <Setter Property="Padding" Value="12,9" />
+      <Setter Property="CornerRadius" Value="10" />
+    </Style>
+    <Style Selector="TextBlock.step-title.pending">
       <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
     </Style>
-    <Style Selector="TextBlock.step.running">
+    <Style Selector="TextBlock.step-title.running">
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="ProgressBar.plan">
+      <Setter Property="MinHeight" Value="4" />
+      <Setter Property="Height" Value="4" />
+      <Setter Property="CornerRadius" Value="2" />
       <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
-    </Style>
-    <Style Selector="TextBlock.step.succeeded">
-      <Setter Property="Foreground" Value="{DynamicResource SyntaxAddedBrush}" />
-    </Style>
-    <Style Selector="TextBlock.step.failed">
-      <Setter Property="Foreground" Value="{DynamicResource DangerBrush}" />
+      <Setter Property="Background" Value="{DynamicResource SeparatorBrush}" />
     </Style>
 
     <Style Selector="Border.card">
@@ -216,44 +350,45 @@
             <TextBlock Classes="title" Text="{Binding Heading}" TextWrapping="Wrap" />
             <TextBlock Text="{Binding Purpose}" TextWrapping="Wrap" />
           </StackPanel>
+          <TextBlock Classes="secondary" Text="{Binding StepCountText}" IsVisible="{Binding IsPlan}" />
           <!-- A plan: each step says what it does, flags anything risky, then shows the exact command. Capped, so a long plan
                scrolls inside the box while the rollback, Approve and Decline stay in view. -->
           <ScrollViewer MaxHeight="320" VerticalScrollBarVisibility="Auto" IsVisible="{Binding IsPlan}">
-            <ItemsControl ItemsSource="{Binding PlanSteps}">
-              <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                  <StackPanel Spacing="10" />
-                </ItemsPanelTemplate>
-              </ItemsControl.ItemsPanel>
+            <ItemsControl ItemsSource="{Binding PlanSteps}" Margin="0,0,8,0">
               <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="chat:PlanStepViewModel">
-                  <Grid ColumnDefinitions="22,*" Margin="0,0,8,0">
-                    <TextBlock Classes="secondary" Text="{Binding NumberText}" FontWeight="SemiBold" Margin="0,1,0,0" />
-                    <StackPanel Grid.Column="1" Spacing="2">
-                      <TextBlock Text="{Binding Purpose}" TextWrapping="Wrap" IsVisible="{Binding HasPurpose}" />
-                      <ItemsControl ItemsSource="{Binding Warnings}" IsVisible="{Binding HasWarnings}">
-                        <ItemsControl.ItemTemplate>
-                          <DataTemplate x:DataType="x:String">
-                            <StackPanel Orientation="Horizontal" Spacing="5">
-                              <TextBlock Classes="warning-glyph" Text="⚠" />
-                              <TextBlock Text="{Binding}" FontWeight="SemiBold" TextWrapping="Wrap" />
-                            </StackPanel>
-                          </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                      </ItemsControl>
-                      <Border Classes="code">
-                        <SelectableTextBlock Classes="mono" Text="{Binding Command}" TextWrapping="Wrap" />
+                  <Border BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,1,0,0" Padding="0,8">
+                    <Grid ColumnDefinitions="20,*" ColumnSpacing="10">
+                      <Border Classes="number">
+                        <TextBlock Text="{Binding NumberText}" />
                       </Border>
-                    </StackPanel>
-                  </Grid>
+                      <StackPanel Grid.Column="1" Spacing="2">
+                        <TextBlock Text="{Binding Purpose}" TextWrapping="Wrap" IsVisible="{Binding HasPurpose}" />
+                        <ItemsControl ItemsSource="{Binding Warnings}" IsVisible="{Binding HasWarnings}">
+                          <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                              <Border Classes="warning">
+                                <TextBlock Text="{Binding StringFormat=⚠ {0}}" TextWrapping="Wrap" />
+                              </Border>
+                            </DataTemplate>
+                          </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <Border Classes="code">
+                          <SelectableTextBlock Classes="mono" Text="{Binding Command}" TextWrapping="Wrap" />
+                        </Border>
+                      </StackPanel>
+                    </Grid>
+                  </Border>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
             </ItemsControl>
           </ScrollViewer>
-          <StackPanel Spacing="2" IsVisible="{Binding HasRollback}">
-            <TextBlock Text="{x:Static res:Strings.PlanRollbackTitle}" FontWeight="SemiBold" />
-            <md:MarkdownView Text="{Binding Rollback}" />
-          </StackPanel>
+          <Border Classes="rollback" IsVisible="{Binding HasRollback}">
+            <StackPanel Spacing="2">
+              <TextBlock Text="{x:Static res:Strings.PlanRollbackTitle}" FontWeight="SemiBold" />
+              <md:MarkdownView Text="{Binding Rollback}" />
+            </StackPanel>
+          </Border>
           <!-- Capped, so a long diff scrolls inside the box and Run and Decline stay in view. -->
           <TextBox x:Name="ApprovalCommand" Classes="code" Text="{Binding Command}" IsReadOnly="{Binding IsCommandReadOnly}" TextWrapping="Wrap" Background="{DynamicResource CodeBrush}"
                    MaxHeight="280" ScrollViewer.VerticalScrollBarVisibility="Auto" IsVisible="{Binding ShowsCommand}"
@@ -389,6 +524,9 @@
       </Grid>
     </StackPanel>
 
+    <!-- The plan in progress, pinned so it stays in view while the conversation scrolls. -->
+    <ContentControl DockPanel.Dock="Top" Content="{Binding ActivePlan}" IsVisible="{Binding HasActivePlan}" Margin="12,8,12,4" />
+
     <!-- The conversation. -->
     <ScrollViewer x:Name="Scroller" Padding="16,8">
       <ItemsControl x:Name="ItemList" ItemsSource="{Binding Items}">
@@ -405,37 +543,8 @@
                   <TextBlock Classes="secondary" Text="{Binding Detail}" TextWrapping="Wrap" />
                 </StackPanel>
               </Border>
-              <!-- An approved plan, ticked off as the agent carries out each step. -->
-              <Border Classes="plan" IsVisible="{Binding IsPlan}">
-                <StackPanel Spacing="6">
-                  <StackPanel Spacing="1">
-                    <TextBlock Classes="secondary" Text="{x:Static res:Strings.PlanChecklistTitle}" FontWeight="SemiBold" />
-                    <SelectableTextBlock Text="{Binding Text}" TextWrapping="Wrap" />
-                  </StackPanel>
-                  <ItemsControl ItemsSource="{Binding Steps}">
-                    <ItemsControl.ItemsPanel>
-                      <ItemsPanelTemplate>
-                        <StackPanel Spacing="4" />
-                      </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                      <DataTemplate x:DataType="chat:PlanStepViewModel">
-                        <Grid ColumnDefinitions="20,*" Focusable="True" AutomationProperties.Name="{Binding AccessibleName}">
-                          <TextBlock Classes="step" Classes.running="{Binding IsRunning}" Classes.succeeded="{Binding IsSucceeded}"
-                                     Classes.failed="{Binding IsFailed}" Text="{Binding Glyph}" />
-                          <StackPanel Grid.Column="1">
-                            <TextBlock TextWrapping="Wrap">
-                              <Run Text="{Binding NumberText}" /><Run Text=". " /><Run Text="{Binding Title}" />
-                            </TextBlock>
-                            <TextBlock Classes="secondary" FontFamily="{StaticResource MonoFont}" Text="{Binding Command}"
-                                       TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Command}" IsVisible="{Binding HasPurpose}" />
-                          </StackPanel>
-                        </Grid>
-                      </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                  </ItemsControl>
-                </StackPanel>
-              </Border>
+              <!-- An approved plan, once its task is over; while it runs, it's pinned above the conversation. -->
+              <ContentControl Content="{Binding Plan}" Margin="0,6" IsVisible="{Binding Plan.IsInConversation, FallbackValue=False}" />
               <StackPanel Margin="12,6" Spacing="4" IsVisible="{Binding IsNotice}">
                 <SelectableTextBlock Classes="secondary" Text="{Binding Text}" TextWrapping="Wrap" TextAlignment="Center" />
                 <Button Content="{Binding ActionLabel}" Command="{Binding ActionCommand}" IsVisible="{Binding HasAction}"

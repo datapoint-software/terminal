@@ -824,6 +824,38 @@ public static class Strings
 
     public static string PlanStepAccessible => Get(nameof(PlanStepAccessible));
 
+    public static string ApprovalHeadingPlanNamed => Get(nameof(ApprovalHeadingPlanNamed));
+
+    public static string PlanStepCount => Get(nameof(PlanStepCount));
+
+    public static string PlanStepCountOne => Get(nameof(PlanStepCountOne));
+
+    public static string PlanStepCountWarning => Get(nameof(PlanStepCountWarning));
+
+    public static string PlanStepCountWarnings => Get(nameof(PlanStepCountWarnings));
+
+    public static string PlanProgress => Get(nameof(PlanProgress));
+
+    public static string PlanProgressFailed => Get(nameof(PlanProgressFailed));
+
+    public static string PlanNotStarted => Get(nameof(PlanNotStarted));
+
+    public static string PlanFolded => Get(nameof(PlanFolded));
+
+    public static string PlanFinished => Get(nameof(PlanFinished));
+
+    public static string PlanFinishedFailed => Get(nameof(PlanFinishedFailed));
+
+    public static string PlanStopped => Get(nameof(PlanStopped));
+
+    public static string PlanStoppedFailed => Get(nameof(PlanStoppedFailed));
+
+    public static string PlanStepTag => Get(nameof(PlanStepTag));
+
+    public static string PlanShowSteps => Get(nameof(PlanShowSteps));
+
+    public static string PlanHideSteps => Get(nameof(PlanHideSteps));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

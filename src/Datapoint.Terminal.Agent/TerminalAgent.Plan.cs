@@ -25,6 +25,7 @@ public sealed partial class TerminalAgent
             """
             {"type":"object","properties":{
               "terminal":{"type":"string","description":"The terminal the plan is for, as listed in the user's message."},
+              "title":{"type":"string","description":"The task in a few words, e.g. \"Update web1\"."},
               "summary":{"type":"string","description":"What the plan achieves, in one sentence."},
               "steps":{"type":"array","description":"The steps in order.","items":{"type":"object","properties":{
                 "command":{"type":"string","description":"The exact command you'll run, e.g. \"sudo systemctl restart nginx\"."},
@@ -47,7 +48,7 @@ public sealed partial class TerminalAgent
         var summary = plan.Summary;
         var terminal = FindTerminal(arguments, out _);
         SetStatus(AgentStatus.WaitingForApproval, terminal);
-        var proposal = new CommandProposal(plan.Text, summary, CommandRisk.Changes, terminal?.Name ?? string.Empty, terminal?.Environment) { Kind = ProposalKind.Plan, Plan = plan };
+        var proposal = new CommandProposal(plan.Text, summary, CommandRisk.Changes, terminal?.Name ?? string.Empty, terminal?.Environment) { Kind = ProposalKind.Plan, Plan = plan, Session = terminal?.Terminal.GetState().Session };
         var approval = await _user.RequestApprovalAsync(proposal, cancellationToken).ConfigureAwait(false);
         SetStatus(AgentStatus.Thinking);
         if (!approval.Approved)
@@ -69,7 +70,8 @@ public sealed partial class TerminalAgent
             : steps.Any(step => step.Command.Length == 0) ? "Not proposed: give every step the command you'll run."
             : steps.Count > MaxPlanSteps ? $"Not proposed: a plan has at most {MaxPlanSteps} steps. Split the task."
             : string.Empty;
-        return problem.Length == 0 ? new AgentPlan(summary, steps, rollback) : null;
+        var title = ToolArguments.GetString(arguments, "title")?.Trim();
+        return problem.Length == 0 ? new AgentPlan(summary, steps, rollback) { Title = string.IsNullOrEmpty(title) ? null : title } : null;
     }
 
     // None when the command may go ahead as the approval mode says; otherwise whether it has to ask, or a refusal in Problem.

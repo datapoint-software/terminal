@@ -10,7 +10,7 @@ public static class NestedSession
 
     private static readonly string[] s_shells = ["sh", "bash", "zsh", "fish", "dash", "ksh", "tcsh", "csh", "pwsh"];
 
-    // What kind of session the command line opens, e.g. "ssh session", or null for an ordinary command.
+    // What kind of session the command line opens, e.g. "ssh session to web1", or null for an ordinary command.
     public static string? Describe(string? commandLine)
     {
         var words = Words(commandLine);
@@ -23,8 +23,8 @@ public static class NestedSession
         var rest = words.Skip(1).ToList();
         return program switch
         {
-            "ssh" or "autossh" => IsInteractiveSsh(rest) ? "ssh session" : null,
-            "mosh" or "telnet" or "et" => $"{program} session",
+            "ssh" or "autossh" => SshDestination(rest) is { } destination ? $"ssh session to {destination}" : null,
+            "mosh" or "telnet" or "et" => rest.LastOrDefault(word => !word.StartsWith('-')) is { } host ? $"{program} session to {host}" : $"{program} session",
             "docker" or "podman" or "nerdctl" => IsInteractiveExec(rest, "exec", "run") ? "container shell" : null,
             "kubectl" or "oc" => IsInteractiveExec(rest, "exec", "debug") ? "pod shell" : null,
             "su" or "machinectl" => "nested shell",
@@ -45,8 +45,8 @@ public static class NestedSession
         return command.Count > 0 ? Describe(string.Join(' ', command)) : null;
     }
 
-    // ssh [options] destination [command]: interactive only without a command.
-    private static bool IsInteractiveSsh(List<string> arguments)
+    // ssh [options] destination [command]: interactive only without a command, so null when there's one.
+    private static string? SshDestination(List<string> arguments)
     {
         var index = 0;
         while (index < arguments.Count && arguments[index].StartsWith('-') && arguments[index].Length > 1)
@@ -55,7 +55,7 @@ public static class NestedSession
             index += option.Length == 2 && SshOptionsWithValue.Contains(option[1], StringComparison.Ordinal) ? 2 : 1;
         }
 
-        return arguments.Count - index == 1;
+        return arguments.Count - index == 1 ? arguments[index] : null;
     }
 
     private static bool IsInteractiveExec(List<string> arguments, params string[] verbs) =>
