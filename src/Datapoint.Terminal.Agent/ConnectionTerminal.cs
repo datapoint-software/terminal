@@ -147,8 +147,11 @@ public sealed class ConnectionTerminal : IAgentTerminal
         var commands = Emulator.Commands;
         for (var index = commands.Count - 1; index >= 0; index--)
         {
+            // The command typed at the prompt is read from where it was typed, not where its output starts: a command that printed
+            // nothing, such as a health check, starts and ends its output on the line where the next one is typed, so by its
+            // output it would pass for the next command, finished, with no output and its exit code.
             var record = commands[index];
-            if (record.OutputLine is { } line && line >= outputLine)
+            if (record is { OutputLine: not null, InputLine: { } input } && input >= outputLine)
             {
                 return record;
             }

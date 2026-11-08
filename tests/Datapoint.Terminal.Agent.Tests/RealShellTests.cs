@@ -63,6 +63,26 @@ public sealed class RealShellTests : IDisposable
         Assert.Contains(connection.Terminal.Commands, command => command.Source == Emulator.ShellIntegration.CommandSource.Agent && string.Equals(command.CommandLine, "ls /nonexistent-folder", StringComparison.Ordinal));
     }
 
+    // A command that prints nothing, such as a health check, ends on the line where the next one is typed. The next command
+    // must wait for its own output rather than take that one's empty result as its own.
+    [Fact]
+    public async Task Reads_the_output_of_a_command_typed_after_one_that_printed_nothing()
+    {
+        await using var connection = await StartBashAsync();
+        var results = new List<string>();
+        var client = new ScriptedChatClient(
+            _ => Call("run_command", new Dictionary<string, object?>(StringComparer.Ordinal) { ["command"] = "test 1 = 1", ["purpose"] = "test" }),
+            messages => { results.Add(LastToolResult(messages)); return Call("run_command", new Dictionary<string, object?>(StringComparer.Ordinal) { ["command"] = "sleep 0.3; echo after; false", ["purpose"] = "test" }, "call-2"); },
+            messages => { results.Add(LastToolResult(messages)); return Text("Done."); });
+        using var agent = new TerminalAgent(client, new FakeUser(), new SecretRedactor(), new AgentOptions { CommandTimeout = TimeSpan.FromSeconds(10) });
+        agent.AddTerminal(new AgentTerminal("Local", new ConnectionTerminal(connection)));
+
+        await agent.SendAsync("Try it", Token);
+
+        Assert.Equal("Exit code: 0\n<terminal_output>\n\n</terminal_output>", results[0]);
+        Assert.Equal("Exit code: 1\n<terminal_output>\nafter\n</terminal_output>", results[1]);
+    }
+
     // The user started another shell, as with ssh: the outer shell reports it as a running command, yet the agent types into it.
     [Fact]
     public async Task Types_into_a_session_the_user_opened_in_the_terminal()
