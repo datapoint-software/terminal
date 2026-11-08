@@ -60,23 +60,27 @@ public sealed partial class MainWindow : IHistoryAccess
     }
 
     // Read-only windows don't open the store, since opening it can upgrade its format. The file isn't created just to search it.
-    private IReadOnlyList<HistoryEntry> SearchHistory(string words, int limit)
+    private IReadOnlyList<HistoryEntry> SearchHistory(string words, int limit) => UseHistory(history => history.Search(words, limit), []);
+
+    private HistoryEntry? FindHistoryEntry(long id) => UseHistory(history => history.Find(id), null);
+
+    private T UseHistory<T>(Func<HistoryStore, T> use, T none)
     {
         if (Workspace.IsReadOnly)
         {
-            return [];
+            return none;
         }
 
         lock (_historyLock)
         {
             if (_isHistoryUnavailable || (_history is null && !File.Exists(Path.Combine(Workspace.PersonalPath, HistoryStore.FileName))))
             {
-                return [];
+                return none;
             }
 
             try
             {
-                return OpenHistory().Search(words, limit);
+                return use(OpenHistory());
             }
             catch (Exception exception) when (exception is SqliteException or HistoryException)
             {

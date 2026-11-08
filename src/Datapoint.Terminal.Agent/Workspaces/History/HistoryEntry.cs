@@ -10,4 +10,8 @@ public sealed record HistoryEntry(
     string? Terminal = null,
     string? Detail = null,
     int? ExitCode = null,
-    string? Connection = null);
+    string? Connection = null)
+{
+    // The row's number in the store, which read_history finds the entry by; 0 for an entry not yet stored.
+    public long Id { get; init; }
+}

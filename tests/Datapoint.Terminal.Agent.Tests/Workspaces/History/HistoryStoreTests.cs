@@ -31,7 +31,7 @@ public sealed class HistoryStoreTests : IDisposable
         var entries = reopened.Conversation(conversation);
 
         Assert.Equal([HistoryEntryKind.User, HistoryEntryKind.Command, HistoryEntryKind.Agent], entries.Select(entry => entry.Kind));
-        Assert.Equal(new HistoryEntry(conversation, s_start.AddSeconds(1), HistoryEntryKind.Command, "df -h", "web1", "/dev/sda1 50G 20G", 0), entries[1]);
+        Assert.Equal(new HistoryEntry(conversation, s_start.AddSeconds(1), HistoryEntryKind.Command, "df -h", "web1", "/dev/sda1 50G 20G", 0) { Id = 2 }, entries[1]);
     }
 
     [Fact]
@@ -80,6 +80,10 @@ public sealed class HistoryStoreTests : IDisposable
         Assert.Equal(["Restarted nginx on web1."], store.Search("nginx web1", 10).Select(entry => entry.Text), StringComparer.Ordinal);
         Assert.Empty(store.Search("\"nginx\" OR (", 10));
         Assert.Empty(store.Search("   ", 10));
+
+        var found = store.Search("systemctl", 10).Single();
+        Assert.Equal("ok", store.Find(found.Id)!.Detail);
+        Assert.Null(store.Find(found.Id + 100));
     }
 
     [Fact]

@@ -212,6 +212,7 @@ public sealed partial class MainWindow : Window, ITerminalOpener
                     HostDocs = CreateHostDocs(),
                     Skills = CreateSkills(),
                     HistorySearch = SearchHistory,
+                    HistoryEntryReader = FindHistoryEntry,
                 };
                 _agent.Mode = _settings.ModeFor(Workspace.Folder);
                 _agent.ModeChanged += OnAgentModeChanged;

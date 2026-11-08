@@ -89,6 +89,15 @@ public sealed class HistoryStore : IDisposable
         }
     }
 
+    public HistoryEntry? Find(long id)
+    {
+        lock (_lock)
+        {
+            using var command = Command($"SELECT {Columns} FROM entries WHERE id = $id", ("$id", id));
+            return Read(command).FirstOrDefault();
+        }
+    }
+
     // Every word must appear, as typed: the words are quoted, so FTS5's own syntax can't make a query fail.
     public IReadOnlyList<HistoryEntry> Search(string text, int limit)
     {
@@ -285,7 +294,7 @@ public sealed class HistoryStore : IDisposable
         }
     }
 
-    private const string Columns = "entries.conversation, entries.time, entries.kind, entries.terminal, entries.text, entries.detail, entries.exit_code, entries.connection";
+    private const string Columns = "entries.conversation, entries.time, entries.kind, entries.terminal, entries.text, entries.detail, entries.exit_code, entries.connection, entries.id";
 
     private SqliteCommand Command(string sql, params (string Name, object? Value)[] parameters)
     {
@@ -313,7 +322,10 @@ public sealed class HistoryStore : IDisposable
                 reader.IsDBNull(3) ? null : reader.GetString(3),
                 reader.IsDBNull(5) ? null : reader.GetString(5),
                 reader.IsDBNull(6) ? null : reader.GetInt32(6),
-                reader.IsDBNull(7) ? null : reader.GetString(7)));
+                reader.IsDBNull(7) ? null : reader.GetString(7))
+            {
+                Id = reader.GetInt64(8),
+            });
         }
 
         return entries;
