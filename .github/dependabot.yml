@@ -1,0 +1,24 @@
+# Keeps the workflows' actions current. They're pinned by commit SHA, so a
+# moved tag can't change what runs; Dependabot updates the SHA and its
+# version comment together, in one pull request that CI runs.
+#
+# Commit messages and pull request titles follow Conventional Commits: the
+# prefix is the type and `include: scope` adds the `deps` scope, so they
+# read `ci(deps): bump ...`.
+#
+# NuGet packages aren't listed: they're updated by hand, since an upgrade
+# means regenerating THIRD-PARTY-NOTICES.txt and reviewing any new license
+# (docs/engineering.md, Build and packages).
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: ci
+      include: scope
+    groups:
+      actions:
+        patterns: ["*"]
