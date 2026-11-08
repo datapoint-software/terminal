@@ -3118,7 +3118,7 @@ Fingerprint: {2}</value>
     <value>Language</value>
   </data>
   <data name="AppearanceLanguageSystem" xml:space="preserve">
-    <value>System ({0})</value>
+    <value>System: {0}</value>
   </data>
   <data name="AppearanceLanguageHint" xml:space="preserve">
     <value>Changes the application's text at once. The agent uses the new language from the next conversation; one under way keeps its language. Commands, files and host documentation stay in the language they're written in.</value>
@@ -3137,5 +3137,11 @@ Fingerprint: {2}</value>
   </data>
   <data name="ThemeImportTooLarge" xml:space="preserve">
     <value>it's too large to be a theme</value>
+  </data>
+  <data name="ThemeDefaultDark" xml:space="preserve">
+    <value>Default dark</value>
+  </data>
+  <data name="ThemeDefaultLight" xml:space="preserve">
+    <value>Default light</value>
   </data>
 </root>

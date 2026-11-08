@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="NoticeReconnected" xml:space="preserve">
+    <value>Ligação a {0} restabelecida após {1}.</value>
+  </data>
+  <data name="NoticeOpening" xml:space="preserve">
+    <value>A abrir um terminal para {0}: {1}</value>
+  </data>
+  <data name="NoticeHostDocsLogged" xml:space="preserve">
+    <value>Registei uma alteração na documentação de {0}.</value>
+  </data>
+  <data name="NoticeHostDocsUpdated" xml:space="preserve">
+    <value>Atualizei "{0}" na documentação de {1}.</value>
+  </data>
+  <data name="CommandFinished" xml:space="preserve">
+    <value>Terminado</value>
+  </data>
+  <data name="CommandStillRunning" xml:space="preserve">
+    <value>Ainda em execução</value>
+  </data>
+  <data name="NoticeReadBeside" xml:space="preserve">
+    <value>Li {0} na máquina de {1}, ao lado do terminal.</value>
+  </data>
+  <data name="NoticeInterrupted" xml:space="preserve">
+    <value>Interrompido. Diga-me como prosseguir ou continue.</value>
+  </data>
+  <data name="NoticeProviderFailed" xml:space="preserve">
+    <value>O pedido ao fornecedor de IA falhou: {0}</value>
+  </data>
+  <data name="NoticeSpendingLimit" xml:space="preserve">
+    <value>Esta sessão atingiu o limite de gastos, por isso parei antes de voltar a contactar o fornecedor de IA. Aumente ou remova o limite para prosseguir.</value>
+  </data>
+  <data name="NoticeStepLimit" xml:space="preserve">
+    <value>Parei após {0} passos. Diga-me se devo prosseguir.</value>
+  </data>
+  <data name="NoticeWatching" xml:space="preserve">
+    <value>A vigiar {0} até {1}, durante no máximo {2} minutos.</value>
+  </data>
+  <data name="WatchingOr" xml:space="preserve">
+    <value> ou </value>
+  </data>
+  <data name="MemoryRememberedEverywhere" xml:space="preserve">
+    <value>Memorizado em todo o lado: {0}</value>
+  </data>
+  <data name="MemoryRememberedWorkspace" xml:space="preserve">
+    <value>Memorizado para este espaço de trabalho: {0}</value>
+  </data>
+  <data name="MemoryForgotEverywhere" xml:space="preserve">
+    <value>Esquecido em todo o lado: {0}</value>
+  </data>
+  <data name="MemoryForgotWorkspace" xml:space="preserve">
+    <value>Esquecido para este espaço de trabalho: {0}</value>
+  </data>
+  <data name="NoticeSkillSaved" xml:space="preserve">
+    <value>Guardei a competência "{0}" em skills/{1}.</value>
+  </data>
+  <data name="NoticeKeysPressed" xml:space="preserve">
+    <value>Premi {0} em {1}: {2}</value>
+  </data>
+  <data name="NoticeRolloutSame" xml:space="preserve">
+    <value>Aprovado em {0} anteriormente nesta tarefa; a executar o mesmo comando em {1}.</value>
+  </data>
+  <data name="NoticeEditing" xml:space="preserve">
+    <value>A alterar {0} em {1}:
+{2}</value>
+  </data>
+  <data name="NoticeEditStaged" xml:space="preserve">
+    <value>Guardei o novo {0} em {1} na máquina de {2}, ao lado do terminal.</value>
+  </data>
+  <data name="NoticeSummarized" xml:space="preserve">
+    <value>A conversa atingiu {0} tokens, por isso resumi-a e continuei a partir do resumo, para que cada resposta fique mais barata. A conversa e o histórico continuam a ter tudo.</value>
+  </data>
+</root>

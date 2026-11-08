@@ -15,10 +15,3127 @@
   <data name="ChatTitle" xml:space="preserve">
     <value>Agente</value>
   </data>
+  <data name="ChatInputPlaceholder" xml:space="preserve">
+    <value>Pedir ao agente…</value>
+  </data>
+  <data name="ChatSend" xml:space="preserve">
+    <value>Enviar</value>
+  </data>
+  <data name="ChatStop" xml:space="preserve">
+    <value>Parar</value>
+  </data>
+  <data name="ChatContinue" xml:space="preserve">
+    <value>Continuar</value>
+  </data>
+  <data name="ChatClear" xml:space="preserve">
+    <value>Nova conversa</value>
+  </data>
+  <data name="ChatMode" xml:space="preserve">
+    <value>Aprovação</value>
+  </data>
+  <data name="ModeAsk" xml:space="preserve">
+    <value>Perguntar</value>
+  </data>
+  <data name="ModeAskForRisky" xml:space="preserve">
+    <value>Perguntar se arriscado</value>
+  </data>
+  <data name="ModePlan" xml:space="preserve">
+    <value>Planear</value>
+  </data>
+  <data name="StatusIdle" xml:space="preserve">
+    <value>Inativo</value>
+  </data>
+  <data name="StatusThinking" xml:space="preserve">
+    <value>A pensar…</value>
+  </data>
+  <data name="StatusRunningCommand" xml:space="preserve">
+    <value>A executar um comando</value>
+  </data>
+  <data name="StatusWaitingForApproval" xml:space="preserve">
+    <value>A aguardar a sua aprovação</value>
+  </data>
+  <data name="StatusWaitingForUser" xml:space="preserve">
+    <value>A aguardar a sua resposta</value>
+  </data>
+  <data name="StatusInterrupted" xml:space="preserve">
+    <value>Interrompido</value>
+  </data>
+  <data name="StatusNoProvider" xml:space="preserve">
+    <value>Sem ligação a um fornecedor de IA</value>
+  </data>
+  <data name="ApprovalHeading" xml:space="preserve">
+    <value>O agente quer executar este comando</value>
+  </data>
+  <data name="ApprovalHeadingTrust" xml:space="preserve">
+    <value>Este comando altera as máquinas em que confia ou a forma como inicia sessão</value>
+  </data>
+  <data name="ApprovalRiskReadOnly" xml:space="preserve">
+    <value>Apenas lê, tanto quanto a aplicação consegue determinar.</value>
+  </data>
+  <data name="ApprovalRiskChanges" xml:space="preserve">
+    <value>Pode alterar o sistema.</value>
+  </data>
+  <data name="ApprovalRiskAlwaysAsk" xml:space="preserve">
+    <value>Precisa sempre da sua aprovação, em todos os modos.</value>
+  </data>
+  <data name="ApprovalCommandLabel" xml:space="preserve">
+    <value>Comando</value>
+  </data>
+  <data name="ApprovalRun" xml:space="preserve">
+    <value>Executar</value>
+  </data>
+  <data name="ApprovalDecline" xml:space="preserve">
+    <value>Recusar</value>
+  </data>
+  <data name="ApprovalFeedbackPlaceholder" xml:space="preserve">
+    <value>Motivo, ou o que fazer em alternativa (opcional)</value>
+  </data>
+  <data name="QuestionAnswer" xml:space="preserve">
+    <value>Responder</value>
+  </data>
+  <data name="QuestionSkip" xml:space="preserve">
+    <value>Ignorar</value>
+  </data>
+  <data name="QuestionPlaceholder" xml:space="preserve">
+    <value>A sua resposta</value>
+  </data>
+  <data name="CommandExitCode" xml:space="preserve">
+    <value>Código de saída {0}</value>
+  </data>
+  <data name="NoticeProviderFailed" xml:space="preserve">
+    <value>Não foi possível configurar o fornecedor de IA: {0}</value>
+  </data>
+  <data name="ModeAskHelp" xml:space="preserve">
+    <value>Todos os comandos aguardam a sua aprovação, em todos os terminais.</value>
+  </data>
+  <data name="ModeAskForRiskyHelp" xml:space="preserve">
+    <value>Os comandos que apenas leem são executados automaticamente; tudo o que possa alterar um sistema aguarda a sua aprovação.</value>
+  </data>
+  <data name="ModePlanHelp" xml:space="preserve">
+    <value>Os comandos que apenas leem são executados automaticamente. Antes de alterar algo, o agente apresenta um plano para aprovação; os passos do plano são depois executados sem perguntar, e tudo o resto pergunta.</value>
+  </data>
+  <data name="SettingsTitle" xml:space="preserve">
+    <value>Definições</value>
+  </data>
+  <data name="SettingsProviders" xml:space="preserve">
+    <value>Fornecedores de IA</value>
+  </data>
+  <data name="SettingsAdd" xml:space="preserve">
+    <value>Adicionar um fornecedor</value>
+  </data>
+  <data name="SettingsRemove" xml:space="preserve">
+    <value>Remover este fornecedor</value>
+  </data>
+  <data name="SettingsEmpty" xml:space="preserve">
+    <value>Adicione um fornecedor para o agente poder trabalhar. Pode usar a Anthropic ou a OpenAI com a sua chave de API, ou um modelo que execute por conta própria.</value>
+  </data>
+  <data name="ProviderKind" xml:space="preserve">
+    <value>Fornecedor</value>
+  </data>
+  <data name="ProviderKindAnthropic" xml:space="preserve">
+    <value>Anthropic</value>
+  </data>
+  <data name="ProviderKindOpenAI" xml:space="preserve">
+    <value>OpenAI</value>
+  </data>
+  <data name="ProviderKindCompatible" xml:space="preserve">
+    <value>Outro</value>
+  </data>
+  <data name="ProviderName" xml:space="preserve">
+    <value>Nome</value>
+  </data>
+  <data name="ProviderModel" xml:space="preserve">
+    <value>Modelo</value>
+  </data>
+  <data name="ProviderEndpoint" xml:space="preserve">
+    <value>Endereço do servidor</value>
+  </data>
+  <data name="ProviderEndpointHint" xml:space="preserve">
+    <value>p. ex. http://localhost:11434/v1 para o Ollama</value>
+  </data>
+  <data name="ProviderIsLocal" xml:space="preserve">
+    <value>É executado na minha própria máquina ou rede</value>
+  </data>
+  <data name="ProviderApiKey" xml:space="preserve">
+    <value>Chave de API</value>
+  </data>
+  <data name="ProviderApiKeyOptional" xml:space="preserve">
+    <value>Só é necessária se o servidor a pedir.</value>
+  </data>
+  <data name="ProviderKeyPlaceholder" xml:space="preserve">
+    <value>Colar a chave de API</value>
+  </data>
+  <data name="ProviderKeySave" xml:space="preserve">
+    <value>Guardar</value>
+  </data>
+  <data name="ProviderKeyReplace" xml:space="preserve">
+    <value>Substituir</value>
+  </data>
+  <data name="ProviderKeyRemove" xml:space="preserve">
+    <value>Remover</value>
+  </data>
+  <data name="ProviderKeySaved" xml:space="preserve">
+    <value>Guardada em {0}. Não volta a ser mostrada.</value>
+  </data>
+  <data name="ProviderKeyFromEnvironment" xml:space="preserve">
+    <value>A usar {0} do ambiente. Guarde aqui uma chave para a manter em {1}.</value>
+  </data>
+  <data name="ProviderKeyNoStore" xml:space="preserve">
+    <value>Este sistema não tem porta-chaves, por isso não é possível guardar chaves. Defina {0} antes de iniciar a aplicação.</value>
+  </data>
+  <data name="ProviderKeyGetOne" xml:space="preserve">
+    <value>Crie uma chave na consola do fornecedor. A utilização da API é faturada pelo fornecedor, à parte de qualquer subscrição de chat.</value>
+  </data>
+  <data name="ProviderUse" xml:space="preserve">
+    <value>Usar no agente</value>
+  </data>
+  <data name="ProviderInUse" xml:space="preserve">
+    <value>O agente usa este fornecedor</value>
+  </data>
+  <data name="ProviderTest" xml:space="preserve">
+    <value>Testar ligação</value>
+  </data>
+  <data name="ProviderTesting" xml:space="preserve">
+    <value>A testar…</value>
+  </data>
+  <data name="ProviderTestPassed" xml:space="preserve">
+    <value>Ligado. O modelo respondeu.</value>
+  </data>
+  <data name="ProviderTestFailed" xml:space="preserve">
+    <value>Não foi possível ligar: {0}</value>
+  </data>
+  <data name="ProviderSendsTo" xml:space="preserve">
+    <value>O agente envia as suas mensagens, e os comandos que executa com o respetivo resultado, para {0}.</value>
+  </data>
+  <data name="ProviderStaysLocal" xml:space="preserve">
+    <value>O agente envia as suas mensagens e o resultado do terminal para {0}, que marcou como seu.</value>
+  </data>
+  <data name="ChatSettings" xml:space="preserve">
+    <value>Definições</value>
+  </data>
+  <data name="ChatConnect" xml:space="preserve">
+    <value>Ligar a um fornecedor de IA</value>
+  </data>
+  <data name="ChatConnectText" xml:space="preserve">
+    <value>O agente precisa de um fornecedor de IA. Adicione a sua chave de API da Anthropic ou da OpenAI, ou um modelo que execute por conta própria.</value>
+  </data>
+  <data name="NoticeSwitched" xml:space="preserve">
+    <value>A partir de agora, a conversa é enviada para {0}.</value>
+  </data>
+  <data name="MarkdownCopy" xml:space="preserve">
+    <value>Copiar</value>
+  </data>
+  <data name="MarkdownCopied" xml:space="preserve">
+    <value>Copiado</value>
+  </data>
+  <data name="MarkdownCopyCode" xml:space="preserve">
+    <value>Copiar código</value>
+  </data>
+  <data name="MarkdownSelectAll" xml:space="preserve">
+    <value>Selecionar tudo</value>
+  </data>
+  <data name="MarkdownOpenLinkQuestion" xml:space="preserve">
+    <value>Abrir esta ligação no browser?</value>
+  </data>
+  <data name="MarkdownOpen" xml:space="preserve">
+    <value>Abrir</value>
+  </data>
+  <data name="MarkdownCancel" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
+  <data name="MarkdownLoadImage" xml:space="preserve">
+    <value>Carregar imagem de {0}</value>
+  </data>
+  <data name="MarkdownLoadImageHelp" xml:space="preserve">
+    <value>As imagens só são carregadas quando pedir: carregar uma revela a {0} o seu endereço IP e que leu esta resposta.</value>
+  </data>
+  <data name="MarkdownImageFailed" xml:space="preserve">
+    <value>Não foi possível carregar a imagem.</value>
+  </data>
+  <data name="MenuFile" xml:space="preserve">
+    <value>_Ficheiro</value>
+  </data>
+  <data name="MenuNewWorkspace" xml:space="preserve">
+    <value>_Novo espaço de trabalho…</value>
+  </data>
+  <data name="MenuOpenWorkspace" xml:space="preserve">
+    <value>_Abrir espaço de trabalho…</value>
+  </data>
+  <data name="MenuOpenRecent" xml:space="preserve">
+    <value>Abrir _recentes</value>
+  </data>
+  <data name="MenuClearRecent" xml:space="preserve">
+    <value>Limpar recentes</value>
+  </data>
+  <data name="MenuSettings" xml:space="preserve">
+    <value>_Definições…</value>
+  </data>
+  <data name="MenuCloseWindow" xml:space="preserve">
+    <value>_Fechar janela</value>
+  </data>
+  <data name="PickerNewWorkspace" xml:space="preserve">
+    <value>Escolha ou crie uma pasta para o novo espaço de trabalho</value>
+  </data>
+  <data name="PickerOpenWorkspace" xml:space="preserve">
+    <value>Escolha a pasta de um espaço de trabalho</value>
+  </data>
+  <data name="NoticeWorkspaceReadOnly" xml:space="preserve">
+    <value>Este espaço de trabalho está aberto noutra instância do Datapoint Terminal, por isso nada é guardado nele a partir desta janela.</value>
+  </data>
+  <data name="NoticeWorkspaceFailed" xml:space="preserve">
+    <value>Não foi possível abrir o espaço de trabalho. {0}</value>
+  </data>
+  <data name="NoticeWorkspaceIsNotNew" xml:space="preserve">
+    <value>{0} já é um espaço de trabalho, por isso foi aberto tal como está.</value>
+  </data>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>{0} — Datapoint Terminal</value>
+  </data>
+  <data name="WindowTitleWithShell" xml:space="preserve">
+    <value>{0} — {1}</value>
+  </data>
+  <data name="CommandInTerminal" xml:space="preserve">
+    <value>{0} · {1}</value>
+  </data>
+  <data name="ApprovalInTerminal" xml:space="preserve">
+    <value>Em {0}</value>
+  </data>
+  <data name="ApprovalInTerminalEnvironment" xml:space="preserve">
+    <value>Em {0} · {1}</value>
+  </data>
+  <data name="MenuTerminal" xml:space="preserve">
+    <value>_Terminal</value>
+  </data>
+  <data name="MenuNewTab" xml:space="preserve">
+    <value>Novo _separador</value>
+  </data>
+  <data name="MenuCloseTab" xml:space="preserve">
+    <value>_Fechar separador</value>
+  </data>
+  <data name="MenuNextTab" xml:space="preserve">
+    <value>_Próximo separador</value>
+  </data>
+  <data name="MenuPreviousTab" xml:space="preserve">
+    <value>Separador _anterior</value>
+  </data>
+  <data name="TabNew" xml:space="preserve">
+    <value>Novo separador</value>
+  </data>
+  <data name="TabClose" xml:space="preserve">
+    <value>Fechar {0}</value>
+  </data>
+  <data name="TabLocal" xml:space="preserve">
+    <value>Local</value>
+  </data>
+  <data name="TabAgentActing" xml:space="preserve">
+    <value>{0}, o agente está a trabalhar aqui</value>
+  </data>
+  <data name="TabAgentNeedsUser" xml:space="preserve">
+    <value>{0}, o agente está à sua espera aqui</value>
+  </data>
+  <data name="TabsName" xml:space="preserve">
+    <value>Terminais</value>
+  </data>
+  <data name="NoticeShellFailed" xml:space="preserve">
+    <value>Não foi possível iniciar a shell: {0}</value>
+  </data>
+  <data name="NewTabLocal" xml:space="preserve">
+    <value>Local</value>
+  </data>
+  <data name="NewTabSshHosts" xml:space="preserve">
+    <value>Hosts em ~/.ssh/config</value>
+  </data>
+  <data name="NewTabNoSshHosts" xml:space="preserve">
+    <value>Nenhum host em ~/.ssh/config</value>
+  </data>
+  <data name="AddHostTitle" xml:space="preserve">
+    <value>Adicionar {0} a este espaço de trabalho?</value>
+  </data>
+  <data name="AddHostMessage" xml:space="preserve">
+    <value>{0} está no seu ~/.ssh/config mas não neste espaço de trabalho. Adicioná-lo inclui-o em workspace.json, que é partilhado com o espaço de trabalho, e permite ao agente manter documentação sobre ele em hosts/. Também o pode abrir uma vez sem o adicionar.</value>
+  </data>
+  <data name="AddHostAdd" xml:space="preserve">
+    <value>Adicionar ao espaço de trabalho</value>
+  </data>
+  <data name="AddHostOpenOnce" xml:space="preserve">
+    <value>Abrir sem adicionar</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
+  <data name="NoticeWorkspaceReadOnlyNotAdded" xml:space="preserve">
+    <value>{0} não foi adicionado: este espaço de trabalho é só de leitura aqui.</value>
+  </data>
+  <data name="NoticeHostAdded" xml:space="preserve">
+    <value>{0} foi adicionado às ligações deste espaço de trabalho.</value>
+  </data>
+  <data name="PromptFromServer" xml:space="preserve">
+    <value>Do servidor:</value>
+  </data>
+  <data name="PromptLogIn" xml:space="preserve">
+    <value>Iniciar sessão</value>
+  </data>
+  <data name="PasswordTitle" xml:space="preserve">
+    <value>Iniciar sessão em {0}</value>
+  </data>
+  <data name="PasswordMessage" xml:space="preserve">
+    <value>Introduza a palavra-passe de {0} em {1}. É enviada apenas para o servidor, nunca para o fornecedor de IA.</value>
+  </data>
+  <data name="PasswordField" xml:space="preserve">
+    <value>Palavra-passe</value>
+  </data>
+  <data name="KeyboardInteractiveTitle" xml:space="preserve">
+    <value>Iniciar sessão em {0}</value>
+  </data>
+  <data name="KeyboardInteractiveMessage" xml:space="preserve">
+    <value>O servidor pede o seguinte. As respostas são enviadas apenas para o servidor, nunca para o fornecedor de IA.</value>
+  </data>
+  <data name="HostKeyNewTitle" xml:space="preserve">
+    <value>Primeira ligação a {0}</value>
+  </data>
+  <data name="HostKeyNewMessage" xml:space="preserve">
+    <value>O Datapoint Terminal ainda não se ligou a este servidor, por isso ainda não consegue saber se é o servidor certo. Antes de confiar nele, confirme que a impressão digital abaixo corresponde à indicada pelo administrador do servidor ou pela consola do próprio servidor.</value>
+  </data>
+  <data name="HostKeyNewOtherTypes" xml:space="preserve">
+    <value>Já existem chaves de outro tipo ({0}) registadas para este host, o que é invulgar: verifique a impressão digital com atenção.</value>
+  </data>
+  <data name="HostKeyDetails" xml:space="preserve">
+    <value>Host: {0}
+Tipo de chave: {1}
+Impressão digital: {2}</value>
+  </data>
+  <data name="HostKeyCancel" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
+  <data name="HostKeyOnce" xml:space="preserve">
+    <value>Ligar uma vez</value>
+  </data>
+  <data name="HostKeyTrust" xml:space="preserve">
+    <value>Confiar e ligar</value>
+  </data>
+  <data name="HostKeyChangedTitle" xml:space="preserve">
+    <value>A identidade de {0} mudou</value>
+  </data>
+  <data name="HostKeyChangedMessage" xml:space="preserve">
+    <value>O servidor enviou uma chave diferente da registada na linha {1} de {0}. Alguém pode estar a intercetar a ligação, ou o servidor pode ter sido reinstalado. A ligação foi interrompida. Se já confirmou o motivo da mudança, remova a chave antiga (por exemplo, com ssh-keygen -R {2}) e volte a ligar.</value>
+  </data>
+  <data name="HostKeyRevokedTitle" xml:space="preserve">
+    <value>A chave de {0} foi revogada</value>
+  </data>
+  <data name="HostKeyRevokedMessage" xml:space="preserve">
+    <value>A chave do servidor está marcada como revogada na linha {1} de {0}, por isso a ligação foi interrompida.</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Fechar</value>
+  </data>
+  <data name="NoticeConnecting" xml:space="preserve">
+    <value>A ligar a {0}…</value>
+  </data>
+  <data name="NoticeServerBanner" xml:space="preserve">
+    <value>Mensagem do servidor de {0}:
+{1}</value>
+  </data>
+  <data name="NoticeConnectFailed" xml:space="preserve">
+    <value>Não foi possível ligar a {0}: {1}</value>
+  </data>
+  <data name="NoticeLoginNote" xml:space="preserve">
+    <value>{0}: {1}</value>
+  </data>
+  <data name="MenuWorkspaceTrust" xml:space="preserve">
+    <value>Confiança no espaço de trabalho…</value>
+  </data>
+  <data name="TrustTitle" xml:space="preserve">
+    <value>Confiar em {0}?</value>
+  </data>
+  <data name="TrustMessage" xml:space="preserve">
+    <value>Quando confia num espaço de trabalho, as respetivas instruções orientam o agente e os respetivos hosts podem ser abertos. Confie apenas se souber quem o pode alterar: um espaço de trabalho partilhado através de um serviço de sincronização, de uma unidade de rede ou de um repositório pode conter instruções escritas para enganar o agente. Até confiar nele, o agente lê estes ficheiros como dados, não como instruções.</value>
+  </data>
+  <data name="TrustFiles" xml:space="preserve">
+    <value>Instruções:</value>
+  </data>
+  <data name="TrustConnections" xml:space="preserve">
+    <value>Hosts em workspace.json:</value>
+  </data>
+  <data name="TrustNothing" xml:space="preserve">
+    <value>Este espaço de trabalho ainda não tem instruções nem hosts.</value>
+  </data>
+  <data name="TrustNew" xml:space="preserve">
+    <value>{0} (novo)</value>
+  </data>
+  <data name="TrustDont" xml:space="preserve">
+    <value>Não confiar</value>
+  </data>
+  <data name="TrustTrust" xml:space="preserve">
+    <value>Confiar no espaço de trabalho</value>
+  </data>
+  <data name="NoticeInstructions" xml:space="preserve">
+    <value>O agente segue as instruções em {0}.</value>
+  </data>
+  <data name="NoticeInstructionsData" xml:space="preserve">
+    <value>O agente lê {0} como dados, não como instruções, porque não confiou nele. Para alterar isto, escolha Ficheiro › Confiança no espaço de trabalho…</value>
+  </data>
+  <data name="NoticeInstructionsCut" xml:space="preserve">
+    <value>Os ficheiros de instruções estão limitados a 32 KB no total, por isso {0} foi truncado.</value>
+  </data>
+  <data name="NoticeInstructionsUnreadable" xml:space="preserve">
+    <value>Não foi possível ler {0}: {1}</value>
+  </data>
+  <data name="ReviewTitle" xml:space="preserve">
+    <value>Rever alterações às ligações</value>
+  </data>
+  <data name="ReviewMessage" xml:space="preserve">
+    <value>O workspace.json em {0} foi alterado fora do Datapoint Terminal, p. ex. por um git pull ou por um colega. Estas alterações tornam as ligações menos restritas ou apontam-nas para outro destino, por isso aguardam a sua decisão. Até as aceitar, as ligações mantêm as definições que confirmou da última vez.</value>
+  </data>
+  <data name="ReviewKeep" xml:space="preserve">
+    <value>Manter definições confirmadas</value>
+  </data>
+  <data name="ReviewAccept" xml:space="preserve">
+    <value>Aceitar alterações</value>
+  </data>
+  <data name="ReviewNewConnection" xml:space="preserve">
+    <value>{0}: nova ligação a {1}</value>
+  </data>
+  <data name="ReviewChange" xml:space="preserve">
+    <value>{0}: {1} {2} → {3}</value>
+  </data>
+  <data name="ReviewNone" xml:space="preserve">
+    <value>nenhum</value>
+  </data>
+  <data name="NoticeConnectionsStricter" xml:space="preserve">
+    <value>Foram aplicadas a {0} as alterações de workspace.json, dado que apenas tornam tudo mais restrito.</value>
+  </data>
+  <data name="NoticeConnectionsHeld" xml:space="preserve">
+    <value>As alterações às ligações em workspace.json aguardam a sua revisão; as ligações mantêm as definições que confirmou. Serão mostradas de novo na próxima vez que abrir o espaço de trabalho.</value>
+  </data>
+  <data name="NoticeInstructionsChanged" xml:space="preserve">
+    <value>{0} foi alterado desde a última vez que o agente o leu.</value>
+  </data>
+  <data name="ShowChanges" xml:space="preserve">
+    <value>Mostrar alterações</value>
+  </data>
+  <data name="InstructionChangesTitle" xml:space="preserve">
+    <value>Alterações a {0}</value>
+  </data>
+  <data name="InstructionChangesMessage" xml:space="preserve">
+    <value>Desde a última vez que o agente leu este ficheiro. As linhas que começam por - foram removidas e as que começam por + foram adicionadas.</value>
+  </data>
+  <data name="BusyAgent" xml:space="preserve">
+    <value>o agente está a executar um comando ali</value>
+  </data>
+  <data name="BusyFullScreen" xml:space="preserve">
+    <value>está aberto um programa em ecrã inteiro</value>
+  </data>
+  <data name="BusyCommand" xml:space="preserve">
+    <value>ainda está um comando em execução</value>
+  </data>
+  <data name="BusyRemote" xml:space="preserve">
+    <value>fechá-lo termina a ligação, e o que ainda estiver a ser executado através dela pode parar</value>
+  </data>
+  <data name="CloseTabTitle" xml:space="preserve">
+    <value>Fechar {0}?</value>
+  </data>
+  <data name="CloseTabMessage" xml:space="preserve">
+    <value>Em {0}, {1}.</value>
+  </data>
+  <data name="CloseTabConfirm" xml:space="preserve">
+    <value>Fechar separador</value>
+  </data>
+  <data name="CloseWindowTitle" xml:space="preserve">
+    <value>Fechar esta janela?</value>
+  </data>
+  <data name="CloseWindowMessage" xml:space="preserve">
+    <value>Fechar a janela fecha todos os seus separadores. Alguns ainda estão em uso:</value>
+  </data>
+  <data name="CloseWindowConfirm" xml:space="preserve">
+    <value>Fechar janela</value>
+  </data>
+  <data name="CloseTabLine" xml:space="preserve">
+    <value>{0}: {1}</value>
+  </data>
+  <data name="QuitTitle" xml:space="preserve">
+    <value>Sair do Datapoint Terminal?</value>
+  </data>
+  <data name="QuitMessage" xml:space="preserve">
+    <value>Sair fecha todos os separadores. Alguns ainda estão em uso:</value>
+  </data>
+  <data name="QuitConfirm" xml:space="preserve">
+    <value>Sair</value>
+  </data>
+  <data name="MarkdownLinks" xml:space="preserve">
+    <value>Ligações:</value>
+  </data>
+  <data name="MarkdownLinkName" xml:space="preserve">
+    <value>Ligação: {0}, para {1}</value>
+  </data>
+  <data name="WindowTitleNeedsUser" xml:space="preserve">
+    <value>À sua espera — {0}</value>
+  </data>
+  <data name="SecretTitle" xml:space="preserve">
+    <value>Possível segredo num ficheiro</value>
+  </data>
+  <data name="SecretMessage" xml:space="preserve">
+    <value>{0} está prestes a ser enviado para o fornecedor de IA com a sua mensagem, e as linhas abaixo parecem conter um segredo. Pode enviá-lo mascarado, com cada correspondência substituída por “{1}”, enviá-lo tal como está, ou não o enviar. “Não é um segredo” envia estas correspondências tal como estão e memoriza-as, nas definições desta aplicação, para não voltarem a ser assinaladas.</value>
+  </data>
+  <data name="SecretSkip" xml:space="preserve">
+    <value>Não enviar</value>
+  </data>
+  <data name="SecretAsWritten" xml:space="preserve">
+    <value>Enviar tal como está</value>
+  </data>
+  <data name="SecretNotSecret" xml:space="preserve">
+    <value>Não é um segredo</value>
+  </data>
+  <data name="SecretMasked" xml:space="preserve">
+    <value>Enviar mascarado</value>
+  </data>
+  <data name="SecretLine" xml:space="preserve">
+    <value>Linha {0}: {1}</value>
+  </data>
+  <data name="SecretMore" xml:space="preserve">
+    <value>…e mais {0} linhas</value>
+  </data>
+  <data name="NoticeTerminalIgnored" xml:space="preserve">
+    <value>Não enviados para o fornecedor de IA, porque constam do .terminalignore: {0}</value>
+  </data>
+  <data name="NoticeFilesSkipped" xml:space="preserve">
+    <value>Não enviados para o fornecedor de IA, conforme escolheu: {0}</value>
+  </data>
+  <data name="NoticeHistoryUnavailable" xml:space="preserve">
+    <value>Esta conversa não está a ser guardada no histórico do espaço de trabalho, que não foi possível escrever: {0}</value>
+  </data>
+  <data name="ApprovalHeadingOpen" xml:space="preserve">
+    <value>O agente quer abrir um terminal</value>
+  </data>
+  <data name="ApprovalRiskOpen" xml:space="preserve">
+    <value>Abre um novo separador para esta ligação, iniciando sessão como o utilizador faria. Nenhum comando é executado até aprovar um.</value>
+  </data>
+  <data name="ApprovalOpen" xml:space="preserve">
+    <value>Abrir</value>
+  </data>
+  <data name="ApprovalForConnection" xml:space="preserve">
+    <value>Para {0}</value>
+  </data>
+  <data name="ApprovalForConnectionEnvironment" xml:space="preserve">
+    <value>Para {0} · {1}</value>
+  </data>
+  <data name="NoticeAgentConnectionGone" xml:space="preserve">
+    <value>O agente pediu um terminal em {0}, que já não consta do espaço de trabalho.</value>
+  </data>
+  <data name="NoticeInstructionsSecretChanged" xml:space="preserve">
+    <value>{0} foi alterado desde a última vez que o agente o leu, apenas em valores que parecem segredos. Esses valores não são guardados, por isso a alteração não pode ser mostrada; abra o ficheiro para a verificar.</value>
+  </data>
+  <data name="ApprovalHeadingIgnored" xml:space="preserve">
+    <value>Este comando lê um ficheiro que consta do .terminalignore</value>
+  </data>
+  <data name="ApprovalRiskIgnored" xml:space="preserve">
+    <value>{0} consta do .terminalignore. Se este comando for executado, o que imprimir é enviado para o fornecedor de IA, com apenas os prováveis segredos mascarados. Pergunta em todos os modos.</value>
+  </data>
+  <data name="NoticeMemory" xml:space="preserve">
+    <value>A memória do agente acompanha esta conversa: {0}.</value>
+  </data>
+  <data name="NoticeMemoryUnwritable" xml:space="preserve">
+    <value>Não foi possível escrever o ficheiro de memória {0}: {1}</value>
+  </data>
+  <data name="ClearMemoryMessage" xml:space="preserve">
+    <value>O agente esquece todas as notas que guardou para este espaço de trabalho. As notas guardadas para todos os espaços de trabalho mantêm-se.</value>
+  </data>
+  <data name="MemoryOpen" xml:space="preserve">
+    <value>Abrir memória</value>
+  </data>
+  <data name="HostDocsOpen" xml:space="preserve">
+    <value>Abrir documentação</value>
+  </data>
+  <data name="HistoryTitle" xml:space="preserve">
+    <value>Histórico</value>
+  </data>
+  <data name="HistorySearch" xml:space="preserve">
+    <value>Pesquisar conversas e comandos</value>
+  </data>
+  <data name="HistoryKeep" xml:space="preserve">
+    <value>Manter histórico:</value>
+  </data>
+  <data name="HistoryKeepForever" xml:space="preserve">
+    <value>Para sempre</value>
+  </data>
+  <data name="HistoryKeepYear" xml:space="preserve">
+    <value>Durante um ano</value>
+  </data>
+  <data name="HistoryKeepDays" xml:space="preserve">
+    <value>Durante {0} dias</value>
+  </data>
+  <data name="HistoryClear" xml:space="preserve">
+    <value>Limpar histórico…</value>
+  </data>
+  <data name="HistoryList" xml:space="preserve">
+    <value>Conversas</value>
+  </data>
+  <data name="HistoryEntries" xml:space="preserve">
+    <value>{0} entradas</value>
+  </data>
+  <data name="HistoryEmpty" xml:space="preserve">
+    <value>Ainda não há conversas. As conversas com o agente neste espaço de trabalho são guardadas aqui.</value>
+  </data>
+  <data name="HistoryNoMatches" xml:space="preserve">
+    <value>Nenhum resultado. Todas as palavras têm de aparecer.</value>
+  </data>
+  <data name="HistoryYou" xml:space="preserve">
+    <value>Utilizador</value>
+  </data>
+  <data name="HistoryAgent" xml:space="preserve">
+    <value>Agente</value>
+  </data>
+  <data name="HistoryCommand" xml:space="preserve">
+    <value>Comando em {0}</value>
+  </data>
+  <data name="HistoryCommandExit" xml:space="preserve">
+    <value>Comando em {0}, código de saída {1}</value>
+  </data>
+  <data name="HistoryNotice" xml:space="preserve">
+    <value>Aviso</value>
+  </data>
+  <data name="HistoryShortenTitle" xml:space="preserve">
+    <value>Eliminar o histórico mais antigo?</value>
+  </data>
+  <data name="HistoryShortenMessage" xml:space="preserve">
+    <value>Manter o histórico {0} elimina de imediato tudo o que for mais antigo e, a partir de agora, à medida que envelhecer. Esta ação não pode ser anulada.</value>
+  </data>
+  <data name="HistoryShortenConfirm" xml:space="preserve">
+    <value>Eliminar histórico mais antigo</value>
+  </data>
+  <data name="HistoryClearTitle" xml:space="preserve">
+    <value>Limpar o histórico?</value>
+  </data>
+  <data name="HistoryClearMessage" xml:space="preserve">
+    <value>Limpar uma ligação elimina os comandos que o agente lá executou e o respetivo resultado; o resto de cada conversa mantém-se. Limpar tudo elimina todo o histórico deste espaço de trabalho. Esta ação não pode ser anulada.</value>
+  </data>
+  <data name="HistoryClearConnection" xml:space="preserve">
+    <value>Limpar {0}</value>
+  </data>
+  <data name="HistoryClearAll" xml:space="preserve">
+    <value>Limpar tudo</value>
+  </data>
+  <data name="HistoryClearedAll" xml:space="preserve">
+    <value>Todo o histórico foi limpo.</value>
+  </data>
+  <data name="HistoryClearedConnection" xml:space="preserve">
+    <value>O histórico de {0} foi limpo.</value>
+  </data>
+  <data name="HistoryProblem" xml:space="preserve">
+    <value>Não foi possível ler ou alterar o histórico: {0}</value>
+  </data>
+  <data name="MenuShowHistory" xml:space="preserve">
+    <value>Mostrar histórico</value>
+  </data>
+  <data name="ApprovalSend" xml:space="preserve">
+    <value>Enviar</value>
+  </data>
+  <data name="ApprovalHeadingKeys" xml:space="preserve">
+    <value>O agente quer premir teclas</value>
+  </data>
+  <data name="ApprovalRiskKeys" xml:space="preserve">
+    <value>As teclas são enviadas para o programa aberto no terminal. Os nomes entre parênteses angulares são teclas, como &lt;Enter&gt; e &lt;Esc&gt;; o resto é escrito tal como está.</value>
+  </data>
+  <data name="ProviderContextWindow" xml:space="preserve">
+    <value>Janela de contexto</value>
+  </data>
+  <data name="ProviderContextWindowHint" xml:space="preserve">
+    <value>Tokens, segundo a documentação do modelo (opcional)</value>
+  </data>
+  <data name="ProviderOutputLimit" xml:space="preserve">
+    <value>Resultado do terminal enviado de cada vez</value>
+  </data>
+  <data name="ProviderOutputLimitHint" xml:space="preserve">
+    <value>Predefinição: {0:N0} carateres</value>
+  </data>
+  <data name="SwitchTitle" xml:space="preserve">
+    <value>Mudar de modelo?</value>
+  </data>
+  <data name="SwitchToCloud" xml:space="preserve">
+    <value>A conversa até agora, incluindo o resultado do terminal, será enviada para {0}. Até aqui, ficou no seu modelo local.</value>
+  </data>
+  <data name="SwitchSmallerContext" xml:space="preserve">
+    <value>A janela de contexto do novo modelo ({0:N0} tokens) é menor do que a do atual ({1:N0}), por isso a conversa até agora pode não caber e o próximo pedido pode falhar. Limpar a conversa inicia uma nova conversa.</value>
+  </data>
+  <data name="SwitchConfirm" xml:space="preserve">
+    <value>Mudar</value>
+  </data>
+  <data name="PendingOutput" xml:space="preserve">
+    <value>A sua próxima mensagem envia também o novo resultado de {0}.</value>
+  </data>
+  <data name="PendingOutputTerminal" xml:space="preserve">
+    <value>{0} ({1:N0} linhas)</value>
+  </data>
+  <data name="PendingOutputCut" xml:space="preserve">
+    <value>Os resultados longos são reduzidos ao início e ao fim.</value>
+  </data>
+  <data name="MenuView" xml:space="preserve">
+    <value>Ver</value>
+  </data>
+  <data name="MenuCollapseTerminals" xml:space="preserve">
+    <value>Recolher terminais</value>
+  </data>
+  <data name="MenuExpandTerminals" xml:space="preserve">
+    <value>Expandir terminais</value>
+  </data>
+  <data name="FindPlaceholder" xml:space="preserve">
+    <value>Procurar no terminal</value>
+  </data>
+  <data name="FindOlder" xml:space="preserve">
+    <value>Anterior</value>
+  </data>
+  <data name="FindNewer" xml:space="preserve">
+    <value>Seguinte</value>
+  </data>
+  <data name="FindClose" xml:space="preserve">
+    <value>Fechar a procura</value>
+  </data>
+  <data name="FindNone" xml:space="preserve">
+    <value>Sem resultados</value>
+  </data>
+  <data name="FindCount" xml:space="preserve">
+    <value>{0:N0} resultados</value>
+  </data>
+  <data name="MenuFind" xml:space="preserve">
+    <value>Procurar…</value>
+  </data>
+  <data name="MenuBiggerText" xml:space="preserve">
+    <value>Texto maior</value>
+  </data>
+  <data name="MenuSmallerText" xml:space="preserve">
+    <value>Texto menor</value>
+  </data>
+  <data name="MenuActualSize" xml:space="preserve">
+    <value>Tamanho real</value>
+  </data>
+  <data name="MenuTheme" xml:space="preserve">
+    <value>Tema do terminal</value>
+  </data>
+  <data name="MenuThemeSystem" xml:space="preserve">
+    <value>Igual ao sistema</value>
+  </data>
+  <data name="MenuThemeDark" xml:space="preserve">
+    <value>Escuro</value>
+  </data>
+  <data name="MenuThemeLight" xml:space="preserve">
+    <value>Claro</value>
+  </data>
+  <data name="MenuFont" xml:space="preserve">
+    <value>Tipo de letra do terminal</value>
+  </data>
+  <data name="MenuFontDefault" xml:space="preserve">
+    <value>Predefinido</value>
+  </data>
+  <data name="NotifyFinished" xml:space="preserve">
+    <value>O agente terminou.</value>
+  </data>
+  <data name="NotifyApproval" xml:space="preserve">
+    <value>O agente aguarda a sua aprovação.</value>
+  </data>
+  <data name="NotifyQuestion" xml:space="preserve">
+    <value>O agente tem uma pergunta.</value>
+  </data>
+  <data name="MenuNotifications" xml:space="preserve">
+    <value>Notificar quando o agente terminar ou aguardar</value>
+  </data>
+  <data name="NoticePanesFull" xml:space="preserve">
+    <value>Um separador pode mostrar no máximo {0} terminais. Mova primeiro um para um separador próprio (Terminal › Mover painel para um separador próprio).</value>
+  </data>
+  <data name="MenuSplitRight" xml:space="preserve">
+    <value>Dividir à direita</value>
+  </data>
+  <data name="MenuSplitDown" xml:space="preserve">
+    <value>Dividir para baixo</value>
+  </data>
+  <data name="MenuNextPane" xml:space="preserve">
+    <value>Painel seguinte</value>
+  </data>
+  <data name="MenuPreviousPane" xml:space="preserve">
+    <value>Painel anterior</value>
+  </data>
+  <data name="MenuMovePaneToTab" xml:space="preserve">
+    <value>Mover painel para um separador próprio</value>
+  </data>
+  <data name="NoticePaneConnectionGone" xml:space="preserve">
+    <value>Não foi possível dividir: o espaço de trabalho já não inclui a ligação {0}.</value>
+  </data>
+  <data name="ApprovalHeadingPlan" xml:space="preserve">
+    <value>O agente propõe este plano</value>
+  </data>
+  <data name="ApprovalRiskPlan" xml:space="preserve">
+    <value>Fora do plano, o agente pergunta sempre primeiro.</value>
+  </data>
+  <data name="ApprovalPlanAnyTerminal" xml:space="preserve">
+    <value>Para esta tarefa</value>
+  </data>
+  <data name="ApprovalPlanStep" xml:space="preserve">
+    <value>Passo {0} do plano aprovado.</value>
+  </data>
+  <data name="ApprovalOutsidePlan" xml:space="preserve">
+    <value>Fora do plano aprovado: o agente precisa de um passo que não tinha planeado.</value>
+  </data>
+  <data name="ApprovalHeadingEdit" xml:space="preserve">
+    <value>O agente quer alterar um ficheiro</value>
+  </data>
+  <data name="ApprovalApplyEdit" xml:space="preserve">
+    <value>Aplicar alteração</value>
+  </data>
+  <data name="ApprovalRiskEdit" xml:space="preserve">
+    <value>Antes da alteração, é guardada uma cópia do ficheiro em ~/.datapoint-terminal/backups na mesma máquina, para que possa ser anulada. A alteração é feita por um comando escrito no terminal, com sudo se o ficheiro o exigir.</value>
+  </data>
+  <data name="RecordingUserCommand" xml:space="preserve">
+    <value>Utilizador: {0}</value>
+  </data>
+  <data name="RecordingAgentCommand" xml:space="preserve">
+    <value>Agente: {0} ({1})</value>
+  </data>
+  <data name="RecordingAgentAction" xml:space="preserve">
+    <value>Agente: {0}</value>
+  </data>
+  <data name="NoticeRecordingFailed" xml:space="preserve">
+    <value>Este separador não está a ser gravado: {0}</value>
+  </data>
+  <data name="MenuRecordSessions" xml:space="preserve">
+    <value>Gravar sessões</value>
+  </data>
+  <data name="MenuShowRecordings" xml:space="preserve">
+    <value>Mostrar gravações…</value>
+  </data>
+  <data name="RecordingsTitle" xml:space="preserve">
+    <value>Gravações</value>
+  </data>
+  <data name="RecordingsList" xml:space="preserve">
+    <value>Gravações</value>
+  </data>
+  <data name="RecordingsEmpty" xml:space="preserve">
+    <value>Ainda não há gravações. Cada separador é gravado enquanto Ficheiro › Gravar sessões estiver ativo.</value>
+  </data>
+  <data name="RecordingsPlay" xml:space="preserve">
+    <value>Reproduzir</value>
+  </data>
+  <data name="RecordingsPause" xml:space="preserve">
+    <value>Pausa</value>
+  </data>
+  <data name="RecordingsSpeed" xml:space="preserve">
+    <value>Velocidade</value>
+  </data>
+  <data name="RecordingsPosition" xml:space="preserve">
+    <value>Posição</value>
+  </data>
+  <data name="RecordingsMarkers" xml:space="preserve">
+    <value>Quem fez o quê</value>
+  </data>
+  <data name="RecordingsDelete" xml:space="preserve">
+    <value>Eliminar…</value>
+  </data>
+  <data name="RecordingsDeleteTitle" xml:space="preserve">
+    <value>Eliminar esta gravação?</value>
+  </data>
+  <data name="RecordingsDeleteMessage" xml:space="preserve">
+    <value>{0} será eliminada deste computador. Esta ação não pode ser anulada.</value>
+  </data>
+  <data name="RecordingsDeleteConfirm" xml:space="preserve">
+    <value>Eliminar</value>
+  </data>
+  <data name="RecordingsUnreadable" xml:space="preserve">
+    <value>Não é possível reproduzir esta gravação: {0}</value>
+  </data>
+  <data name="RecordingsNote" xml:space="preserve">
+    <value>Guardadas apenas neste computador, nunca na pasta do espaço de trabalho, com os segredos removidos quando são reconhecidos. Também podem ser reproduzidas com o asciinema.</value>
+  </data>
+  <data name="ApprovalAlsoApproves" xml:space="preserve">
+    <value>Aprovar permite também ao agente executar exatamente este comando em {0} até a tarefa terminar.</value>
+  </data>
+  <data name="NoticeJumping" xml:space="preserve">
+    <value>A ligar a {0} através de {1}…</value>
+  </data>
+  <data name="NoticeForwardUnreadable" xml:space="preserve">
+    <value>O reencaminhamento "{1}" de {0} não está escrito como porta host:porta, por isso foi ignorado.</value>
+  </data>
+  <data name="NoticeForwardLoopbackOnly" xml:space="preserve">
+    <value>O reencaminhamento de {0}:{1} só escuta neste computador: o Datapoint Terminal não abre portas reencaminhadas à rede.</value>
+  </data>
+  <data name="NoticeForwarding" xml:space="preserve">
+    <value>A reencaminhar localhost:{0} para {1}:{2} através de {3} enquanto o separador estiver aberto.</value>
+  </data>
+  <data name="NoticeForwardFailed" xml:space="preserve">
+    <value>Não foi possível reencaminhar a porta {0}: {1}</value>
+  </data>
+  <data name="MenuUploadFile" xml:space="preserve">
+    <value>Carregar ficheiro…</value>
+  </data>
+  <data name="MenuDownloadFile" xml:space="preserve">
+    <value>Transferir ficheiro…</value>
+  </data>
+  <data name="PickerUpload" xml:space="preserve">
+    <value>Escolha um ficheiro para carregar</value>
+  </data>
+  <data name="PickerDownload" xml:space="preserve">
+    <value>Guardar o ficheiro transferido</value>
+  </data>
+  <data name="UploadTitle" xml:space="preserve">
+    <value>Carregar {0}</value>
+  </data>
+  <data name="UploadMessage" xml:space="preserve">
+    <value>Para onde deve ir o ficheiro em {0}? ~/ é a sua pasta pessoal nessa máquina. O ficheiro é primeiro gravado com um nome temporário e só substitui o destino quando tiver chegado por completo.</value>
+  </data>
+  <data name="DownloadTitle" xml:space="preserve">
+    <value>Transferir um ficheiro</value>
+  </data>
+  <data name="DownloadMessage" xml:space="preserve">
+    <value>Que ficheiro de {0} pretende? ~/ é a sua pasta pessoal nessa máquina.</value>
+  </data>
+  <data name="TransferPathLabel" xml:space="preserve">
+    <value>Caminho em {0}</value>
+  </data>
+  <data name="NoticeUploading" xml:space="preserve">
+    <value>A carregar {0} para {2} em {1}…</value>
+  </data>
+  <data name="NoticeUploaded" xml:space="preserve">
+    <value>{0} carregado para {2} em {1} ({3}).</value>
+  </data>
+  <data name="NoticeDownloading" xml:space="preserve">
+    <value>A transferir {0} de {1}…</value>
+  </data>
+  <data name="NoticeDownloaded" xml:space="preserve">
+    <value>{0} transferido de {1} para {2} ({3}).</value>
+  </data>
+  <data name="NoticeTransferFailed" xml:space="preserve">
+    <value>{0} não foi transferido: {1}</value>
+  </data>
+  <data name="NoticeTransferNeedsSsh" xml:space="preserve">
+    <value>A transferência de ficheiros funciona em separadores com sessão iniciada num host SSH. Selecione um primeiro.</value>
+  </data>
+  <data name="ReplaceRemoteTitle" xml:space="preserve">
+    <value>Substituir o ficheiro?</value>
+  </data>
+  <data name="ReplaceRemoteMessage" xml:space="preserve">
+    <value>{0} já existe. Substituí-lo pelo ficheiro escolhido?</value>
+  </data>
+  <data name="ReplaceRemoteConfirm" xml:space="preserve">
+    <value>Substituir</value>
+  </data>
+  <data name="SizeBytes" xml:space="preserve">
+    <value>{0} bytes</value>
+  </data>
+  <data name="SizeKilobytes" xml:space="preserve">
+    <value>{0} KB</value>
+  </data>
+  <data name="SizeMegabytes" xml:space="preserve">
+    <value>{0} MB</value>
+  </data>
+  <data name="ExcerptAttached" xml:space="preserve">
+    <value>Anexado: {0} de {1} ({2} linhas), enviado com a sua mensagem com os segredos ocultados.</value>
+  </data>
+  <data name="ExcerptSent" xml:space="preserve">
+    <value>(com {0} de {1} anexado)</value>
+  </data>
+  <data name="ExcerptRemove" xml:space="preserve">
+    <value>Remover</value>
+  </data>
+  <data name="MenuExplainSelection" xml:space="preserve">
+    <value>Explicar seleção</value>
+  </data>
+  <data name="MenuFixFailedCommand" xml:space="preserve">
+    <value>Corrigir último comando falhado</value>
+  </data>
+  <data name="NoticeSelectFirst" xml:space="preserve">
+    <value>Selecione primeiro algum texto no terminal e depois escolha Explicar seleção.</value>
+  </data>
+  <data name="NoticeNoFailedCommand" xml:space="preserve">
+    <value>Não há nenhum comando falhado para corrigir neste terminal. Os comandos falhados são reconhecidos em shells com integração de shell.</value>
+  </data>
+  <data name="ExcerptSelection" xml:space="preserve">
+    <value>o texto selecionado</value>
+  </data>
+  <data name="ExcerptFailedCommand" xml:space="preserve">
+    <value>um comando falhado e o respetivo resultado (código de saída {0})</value>
+  </data>
+  <data name="ExplainSelectionDraft" xml:space="preserve">
+    <value>Explique este resultado.</value>
+  </data>
+  <data name="FixCommandDraft" xml:space="preserve">
+    <value>Este comando falhou. Explique porquê e corrija-o, se possível.</value>
+  </data>
+  <data name="ProviderInputPrice" xml:space="preserve">
+    <value>Preço de entrada (US$ por milhão de tokens)</value>
+  </data>
+  <data name="ProviderOutputPrice" xml:space="preserve">
+    <value>Preço de saída (US$ por milhão de tokens)</value>
+  </data>
+  <data name="ProviderPriceHint" xml:space="preserve">
+    <value>Opcional, da tabela de preços do seu fornecedor</value>
+  </data>
+  <data name="UsageSession" xml:space="preserve">
+    <value>Esta sessão: {0} tokens</value>
+  </data>
+  <data name="UsageCost" xml:space="preserve">
+    <value>(cerca de {0})</value>
+  </data>
+  <data name="UsageLimit" xml:space="preserve">
+    <value>· limite {0}</value>
+  </data>
+  <data name="UsageUnreported" xml:space="preserve">
+    <value>· {0} pedidos sem contagem de tokens</value>
+  </data>
+  <data name="UsageTerminal" xml:space="preserve">
+    <value>{0}: {1} tokens</value>
+  </data>
+  <data name="MenuSpendingLimit" xml:space="preserve">
+    <value>Limite de gastos…</value>
+  </data>
+  <data name="SpendingLimitTitle" xml:space="preserve">
+    <value>Limite de gastos</value>
+  </data>
+  <data name="SpendingLimitMessage" xml:space="preserve">
+    <value>O agente para antes de voltar a pedir ao fornecedor de IA quando a sessão desta janela tiver custado este valor, em dólares americanos, estimado a partir dos preços nas Definições. Deixe vazio para não ter limite.</value>
+  </data>
+  <data name="SpendingLimitNeedsPrices" xml:space="preserve">
+    <value>Introduza primeiro os preços do seu fornecedor nas Definições: sem eles, o custo não pode ser estimado e o limite não se aplica.</value>
+  </data>
+  <data name="SpendingLimitLabel" xml:space="preserve">
+    <value>Limite em dólares americanos</value>
+  </data>
+  <data name="NoticeSpendingLimitUnreadable" xml:space="preserve">
+    <value>Esse limite não é um número, por isso não foi alterado.</value>
+  </data>
+  <data name="NoticeSpendingLimitSet" xml:space="preserve">
+    <value>O agente para agora quando esta sessão tiver custado cerca de {0}.</value>
+  </data>
+  <data name="NoticeSpendingLimitRemoved" xml:space="preserve">
+    <value>O limite de gastos está desativado.</value>
+  </data>
+  <data name="QuestionRecommended" xml:space="preserve">
+    <value>Recomendado</value>
+  </data>
+  <data name="PlanHazardEndsConnection" xml:space="preserve">
+    <value>Termina a ligação</value>
+  </data>
+  <data name="PlanHazardErasesDisk" xml:space="preserve">
+    <value>Apaga um disco</value>
+  </data>
+  <data name="PlanHazardDeletesRecursively" xml:space="preserve">
+    <value>Elimina ficheiros recursivamente</value>
+  </data>
+  <data name="PlanHazardChangesTrust" xml:space="preserve">
+    <value>Altera chaves SSH ou a confiança, por isso pergunta novamente antes de ser executado</value>
+  </data>
+  <data name="PlanRollbackTitle" xml:space="preserve">
+    <value>Se algo correr mal</value>
+  </data>
+  <data name="PlanChecklistTitle" xml:space="preserve">
+    <value>Plano</value>
+  </data>
+  <data name="PlanStepPending" xml:space="preserve">
+    <value>não iniciado</value>
+  </data>
+  <data name="PlanStepRunning" xml:space="preserve">
+    <value>em execução</value>
+  </data>
+  <data name="PlanStepSucceeded" xml:space="preserve">
+    <value>concluído</value>
+  </data>
+  <data name="PlanStepFailed" xml:space="preserve">
+    <value>falhou</value>
+  </data>
+  <data name="PlanStepFinished" xml:space="preserve">
+    <value>terminado, sem código de saída</value>
+  </data>
+  <data name="PlanStepAccessible" xml:space="preserve">
+    <value>Passo {0}, {1}: {2}</value>
+  </data>
+  <data name="PlanStepCount" xml:space="preserve">
+    <value>{0} passos</value>
+  </data>
+  <data name="PlanStepCountOne" xml:space="preserve">
+    <value>1 passo</value>
+  </data>
+  <data name="PlanStepCountWarning" xml:space="preserve">
+    <value>{0} · 1 {1}</value>
+  </data>
+  <data name="PlanStepCountWarnings" xml:space="preserve">
+    <value>{0} · {1} com avisos</value>
+  </data>
+  <data name="PlanProgress" xml:space="preserve">
+    <value>Passo {0} de {1}</value>
+  </data>
+  <data name="PlanProgressFailed" xml:space="preserve">
+    <value>Passo {0} de {1} · {2} falharam</value>
+  </data>
+  <data name="PlanNotStarted" xml:space="preserve">
+    <value>Não iniciado · {0}</value>
+  </data>
+  <data name="PlanFolded" xml:space="preserve">
+    <value>Passo {0} de {1} · {2}</value>
+  </data>
+  <data name="PlanFinished" xml:space="preserve">
+    <value>Plano terminado · {0} de {1} concluídos</value>
+  </data>
+  <data name="PlanFinishedFailed" xml:space="preserve">
+    <value>Plano terminado · {0} de {1} concluídos, {2} falharam</value>
+  </data>
+  <data name="PlanStopped" xml:space="preserve">
+    <value>Plano parado · {0} de {1} concluídos</value>
+  </data>
+  <data name="PlanStoppedFailed" xml:space="preserve">
+    <value>Plano parado · {0} de {1} concluídos, {2} falharam</value>
+  </data>
+  <data name="PlanStepTag" xml:space="preserve">
+    <value>Passo {0}</value>
+  </data>
+  <data name="PlanShowSteps" xml:space="preserve">
+    <value>Mostrar os passos do plano</value>
+  </data>
+  <data name="PlanHideSteps" xml:space="preserve">
+    <value>Ocultar os passos do plano</value>
+  </data>
+  <data name="ProviderCachedInputPrice" xml:space="preserve">
+    <value>Preço de entrada em cache (US$ por milhão de tokens)</value>
+  </data>
+  <data name="ProviderCachedPriceHint" xml:space="preserve">
+    <value>Opcional. Vazio: um décimo do preço de entrada na Anthropic, o preço de entrada completo nos restantes</value>
+  </data>
+  <data name="UsageCached" xml:space="preserve">
+    <value>{0} de {1} tokens de entrada lidos da cache</value>
+  </data>
+  <data name="QuestionHeading" xml:space="preserve">
+    <value>O agente pergunta</value>
+  </data>
+  <data name="QuestionSomethingElse" xml:space="preserve">
+    <value>Outra coisa…</value>
+  </data>
+  <data name="QuestionKeys" xml:space="preserve">
+    <value>Prima 1–{0} ou clique</value>
+  </data>
+  <data name="QuestionBack" xml:space="preserve">
+    <value>Voltar</value>
+  </data>
+  <data name="QuestionSend" xml:space="preserve">
+    <value>Enviar</value>
+  </data>
+  <data name="QuestionAsked" xml:space="preserve">
+    <value>O agente perguntou: {0}</value>
+  </data>
+  <data name="QuestionSkipped" xml:space="preserve">
+    <value>Ignorada</value>
+  </data>
+  <data name="QuestionReplaced" xml:space="preserve">
+    <value>Enviou uma nova mensagem em vez disso</value>
+  </data>
+  <data name="ApprovalReplaced" xml:space="preserve">
+    <value>Não aprovado: enviou uma nova mensagem em vez disso.</value>
+  </data>
+  <data name="ChatInputReplaces" xml:space="preserve">
+    <value>Ou peça outra coisa em vez disso…</value>
+  </data>
+  <data name="SidebarHosts" xml:space="preserve">
+    <value>Hosts</value>
+  </data>
+  <data name="SidebarOtherHosts" xml:space="preserve">
+    <value>Mais {0} na sua configuração SSH</value>
+  </data>
+  <data name="SidebarOpenTerminals" xml:space="preserve">
+    <value>{0} abertos</value>
+  </data>
+  <data name="SidebarAdd" xml:space="preserve">
+    <value>Adicionar</value>
+  </data>
+  <data name="SidebarOpenTerminal" xml:space="preserve">
+    <value>Abrir terminal</value>
+  </data>
+  <data name="SidebarOpenDocumentation" xml:space="preserve">
+    <value>Abrir documentação</value>
+  </data>
+  <data name="SidebarNoHosts" xml:space="preserve">
+    <value>Ainda não há hosts neste espaço de trabalho.</value>
+  </data>
+  <data name="MenuHideSidebar" xml:space="preserve">
+    <value>Ocultar barra lateral</value>
+  </data>
+  <data name="MenuShowSidebar" xml:space="preserve">
+    <value>Mostrar barra lateral</value>
+  </data>
+  <data name="SidebarLabel" xml:space="preserve">
+    <value>Hosts e ficheiros do espaço de trabalho</value>
+  </data>
   <data name="SidebarAddHost" xml:space="preserve">
     <value>Adicionar {0} ao espaço de trabalho</value>
   </data>
+  <data name="SidebarNoDocumentation" xml:space="preserve">
+    <value>{0} ainda não tem documentação.</value>
+  </data>
+  <data name="SidebarReadOnly" xml:space="preserve">
+    <value>Este espaço de trabalho está aberto só de leitura nesta janela, por isso não é possível adicionar ficheiros aqui.</value>
+  </data>
+  <data name="DocumentPlaceholder" xml:space="preserve">
+    <value>Comece a escrever…</value>
+  </data>
+  <data name="DocumentConflict" xml:space="preserve">
+    <value>Este ficheiro foi alterado no disco enquanto o editava.</value>
+  </data>
+  <data name="DocumentKeepMine" xml:space="preserve">
+    <value>Manter a minha versão</value>
+  </data>
+  <data name="DocumentTakeTheirs" xml:space="preserve">
+    <value>Usar a versão do disco</value>
+  </data>
+  <data name="DocumentSaveFailed" xml:space="preserve">
+    <value>Não foi possível guardar: {0}</value>
+  </data>
+  <data name="DocumentCantOpen" xml:space="preserve">
+    <value>Não foi possível abrir {0}: {1}</value>
+  </data>
+  <data name="DocumentClose" xml:space="preserve">
+    <value>Fechar {0}</value>
+  </data>
+  <data name="DocumentTabName" xml:space="preserve">
+    <value>{0}, documento</value>
+  </data>
+  <data name="DocumentTabUnsaved" xml:space="preserve">
+    <value>{0}, documento, ainda não guardado</value>
+  </data>
+  <data name="DocumentTabsName" xml:space="preserve">
+    <value>Documentos</value>
+  </data>
+  <data name="DocumentOpenTerminal" xml:space="preserve">
+    <value>Abrir terminal</value>
+  </data>
+  <data name="MenuFormat" xml:space="preserve">
+    <value>Formatar</value>
+  </data>
+  <data name="MenuBold" xml:space="preserve">
+    <value>Negrito</value>
+  </data>
+  <data name="MenuItalic" xml:space="preserve">
+    <value>Itálico</value>
+  </data>
+  <data name="MenuInlineCode" xml:space="preserve">
+    <value>Código</value>
+  </data>
+  <data name="MenuLink" xml:space="preserve">
+    <value>Hiperligação</value>
+  </data>
+  <data name="MenuShowMarkdown" xml:space="preserve">
+    <value>Mostrar Markdown</value>
+  </data>
+  <data name="MenuCloseDocument" xml:space="preserve">
+    <value>Fechar documento</value>
+  </data>
+  <data name="MenuCut" xml:space="preserve">
+    <value>Cortar</value>
+  </data>
+  <data name="MenuCopy" xml:space="preserve">
+    <value>Copiar</value>
+  </data>
+  <data name="MenuPaste" xml:space="preserve">
+    <value>Colar</value>
+  </data>
+  <data name="NoticeRemoteIntegration" xml:space="preserve">
+    <value>A integração de shell está ativa em {0}: a aplicação vê onde cada comando começa e termina, e o respetivo código de saída.</value>
+  </data>
+  <data name="NoticeRemoteNoIntegration" xml:space="preserve">
+    <value>A shell de início de sessão de {0} não é bash, zsh nem fish, por isso a aplicação deduz quando os comandos terminam a partir do resultado.</value>
+  </data>
+  <data name="WorkspaceHostKeyTitle" xml:space="preserve">
+    <value>{0} tem uma chave de host diferente</value>
+  </data>
+  <data name="WorkspaceHostKeyMessage" xml:space="preserve">
+    <value>O seu known_hosts aceita a chave que {1} enviou, mas não é a que este espaço de trabalho viu da última vez para {0}. A máquina pode ter sido reinstalada ou substituída, por isso a documentação deste espaço de trabalho para {0} pode já não estar correta.</value>
+  </data>
+  <data name="WorkspaceHostKeyDetails" xml:space="preserve">
+    <value>Última vista: {0}\nAgora: {1}</value>
+  </data>
+  <data name="WorkspaceHostKeyArchive" xml:space="preserve">
+    <value>Pôr documentação de parte</value>
+  </data>
+  <data name="WorkspaceHostKeyReview" xml:space="preserve">
+    <value>Rever documentação</value>
+  </data>
+  <data name="WorkspaceHostKeyKeep" xml:space="preserve">
+    <value>Manter documentação</value>
+  </data>
+  <data name="NoticeWorkspaceHostKeyChanged" xml:space="preserve">
+    <value>{0} tem uma chave de host diferente da que este espaço de trabalho viu da última vez. O seu known_hosts aceita-a e não há documentação de {0} para rever.</value>
+  </data>
+  <data name="NoticeHostDocsArchived" xml:space="preserve">
+    <value>A documentação de {0} foi movida para {1}, porque a máquina pode ter sido substituída.</value>
+  </data>
+  <data name="NoticeHostDocsArchiveFailed" xml:space="preserve">
+    <value>Não foi possível mover a documentação de {0}: {1}</value>
+  </data>
+  <data name="MenuSelectWithKeyboard" xml:space="preserve">
+    <value>Selecionar com o teclado</value>
+  </data>
+  <data name="FindPattern" xml:space="preserve">
+    <value>Expressão regular</value>
+  </data>
+  <data name="FindInvalidPattern" xml:space="preserve">
+    <value>Padrão inválido</value>
+  </data>
+  <data name="ScrollbackDivider" xml:space="preserve">
+    <value>{0} · sessão anterior, não em direto</value>
+  </data>
+  <data name="WhenToday" xml:space="preserve">
+    <value>Hoje às {0}</value>
+  </data>
+  <data name="WhenYesterday" xml:space="preserve">
+    <value>Ontem às {0}</value>
+  </data>
+  <data name="WhenOnDay" xml:space="preserve">
+    <value>{0} às {1}</value>
+  </data>
+  <data name="NoticeEarlierWork" xml:space="preserve">
+    <value>Anteriormente em {0} · {1}: {2}</value>
+  </data>
+  <data name="NoticeEarlierWorkNoReply" xml:space="preserve">
+    <value>Anteriormente em {0} · {1}, o agente executou comandos aqui.</value>
+  </data>
+  <data name="HistoryShowConversation" xml:space="preserve">
+    <value>Mostrar</value>
+  </data>
+  <data name="SettingsPageProviders" xml:space="preserve">
+    <value>Fornecedores</value>
+  </data>
+  <data name="SettingsPageAppearance" xml:space="preserve">
+    <value>Aspeto</value>
+  </data>
+  <data name="SettingsPageHistory" xml:space="preserve">
+    <value>Histórico</value>
+  </data>
+  <data name="AppearanceThemeHeading" xml:space="preserve">
+    <value>Tema do terminal</value>
+  </data>
+  <data name="ThemeDefault" xml:space="preserve">
+    <value>Predefinido</value>
+  </data>
+  <data name="ThemeFollowsSystem" xml:space="preserve">
+    <value>segue o sistema</value>
+  </data>
+  <data name="ThemeImported" xml:space="preserve">
+    <value>importado</value>
+  </data>
+  <data name="ThemeCustom" xml:space="preserve">
+    <value>personalizado</value>
+  </data>
+  <data name="ThemeImport" xml:space="preserve">
+    <value>Importar…</value>
+  </data>
+  <data name="ThemeEditColors" xml:space="preserve">
+    <value>Editar cores…</value>
+  </data>
+  <data name="ThemeRemove" xml:space="preserve">
+    <value>Remover tema</value>
+  </data>
+  <data name="ThemeImportHint" xml:space="preserve">
+    <value>Importar lê temas do iTerm2, Windows Terminal, Ghostty e kitty. Editar cores mostra as 16 cores, o texto, o fundo, o cursor e a seleção, com pré-visualização em direto.</value>
+  </data>
+  <data name="AppearanceFont" xml:space="preserve">
+    <value>Tipo de letra</value>
+  </data>
+  <data name="AppearanceTextSize" xml:space="preserve">
+    <value>Tamanho do texto</value>
+  </data>
+  <data name="AppearanceFontDefault" xml:space="preserve">
+    <value>Predefinido</value>
+  </data>
+  <data name="AppearanceTextSizeValue" xml:space="preserve">
+    <value>{0} pt</value>
+  </data>
+  <data name="ThemeImportTitle" xml:space="preserve">
+    <value>Importar um tema</value>
+  </data>
+  <data name="ThemeImportFailed" xml:space="preserve">
+    <value>Não foi possível importar {0}: {1}.</value>
+  </data>
+  <data name="ThemeCardName" xml:space="preserve">
+    <value>Tema {0}</value>
+  </data>
+  <data name="ThemeEditorTitle" xml:space="preserve">
+    <value>Editar cores</value>
+  </data>
+  <data name="ThemeEditorName" xml:space="preserve">
+    <value>Nome</value>
+  </data>
+  <data name="ThemeEditorCopyName" xml:space="preserve">
+    <value>{0} (editado)</value>
+  </data>
+  <data name="ThemeEditorSave" xml:space="preserve">
+    <value>Guardar tema</value>
+  </data>
+  <data name="ThemeEditorInvalid" xml:space="preserve">
+    <value>Cada cor tem seis dígitos hexadecimais, como #1E1E1E.</value>
+  </data>
+  <data name="ThemeColorText" xml:space="preserve">
+    <value>Texto</value>
+  </data>
+  <data name="ThemeColorBackground" xml:space="preserve">
+    <value>Fundo</value>
+  </data>
+  <data name="ThemeColorCursor" xml:space="preserve">
+    <value>Cursor</value>
+  </data>
+  <data name="ThemeColorSelection" xml:space="preserve">
+    <value>Seleção</value>
+  </data>
+  <data name="ThemeColorNames" xml:space="preserve">
+    <value>Preto,Vermelho,Verde,Amarelo,Azul,Magenta,Ciano,Branco,Preto claro,Vermelho claro,Verde claro,Amarelo claro,Azul claro,Magenta claro,Ciano claro,Branco claro</value>
+  </data>
+  <data name="HistoryKeepFor" xml:space="preserve">
+    <value>Manter o histórico durante</value>
+  </data>
+  <data name="HistoryKeepHint" xml:space="preserve">
+    <value>Conversas e resultados do terminal, guardados apenas neste computador, nunca numa pasta do espaço de trabalho. O histórico mais antigo é eliminado quando o espaço de trabalho é aberto.</value>
+  </data>
+  <data name="HistoryInWorkspace" xml:space="preserve">
+    <value>Em {0}</value>
+  </data>
+  <data name="HistoryUsage" xml:space="preserve">
+    <value>{0} conversas · {1}</value>
+  </data>
+  <data name="HistoryClearRow" xml:space="preserve">
+    <value>Limpar…</value>
+  </data>
+  <data name="HistoryClearRowName" xml:space="preserve">
+    <value>Limpar o histórico de {0}</value>
+  </data>
+  <data name="HistoryClearHint" xml:space="preserve">
+    <value>Limpar elimina as conversas, gravações e resultados guardados de uma ligação. Esta ação não pode ser anulada.</value>
+  </data>
+  <data name="HistoryNoWorkspace" xml:space="preserve">
+    <value>Abra um espaço de trabalho para ver e limpar o respetivo histórico aqui.</value>
+  </data>
+  <data name="HistoryNothingKept" xml:space="preserve">
+    <value>Ainda não há nada guardado para as ligações deste espaço de trabalho.</value>
+  </data>
+  <data name="HistoryClearOneTitle" xml:space="preserve">
+    <value>Limpar o histórico de {0}?</value>
+  </data>
+  <data name="HistoryClearOneMessage" xml:space="preserve">
+    <value>Isto elimina os comandos que o agente executou em {0}, o respetivo resultado e o resultado do terminal guardado. Esta ação não pode ser anulada.</value>
+  </data>
+  <data name="NewHostTitle" xml:space="preserve">
+    <value>Adicionar um host</value>
+  </data>
+  <data name="NewHostCaption" xml:space="preserve">
+    <value>Guardado em workspace.json, que todos os que partilham este espaço de trabalho veem.</value>
+  </data>
+  <data name="NewHostName" xml:space="preserve">
+    <value>Nome</value>
+  </data>
+  <data name="NewHostAddress" xml:space="preserve">
+    <value>Endereço</value>
+  </data>
+  <data name="NewHostAddressHint" xml:space="preserve">
+    <value>nome do host, endereço IP ou alias da configuração SSH</value>
+  </data>
+  <data name="NewHostUser" xml:space="preserve">
+    <value>Utilizador</value>
+  </data>
+  <data name="NewHostPort" xml:space="preserve">
+    <value>Porta</value>
+  </data>
+  <data name="NewHostEnvironment" xml:space="preserve">
+    <value>Ambiente</value>
+  </data>
+  <data name="NewHostEnvironmentNone" xml:space="preserve">
+    <value>Nenhum</value>
+  </data>
+  <data name="NewHostEnvironmentDevelopment" xml:space="preserve">
+    <value>Desenvolvimento</value>
+  </data>
+  <data name="NewHostEnvironmentStaging" xml:space="preserve">
+    <value>Pré-produção</value>
+  </data>
+  <data name="NewHostEnvironmentProduction" xml:space="preserve">
+    <value>Produção</value>
+  </data>
+  <data name="NewHostProductionNote" xml:space="preserve">
+    <value>Os separadores de produção são marcados a vermelho e o agente pergunta antes de cada comando nesses hosts.</value>
+  </data>
+  <data name="NewHostFromConfig" xml:space="preserve">
+    <value>Da sua configuração SSH</value>
+  </data>
+  <data name="NewHostFromConfigItem" xml:space="preserve">
+    <value>Preencher {0} a partir da sua configuração SSH</value>
+  </data>
+  <data name="NewHostLogin" xml:space="preserve">
+    <value>Inicia sessão com o seu agente SSH e chaves, ou pede uma palavra-passe.</value>
+  </data>
+  <data name="NewHostAdd" xml:space="preserve">
+    <value>Adicionar host</value>
+  </data>
+  <data name="NewHostMenu" xml:space="preserve">
+    <value>Adicionar um host…</value>
+  </data>
+  <data name="NewHostNameProblem" xml:space="preserve">
+    <value>Dê ao host um nome com até 40 letras, dígitos, espaços, pontos, hífenes, sublinhados ou @.</value>
+  </data>
+  <data name="NewHostNameTaken" xml:space="preserve">
+    <value>Este espaço de trabalho já tem um host chamado {0}.</value>
+  </data>
+  <data name="NewHostAddressProblem" xml:space="preserve">
+    <value>Introduza um nome de host, um endereço IP ou um host da sua configuração SSH.</value>
+  </data>
+  <data name="NewHostUserProblem" xml:space="preserve">
+    <value>Um nome de utilizador tem letras, dígitos, pontos, hífenes e sublinhados.</value>
+  </data>
+  <data name="NewHostPortProblem" xml:space="preserve">
+    <value>A porta é um número de 1 a 65535.</value>
+  </data>
+  <data name="NewHostReadOnly" xml:space="preserve">
+    <value>As definições deste espaço de trabalho não podem ser alteradas aqui, por isso não é possível adicionar hosts.</value>
+  </data>
+  <data name="HostFileMenu" xml:space="preserve">
+    <value>Abrir ficheiro no host…</value>
+  </data>
+  <data name="HostFileOpenTitle" xml:space="preserve">
+    <value>Abrir um ficheiro em {0}</value>
+  </data>
+  <data name="HostFileOpenHint" xml:space="preserve">
+    <value>Começa na pasta em que o terminal está. Tab completa, ↑↓ escolhem.</value>
+  </data>
+  <data name="HostFileOpenPath" xml:space="preserve">
+    <value>Caminho</value>
+  </data>
+  <data name="HostFileOpenNote" xml:space="preserve">
+    <value>Lido através da ligação deste separador. O agente só o vê se o pedir.</value>
+  </data>
+  <data name="HostFileOpen" xml:space="preserve">
+    <value>Abrir</value>
+  </data>
+  <data name="HostFileOpenFolderProblem" xml:space="preserve">
+    <value>Não é possível listar {0}: {1}</value>
+  </data>
+  <data name="HostFileNoFiles" xml:space="preserve">
+    <value>Abrir ficheiros não está disponível neste separador: não tem acesso aos ficheiros da sua máquina.</value>
+  </data>
+  <data name="HostFileCantOpen" xml:space="preserve">
+    <value>Não é possível abrir {0}: {1}</value>
+  </data>
+  <data name="HostFileTooLarge" xml:space="preserve">
+    <value>tem mais de 1 MB, é demasiado grande para editar aqui.</value>
+  </data>
+  <data name="HostFileBinary" xml:space="preserve">
+    <value>não é texto.</value>
+  </data>
+  <data name="HostFileNotUtf8" xml:space="preserve">
+    <value>não é texto UTF-8.</value>
+  </data>
+  <data name="HostFileMissing" xml:space="preserve">
+    <value>o ficheiro não existe.</value>
+  </data>
+  <data name="HostFileTabName" xml:space="preserve">
+    <value>{0} — {1}</value>
+  </data>
+  <data name="HostFileTabUnsaved" xml:space="preserve">
+    <value>{0}, não guardado</value>
+  </data>
+  <data name="HostFileNeedsSudo" xml:space="preserve">
+    <value>guardar requer sudo</value>
+  </data>
+  <data name="HostFileRevert" xml:space="preserve">
+    <value>Reverter</value>
+  </data>
+  <data name="HostFileReviewSave" xml:space="preserve">
+    <value>Rever e guardar…</value>
+  </data>
+  <data name="HostFileEdited" xml:space="preserve">
+    <value>Editado · não guardado</value>
+  </data>
+  <data name="HostFileSaving" xml:space="preserve">
+    <value>A guardar: conclua no terminal {0}.</value>
+  </data>
+  <data name="HostFileSaved" xml:space="preserve">
+    <value>Guardado</value>
+  </data>
+  <data name="HostFileNotConfirmed" xml:space="preserve">
+    <value>Ainda não guardado: verifique o terminal {0} e guarde novamente.</value>
+  </data>
+  <data name="HostFilePlainText" xml:space="preserve">
+    <value>Texto simples</value>
+  </data>
+  <data name="HostFileCaret" xml:space="preserve">
+    <value>Ln {0}, Col {1}</value>
+  </data>
+  <data name="HostFileStatus" xml:space="preserve">
+    <value>{0}  ·  UTF-8  ·  {1}  ·  {2}</value>
+  </data>
+  <data name="HostFileSaveTitle" xml:space="preserve">
+    <value>Guardar {0} em {1}?</value>
+  </data>
+  <data name="HostFileLinesChanged" xml:space="preserve">
+    <value>{0} linhas alteradas em {1}</value>
+  </data>
+  <data name="HostFileLineChanged" xml:space="preserve">
+    <value>1 linha alterada em {0}</value>
+  </data>
+  <data name="HostFileProductionNote" xml:space="preserve">
+    <value>{0} é de produção. A alteração produz efeito quando o programa que usa o ficheiro o voltar a ler; nada é reiniciado nem recarregado automaticamente.</value>
+  </data>
+  <data name="HostFileCommandNote" xml:space="preserve">
+    <value>Escrito no terminal {0}, onde o verá ser executado:</value>
+  </data>
+  <data name="HostFileSudoNote" xml:space="preserve">
+    <value>O sudo pede a palavra-passe aí.</value>
+  </data>
+  <data name="HostFileBackupNote" xml:space="preserve">
+    <value>Mantém o ficheiro atual como {0}.</value>
+  </data>
+  <data name="HostFileSaveOn" xml:space="preserve">
+    <value>Guardar em {0}</value>
+  </data>
+  <data name="HostFileBusy" xml:space="preserve">
+    <value>Não é possível guardar agora: no terminal {0}, {1}. Guarde novamente quando voltar a haver um prompt.</value>
+  </data>
+  <data name="HostFileNoTerminal" xml:space="preserve">
+    <value>Não é possível guardar: o terminal {0} a partir do qual este ficheiro foi aberto está fechado. Abra o ficheiro novamente a partir de um novo separador.</value>
+  </data>
+  <data name="HostFileChangedTitle" xml:space="preserve">
+    <value>{0} foi alterado em {1}</value>
+  </data>
+  <data name="HostFileChangedMessage" xml:space="preserve">
+    <value>Alguém ou algo alterou o ficheiro desde que o abriu. Guardar agora substituiria essa alteração.</value>
+  </data>
+  <data name="HostFileReload" xml:space="preserve">
+    <value>Descartar as minhas e recarregar</value>
+  </data>
+  <data name="HostFileSaveAnyway" xml:space="preserve">
+    <value>Guardar as minhas mesmo assim</value>
+  </data>
+  <data name="HostFileSavedNotice" xml:space="preserve">
+    <value>{0} guardado em {1}. Cópia de segurança: {2}. Para anular: {3}</value>
+  </data>
+  <data name="HostFileCreatedNotice" xml:space="preserve">
+    <value>{0} guardado em {1}.</value>
+  </data>
+  <data name="HostFileUnsavedTitle" xml:space="preserve">
+    <value>Fechar {0} sem guardar?</value>
+  </data>
+  <data name="HostFileUnsavedMessage" xml:space="preserve">
+    <value>As alterações a {0} em {1} não foram guardadas.</value>
+  </data>
+  <data name="HostFileDiscard" xml:space="preserve">
+    <value>Fechar sem guardar</value>
+  </data>
+  <data name="HostFileUnsavedReason" xml:space="preserve">
+    <value>alterações não guardadas</value>
+  </data>
+  <data name="NewHostLabels" xml:space="preserve">
+    <value>Etiquetas</value>
+  </data>
+  <data name="NewHostLabelsHint" xml:space="preserve">
+    <value>web, debian</value>
+  </data>
+  <data name="NewHostLabelsProblem" xml:space="preserve">
+    <value>As etiquetas são separadas por vírgulas, até 20, cada uma com até 40 letras, algarismos, espaços, pontos, hífenes, sublinhados ou @.</value>
+  </data>
+  <data name="NewHostLabelsUsed" xml:space="preserve">
+    <value>Usadas neste espaço de trabalho</value>
+  </data>
+  <data name="NewHostLabelsItem" xml:space="preserve">
+    <value>Adicionar a etiqueta {0}</value>
+  </data>
+  <data name="SidebarSwitcherName" xml:space="preserve">
+    <value>Espaço de trabalho {0}, {1}. Mudar de espaço de trabalho</value>
+  </data>
+  <data name="SidebarSkills" xml:space="preserve">
+    <value>Competências</value>
+  </data>
+  <data name="SidebarNoSkills" xml:space="preserve">
+    <value>Ainda não há competências. Peça ao agente para guardar uma depois de uma tarefa.</value>
+  </data>
+  <data name="SidebarWorkspaceSection" xml:space="preserve">
+    <value>Espaço de trabalho</value>
+  </data>
+  <data name="SidebarInstructions" xml:space="preserve">
+    <value>Instruções</value>
+  </data>
+  <data name="SidebarSettings" xml:space="preserve">
+    <value>Definições</value>
+  </data>
+  <data name="SidebarNewWorkspace" xml:space="preserve">
+    <value>Novo espaço de trabalho…</value>
+  </data>
+  <data name="SidebarOpenWorkspace" xml:space="preserve">
+    <value>Abrir pasta do espaço de trabalho…</value>
+  </data>
+  <data name="SidebarReveal" xml:space="preserve">
+    <value>Mostrar {0} no gestor de ficheiros</value>
+  </data>
+  <data name="SidebarHostCount" xml:space="preserve">
+    <value>{0} hosts</value>
+  </data>
+  <data name="SidebarHostCountOne" xml:space="preserve">
+    <value>1 host</value>
+  </data>
+  <data name="SidebarDefaultWorkspace" xml:space="preserve">
+    <value>Espaço de trabalho predefinido</value>
+  </data>
+  <data name="SidebarRevealMac" xml:space="preserve">
+    <value>Mostrar {0} no Finder</value>
+  </data>
+  <data name="SidebarRevealWindows" xml:space="preserve">
+    <value>Mostrar {0} no Explorador de Ficheiros</value>
+  </data>
+  <data name="DocumentLogHeading" xml:space="preserve">
+    <value>Registo de manutenção</value>
+  </data>
+  <data name="DocumentLogShowAll" xml:space="preserve">
+    <value>Todas as {0} entradas</value>
+  </data>
+  <data name="DocumentLogShowFewer" xml:space="preserve">
+    <value>Mostrar menos</value>
+  </data>
+  <data name="DocumentLogYou" xml:space="preserve">
+    <value>Utilizador</value>
+  </data>
+  <data name="DocumentLogWithAgent" xml:space="preserve">
+    <value>{0}, com o agente</value>
+  </data>
+  <data name="DocumentLogAgentOnly" xml:space="preserve">
+    <value>Com o agente</value>
+  </data>
+  <data name="DocumentLogNone" xml:space="preserve">
+    <value>Ainda não há entradas. O agente adiciona uma após cada alteração que faz neste host.</value>
+  </data>
+  <data name="DocumentLogLabel" xml:space="preserve">
+    <value>Registo de manutenção de {0}</value>
+  </data>
+  <data name="MemoryIntro" xml:space="preserve">
+    <value>O que o agente aprendeu sobre a forma como gosta de trabalhar. Lê isto no início de cada conversa e acrescenta notas por iniciativa própria, avisando na conversa. Guardado apenas neste computador, nunca numa pasta de espaço de trabalho.</value>
+  </data>
+  <data name="MemoryFooter" xml:space="preserve">
+    <value>Os factos sobre uma máquina vão para o documento do host, partilhado por toda a equipa, e não para aqui.</value>
+  </data>
+  <data name="MemoryEverywhere" xml:space="preserve">
+    <value>Em todo o lado</value>
+  </data>
+  <data name="MemoryInWorkspace" xml:space="preserve">
+    <value>Em {0}</value>
+  </data>
+  <data name="MemoryClear" xml:space="preserve">
+    <value>Limpar…</value>
+  </data>
+  <data name="MemoryClearSection" xml:space="preserve">
+    <value>Limpar memória: {0}</value>
+  </data>
+  <data name="MemoryClearTitle" xml:space="preserve">
+    <value>Limpar memória: {0}?</value>
+  </data>
+  <data name="MemoryClearEverywhere" xml:space="preserve">
+    <value>O agente esquece todas as notas que guardou para todos os espaços de trabalho. As notas guardadas para um espaço de trabalho específico mantêm-se.</value>
+  </data>
+  <data name="MemoryEmpty" xml:space="preserve">
+    <value>Ainda nada.</value>
+  </data>
+  <data name="MemoryFull" xml:space="preserve">
+    <value>Não guardado: a memória está cheia. Elimine primeiro uma nota.</value>
+  </data>
+  <data name="MemoryEditNote" xml:space="preserve">
+    <value>Editar: {0}</value>
+  </data>
+  <data name="MemoryDeleteNote" xml:space="preserve">
+    <value>Eliminar: {0}</value>
+  </data>
+  <data name="MemorySave" xml:space="preserve">
+    <value>Guardar</value>
+  </data>
+  <data name="MemoryReadOnly" xml:space="preserve">
+    <value>Este espaço de trabalho está aberto noutra janela, pelo que a sua memória só pode ser alterada aí.</value>
+  </data>
+  <data name="MenuMemory" xml:space="preserve">
+    <value>Memória do agente…</value>
+  </data>
+  <data name="SettingsPageMemory" xml:space="preserve">
+    <value>Memória</value>
+  </data>
+  <data name="MemoryClearConfirm" xml:space="preserve">
+    <value>Limpar</value>
+  </data>
+  <data name="MenuRunSkill" xml:space="preserve">
+    <value>Executar competência</value>
+  </data>
+  <data name="MenuSaveSkill" xml:space="preserve">
+    <value>Guardar última tarefa como competência…</value>
+  </data>
+  <data name="MenuNoSkills" xml:space="preserve">
+    <value>Ainda sem competências</value>
+  </data>
+  <data name="SkillRunDraft" xml:space="preserve">
+    <value>Executar a competência "{0}".</value>
+  </data>
+  <data name="SkillSaveDraft" xml:space="preserve">
+    <value>Guardar a tarefa que acabámos de concluir como uma competência chamada </value>
+  </data>
+  <data name="SkillBadge" xml:space="preserve">
+    <value>Competência</value>
+  </data>
+  <data name="SkillRunOn" xml:space="preserve">
+    <value>Executar em {0} hosts…</value>
+  </data>
+  <data name="SkillRunOnOne" xml:space="preserve">
+    <value>Executar em 1 host…</value>
+  </data>
+  <data name="SkillRunOnNone" xml:space="preserve">
+    <value>Executar…</value>
+  </data>
+  <data name="SkillDescription" xml:space="preserve">
+    <value>Quando usar</value>
+  </data>
+  <data name="SkillDescriptionHint" xml:space="preserve">
+    <value>O que faz e quando usar: o agente lê isto para escolher uma competência.</value>
+  </data>
+  <data name="SkillHowItRollsOut" xml:space="preserve">
+    <value>Como é implementada</value>
+  </data>
+  <data name="SkillRunsOn" xml:space="preserve">
+    <value>Executa em</value>
+  </data>
+  <data name="SkillAddLabel" xml:space="preserve">
+    <value>Adicionar etiqueta</value>
+  </data>
+  <data name="SkillRemoveLabel" xml:space="preserve">
+    <value>Remover a etiqueta {0}</value>
+  </data>
+  <data name="SkillMatchesHosts" xml:space="preserve">
+    <value>Executa em {0}: os hosts com todas as etiquetas indicadas.</value>
+  </data>
+  <data name="SkillMatchesEvery" xml:space="preserve">
+    <value>Executa em todos os hosts do espaço de trabalho: não indica etiquetas.</value>
+  </data>
+  <data name="SkillMatchesNone" xml:space="preserve">
+    <value>Ainda nenhum host tem todas as etiquetas indicadas.</value>
+  </data>
+  <data name="SkillOrder" xml:space="preserve">
+    <value>Ordem</value>
+  </data>
+  <data name="SkillOrderOneByOne" xml:space="preserve">
+    <value>Um de cada vez</value>
+  </data>
+  <data name="SkillOrderBatches" xml:space="preserve">
+    <value>Em lotes</value>
+  </data>
+  <data name="SkillOrderAllAtOnce" xml:space="preserve">
+    <value>Todos ao mesmo tempo</value>
+  </data>
+  <data name="SkillBatchSize" xml:space="preserve">
+    <value>hosts de cada vez</value>
+  </data>
+  <data name="SkillMaxHosts" xml:space="preserve">
+    <value>hosts no máximo</value>
+  </data>
+  <data name="SkillHealthCheck" xml:space="preserve">
+    <value>Verificação de estado</value>
+  </data>
+  <data name="SkillHealthCheckHint" xml:space="preserve">
+    <value>É executada no terminal de cada host depois dos seus passos; tem de ter êxito antes de o host seguinte começar.</value>
+  </data>
+  <data name="SkillHealthyFor" xml:space="preserve">
+    <value>Em bom estado durante</value>
+  </data>
+  <data name="SkillHealthyForUnit" xml:space="preserve">
+    <value>minutos, verificado a cada 10 segundos</value>
+  </data>
+  <data name="SkillGiveUpAfter" xml:space="preserve">
+    <value>Desistir após</value>
+  </data>
+  <data name="SkillGiveUpAfterUnit" xml:space="preserve">
+    <value>minutos depois de o host voltar</value>
+  </data>
+  <data name="SkillOnFailure" xml:space="preserve">
+    <value>Se um host falhar</value>
+  </data>
+  <data name="SkillOnFailureStop" xml:space="preserve">
+    <value>Parar a implementação</value>
+  </data>
+  <data name="SkillOnFailureContinue" xml:space="preserve">
+    <value>Continuar com o host seguinte</value>
+  </data>
+  <data name="SkillOnFailureAsk" xml:space="preserve">
+    <value>Perguntar-me o que fazer</value>
+  </data>
+  <data name="SkillOnFailureStopHint" xml:space="preserve">
+    <value>Os hosts que faltam ficam como estão.</value>
+  </data>
+  <data name="SkillOnFailureContinueHint" xml:space="preserve">
+    <value>O host que falhou fica como está e a implementação prossegue.</value>
+  </data>
+  <data name="SkillOnFailureAskHint" xml:space="preserve">
+    <value>A implementação faz uma pausa e a conversa pergunta se deve parar, tentar novamente ou ignorar o host.</value>
+  </data>
+  <data name="SkillNumberProblem" xml:space="preserve">
+    <value>Use um número inteiro de 1 a 1000 para os hosts e até 1440 minutos.</value>
+  </data>
+  <data name="SkillLabelProblem" xml:space="preserve">
+    <value>Uma etiqueta tem até 40 letras, algarismos, espaços, pontos, hífenes, sublinhados ou @.</value>
+  </data>
+  <data name="SkillSaveConflict" xml:space="preserve">
+    <value>A competência foi alterada no disco desde que foi aberta. Recarregue-a para alterar as definições.</value>
+  </data>
+  <data name="SkillRunDraftHosts" xml:space="preserve">
+    <value>Executar a competência "{0}" em {1}.</value>
+  </data>
+  <data name="And" xml:space="preserve">
+    <value>e</value>
+  </data>
+  <data name="ApprovalHeadingRollout" xml:space="preserve">
+    <value>O agente propõe esta implementação</value>
+  </data>
+  <data name="ApprovalStartRollout" xml:space="preserve">
+    <value>Iniciar implementação</value>
+  </data>
+  <data name="ApprovalRiskRollout" xml:space="preserve">
+    <value>O agente trabalha apenas nos hosts que estão na sua vez; a aplicação verifica cada um antes de continuar.</value>
+  </data>
+  <data name="ApprovalRolloutHosts" xml:space="preserve">
+    <value>Em {0}</value>
+  </data>
+  <data name="ApprovalRolloutHostsEnvironment" xml:space="preserve">
+    <value>Em {0} ({1})</value>
+  </data>
+  <data name="RolloutCaption" xml:space="preserve">
+    <value>Implementação</value>
+  </data>
+  <data name="RolloutHeading" xml:space="preserve">
+    <value>{0} · {1}</value>
+  </data>
+  <data name="RolloutOneHost" xml:space="preserve">
+    <value>1 host</value>
+  </data>
+  <data name="RolloutHosts" xml:space="preserve">
+    <value>{0} hosts</value>
+  </data>
+  <data name="RolloutOneByOne" xml:space="preserve">
+    <value>{0}, um de cada vez</value>
+  </data>
+  <data name="RolloutInBatches" xml:space="preserve">
+    <value>{0}, {1} de cada vez</value>
+  </data>
+  <data name="RolloutAllAtOnce" xml:space="preserve">
+    <value>{0}, todos ao mesmo tempo</value>
+  </data>
+  <data name="RolloutHealthCheck" xml:space="preserve">
+    <value>Verificação de estado</value>
+  </data>
+  <data name="RolloutNoHealthCheck" xml:space="preserve">
+    <value>Sem verificação de estado: cada lote começa quando o agente indica que o anterior terminou.</value>
+  </data>
+  <data name="RolloutPauseAfter" xml:space="preserve">
+    <value>Pausar após {0}</value>
+  </data>
+  <data name="RolloutResume" xml:space="preserve">
+    <value>Retomar</value>
+  </data>
+  <data name="RolloutStop" xml:space="preserve">
+    <value>Parar</value>
+  </data>
+  <data name="RolloutStopHelp" xml:space="preserve">
+    <value>Parar a implementação: os hosts ainda não iniciados são ignorados</value>
+  </data>
+  <data name="RolloutPausedAfter" xml:space="preserve">
+    <value>Em pausa após {0}</value>
+  </data>
+  <data name="RolloutShowHosts" xml:space="preserve">
+    <value>Mostrar os hosts da implementação</value>
+  </data>
+  <data name="RolloutHideHosts" xml:space="preserve">
+    <value>Ocultar os hosts da implementação</value>
+  </data>
+  <data name="RolloutHostWaiting" xml:space="preserve">
+    <value>Não iniciado</value>
+  </data>
+  <data name="RolloutHostNext" xml:space="preserve">
+    <value>Seguinte</value>
+  </data>
+  <data name="RolloutHostWorking" xml:space="preserve">
+    <value>Em curso</value>
+  </data>
+  <data name="RolloutHostChecking" xml:space="preserve">
+    <value>A verificar o estado</value>
+  </data>
+  <data name="RolloutHostReconnecting" xml:space="preserve">
+    <value>A restabelecer ligação</value>
+  </data>
+  <data name="RolloutHostDone" xml:space="preserve">
+    <value>Concluído</value>
+  </data>
+  <data name="RolloutHostDoneIn" xml:space="preserve">
+    <value>Concluído · {0}</value>
+  </data>
+  <data name="RolloutHostFailed" xml:space="preserve">
+    <value>Falhou</value>
+  </data>
+  <data name="RolloutHostSkipped" xml:space="preserve">
+    <value>Ignorado</value>
+  </data>
+  <data name="RolloutHealthyOf" xml:space="preserve">
+    <value>Em bom estado há {0} de {1}</value>
+  </data>
+  <data name="RolloutHostAccessible" xml:space="preserve">
+    <value>{0}: {1}</value>
+  </data>
+  <data name="RolloutCompleted" xml:space="preserve">
+    <value>{0}: concluído em {1} de {2} hosts</value>
+  </data>
+  <data name="RolloutEndedFailed" xml:space="preserve">
+    <value>{0}: parado após uma falha, {1} de {2} hosts concluídos</value>
+  </data>
+  <data name="RolloutEndedStopped" xml:space="preserve">
+    <value>{0}: parado, {1} de {2} hosts concluídos</value>
+  </data>
+  <data name="RolloutProgressText" xml:space="preserve">
+    <value>Lote {0} de {1}</value>
+  </data>
+  <data name="RolloutMinutes" xml:space="preserve">
+    <value>{0} min</value>
+  </data>
+  <data name="RolloutSeconds" xml:space="preserve">
+    <value>{0} s</value>
+  </data>
+  <data name="NoticeChangedOutside" xml:space="preserve">
+    <value>{0} foi alterado fora da aplicação. O agente continua a usar a versão que aceitou até rever a alteração.</value>
+  </data>
+  <data name="NoticeNewSkillOutside" xml:space="preserve">
+    <value>Chegou uma nova competência, {0}, de fora da aplicação. O agente não a usa até a rever.</value>
+  </data>
+  <data name="ReviewChangeAction" xml:space="preserve">
+    <value>Rever…</value>
+  </data>
+  <data name="ReviewChangeTitle" xml:space="preserve">
+    <value>Rever a alteração a {0}</value>
+  </data>
+  <data name="ReviewChangeMessage" xml:space="preserve">
+    <value>Este ficheiro foi alterado fora da aplicação, p. ex. por um colega através de um serviço de sincronização ou do Git. Aceite a alteração para o agente a usar, ou mantenha a sua versão.</value>
+  </data>
+  <data name="ReviewNewSkillTitle" xml:space="preserve">
+    <value>Rever a nova competência {0}</value>
+  </data>
+  <data name="ReviewNewSkillMessage" xml:space="preserve">
+    <value>Esta competência chegou de fora da aplicação, p. ex. de um colega. Aceite-a para o agente a usar.</value>
+  </data>
+  <data name="ReviewLooser" xml:space="preserve">
+    <value>Esta alteração torna a implementação menos cuidadosa: mais hosts de cada vez ou mais hosts no total, uma verificação de estado mais curta ou inexistente, ou continuar após uma falha.</value>
+  </data>
+  <data name="ReviewKeepMine" xml:space="preserve">
+    <value>Manter a minha versão</value>
+  </data>
+  <data name="ReviewAcceptChange" xml:space="preserve">
+    <value>Aceitar alteração</value>
+  </data>
+  <data name="ReviewLeaveOut" xml:space="preserve">
+    <value>Deixar de fora</value>
+  </data>
+  <data name="ReviewAcceptSkill" xml:space="preserve">
+    <value>Aceitar competência</value>
+  </data>
+  <data name="NoticeKeptForAgent" xml:space="preserve">
+    <value>A sua versão de {0} foi mantida para o agente. O ficheiro continua com a alteração, porque a sua versão tem segredos ocultados e não pode ser reescrita.</value>
+  </data>
+  <data name="NoticeChangeAccepted" xml:space="preserve">
+    <value>A alteração a {0} foi aceite.</value>
+  </data>
+  <data name="NoticeChangeKept" xml:space="preserve">
+    <value>A sua versão de {0} foi reposta.</value>
+  </data>
+  <data name="NoticeConflict" xml:space="preserve">
+    <value>{0} tem duas versões devido a um conflito de sincronização. O agente não usa nenhuma até o resolver.</value>
+  </data>
+  <data name="ConflictAction" xml:space="preserve">
+    <value>Resolver…</value>
+  </data>
+  <data name="ConflictTitle" xml:space="preserve">
+    <value>Resolver o conflito em {0}</value>
+  </data>
+  <data name="ConflictMessage" xml:space="preserve">
+    <value>Um serviço de sincronização manteve duas versões, porque o ficheiro foi alterado em dois sítios ao mesmo tempo. Escolha uma, ou mantenha ambas as alterações quando afetam linhas diferentes. A versão que não mantiver é movida para a pasta de dados da aplicação, não é eliminada.</value>
+  </data>
+  <data name="ConflictDetails" xml:space="preserve">
+    <value>Diferenças de {1} em relação a {0}:</value>
+  </data>
+  <data name="ConflictKeep" xml:space="preserve">
+    <value>Manter {0}</value>
+  </data>
+  <data name="ConflictKeepBoth" xml:space="preserve">
+    <value>Manter ambas as alterações</value>
+  </data>
+  <data name="NoticeConflictSettled" xml:space="preserve">
+    <value>{0} resolvido. A outra versão foi guardada em {1}.</value>
+  </data>
+  <data name="SidebarRemoveHost" xml:space="preserve">
+    <value>Remover do espaço de trabalho…</value>
+  </data>
+  <data name="RemoveHostTitle" xml:space="preserve">
+    <value>Remover {0} deste espaço de trabalho?</value>
+  </data>
+  <data name="RemoveHostMessage" xml:space="preserve">
+    <value>O host sai da lista do espaço de trabalho para todos os que o partilham. A sua documentação e o registo de manutenção ficam na pasta dos hosts, e os terminais abertos nele continuam abertos.</value>
+  </data>
+  <data name="RemoveHostAction" xml:space="preserve">
+    <value>Remover</value>
+  </data>
+  <data name="NoticeHostRemoved" xml:space="preserve">
+    <value>{0} foi removido do espaço de trabalho.</value>
+  </data>
+  <data name="NoticeWorkspaceReadOnlyNotRemoved" xml:space="preserve">
+    <value>{0} não foi removido: este espaço de trabalho é só de leitura.</value>
+  </data>
+  <data name="AppearanceReduceMotion" xml:space="preserve">
+    <value>Reduzir movimento</value>
+  </data>
+  <data name="AppearanceReduceMotionHint" xml:space="preserve">
+    <value>Menus, caixas de diálogo e cartões aparecem e fecham sem animação. O mesmo acontece quando o sistema pede para reduzir o movimento.</value>
+  </data>
+  <data name="SidebarDefaultWorkspaceDetail" xml:space="preserve">
+    <value>Sempre aqui</value>
+  </data>
+  <data name="NoTerminalsTitle" xml:space="preserve">
+    <value>Nenhum terminal aberto</value>
+  </data>
+  <data name="NoTerminalsMessage" xml:space="preserve">
+    <value>Abra um terminal neste computador ou ligue-se a um host. O agente trabalha nos terminais que abrir.</value>
+  </data>
+  <data name="NoTerminalsOpen" xml:space="preserve">
+    <value>Abrir um terminal…</value>
+  </data>
+  <data name="WebAccessHeading" xml:space="preserve">
+    <value>O agente quer usar a web</value>
+  </data>
+  <data name="WebSearchQuestion" xml:space="preserve">
+    <value>Pesquisar na web por “{0}”?</value>
+  </data>
+  <data name="WebReadQuestion" xml:space="preserve">
+    <value>Ler {0}?</value>
+  </data>
+  <data name="WebSearchSent" xml:space="preserve">
+    <value>A pesquisa é enviada para {0}, tal como apresentada.</value>
+  </data>
+  <data name="WebReadSent" xml:space="preserve">
+    <value>Este computador obtém a página, sem cookies nem palavras-passe, e o agente lê o seu texto.</value>
+  </data>
+  <data name="WebLeavesNetwork" xml:space="preserve">
+    <value>O modelo é executado na sua própria rede, mas este pedido sai para a internet.</value>
+  </data>
+  <data name="WebDeny" xml:space="preserve">
+    <value>Não permitir</value>
+  </data>
+  <data name="WebDenyDescription" xml:space="preserve">
+    <value>O agente continua sem isto.</value>
+  </data>
+  <data name="WebAllowOnce" xml:space="preserve">
+    <value>Permitir uma vez</value>
+  </data>
+  <data name="WebAllowOnceSearch" xml:space="preserve">
+    <value>Apenas esta pesquisa.</value>
+  </data>
+  <data name="WebAllowOncePage" xml:space="preserve">
+    <value>Apenas esta página.</value>
+  </data>
+  <data name="WebAllowAlways" xml:space="preserve">
+    <value>Permitir sempre</value>
+  </data>
+  <data name="WebAllowAlwaysDescription" xml:space="preserve">
+    <value>Todas as pesquisas e leituras de páginas a partir de agora, sem perguntar. Pode revogar isto nas Definições.</value>
+  </data>
+  <data name="SettingsPageWeb" xml:space="preserve">
+    <value>Web</value>
+  </data>
+  <data name="WebAlwaysAllow" xml:space="preserve">
+    <value>Usar a web sem perguntar</value>
+  </data>
+  <data name="WebAlwaysAllowHint" xml:space="preserve">
+    <value>Quando está desativado, o agente pergunta antes de cada pesquisa e de cada página que lê. Escolher Permitir sempre na conversa ativa-o.</value>
+  </data>
+  <data name="WebSearchWith" xml:space="preserve">
+    <value>Pesquisar com</value>
+  </data>
+  <data name="WebServiceProvider" xml:space="preserve">
+    <value>A pesquisa do fornecedor do modelo</value>
+  </data>
+  <data name="WebServiceBrave" xml:space="preserve">
+    <value>Brave Search</value>
+  </data>
+  <data name="WebServiceTavily" xml:space="preserve">
+    <value>Tavily</value>
+  </data>
+  <data name="WebServiceSearxng" xml:space="preserve">
+    <value>SearXNG</value>
+  </data>
+  <data name="WebServiceOff" xml:space="preserve">
+    <value>Sem pesquisa</value>
+  </data>
+  <data name="WebKey" xml:space="preserve">
+    <value>Chave de API</value>
+  </data>
+  <data name="WebServer" xml:space="preserve">
+    <value>Servidor</value>
+  </data>
+  <data name="WebServerPlaceholder" xml:space="preserve">
+    <value>https://searx.example.org</value>
+  </data>
+  <data name="WebServerInvalid" xml:space="preserve">
+    <value>Indique o endereço completo do servidor, começando por https:// ou http://.</value>
+  </data>
+  <data name="WebHintProvider" xml:space="preserve">
+    <value>A Anthropic e a OpenAI fazem a pesquisa elas próprias, num pedido que contém apenas a consulta, e cobram-na com a sua utilização. Os modelos num servidor compatível com OpenAI não têm pesquisa própria: com eles, escolha um serviço de pesquisa, ou o agente só pode ler páginas cujo endereço conhece.</value>
+  </data>
+  <data name="WebHintBrave" xml:space="preserve">
+    <value>As pesquisas são enviadas para o Brave Search com a sua chave. Obtenha uma em api-dashboard.search.brave.com.</value>
+  </data>
+  <data name="WebHintTavily" xml:space="preserve">
+    <value>As pesquisas são enviadas para a Tavily com a sua chave. Obtenha uma em app.tavily.com.</value>
+  </data>
+  <data name="WebHintSearxng" xml:space="preserve">
+    <value>As pesquisas são enviadas para o seu servidor SearXNG, que tem de ter o formato JSON ativado.</value>
+  </data>
+  <data name="WebHintOff" xml:space="preserve">
+    <value>O agente não pode pesquisar e só pode ler páginas cujo endereço conhece.</value>
+  </data>
+  <data name="WebReadHint" xml:space="preserve">
+    <value>As páginas são lidas por este computador: apenas endereços públicos, nunca esta máquina nem a sua rede local, e sem cookies nem palavras-passe. O que o agente lê é enviado ao fornecedor do modelo juntamente com a conversa.</value>
+  </data>
+  <data name="WebSearched" xml:space="preserve">
+    <value>Pesquisou na web por “{0}”</value>
+  </data>
+  <data name="WebReadPage" xml:space="preserve">
+    <value>Leu {0}</value>
+  </data>
+  <data name="WebNoResults" xml:space="preserve">
+    <value>Sem resultados.</value>
+  </data>
+  <data name="ApprovalRiskSendsTerminalText" xml:space="preserve">
+    <value>Pode enviar dados para outra máquina e contém texto dos seus terminais: “{0}”. Verifique que não está a levar algo para fora.</value>
+  </data>
+  <data name="ApprovalRiskAfterWeb" xml:space="preserve">
+    <value>Pode enviar dados para outra máquina. O agente leu conteúdo da web nesta conversa, que pode tentar levá-lo a enviar os seus dados para fora, por isso isto é perguntado mesmo no modo Planear.</value>
+  </data>
+  <data name="WebComposedAddress" xml:space="preserve">
+    <value>O agente escreveu este endereço por si: não vem de um resultado de pesquisa, de uma página que leu nem da sua mensagem.</value>
+  </data>
+  <data name="WebComposedAlways" xml:space="preserve">
+    <value>É perguntado mesmo que permita sempre a web.</value>
+  </data>
+  <data name="WebHoldsTerminalText" xml:space="preserve">
+    <value>O endereço contém texto dos seus terminais: “{0}”. Algo que o agente leu pode estar a tentar levá-lo a enviar isso para fora.</value>
+  </data>
+  <data name="WebInjectionWarning" xml:space="preserve">
+    <value>Isto contém texto dirigido a um modelo de IA: “{0}”. O agente foi instruído a não o seguir.</value>
+  </data>
+  <data name="ModeIgnorePermissions" xml:space="preserve">
+    <value>Ignorar permissões</value>
+  </data>
+  <data name="ModeIgnorePermissionsHelp" xml:space="preserve">
+    <value>Os comandos são executados em todos os terminais sem perguntar, incluindo produção. As pesquisas na web e leituras de páginas continuam a perguntar. Termina com a conversa ou quando a aplicação fecha.</value>
+  </data>
+  <data name="IgnorePermissionsTitle" xml:space="preserve">
+    <value>Ignorar permissões?</value>
+  </data>
+  <data name="IgnorePermissionsMessage" xml:space="preserve">
+    <value>O agente vai executar qualquer comando em todos os terminais deste projeto sem perguntar, incluindo produção, até esta conversa terminar ou a aplicação fechar. Texto que leia num terminal, num ficheiro ou na web pode levá-lo a executar algo prejudicial, e só o veria enquanto acontece. Pode pará-lo a qualquer momento.</value>
+  </data>
+  <data name="IgnorePermissionsConfirm" xml:space="preserve">
+    <value>Ignorar permissões</value>
+  </data>
+  <data name="MenuNextArea" xml:space="preserve">
+    <value>Área seguinte</value>
+  </data>
+  <data name="MenuPreviousArea" xml:space="preserve">
+    <value>Área anterior</value>
+  </data>
+  <data name="CountNoneOpen" xml:space="preserve">
+    <value>Nenhum aberto</value>
+  </data>
+  <data name="CountOneOpen" xml:space="preserve">
+    <value>1 aberto</value>
+  </data>
+  <data name="CountOpen" xml:space="preserve">
+    <value>{0} abertos</value>
+  </data>
+  <data name="DocumentsServerFiles" xml:space="preserve">
+    <value>Ficheiros do servidor</value>
+  </data>
+  <data name="MenuMoveArea" xml:space="preserve">
+    <value>Mover {0}</value>
+  </data>
+  <data name="MenuAreaLeftOf" xml:space="preserve">
+    <value>À esquerda de {0}</value>
+  </data>
+  <data name="MenuAreaRightOf" xml:space="preserve">
+    <value>À direita de {0}</value>
+  </data>
+  <data name="MenuAreaAbove" xml:space="preserve">
+    <value>Acima de {0}</value>
+  </data>
+  <data name="MenuAreaBelow" xml:space="preserve">
+    <value>Abaixo de {0}</value>
+  </data>
+  <data name="MenuWindowLeft" xml:space="preserve">
+    <value>Lado esquerdo da janela</value>
+  </data>
+  <data name="MenuWindowRight" xml:space="preserve">
+    <value>Lado direito da janela</value>
+  </data>
+  <data name="MenuWindowTop" xml:space="preserve">
+    <value>Parte superior da janela</value>
+  </data>
+  <data name="MenuWindowBottom" xml:space="preserve">
+    <value>Parte inferior da janela</value>
+  </data>
+  <data name="MenuResetLayout" xml:space="preserve">
+    <value>Repor disposição</value>
+  </data>
+  <data name="NoticeAreaDoesNotFit" xml:space="preserve">
+    <value>{0} não pode ir para aí: a janela é demasiado pequena para todas as áreas manterem um tamanho utilizável. Aumente a janela ou oculte primeiro uma área.</value>
+  </data>
+  <data name="AppearanceWindowHeading" xml:space="preserve">
+    <value>Janela</value>
+  </data>
+  <data name="AppearanceWindowTheme" xml:space="preserve">
+    <value>Tema</value>
+  </data>
+  <data name="WindowThemeSystem" xml:space="preserve">
+    <value>Sistema</value>
+  </data>
+  <data name="WindowThemeLight" xml:space="preserve">
+    <value>Claro</value>
+  </data>
+  <data name="WindowThemeDark" xml:space="preserve">
+    <value>Escuro</value>
+  </data>
+  <data name="WindowThemeTerminal" xml:space="preserve">
+    <value>Igual ao terminal</value>
+  </data>
+  <data name="AppearanceWindowThemeHint" xml:space="preserve">
+    <value>Igual ao terminal dá à barra lateral, aos separadores e à conversa as cores de fundo e de texto do tema do terminal.</value>
+  </data>
+  <data name="AppearanceTerminalHeading" xml:space="preserve">
+    <value>Terminal</value>
+  </data>
+  <data name="AppearanceWindowThemeName" xml:space="preserve">
+    <value>Tema da janela</value>
+  </data>
+  <data name="PlanStepExample" xml:space="preserve">
+    <value>Exemplo</value>
+  </data>
+  <data name="PlanStepCommand" xml:space="preserve">
+    <value>Comando</value>
+  </data>
+  <data name="PlanStepReadOnly" xml:space="preserve">
+    <value>Só de leitura</value>
+  </data>
+  <data name="PlanStepChanges" xml:space="preserve">
+    <value>Alterações</value>
+  </data>
+  <data name="PlanOneComment" xml:space="preserve">
+    <value>1 comentário</value>
+  </data>
+  <data name="PlanComments" xml:space="preserve">
+    <value>{0} comentários</value>
+  </data>
+  <data name="PlanCommentOnStep" xml:space="preserve">
+    <value>Comentar o passo {0}</value>
+  </data>
+  <data name="PlanStepChanged" xml:space="preserve">
+    <value>Alterado</value>
+  </data>
+  <data name="PlanStepNew" xml:space="preserve">
+    <value>Novo</value>
+  </data>
+  <data name="ApprovalLookScopeOne" xml:space="preserve">
+    <value>Os comandos só de leitura neste nó serão executados sem perguntar, apenas nesta tarefa. Tudo o que altere um sistema continua a pedir aprovação. Cada comando aparece no respetivo terminal à medida que é executado.</value>
+  </data>
+  <data name="ApprovalLookScope" xml:space="preserve">
+    <value>Os comandos só de leitura nestes {0} nós serão executados sem perguntar, apenas nesta tarefa. Tudo o que altere um sistema continua a pedir aprovação. Cada comando aparece no respetivo terminal à medida que é executado.</value>
+  </data>
+  <data name="ApprovalLookWhere" xml:space="preserve">
+    <value>Antes de planear</value>
+  </data>
+  <data name="ApprovalLookAllow" xml:space="preserve">
+    <value>Permitir observar</value>
+  </data>
+  <data name="ApprovalLookDecline" xml:space="preserve">
+    <value>Não permitir</value>
+  </data>
+  <data name="ApprovalLookOpens" xml:space="preserve">
+    <value>Abre uma ligação</value>
+  </data>
+  <data name="PlanCommentSent" xml:space="preserve">
+    <value>Enviado</value>
+  </data>
+  <data name="PlanDocumentName" xml:space="preserve">
+    <value>Plano</value>
+  </data>
+  <data name="PlanDocumentUnsent" xml:space="preserve">
+    <value>{0}, comentários não enviados</value>
+  </data>
+  <data name="PlanDocumentAccessible" xml:space="preserve">
+    <value>{0}, plano</value>
+  </data>
+  <data name="PlanNoCommentsToSend" xml:space="preserve">
+    <value>Sem comentários</value>
+  </data>
+  <data name="PlanOneCommentToSend" xml:space="preserve">
+    <value>1 comentário por enviar</value>
+  </data>
+  <data name="PlanCommentsToSend" xml:space="preserve">
+    <value>{0} comentários por enviar</value>
+  </data>
+  <data name="PlanStatusWaiting" xml:space="preserve">
+    <value>A aguardar a sua revisão</value>
+  </data>
+  <data name="PlanStatusRevised" xml:space="preserve">
+    <value>Revisto · a aguardar a sua revisão</value>
+  </data>
+  <data name="PlanStatusApproved" xml:space="preserve">
+    <value>Aprovado</value>
+  </data>
+  <data name="PlanStatusSentBack" xml:space="preserve">
+    <value>Devolvido com os seus comentários</value>
+  </data>
+  <data name="PlanStatusDeclined" xml:space="preserve">
+    <value>Recusado</value>
+  </data>
+  <data name="PlanStatusWithdrawn" xml:space="preserve">
+    <value>Já não está a aguardar: o agente parou</value>
+  </data>
+  <data name="PlanFeedbackIntro" xml:space="preserve">
+    <value>Reveja o plano com estes comentários e proponha-o novamente:</value>
+  </data>
+  <data name="PlanRevisedOne" xml:space="preserve">
+    <value>Alterado desde o último plano: passo {0}.</value>
+  </data>
+  <data name="PlanRevisedMany" xml:space="preserve">
+    <value>Alterado desde o último plano: passos {0}.</value>
+  </data>
+  <data name="PlanSendComments" xml:space="preserve">
+    <value>Enviar comentários</value>
+  </data>
+  <data name="PlanKeepReviewing" xml:space="preserve">
+    <value>Continuar a rever</value>
+  </data>
+  <data name="PlanApproveAnyway" xml:space="preserve">
+    <value>Aprovar mesmo assim</value>
+  </data>
+  <data name="PlanApproveUnsent" xml:space="preserve">
+    <value>Os seus comentários não foram enviados. Ao aprovar, serão descartados.</value>
+  </data>
+  <data name="PlanCommentsTitle" xml:space="preserve">
+    <value>Comentários</value>
+  </data>
+  <data name="PlanCommentsHint" xml:space="preserve">
+    <value>Selecione qualquer texto do plano e escolha Comentar, ou prima Ctrl+Alt+M (⌘⌥M num Mac). Ou utilize o botão Comentar de um passo.</value>
+  </data>
+  <data name="PlanCommentPlaceholder" xml:space="preserve">
+    <value>O que deve mudar?</value>
+  </data>
+  <data name="PlanCommentSave" xml:space="preserve">
+    <value>Comentar</value>
+  </data>
+  <data name="PlanCommentEdit" xml:space="preserve">
+    <value>Editar</value>
+  </data>
+  <data name="PlanCommentDelete" xml:space="preserve">
+    <value>Eliminar</value>
+  </data>
+  <data name="PlanFindingsTitle" xml:space="preserve">
+    <value>O que encontrei</value>
+  </data>
+  <data name="PlanStepOn" xml:space="preserve">
+    <value>Em</value>
+  </data>
+  <data name="PlanComment" xml:space="preserve">
+    <value>Comentar</value>
+  </data>
+  <data name="PlanCommentSelectionTip" xml:space="preserve">
+    <value>Comentar o texto selecionado</value>
+  </data>
+  <data name="PlanCommentQuoteStep" xml:space="preserve">
+    <value>Passo {0}: {1}</value>
+  </data>
+  <data name="PlanCommentLabel" xml:space="preserve">
+    <value>O seu comentário</value>
+  </data>
   <data name="PlanStepsTitle" xml:space="preserve">
     <value>Passos</value>
+  </data>
+  <data name="LookRunning" xml:space="preserve">
+    <value>A observar {0}…</value>
+  </data>
+  <data name="LookDone" xml:space="preserve">
+    <value>Observou {0} · {1} comandos</value>
+  </data>
+  <data name="LookDoneOne" xml:space="preserve">
+    <value>Observou {0} · 1 comando</value>
+  </data>
+  <data name="LookOneHost" xml:space="preserve">
+    <value>1 nó</value>
+  </data>
+  <data name="LookHosts" xml:space="preserve">
+    <value>{0} nós</value>
+  </data>
+  <data name="ApprovalReply" xml:space="preserve">
+    <value>Responder…</value>
+  </data>
+  <data name="ApprovalSendReply" xml:space="preserve">
+    <value>Enviar resposta</value>
+  </data>
+  <data name="ApprovalApprove" xml:space="preserve">
+    <value>Aprovar</value>
+  </data>
+  <data name="PlanApprove" xml:space="preserve">
+    <value>Aprovar plano</value>
+  </data>
+  <data name="PlanRevisedAfterOne" xml:space="preserve">
+    <value>Revisto após 1 comentário</value>
+  </data>
+  <data name="PlanRevisedAfter" xml:space="preserve">
+    <value>Revisto após {0} comentários</value>
+  </data>
+  <data name="PlanCommentSentOne" xml:space="preserve">
+    <value>Enviado · passo {0} alterado</value>
+  </data>
+  <data name="PlanCommentSentMany" xml:space="preserve">
+    <value>Enviado · passos {0} alterados</value>
+  </data>
+  <data name="ApprovalTreatAsReadOnly" xml:space="preserve">
+    <value>Tratar sempre “{0}” como só de leitura</value>
+  </data>
+  <data name="ApprovalTreatAsReadOnlyHint" xml:space="preserve">
+    <value>A partir de agora, é executado sem perguntar onde só as alterações precisam de aprovação, seja o que for que se lhe siga, a menos que escreva num ficheiro ou utilize uma opção que se sabe que escreve. Pode removê-lo em Definições › Comandos.</value>
+  </data>
+  <data name="SettingsPageCommands" xml:space="preserve">
+    <value>Comandos</value>
+  </data>
+  <data name="CommandsLearnedHeading" xml:space="preserve">
+    <value>Comandos que trata como só de leitura</value>
+  </data>
+  <data name="CommandsNone" xml:space="preserve">
+    <value>Ainda nenhum. Quando aprovar um comando que o agente considerou uma alteração, pode indicar que esse comando passe a ser tratado como só de leitura.</value>
+  </data>
+  <data name="CommandsPlaceholder" xml:space="preserve">
+    <value>p. ex. patronictl list</value>
+  </data>
+  <data name="CommandsAddName" xml:space="preserve">
+    <value>Comando a tratar como só de leitura</value>
+  </data>
+  <data name="CommandsAdd" xml:space="preserve">
+    <value>Adicionar</value>
+  </data>
+  <data name="CommandsRemove" xml:space="preserve">
+    <value>Remover</value>
+  </data>
+  <data name="CommandsRemoveName" xml:space="preserve">
+    <value>Remover {0}</value>
+  </data>
+  <data name="CommandsTeach" xml:space="preserve">
+    <value>Tratar como só de leitura</value>
+  </data>
+  <data name="CommandsTeachName" xml:space="preserve">
+    <value>Tratar {0} como só de leitura</value>
+  </data>
+  <data name="CommandsHint" xml:space="preserve">
+    <value>Estes comandos são executados sem perguntar no modo Perguntar se arriscado, no modo Planear antes de haver um plano e enquanto o agente observa, seja o que for que se lhes siga, a menos que escrevam num ficheiro ou utilizem uma opção que se sabe que escreve. Um comando é o programa e até dois subcomandos. Não é possível adicionar shells, interpretadores nem comandos que executam outros. Ficam guardados nas suas definições, nunca num espaço de trabalho.</value>
+  </data>
+  <data name="CommandsRecentHeading" xml:space="preserve">
+    <value>Aprovados nesta sessão</value>
+  </data>
+  <data name="CommandsRecentHint" xml:space="preserve">
+    <value>Comandos que aprovou e que o agente considerou alterações. Mantidos apenas até sair.</value>
+  </data>
+  <data name="CommandsCantTeach" xml:space="preserve">
+    <value>“{0}” não pode ser tratado como só de leitura: executa outros comandos, altera algo, acede a outras máquinas ou não é um comando simples de até três palavras.</value>
+  </data>
+  <data name="CommandsTaught" xml:space="preserve">
+    <value>“{0}” passa a ser tratado como só de leitura.</value>
+  </data>
+  <data name="CommandsRemoved" xml:space="preserve">
+    <value>“{0}” volta a pedir aprovação.</value>
+  </data>
+  <data name="PasswordRemember" xml:space="preserve">
+    <value>Guardar em {0}</value>
+  </data>
+  <data name="PasswordSavedRefused" xml:space="preserve">
+    <value>A palavra-passe guardada para {0} em {1} foi recusada. Escreva a palavra-passe para iniciar sessão.</value>
+  </data>
+  <data name="PasswordSavedTitle" xml:space="preserve">
+    <value>Iniciar sessão em {0} com a palavra-passe guardada?</value>
+  </data>
+  <data name="PasswordSavedMessage" xml:space="preserve">
+    <value>Está guardada uma palavra-passe para {0} em {1} no armazenamento de credenciais deste computador. O Datapoint Terminal só a entrega a este servidor, depois de verificar a chave do host. Pode alterar isto em Definições › Palavras-passe.</value>
+  </data>
+  <data name="PasswordSavedTypeIt" xml:space="preserve">
+    <value>Vou escrevê-la eu</value>
+  </data>
+  <data name="PasswordSavedOnce" xml:space="preserve">
+    <value>Permitir uma vez</value>
+  </data>
+  <data name="PasswordSavedAlways" xml:space="preserve">
+    <value>Permitir sempre</value>
+  </data>
+  <data name="NoticeLoginNotSaved" xml:space="preserve">
+    <value>A palavra-passe para {0} não foi guardada: {1}</value>
+  </data>
+  <data name="NoticeLoginNotRead" xml:space="preserve">
+    <value>Não foi possível ler a palavra-passe guardada para {0}: {1}</value>
+  </data>
+  <data name="SettingsPagePasswords" xml:space="preserve">
+    <value>Palavras-passe</value>
+  </data>
+  <data name="PasswordsHeading" xml:space="preserve">
+    <value>Palavras-passe de início de sessão SSH guardadas</value>
+  </data>
+  <data name="PasswordsNone" xml:space="preserve">
+    <value>Ainda nenhuma. Quando iniciar sessão numa ligação com palavra-passe, assinale “Guardar” na janela de início de sessão para a manter.</value>
+  </data>
+  <data name="PasswordsAlways" xml:space="preserve">
+    <value>Permitir sempre</value>
+  </data>
+  <data name="PasswordsAlwaysName" xml:space="preserve">
+    <value>Utilizar a palavra-passe guardada para {0} sem perguntar</value>
+  </data>
+  <data name="PasswordsForget" xml:space="preserve">
+    <value>Esquecer</value>
+  </data>
+  <data name="PasswordsForgetName" xml:space="preserve">
+    <value>Esquecer a palavra-passe guardada para {0}</value>
+  </data>
+  <data name="PasswordsHint" xml:space="preserve">
+    <value>Guardadas em {0}, nunca nas definições nem num espaço de trabalho. Uma palavra-passe guardada só é entregue ao servidor para o qual foi guardada (utilizador, endereço e porta), depois de verificada a chave do host, e nunca ao agente nem ao fornecedor de IA. Sem Permitir sempre, é-lhe perguntado sempre que for utilizada. Só são usadas para iniciar sessão: o sudo e outros pedidos no terminal continuam a ser escritos por si.</value>
+  </data>
+  <data name="PasswordsNoStore" xml:space="preserve">
+    <value>Este sistema não tem armazenamento de credenciais, pelo que não é possível guardar palavras-passe.</value>
+  </data>
+  <data name="PasswordsForgotten" xml:space="preserve">
+    <value>A palavra-passe para {0} foi esquecida.</value>
+  </data>
+  <data name="PasswordsNotForgotten" xml:space="preserve">
+    <value>Não foi possível esquecer a palavra-passe para {0}: {1}</value>
+  </data>
+  <data name="ApprovalHeadingPlanMode" xml:space="preserve">
+    <value>Planear “{0}” antes de alterar alguma coisa?</value>
+  </data>
+  <data name="ApprovalPlanModeSwitch" xml:space="preserve">
+    <value>Mudar para o modo Planear</value>
+  </data>
+  <data name="ApprovalPlanModeDecline" xml:space="preserve">
+    <value>Continuar sem plano</value>
+  </data>
+  <data name="ApprovalRiskPlanMode" xml:space="preserve">
+    <value>No modo Planear, o agente observa com comandos só de leitura e depois mostra-lhe um plano. Nada que altere um sistema é executado até o aprovar, e os passos são então executados sem perguntar. O modo Planear mantém-se ativo neste espaço de trabalho até o alterar.</value>
+  </data>
+  <data name="ApprovalPlanModeAnyHost" xml:space="preserve">
+    <value>Neste espaço de trabalho</value>
+  </data>
+  <data name="ApprovalPlanModeHosts" xml:space="preserve">
+    <value>Altera {0}</value>
+  </data>
+  <data name="RailCollapse" xml:space="preserve">
+    <value>Recolher terminais</value>
+  </data>
+  <data name="RailExpand" xml:space="preserve">
+    <value>Expandir terminais</value>
+  </data>
+  <data name="ChatTerminalInputTitle" xml:space="preserve">
+    <value>{0} está à sua espera</value>
+  </data>
+  <data name="ChatTerminalInputText" xml:space="preserve">
+    <value>O agente está à espera de que escreva neste terminal, por exemplo uma palavra-passe. Continua quando o comando terminar.</value>
+  </data>
+  <data name="ChatTerminalInputShow" xml:space="preserve">
+    <value>Ir para {0}</value>
+  </data>
+  <data name="NotifyTerminalInput" xml:space="preserve">
+    <value>{0} está à espera de que escreva nele.</value>
+  </data>
+  <data name="PlanReadyText" xml:space="preserve">
+    <value>{0}. Está aberto na área de documentos: leia-o, comente qualquer passo e depois aprove-o aí.</value>
+  </data>
+  <data name="PlanReadyHeading" xml:space="preserve">
+    <value>O plano está pronto</value>
+  </data>
+  <data name="PlanReadyHeadingNamed" xml:space="preserve">
+    <value>O plano está pronto: {0}</value>
+  </data>
+  <data name="PlanShow" xml:space="preserve">
+    <value>Mostrar o plano</value>
+  </data>
+  <data name="StatusLookingAt" xml:space="preserve">
+    <value>A observar {0}</value>
+  </data>
+  <data name="LookOpening" xml:space="preserve">
+    <value>A abrir um terminal…</value>
+  </data>
+  <data name="LookConnecting" xml:space="preserve">
+    <value>A ligar…</value>
+  </data>
+  <data name="PlanReject" xml:space="preserve">
+    <value>Rejeitar</value>
+  </data>
+  <data name="PlanRejectFeedback" xml:space="preserve">
+    <value>Estou a rejeitar este plano. Não execute nenhuma parte dele e não o proponha novamente, a menos que eu peça.</value>
+  </data>
+  <data name="PlanRejectComments" xml:space="preserve">
+    <value>Os meus comentários sobre ele:</value>
+  </data>
+  <data name="PlanAreaName" xml:space="preserve">
+    <value>Plano</value>
+  </data>
+  <data name="CollapseArea" xml:space="preserve">
+    <value>Recolher {0}</value>
+  </data>
+  <data name="ExpandArea" xml:space="preserve">
+    <value>Expandir {0}</value>
+  </data>
+  <data name="TerminalConnectionLost" xml:space="preserve">
+    <value>A ligação a {0} perdeu-se. A restabelecer a ligação…</value>
+  </data>
+  <data name="TerminalReconnected" xml:space="preserve">
+    <value>Ligação a {0} restabelecida.</value>
+  </data>
+  <data name="TerminalReconnectStopped" xml:space="preserve">
+    <value>Não foi possível restabelecer a ligação a {0}. Prima Enter para tentar novamente ou feche o separador.</value>
+  </data>
+  <data name="TerminalReconnecting" xml:space="preserve">
+    <value>A restabelecer a ligação a {0}…</value>
+  </data>
+  <data name="PlanStatusStepAdded" xml:space="preserve">
+    <value>Novo passo · a aguardar a sua revisão</value>
+  </data>
+  <data name="PlanStepAddedText" xml:space="preserve">
+    <value>O agente pede para adicionar o passo {0} ao plano aprovado; os passos seguintes descem uma posição.</value>
+  </data>
+  <data name="PlanStepAdded" xml:space="preserve">
+    <value>Adicionado</value>
+  </data>
+  <data name="ProviderModelOther" xml:space="preserve">
+    <value>Outro…</value>
+  </data>
+  <data name="ProviderModelName" xml:space="preserve">
+    <value>Nome do modelo</value>
+  </data>
+  <data name="ProviderModelNameHint" xml:space="preserve">
+    <value>O ID do modelo, tal como o fornecedor o designa</value>
+  </data>
+  <data name="ProviderKnownSource" xml:space="preserve">
+    <value>Com base nos preços publicados e na documentação de modelos de {0}, à data de {1}. Para utilizar outros valores, escolha Outro…</value>
+  </data>
+  <data name="ProviderTokens" xml:space="preserve">
+    <value>{0:N0} tokens</value>
+  </data>
+  <data name="ProviderLongPromptPrice" xml:space="preserve">
+    <value>{0}, ou {1} para prompts com mais de {2:N0} tokens</value>
+  </data>
+  <data name="ProviderNoPrice" xml:space="preserve">
+    <value>Não publicado</value>
+  </data>
+  <data name="ContextUsedDetail" xml:space="preserve">
+    <value>{0:N0} de {1:N0} tokens de contexto utilizados</value>
+  </data>
+  <data name="TokensThousands" xml:space="preserve">
+    <value>{0:0}k</value>
+  </data>
+  <data name="TokensMillions" xml:space="preserve">
+    <value>{0:0.0}M</value>
+  </data>
+  <data name="EditHostTitle" xml:space="preserve">
+    <value>Editar host</value>
+  </data>
+  <data name="EditHostHeading" xml:space="preserve">
+    <value>Editar {0}</value>
+  </data>
+  <data name="EditHostSave" xml:space="preserve">
+    <value>Guardar</value>
+  </data>
+  <data name="EditHostNameFixed" xml:space="preserve">
+    <value>Não é possível alterar o nome: a documentação do host está guardada com ele.</value>
+  </data>
+  <data name="EditHostLeavingProduction" xml:space="preserve">
+    <value>Este host deixará de ser tratado como produção: os seus separadores deixarão de ser assinalados a vermelho e os comandos do agente nele passarão a seguir o modo de aprovação do separador.</value>
+  </data>
+  <data name="EditHostMoving" xml:space="preserve">
+    <value>O documento do host, o registo de manutenção e as notas do agente ficam com este host. Se o novo endereço for outra máquina, atualize-os.</value>
+  </data>
+  <data name="SidebarEditHost" xml:space="preserve">
+    <value>Editar host…</value>
+  </data>
+  <data name="DocumentEditHost" xml:space="preserve">
+    <value>Editar host…</value>
+  </data>
+  <data name="NoticeHostEdited" xml:space="preserve">
+    <value>Alterações a {0} guardadas.</value>
+  </data>
+  <data name="NoticeHostEditedOpen" xml:space="preserve">
+    <value>Alterações a {0} guardadas. Os terminais já abertos nele mantêm o endereço, o utilizador e a porta até serem abertos novamente.</value>
+  </data>
+  <data name="NoticeWorkspaceReadOnlyNotEdited" xml:space="preserve">
+    <value>{0} não foi alterado: a pasta deste espaço de trabalho é só de leitura.</value>
+  </data>
+  <data name="ContextUseHelp" xml:space="preserve">
+    <value>Contexto e utilização desta sessão</value>
+  </data>
+  <data name="ContextUsedUnknownWindow" xml:space="preserve">
+    <value>{0:N0} tokens de contexto utilizados</value>
+  </data>
+  <data name="UsageRequests" xml:space="preserve">
+    <value>Pedidos ao modelo: {0:N0}, com cerca de {1} tokens de entrada cada</value>
+  </data>
+  <data name="UsagePartNew" xml:space="preserve">
+    <value>Entrada nova: {0} tokens</value>
+  </data>
+  <data name="UsagePartCacheRead" xml:space="preserve">
+    <value>Lidos da cache: {0} tokens</value>
+  </data>
+  <data name="UsagePartCacheWrite" xml:space="preserve">
+    <value>Escritos na cache: {0} tokens</value>
+  </data>
+  <data name="UsagePartOutput" xml:space="preserve">
+    <value>Saída: {0} tokens</value>
+  </data>
+  <data name="ProviderCompactAt" xml:space="preserve">
+    <value>Resumir a conversa aos</value>
+  </data>
+  <data name="ProviderCompactAtHint" xml:space="preserve">
+    <value>Predefinição: {0:N0} tokens; 0 para nunca</value>
+  </data>
+  <data name="NoticeSummaryLabel" xml:space="preserve">
+    <value>Resumo</value>
+  </data>
+  <data name="HistoryOutput" xml:space="preserve">
+    <value>Resultado em {0}, enviado ao agente</value>
+  </data>
+  <data name="ContextSummarizing" xml:space="preserve">
+    <value>A resumir…</value>
+  </data>
+  <data name="ContextSummarizingDetail" xml:space="preserve">
+    <value>A resumir a conversa para a manter curta. O tamanho do contexto volta a aparecer após a próxima resposta.</value>
+  </data>
+  <data name="ContextEstimatedDetail" xml:space="preserve">
+    <value>Cerca de {0:N0} de {1:N0} tokens de contexto utilizados, uma estimativa até a próxima resposta o indicar</value>
+  </data>
+  <data name="ContextEstimatedUnknownWindow" xml:space="preserve">
+    <value>Cerca de {0:N0} tokens de contexto utilizados, uma estimativa até a próxima resposta o indicar</value>
+  </data>
+  <data name="UsageConversation" xml:space="preserve">
+    <value>Esta conversa: {0} tokens</value>
+  </data>
+  <data name="MarkdownQuote" xml:space="preserve">
+    <value>Citar na mensagem</value>
+  </data>
+  <data name="MenuAbout" xml:space="preserve">
+    <value>Acerca do Datapoint Terminal</value>
+  </data>
+  <data name="MenuHelp" xml:space="preserve">
+    <value>Ajuda</value>
+  </data>
+  <data name="AboutVersion" xml:space="preserve">
+    <value>Versão {0}</value>
+  </data>
+  <data name="AboutVersionWithCommit" xml:space="preserve">
+    <value>Versão {0} ({1})</value>
+  </data>
+  <data name="AboutNotice" xml:space="preserve">
+    <value>Copyright © 2026 Datapoint - Sistemas de Informação, Lda. Este programa é software livre: pode partilhá-lo e alterá-lo nos termos da GNU Affero General Public License, versão 3, com os termos adicionais do seu NOTICE. É fornecido sem qualquer garantia.</value>
+  </data>
+  <data name="AboutLicense" xml:space="preserve">
+    <value>Licença</value>
+  </data>
+  <data name="AboutThirdPartyNotices" xml:space="preserve">
+    <value>Avisos de terceiros</value>
+  </data>
+  <data name="AboutSourceCode" xml:space="preserve">
+    <value>Código-fonte</value>
+  </data>
+  <data name="AboutWebsite" xml:space="preserve">
+    <value>Site</value>
+  </data>
+  <data name="AboutAttributionLink" xml:space="preserve">
+    <value>Abrir datapoint.software</value>
+  </data>
+  <data name="SetupTitle" xml:space="preserve">
+    <value>Configurar o Datapoint Terminal</value>
+  </data>
+  <data name="SetupStep" xml:space="preserve">
+    <value>Passo {0} de {1}</value>
+  </data>
+  <data name="SetupLater" xml:space="preserve">
+    <value>Configurar mais tarde</value>
+  </data>
+  <data name="SetupBack" xml:space="preserve">
+    <value>Voltar</value>
+  </data>
+  <data name="SetupContinue" xml:space="preserve">
+    <value>Continuar</value>
+  </data>
+  <data name="SetupGetStarted" xml:space="preserve">
+    <value>Começar</value>
+  </data>
+  <data name="SetupOpen" xml:space="preserve">
+    <value>Abrir o Datapoint Terminal</value>
+  </data>
+  <data name="SetupWelcomeTitle" xml:space="preserve">
+    <value>Bem-vindo ao Datapoint Terminal</value>
+  </data>
+  <data name="SetupWelcomeText" xml:space="preserve">
+    <value>Um terminal com um agente de IA ao lado. Descreve o que pretende na conversa e o agente trabalha no mesmo terminal que vê: cada comando que escreve aparece à medida que acontece, e pode escrever por cima a qualquer momento.</value>
+  </data>
+  <data name="SetupWelcomeProvider" xml:space="preserve">
+    <value>Ligar um fornecedor de IA</value>
+  </data>
+  <data name="SetupWelcomeAppearance" xml:space="preserve">
+    <value>Escolher o aspeto</value>
+  </data>
+  <data name="SetupWelcomeLater" xml:space="preserve">
+    <value>Demora cerca de um minuto. Pode alterar tudo mais tarde nas Definições.</value>
+  </data>
+  <data name="SetupProviderTitle" xml:space="preserve">
+    <value>Ligar um fornecedor de IA</value>
+  </data>
+  <data name="SetupProviderText" xml:space="preserve">
+    <value>O agente utiliza a sua própria conta. Sem uma, a aplicação continua a funcionar como terminal.</value>
+  </data>
+  <data name="SetupAnthropicDetail" xml:space="preserve">
+    <value>Modelos Claude, com a sua chave de API da Anthropic.</value>
+  </data>
+  <data name="SetupOpenAIDetail" xml:space="preserve">
+    <value>Modelos GPT, com a sua chave de API da OpenAI.</value>
+  </data>
+  <data name="SetupOpenWeightTitle" xml:space="preserve">
+    <value>Modelo de pesos abertos</value>
+  </data>
+  <data name="SetupOpenWeightDetail" xml:space="preserve">
+    <value>Um modelo que executa por si ou a que acede através de um serviço de alojamento, por uma API compatível com a OpenAI.</value>
+  </data>
+  <data name="SetupApiKey" xml:space="preserve">
+    <value>Chave de API</value>
+  </data>
+  <data name="SetupTest" xml:space="preserve">
+    <value>Testar</value>
+  </data>
+  <data name="SetupKeySaved" xml:space="preserve">
+    <value>Guardada em {0}, nunca num ficheiro.</value>
+  </data>
+  <data name="SetupKeyFromEnvironment" xml:space="preserve">
+    <value>A utilizar {0} do ambiente. Introduza uma chave para a guardar em {1}.</value>
+  </data>
+  <data name="SetupModel" xml:space="preserve">
+    <value>Modelo</value>
+  </data>
+  <data name="SetupModelHint" xml:space="preserve">
+    <value>O nome do modelo, tal como o servidor o apresenta</value>
+  </data>
+  <data name="SetupNeedsKey" xml:space="preserve">
+    <value>Introduza uma chave de API ou escolha Configurar mais tarde.</value>
+  </data>
+  <data name="SetupNeedsServer" xml:space="preserve">
+    <value>Introduza o endereço do servidor, começado por http:// ou https://, e um modelo.</value>
+  </data>
+  <data name="SetupMasked" xml:space="preserve">
+    <value>Os segredos que reconhece são ocultados antes de qualquer envio.</value>
+  </data>
+  <data name="SetupAppearanceTitle" xml:space="preserve">
+    <value>Escolher o aspeto</value>
+  </data>
+  <data name="SetupWindow" xml:space="preserve">
+    <value>Janela</value>
+  </data>
+  <data name="SetupTerminal" xml:space="preserve">
+    <value>Terminal</value>
+  </data>
+  <data name="SetupThemeSystem" xml:space="preserve">
+    <value>Igual ao sistema</value>
+  </data>
+  <data name="SetupMotionNote" xml:space="preserve">
+    <value>A redução de movimento e o tamanho do texto seguem as definições do sistema.</value>
+  </data>
+  <data name="SetupReadyTitle" xml:space="preserve">
+    <value>Está tudo pronto</value>
+  </data>
+  <data name="SetupReadyAgent" xml:space="preserve">
+    <value>Agente: {0}</value>
+  </data>
+  <data name="SetupReadyNoAgent" xml:space="preserve">
+    <value>Agente: ainda não configurado. Adicione um fornecedor nas Definições quando quiser.</value>
+  </data>
+  <data name="SetupReadyWindow" xml:space="preserve">
+    <value>Janela: {0}</value>
+  </data>
+  <data name="SetupReadyTerminal" xml:space="preserve">
+    <value>Terminal: {0}</value>
+  </data>
+  <data name="SetupReadyMatchesSystem" xml:space="preserve">
+    <value>igual ao sistema</value>
+  </data>
+  <data name="SetupReadyMatchesTerminal" xml:space="preserve">
+    <value>igual ao terminal</value>
+  </data>
+  <data name="SetupReadyLight" xml:space="preserve">
+    <value>claro</value>
+  </data>
+  <data name="SetupReadyDark" xml:space="preserve">
+    <value>escuro</value>
+  </data>
+  <data name="SetupReadyText" xml:space="preserve">
+    <value>Está aberto um terminal local no seu espaço de trabalho predefinido. Experimente perguntar ao agente algo como "quanto espaço livre há no disco?"</value>
+  </data>
+  <data name="SetupPreviewName" xml:space="preserve">
+    <value>Pré-visualização das cores do terminal</value>
+  </data>
+  <data name="TipHostsTitle" xml:space="preserve">
+    <value>Hosts</value>
+  </data>
+  <data name="TipHostsText" xml:space="preserve">
+    <value>As máquinas com que trabalha neste espaço de trabalho. Abra uma para ler a sua documentação ou utilize o respetivo menu para abrir um terminal nela. Adicione uma com +.</value>
+  </data>
+  <data name="TipSkillsTitle" xml:space="preserve">
+    <value>Competências</value>
+  </data>
+  <data name="TipSkillsText" xml:space="preserve">
+    <value>Procedimentos que o agente guardou após uma tarefa, como aplicar atualizações a um servidor. Abra um para o ler ou editar; o agente pode segui-lo novamente quando pedir.</value>
+  </data>
+  <data name="TipWorkspaceTitle" xml:space="preserve">
+    <value>Espaço de trabalho</value>
+  </data>
+  <data name="TipWorkspaceText" xml:space="preserve">
+    <value>Onde ficam os hosts, as competências e as instruções para o agente desta janela: uma pasta, que pode partilhar. Mude para outro espaço de trabalho ou crie um novo aqui.</value>
+  </data>
+  <data name="TipCount" xml:space="preserve">
+    <value>{0} de {1}</value>
+  </data>
+  <data name="TipNext" xml:space="preserve">
+    <value>Seguinte</value>
+  </data>
+  <data name="TipDone" xml:space="preserve">
+    <value>Entendido</value>
+  </data>
+  <data name="TipSkip" xml:space="preserve">
+    <value>Ignorar dicas</value>
+  </data>
+  <data name="MenuShowTips" xml:space="preserve">
+    <value>Mostrar dicas novamente</value>
+  </data>
+  <data name="AppearanceLanguageHeading" xml:space="preserve">
+    <value>Idioma</value>
+  </data>
+  <data name="AppearanceLanguage" xml:space="preserve">
+    <value>Idioma</value>
+  </data>
+  <data name="AppearanceLanguageSystem" xml:space="preserve">
+    <value>Sistema: {0}</value>
+  </data>
+  <data name="AppearanceLanguageHint" xml:space="preserve">
+    <value>Altera de imediato o texto da aplicação. O agente utiliza o novo idioma a partir da próxima conversa; uma conversa em curso mantém o seu idioma. Os comandos, os ficheiros e a documentação dos hosts mantêm o idioma em que foram escritos.</value>
+  </data>
+  <data name="SettingsUnreadable" xml:space="preserve">
+    <value>Não foi possível ler o ficheiro de definições ({0}). Foi mantido como {1} e são utilizadas as predefinições.</value>
+  </data>
+  <data name="SettingsNewerVersion" xml:space="preserve">
+    <value>Estas definições foram escritas por uma versão mais recente do Datapoint Terminal; as alterações feitas aqui não serão guardadas.</value>
+  </data>
+  <data name="ThemeImportTooLarge" xml:space="preserve">
+    <value>é demasiado grande para ser um tema</value>
+  </data>
+  <data name="ThemeDefaultDark" xml:space="preserve">
+    <value>Escuro predefinido</value>
+  </data>
+  <data name="ThemeDefaultLight" xml:space="preserve">
+    <value>Claro predefinido</value>
   </data>
 </root>

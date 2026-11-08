@@ -1,8 +1,10 @@
 using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using Datapoint.Terminal.Resources;
 using Datapoint.Terminal.Settings;
+using Datapoint.Terminal.Setup;
 using Datapoint.Terminal.Tests.Chat;
 using Datapoint.Terminal.Tests.Settings;
 using Datapoint.Terminal.Tests.Shell;
@@ -42,6 +44,41 @@ public sealed class LanguageSettingTests : IDisposable
         Assert.Equal(0, page.FindControl<ComboBox>("FontChoice")!.SelectedIndex);
         window.Close();
     }
+
+    [AvaloniaFact]
+    public void Switches_setup_to_portuguese_from_its_first_step()
+    {
+        var settings = Create();
+        var window = new SetupWindow { DataContext = new SetupViewModel(settings, _ => null) };
+        window.Show();
+        Dispatcher.UIThread.RunJobs();
+
+        window.FindControl<ComboBox>("LanguageChoice")!.SelectedIndex = (int)AppLanguage.PortuguesePortugal;
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.Contains(window.GetVisualDescendants().OfType<TextBlock>(), text => string.Equals(text.Text, Strings.SetupWelcomeTitle, StringComparison.Ordinal));
+        Assert.NotEqual(Strings.Get(nameof(Strings.SetupWelcomeTitle)), English(nameof(Strings.SetupWelcomeTitle)), StringComparer.Ordinal);
+        window.Close();
+    }
+
+    [AvaloniaFact]
+    public void Shows_settings_in_portuguese()
+    {
+        Localizer.Instance.Use(AppLanguage.PortuguesePortugal);
+        var window = new SettingsWindow { DataContext = Create(), History = new FakeHistory() };
+        window.Show();
+        for (var page = 0; page < 7; page++)
+        {
+            window.ShowPage(page);
+            Dispatcher.UIThread.RunJobs();
+        }
+
+        Assert.Equal(Strings.SettingsTitle, window.Title);
+        Assert.NotEqual(English(nameof(Strings.SettingsTitle)), window.Title, StringComparer.Ordinal);
+        window.Close();
+    }
+
+    private static string English(string key) => new System.Resources.ResourceManager("Datapoint.Terminal.Resources.Strings", typeof(Strings).Assembly).GetString(key, System.Globalization.CultureInfo.GetCultureInfo("en"))!;
 
     private SettingsViewModel Create()
     {

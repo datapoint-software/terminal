@@ -156,8 +156,8 @@ public sealed partial class AppearanceViewModel : LocalizedObject
         var isDark = WindowColors.IsSystemDark;
         Themes.Clear();
         Themes.Add(new ThemeCard(isDark ? BuiltInThemes.Dark : BuiltInThemes.Light, Strings.ThemeDefault, Strings.ThemeFollowsSystem, TerminalTheme.System));
-        Themes.Add(new ThemeCard(BuiltInThemes.Dark, BuiltInThemes.Dark.Name, string.Empty, TerminalTheme.Dark));
-        Themes.Add(new ThemeCard(BuiltInThemes.Light, BuiltInThemes.Light.Name, string.Empty, TerminalTheme.Light));
+        Themes.Add(new ThemeCard(BuiltInThemes.Dark, Strings.ThemeDefaultDark, string.Empty, TerminalTheme.Dark));
+        Themes.Add(new ThemeCard(BuiltInThemes.Light, Strings.ThemeDefaultLight, string.Empty, TerminalTheme.Light));
         foreach (var theme in _settings.Themes)
         {
             Themes.Add(new ThemeCard(theme, theme.Name, theme.Source is null ? Strings.ThemeCustom : Strings.ThemeImported, builtIn: null));
