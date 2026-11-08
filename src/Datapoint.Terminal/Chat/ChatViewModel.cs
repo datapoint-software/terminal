@@ -160,13 +160,6 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
 
     public bool IsLookingAt(string host) => _look?.Covers(host) == true;
 
-    // The agent thinking with nothing on screen yet, shown as a line at the end of the conversation.
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ThinkingText))]
-    public partial bool ShowsThinking { get; private set; }
-
-    public string ThinkingText => _look is not null ? Strings.ChatThinkingAboutFindings : Strings.ChatThinking;
-
     public void AddNotice(string text, string actionLabel, Action action) => Items.Add(new ChatItemViewModel(ChatItemKind.Notice, text)
     {
         ActionLabel = actionLabel,
@@ -614,7 +607,6 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
 
     private void AppendDelta(string text)
     {
-        ShowsThinking = false;
         if (_streaming is null)
         {
             _streaming = new ChatItemViewModel(ChatItemKind.Agent, string.Empty);
@@ -626,7 +618,6 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
 
     private void FinishReply(string text)
     {
-        ShowsThinking = false;
         if (_streaming is null)
         {
             Items.Add(new ChatItemViewModel(ChatItemKind.Agent, text));
@@ -710,7 +701,6 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
         }
 
         Status = status;
-        ShowsThinking = status == AgentStatus.Thinking;
         StatusText = status switch
         {
             AgentStatus.Thinking => Strings.StatusThinking,

@@ -2763,12 +2763,6 @@ Fingerprint: {2}</value>
   <data name="PlanShow" xml:space="preserve">
     <value>Show the plan</value>
   </data>
-  <data name="ChatThinking" xml:space="preserve">
-    <value>Thinking…</value>
-  </data>
-  <data name="ChatThinkingAboutFindings" xml:space="preserve">
-    <value>Going through what it found…</value>
-  </data>
   <data name="StatusLookingAt" xml:space="preserve">
     <value>Looking at {0}</value>
   </data>
@@ -2777,5 +2771,14 @@ Fingerprint: {2}</value>
   </data>
   <data name="LookConnecting" xml:space="preserve">
     <value>Connecting…</value>
+  </data>
+  <data name="PlanReject" xml:space="preserve">
+    <value>Reject</value>
+  </data>
+  <data name="PlanRejectFeedback" xml:space="preserve">
+    <value>I'm rejecting this plan. Don't run any of it, and don't propose it again unless I ask.</value>
+  </data>
+  <data name="PlanRejectComments" xml:space="preserve">
+    <value>My comments on it:</value>
   </data>
 </root>

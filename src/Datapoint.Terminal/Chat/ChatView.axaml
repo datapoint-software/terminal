@@ -326,16 +326,23 @@
   </UserControl.Styles>
 
   <DockPanel>
-    <!-- Header: the session's token use. -->
+    <!-- Header: what the agent is doing, announced to screen readers as it changes. The same status sits above the message
+         box, where the user looks while waiting; only this copy is announced, so it isn't read twice. -->
     <!-- Dragging the header moves the chat elsewhere in the window (product decision 109). -->
     <Border x:Name="Header" DockPanel.Dock="Top" Height="{StaticResource PaneHeaderHeight}" Padding="16,0,10,0" Background="Transparent" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
       <Grid ColumnDefinitions="*,Auto">
         <StackPanel Spacing="2" VerticalAlignment="Center">
           <TextBlock Classes="title" Text="{x:Static res:Strings.ChatTitle}" />
-          <!-- One line, so the header keeps the sidebar's height; the details are in the tooltip. -->
-          <TextBlock Classes="secondary" Text="{Binding UsageSummary}" IsVisible="{Binding HasUsage}"
-                     TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding UsageDetail}" Focusable="True"
-                     AutomationProperties.Name="{Binding UsageSummary}" AutomationProperties.HelpText="{Binding UsageDetail}" />
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <Panel Width="12" Height="12" VerticalAlignment="Center">
+              <c:Spinner IsVisible="{Binding IsWorking}" />
+              <Ellipse Classes="status" Classes.waiting="{Binding NeedsUser}" Classes.stopped="{Binding IsInterrupted}"
+                       HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{Binding !IsWorking}" />
+            </Panel>
+            <!-- One line, so the header keeps the sidebar's height; the whole status is in the tooltip. -->
+            <TextBlock Classes="secondary" Text="{Binding StatusText}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding StatusText}"
+                       AutomationProperties.LiveSetting="Polite" />
+          </StackPanel>
         </StackPanel>
         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="2" VerticalAlignment="Center">
           <Button Classes="icon" Command="{Binding StopCommand}" IsVisible="{Binding CanStop}"
@@ -523,6 +530,18 @@
                 AutomationProperties.Name="{x:Static res:Strings.ExcerptRemove}" />
       </Grid>
 
+      <!-- What the agent is doing, right above where the user writes to it: a spinner while it works, a dot while it waits,
+           is idle or stopped. -->
+      <StackPanel x:Name="ComposerStatus" Orientation="Horizontal" Spacing="6" Margin="4,0,8,6">
+        <Panel Width="12" Height="12" VerticalAlignment="Center">
+          <c:Spinner IsVisible="{Binding IsWorking}" />
+          <Ellipse Classes="status" Classes.waiting="{Binding NeedsUser}" Classes.stopped="{Binding IsInterrupted}"
+                   HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{Binding !IsWorking}" />
+        </Panel>
+        <TextBlock Classes="secondary" Text="{Binding StatusText}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding StatusText}"
+                   VerticalAlignment="Center" />
+      </StackPanel>
+
       <!-- Composer: a rounded field with the send button inside, and quiet menus for the model and approval under it. -->
       <Border Classes="composer">
         <Grid ColumnDefinitions="*,Auto">
@@ -542,17 +561,9 @@
       </Border>
 
       <Grid ColumnDefinitions="*,Auto" Margin="0,6,-4,0">
-      <!-- What the agent is doing, next to where the user writes to it, announced to screen readers as it changes. -->
-      <StackPanel Orientation="Horizontal" Spacing="6" Margin="4,0,8,0" VerticalAlignment="Center">
-        <!-- A spinner while the agent works, a dot while it waits, is idle or stopped. -->
-        <Panel Width="12" Height="12" VerticalAlignment="Center">
-          <c:Spinner IsVisible="{Binding IsWorking}" />
-          <Ellipse Classes="status" Classes.waiting="{Binding NeedsUser}" Classes.stopped="{Binding IsInterrupted}"
-                   HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{Binding !IsWorking}" />
-        </Panel>
-        <TextBlock Classes="secondary" Text="{Binding StatusText}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding StatusText}"
-                   VerticalAlignment="Center" AutomationProperties.LiveSetting="Polite" />
-      </StackPanel>
+      <TextBlock Classes="secondary" Text="{Binding UsageSummary}" IsVisible="{Binding HasUsage}" VerticalAlignment="Center"
+                 TextTrimming="CharacterEllipsis" Margin="4,0,8,0" ToolTip.Tip="{Binding UsageDetail}" Focusable="True"
+                 AutomationProperties.Name="{Binding UsageSummary}" AutomationProperties.HelpText="{Binding UsageDetail}" />
       <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="2">
         <ComboBox Classes="menu" ItemsSource="{Binding ModelChoices}" SelectedItem="{Binding SelectedModel}"
                   IsVisible="{Binding HasModelChoices}" ToolTip.Tip="{x:Static res:Strings.ChatModel}"
@@ -674,11 +685,6 @@
           </DataTemplate>
         </ItemsControl.ItemTemplate>
       </ItemsControl>
-      <!-- The agent working before anything shows: a line at the end of the conversation, so the wait reads as work. -->
-      <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,8" IsVisible="{Binding ShowsThinking}">
-        <c:Spinner VerticalAlignment="Center" />
-        <TextBlock Classes="secondary" Text="{Binding ThinkingText}" VerticalAlignment="Center" TextWrapping="Wrap" />
-      </StackPanel>
       </StackPanel>
     </ScrollViewer>
   </DockPanel>

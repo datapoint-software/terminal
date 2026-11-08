@@ -1,4 +1,5 @@
 using Avalonia;
+using Avalonia.LogicalTree;
 using Avalonia.VisualTree;
 using Avalonia.Controls;
 using Avalonia.Headless;
@@ -294,22 +295,24 @@ public sealed class ChatViewTests
     }
 
     [AvaloniaFact]
-    public void Shows_the_agent_thinking_until_its_reply_starts()
+    public void Shows_what_the_agent_is_doing_above_the_message_box_and_in_the_header()
     {
         using var chat = new ChatViewModel(new ImmediateUiThread());
         chat.Items.Add(new ChatItemViewModel(ChatItemKind.User, "Which nodes need updates?"));
 
         chat.Show(new AgentEventArgs(AgentEventKind.StatusChanged, string.Empty) { Status = AgentStatus.Thinking });
-        var window = new Window { Width = 420, Height = 300, Content = new ChatView { DataContext = chat } };
+        var view = new ChatView { DataContext = chat };
+        var window = new Window { Width = 420, Height = 300, Content = view };
         window.Show();
         Avalonia.Threading.Dispatcher.UIThread.RunJobs();
         using var frame = window.CaptureRenderedFrame();
         Directory.CreateDirectory("rendered");
         frame?.Save("rendered/chat-thinking.png", new PngBitmapEncoderOptions());
-        Assert.True(chat.ShowsThinking);
 
-        chat.Show(new AgentEventArgs(AgentEventKind.TextDelta, "Both "));
-        Assert.False(chat.ShowsThinking);
+        var texts = view.GetLogicalDescendants().OfType<TextBlock>().Where(text => text.IsEffectivelyVisible && string.Equals(text.Text, chat.StatusText, StringComparison.Ordinal)).ToList();
+        Assert.Equal(2, texts.Count);
+        Assert.Single(texts, text => Avalonia.Automation.AutomationProperties.GetLiveSetting(text) == Avalonia.Automation.AutomationLiveSetting.Polite);
+        Assert.True(view.FindControl<StackPanel>("ComposerStatus")!.IsEffectivelyVisible);
     }
 
     [AvaloniaFact]

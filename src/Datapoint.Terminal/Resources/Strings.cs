@@ -1840,15 +1840,17 @@ public static class Strings
 
     public static string PlanShow => Get(nameof(PlanShow));
 
-    public static string ChatThinking => Get(nameof(ChatThinking));
-
-    public static string ChatThinkingAboutFindings => Get(nameof(ChatThinkingAboutFindings));
-
     public static string StatusLookingAt => Get(nameof(StatusLookingAt));
 
     public static string LookOpening => Get(nameof(LookOpening));
 
     public static string LookConnecting => Get(nameof(LookConnecting));
+
+    public static string PlanReject => Get(nameof(PlanReject));
+
+    public static string PlanRejectFeedback => Get(nameof(PlanRejectFeedback));
+
+    public static string PlanRejectComments => Get(nameof(PlanRejectComments));
 
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
