@@ -57,3 +57,41 @@ jobs:
           name: coverage-${{ matrix.name }}
           path: TestResults/*.cobertura.xml
           if-no-files-found: ignore
+
+  # Publishes the application as releases do, self-contained with
+  # ReadyToRun, for both processor architectures of each operating system,
+  # so a change that breaks publishing fails here rather than on release
+  # day. The output isn't kept.
+  publish:
+    name: Publish (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Linux
+            os: ubuntu-24.04
+            rids: linux-x64 linux-arm64
+          - name: macOS
+            os: macos-15
+            rids: osx-arm64 osx-x64
+          - name: Windows
+            os: windows-2025
+            rids: win-x64 win-arm64
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+        with:
+          global-json-file: global.json
+      - name: Publish
+        shell: bash
+        env:
+          RIDS: ${{ matrix.rids }}
+        run: |
+          for rid in $RIDS; do
+            dotnet publish src/Datapoint.Terminal/Datapoint.Terminal.csproj -c Release -r "$rid" --self-contained \
+              -p:PublishReadyToRun=true -p:ContinuousIntegrationBuild=true -o "publish/$rid"
+          done

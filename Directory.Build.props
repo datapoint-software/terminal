@@ -20,6 +20,12 @@
     <IsTestProject Condition="$(MSBuildProjectName.EndsWith('.Tests'))">true</IsTestProject>
   </PropertyGroup>
 
+  <!-- The platforms releases are published for, so the lock files cover their runtime packages and CI restores in locked
+       mode for each. -->
+  <PropertyGroup Condition="'$(IsTestProject)' != 'true'">
+    <RuntimeIdentifiers>win-x64;win-arm64;osx-x64;osx-arm64;linux-x64;linux-arm64</RuntimeIdentifiers>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(IsTestProject)' != 'true' and '$(MSBuildProjectName)' != 'Datapoint.Terminal'">
     <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>

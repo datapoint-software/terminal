@@ -290,9 +290,9 @@
         "type": "Project",
         "dependencies": {
           "Anthropic": "[13.6.0, )",
-          "Datapoint.Terminal.Emulator": "[1.0.0, )",
-          "Datapoint.Terminal.Security": "[1.0.0, )",
-          "Datapoint.Terminal.Sessions": "[1.0.0, )",
+          "Datapoint.Terminal.Emulator": "[1.0.0-alpha.1, )",
+          "Datapoint.Terminal.Security": "[1.0.0-alpha.1, )",
+          "Datapoint.Terminal.Sessions": "[1.0.0-alpha.1, )",
           "Microsoft.Data.Sqlite": "[10.0.14, )",
           "Microsoft.Extensions.AI.Abstractions": "[10.11.0, )",
           "Microsoft.Extensions.AI.OpenAI": "[10.11.0, )"
@@ -310,8 +310,8 @@
       "datapoint.terminal.sessions": {
         "type": "Project",
         "dependencies": {
-          "Datapoint.Terminal.Emulator": "[1.0.0, )",
-          "Datapoint.Terminal.Security": "[1.0.0, )",
+          "Datapoint.Terminal.Emulator": "[1.0.0-alpha.1, )",
+          "Datapoint.Terminal.Security": "[1.0.0-alpha.1, )",
           "Porta.Pty": "[2.2.3, )"
         }
       },

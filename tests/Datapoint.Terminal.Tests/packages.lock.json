@@ -468,11 +468,11 @@
           "Avalonia.HarfBuzz": "[12.1.5, )",
           "Avalonia.Themes.Fluent": "[12.1.5, )",
           "CommunityToolkit.Mvvm": "[8.4.2, )",
-          "Datapoint.Terminal.Agent": "[1.0.0, )",
-          "Datapoint.Terminal.Controls": "[1.0.0, )",
-          "Datapoint.Terminal.Emulator": "[1.0.0, )",
-          "Datapoint.Terminal.Security": "[1.0.0, )",
-          "Datapoint.Terminal.Sessions": "[1.0.0, )",
+          "Datapoint.Terminal.Agent": "[1.0.0-alpha.1, )",
+          "Datapoint.Terminal.Controls": "[1.0.0-alpha.1, )",
+          "Datapoint.Terminal.Emulator": "[1.0.0-alpha.1, )",
+          "Datapoint.Terminal.Security": "[1.0.0-alpha.1, )",
+          "Datapoint.Terminal.Sessions": "[1.0.0-alpha.1, )",
           "Markdig": "[1.6.0, )",
           "Microsoft.Extensions.DependencyInjection": "[10.0.14, )"
         }
@@ -481,9 +481,9 @@
         "type": "Project",
         "dependencies": {
           "Anthropic": "[13.6.0, )",
-          "Datapoint.Terminal.Emulator": "[1.0.0, )",
-          "Datapoint.Terminal.Security": "[1.0.0, )",
-          "Datapoint.Terminal.Sessions": "[1.0.0, )",
+          "Datapoint.Terminal.Emulator": "[1.0.0-alpha.1, )",
+          "Datapoint.Terminal.Security": "[1.0.0-alpha.1, )",
+          "Datapoint.Terminal.Sessions": "[1.0.0-alpha.1, )",
           "Microsoft.Data.Sqlite": "[10.0.14, )",
           "Microsoft.Extensions.AI.Abstractions": "[10.11.0, )",
           "Microsoft.Extensions.AI.OpenAI": "[10.11.0, )"
@@ -493,7 +493,7 @@
         "type": "Project",
         "dependencies": {
           "Avalonia": "[12.1.5, )",
-          "Datapoint.Terminal.Emulator": "[1.0.0, )"
+          "Datapoint.Terminal.Emulator": "[1.0.0-alpha.1, )"
         }
       },
       "datapoint.terminal.emulator": {
@@ -508,8 +508,8 @@
       "datapoint.terminal.sessions": {
         "type": "Project",
         "dependencies": {
-          "Datapoint.Terminal.Emulator": "[1.0.0, )",
-          "Datapoint.Terminal.Security": "[1.0.0, )",
+          "Datapoint.Terminal.Emulator": "[1.0.0-alpha.1, )",
+          "Datapoint.Terminal.Security": "[1.0.0-alpha.1, )",
           "Porta.Pty": "[2.2.3, )"
         }
       },

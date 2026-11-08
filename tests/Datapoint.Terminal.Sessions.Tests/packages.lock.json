@@ -183,8 +183,8 @@
       "datapoint.terminal.sessions": {
         "type": "Project",
         "dependencies": {
-          "Datapoint.Terminal.Emulator": "[1.0.0, )",
-          "Datapoint.Terminal.Security": "[1.0.0, )",
+          "Datapoint.Terminal.Emulator": "[1.0.0-alpha.1, )",
+          "Datapoint.Terminal.Security": "[1.0.0-alpha.1, )",
           "Porta.Pty": "[2.2.3, )"
         }
       },
