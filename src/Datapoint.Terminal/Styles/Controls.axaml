@@ -6,6 +6,7 @@
     <Setter Property="FontSize" Value="{StaticResource BodySize}" />
     <Setter Property="Background" Value="{DynamicResource WindowBrush}" />
     <Setter Property="Foreground" Value="{DynamicResource LabelBrush}" />
+    <Setter Property="Icon" Value="avares://Datapoint.Terminal/Assets/terminal-icon.png" />
   </Style>
 
   <!-- Buttons: secondary (grey fill) by default, .primary for the one action, .plain and .icon for toolbar buttons. -->

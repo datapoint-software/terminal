@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Datapoint Terminal" viewBox="0 0 1024 1024" width="1024" height="1024">
+<title>Datapoint Terminal</title>
+<!-- The application's icon: the agent's panel, in Datapoint's primary blue (#0077BE), beside a terminal with its prompt. -->
+<rect x="0" y="0" width="1024" height="1024" rx="230" fill="#1E1F22"/>
+<path d="M423 0 H230 A230 230 0 0 0 0 230 V794 A230 230 0 0 0 230 1024 H423 Z" fill="#0077BE"/>
+<rect x="122" y="289" width="200" height="78" rx="39" fill="#FFFFFF"/>
+<rect x="122" y="434" width="134" height="78" rx="39" fill="#FFFFFF" fill-opacity="0.75"/>
+<path d="M545 356 L668 467 L545 579" fill="none" stroke="#FFFFFF" stroke-width="78" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="712" y="534" width="178" height="78" rx="39" fill="#FFFFFF"/>
+</svg>

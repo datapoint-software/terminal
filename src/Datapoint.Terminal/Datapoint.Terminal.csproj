@@ -4,6 +4,8 @@
     <AssemblyName>Datapoint.Terminal</AssemblyName>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- The executable's icon in Windows' Explorer and taskbar; branding/terminal-icon.svg is its source. -->
+    <ApplicationIcon>..\..\branding\terminal-icon.ico</ApplicationIcon>
     <!-- [LibraryImport] for asking the operating system to draw attention to a window. -->
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
@@ -23,6 +25,10 @@
     <EmbeddedResource Include="..\..\LICENSE" LogicalName="Datapoint.Terminal.Legal.LICENSE" />
     <EmbeddedResource Include="..\..\NOTICE" LogicalName="Datapoint.Terminal.Legal.NOTICE" />
     <EmbeddedResource Include="..\..\THIRD-PARTY-NOTICES.txt" LogicalName="Datapoint.Terminal.Legal.THIRD-PARTY-NOTICES.txt" />
+  </ItemGroup>
+  <!-- Every window's icon, which macOS shows in the Dock and Linux in the title bar and taskbar (product decision 149). -->
+  <ItemGroup>
+    <AvaloniaResource Include="..\..\branding\terminal-icon.png" Link="Assets\terminal-icon.png" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Datapoint.Terminal.Tests" />

@@ -43,7 +43,7 @@ tests/
   Datapoint.Terminal.Architecture.Tests/   Checks the dependency rules below
   Datapoint.Terminal.Emulator.Fuzz/        Fuzzing targets for the parser and screen model
   Datapoint.Terminal.Emulator.Benchmarks/  BenchmarkDotNet benchmarks
-tools/                             Repository scripts, such as the third-party notices generator
+tools/                             Repository scripts, such as the third-party notices generator and the icon renderer
 .githooks/                         Git hooks that stop secrets and real host names or addresses from being committed
 docs/  branding/
 Datapoint.Terminal.slnx  Directory.Build.props  Directory.Packages.props  global.json  .editorconfig
