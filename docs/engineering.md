@@ -535,7 +535,7 @@ Enterprise and government customers may require FIPS 140 validated cryptography 
   - **Windows:** a per-user installer that needs no administrator rights, signed with Azure Artifact Signing if Datapoint is eligible, otherwise with an OV certificate kept in a cloud hardware security module.
   - **Linux:** an AppImage, which updates itself, plus `.deb` and `.rpm` packages, which update through the system's package manager.
 - **Not used:** MSIX, which wraps the application in a package identity and virtualized file system that get in the way of a terminal starting the user's shells; Flatpak for now, whose sandbox would force every shell to start through `flatpak-spawn --host`; and Avalonia's paid Parcel packager.
-- **Distributed by direct download from <https://datapoint.software/terminal/>, for now** (product decision 61), which also serves the update feed. No app stores: the Mac App Store's terms conflict with the AGPL, and its required sandbox rules out starting arbitrary shells.
+- **To be distributed by direct download from <https://datapoint.software/terminal/>, for now** (product decision 61), which will also serve the update feed. Nothing is published there yet. No app stores: the Mac App Store's terms conflict with the AGPL, and its required sandbox rules out starting arbitrary shells.
 
 ## Decision log
 

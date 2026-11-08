@@ -2,13 +2,39 @@
 
 An AI-powered terminal: a desktop application for macOS, Linux and Windows where you work in a real shell, locally or over SSH, alongside an agent, powered by Anthropic, OpenAI or an open-weight model of your choice, that can talk with you, ask you questions and type into the terminal on your behalf, in plain sight.
 
-This project is in early design. Nothing is built yet.
+## Status
+
+Datapoint Terminal is in early development and hasn't been released: there are no installers or updates yet, and no continuous integration. It's built and tested on macOS so far; Linux and Windows are supported by design but haven't been tried, and some features may not work there yet. Expect anything to change before version 1.0.
+
+## Building and running
+
+You need the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) (10.0.403 or later; `global.json` pins it).
+
+```bash
+dotnet build
+dotnet run --project src/Datapoint.Terminal
+```
+
+The agent needs an API key for Anthropic or OpenAI, or the address of an OpenAI-compatible server running an open-weight model; add it in the application's settings. Keys are kept in the operating system's credential store.
+
+To run the tests:
+
+```bash
+dotnet test
+```
+
+The SSH tests run against an OpenSSH server in a container. Without [Docker](https://www.docker.com/) they're skipped; to run them, build the server's image first:
+
+```bash
+docker build -t datapoint-terminal-sshd:test tests/ssh-server
+```
 
 ## Documentation
 
 - [Product](docs/product.md): what the application does, for whom, and the decisions taken so far, with the questions still open.
 - [Engineering](docs/engineering.md): the technical stack, the terminal emulator's design and the repository conventions, with the decisions taken so far and the questions still open.
-- [Autopilot notes](docs/autopilot.md): decisions taken while the product owner was away, for review.
+- [Autopilot notes](docs/autopilot.md): implementation decisions taken during development, kept for review.
+- [Contributing](CLAUDE.md): how we work in this repository, with branch names, commit messages, merge requests and versions. It's written for people and for AI coding assistants alike.
 
 ## Known risks
 
@@ -34,6 +60,6 @@ Datapoint Terminal is free software, licensed under the [GNU Affero General Publ
 
 Datapoint also offers Datapoint Terminal under a commercial license, for organizations that can't accept the AGPL.
 
-Contributors sign the [Contributor License Agreement](CLA.md) before their first contribution is merged.
+Contributors sign the [Contributor License Agreement](CLA.md) before their first contribution is merged. To report a security issue, don't open a public issue: contact Datapoint at https://datapoint.software/.
 
 Copyright © 2026 Datapoint - Sistemas de Informação, Lda.
