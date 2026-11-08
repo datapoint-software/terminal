@@ -15,6 +15,7 @@
       </StackPanel>
     </Border>
     <StackPanel x:Name="Fields" Spacing="8" />
+    <CheckBox x:Name="RememberBox" IsVisible="False" />
     <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" Margin="0,8,0,0">
       <Button x:Name="CancelButton" Content="{x:Static res:Strings.Cancel}" />
       <Button x:Name="OkButton" Classes="primary" IsDefault="True" Content="{x:Static res:Strings.PromptLogIn}" />

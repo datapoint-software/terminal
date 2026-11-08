@@ -14,6 +14,25 @@ public sealed partial class PromptWindow : Window
     public static Task<IReadOnlyList<string>?> AskAsync(Window owner, string heading, string message, string? serverText, IReadOnlyList<(string Label, bool IsSecret)> fields, IReadOnlyList<string>? values = null)
     {
         ArgumentNullException.ThrowIfNull(owner);
+        var window = Create(heading, message, serverText, fields, values);
+        window.OkButton.Click += (_, _) => window.Close(window.Answers());
+        return window.ShowDialog<IReadOnlyList<string>?>(owner);
+    }
+
+    // A password, with a box to keep it in the credential store when there is one (product decision 113).
+    public static Task<PasswordAnswer?> AskPasswordAsync(Window owner, string heading, string message, string label, string? rememberLabel, bool remember)
+    {
+        ArgumentNullException.ThrowIfNull(owner);
+        var window = Create(heading, message, serverText: null, [(label, true)], values: null);
+        window.RememberBox.IsVisible = rememberLabel is not null;
+        window.RememberBox.Content = rememberLabel;
+        window.RememberBox.IsChecked = remember && rememberLabel is not null;
+        window.OkButton.Click += (_, _) => window.Close(new PasswordAnswer(window.Answers()[0], window.RememberBox.IsChecked == true));
+        return window.ShowDialog<PasswordAnswer?>(owner);
+    }
+
+    private static PromptWindow Create(string heading, string message, string? serverText, IReadOnlyList<(string Label, bool IsSecret)> fields, IReadOnlyList<string>? values)
+    {
         ArgumentNullException.ThrowIfNull(fields);
         var window = new PromptWindow { Title = heading };
         window.Heading.Text = heading;
@@ -29,7 +48,6 @@ public sealed partial class PromptWindow : Window
             window._boxes.Add(box);
         }
 
-        window.OkButton.Click += (_, _) => window.Close((IReadOnlyList<string>?)[.. window._boxes.Select(box => box.Text ?? string.Empty)]);
         window.CancelButton.Click += (_, _) => window.Close(null);
         window.KeyDown += (_, e) =>
         {
@@ -43,6 +61,8 @@ public sealed partial class PromptWindow : Window
         };
         window.Opened += (_, _) => (window._boxes.Count > 0 ? window._boxes[0] : (Control)window.OkButton).Focus();
         window.Closed += (_, _) => window._boxes.ForEach(box => box.Text = string.Empty);
-        return window.ShowDialog<IReadOnlyList<string>?>(owner);
+        return window;
     }
+
+    private IReadOnlyList<string> Answers() => [.. _boxes.Select(box => box.Text ?? string.Empty)];
 }

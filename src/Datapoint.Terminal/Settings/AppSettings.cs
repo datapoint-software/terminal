@@ -36,6 +36,9 @@ public sealed record AppSettings
     // the user's own settings, so no workspace file can add to them.
     public IReadOnlyList<string> ReadOnlyCommands { get; init => field = value ?? []; } = [];
 
+    // Logins whose password is in the credential store (product decision 113); the passwords themselves never are here.
+    public IReadOnlyList<SavedLogin> SavedLogins { get; init => field = value ?? []; } = [];
+
     // Where the terminals docked beside the chat before areas could be moved; read only to start areaLayout from it.
     public Shell.TerminalSide TerminalSide { get; set; } = Shell.TerminalSide.Right;
 

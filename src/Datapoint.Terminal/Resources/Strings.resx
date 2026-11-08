@@ -2661,4 +2661,64 @@ Fingerprint: {2}</value>
   <data name="CommandsRemoved" xml:space="preserve">
     <value>“{0}” asks again.</value>
   </data>
+  <data name="PasswordRemember" xml:space="preserve">
+    <value>Save in {0}</value>
+  </data>
+  <data name="PasswordSavedRefused" xml:space="preserve">
+    <value>The saved password for {0} on {1} was refused. Type the password to log in.</value>
+  </data>
+  <data name="PasswordSavedTitle" xml:space="preserve">
+    <value>Log in to {0} with the saved password?</value>
+  </data>
+  <data name="PasswordSavedMessage" xml:space="preserve">
+    <value>A password for {0} on {1} is saved in this computer's credential store. Datapoint Terminal gives it only to this server, after checking its host key. You can change this in Settings › Passwords.</value>
+  </data>
+  <data name="PasswordSavedTypeIt" xml:space="preserve">
+    <value>I'll type it myself</value>
+  </data>
+  <data name="PasswordSavedOnce" xml:space="preserve">
+    <value>Allow once</value>
+  </data>
+  <data name="PasswordSavedAlways" xml:space="preserve">
+    <value>Allow always</value>
+  </data>
+  <data name="NoticeLoginNotSaved" xml:space="preserve">
+    <value>The password for {0} wasn't saved: {1}</value>
+  </data>
+  <data name="NoticeLoginNotRead" xml:space="preserve">
+    <value>The saved password for {0} couldn't be read: {1}</value>
+  </data>
+  <data name="SettingsPagePasswords" xml:space="preserve">
+    <value>Passwords</value>
+  </data>
+  <data name="PasswordsHeading" xml:space="preserve">
+    <value>Saved SSH login passwords</value>
+  </data>
+  <data name="PasswordsNone" xml:space="preserve">
+    <value>None yet. When you log in to a connection with a password, tick “Save” in the login window to keep it.</value>
+  </data>
+  <data name="PasswordsAlways" xml:space="preserve">
+    <value>Allow always</value>
+  </data>
+  <data name="PasswordsAlwaysName" xml:space="preserve">
+    <value>Use the saved password for {0} without asking</value>
+  </data>
+  <data name="PasswordsForget" xml:space="preserve">
+    <value>Forget</value>
+  </data>
+  <data name="PasswordsForgetName" xml:space="preserve">
+    <value>Forget the saved password for {0}</value>
+  </data>
+  <data name="PasswordsHint" xml:space="preserve">
+    <value>Kept in {0}, never in settings or a workspace. A saved password is given only to the server it was saved for (user, address and port), after its host key is checked, and never to the agent or the AI provider. Without Allow always, you're asked each time it would be used. Only logins use them: sudo and other prompts in the terminal are still typed by you.</value>
+  </data>
+  <data name="PasswordsNoStore" xml:space="preserve">
+    <value>This system has no credential store, so passwords can't be saved.</value>
+  </data>
+  <data name="PasswordsForgotten" xml:space="preserve">
+    <value>The password for {0} is forgotten.</value>
+  </data>
+  <data name="PasswordsNotForgotten" xml:space="preserve">
+    <value>The password for {0} couldn't be forgotten: {1}</value>
+  </data>
 </root>

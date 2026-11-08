@@ -26,6 +26,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         _createClient = createClient;
         Keys = keys;
         WebKeys = new WebSearchKeys(keys.Store, Environment.GetEnvironmentVariable);
+        LoginPasswords = new LoginPasswords(keys.Store);
         Kinds =
         [
             new(ProviderKind.Anthropic, Strings.ProviderKindAnthropic),
@@ -39,6 +40,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         ConfirmedConnections = settings.ConfirmedConnections;
         NotSecrets = settings.NotSecrets;
         LearnedCommands = LearnedCommands.From(settings.ReadOnlyCommands);
+        SavedLogins = settings.SavedLogins;
         HistoryDays = settings.HistoryDays;
         TerminalSide = settings.TerminalSide;
         AreaLayout = settings.AreaLayout;
@@ -158,6 +160,40 @@ public sealed partial class SettingsViewModel : ObservableObject
     {
         WebSearch = service;
         SearxngServer = string.IsNullOrWhiteSpace(searxngServer) ? null : searxngServer.Trim();
+        Save();
+    }
+
+    public LoginPasswords LoginPasswords { get; }
+
+    public IReadOnlyList<SavedLogin> SavedLogins { get; private set; }
+
+    public SavedLogin? SavedLoginFor(string login) =>
+        SavedLogins.FirstOrDefault(item => string.Equals(item.Login, login, StringComparison.Ordinal));
+
+    // Keeps the password in the credential store, replacing any saved before; it's never kept in the settings file.
+    public void SaveLoginPassword(string login, string password)
+    {
+        LoginPasswords.Save(login, password);
+        var usesWithoutAsking = SavedLoginFor(login)?.UsesWithoutAsking == true;
+        SavedLogins = [.. SavedLogins.Where(item => !string.Equals(item.Login, login, StringComparison.Ordinal)), new SavedLogin { Login = login, UsesWithoutAsking = usesWithoutAsking }];
+        Save();
+    }
+
+    public void SetUsesWithoutAsking(string login, bool usesWithoutAsking)
+    {
+        if (SavedLoginFor(login) is not { } saved || saved.UsesWithoutAsking == usesWithoutAsking)
+        {
+            return;
+        }
+
+        SavedLogins = [.. SavedLogins.Select(item => ReferenceEquals(item, saved) ? item with { UsesWithoutAsking = usesWithoutAsking } : item)];
+        Save();
+    }
+
+    public void ForgetLogin(string login)
+    {
+        LoginPasswords.Delete(login);
+        SavedLogins = [.. SavedLogins.Where(item => !string.Equals(item.Login, login, StringComparison.Ordinal))];
         Save();
     }
 
@@ -305,6 +341,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         ConfirmedConnections = ConfirmedConnections,
         NotSecrets = NotSecrets,
         ReadOnlyCommands = LearnedCommands.Commands,
+        SavedLogins = SavedLogins,
         HistoryDays = HistoryDays,
         TerminalSide = TerminalSide,
         AreaLayout = AreaLayout,

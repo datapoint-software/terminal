@@ -1772,6 +1772,46 @@ public static class Strings
 
     public static string CommandsRemoved => Get(nameof(CommandsRemoved));
 
+    public static string PasswordRemember => Get(nameof(PasswordRemember));
+
+    public static string PasswordSavedRefused => Get(nameof(PasswordSavedRefused));
+
+    public static string PasswordSavedTitle => Get(nameof(PasswordSavedTitle));
+
+    public static string PasswordSavedMessage => Get(nameof(PasswordSavedMessage));
+
+    public static string PasswordSavedTypeIt => Get(nameof(PasswordSavedTypeIt));
+
+    public static string PasswordSavedOnce => Get(nameof(PasswordSavedOnce));
+
+    public static string PasswordSavedAlways => Get(nameof(PasswordSavedAlways));
+
+    public static string NoticeLoginNotSaved => Get(nameof(NoticeLoginNotSaved));
+
+    public static string NoticeLoginNotRead => Get(nameof(NoticeLoginNotRead));
+
+    public static string SettingsPagePasswords => Get(nameof(SettingsPagePasswords));
+
+    public static string PasswordsHeading => Get(nameof(PasswordsHeading));
+
+    public static string PasswordsNone => Get(nameof(PasswordsNone));
+
+    public static string PasswordsAlways => Get(nameof(PasswordsAlways));
+
+    public static string PasswordsAlwaysName => Get(nameof(PasswordsAlwaysName));
+
+    public static string PasswordsForget => Get(nameof(PasswordsForget));
+
+    public static string PasswordsForgetName => Get(nameof(PasswordsForgetName));
+
+    public static string PasswordsHint => Get(nameof(PasswordsHint));
+
+    public static string PasswordsNoStore => Get(nameof(PasswordsNoStore));
+
+    public static string PasswordsForgotten => Get(nameof(PasswordsForgotten));
+
+    public static string PasswordsNotForgotten => Get(nameof(PasswordsNotForgotten));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

@@ -13,6 +13,8 @@ using Datapoint.Terminal.Sessions.Ssh.Config;
 using Datapoint.Terminal.Sessions.Ssh.KnownHosts;
 using Datapoint.Terminal.Sessions.Ssh.Protocol;
 
+using Datapoint.Terminal.Settings;
+
 namespace Datapoint.Terminal.Shell;
 
 public sealed partial class MainWindow
@@ -133,7 +135,8 @@ public sealed partial class MainWindow
     // Through via when given, a jump host this takes over: closing the new connection closes it too, and so does a failure here.
     private async Task<SshClient> LogInClientAsync(string name, SshHostConfig host, string address, int port, string user, SshClient? via)
     {
-        var prompts = new SshLoginPrompts(this, name, _redactor, _chat.AddNotice);
+        var saved = new SavedLoginSource(_settings, LoginPasswords.Login(user, address, port), user, address);
+        var prompts = new SshLoginPrompts(this, name, _redactor, _chat.AddNotice, saved);
         var knownHosts = new KnownHostsFile([.. host.UserKnownHostsFiles, .. host.GlobalKnownHostsFiles]);
         var verifier = new KnownHostsVerifier(knownHosts, prompts, name, host.Get("HostKeyAlias"), isStrict: host.IsYes("StrictHostKeyChecking"));
         var options = new SshConnectionOptions { Host = address, Port = port, UserName = user, HostKeyVerifier = ForWorkspace(verifier, name) };
@@ -147,6 +150,7 @@ public sealed partial class MainWindow
             }
 
             await client.AuthenticateAsync(keys, prompts, CancellationToken.None).ConfigureAwait(true);
+            prompts.LoggedIn();
             return client;
         }
         catch
