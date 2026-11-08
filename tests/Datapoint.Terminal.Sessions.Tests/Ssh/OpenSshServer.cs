@@ -15,6 +15,8 @@ public sealed class OpenSshServer : IAsyncLifetime
     public const string UserName = "tester";
     public const string Password = "correct horse battery staple";
 
+    private static readonly TimeSpan ToolTimeLimit = TimeSpan.FromMinutes(2);
+
     private string? _container;
 
     public int Port { get; private set; }
@@ -94,13 +96,19 @@ public sealed class OpenSshServer : IAsyncLifetime
         {
             try
             {
+                // Each attempt has a time limit, so a connection that's accepted but never answered can't hang the run.
+                using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));
                 using var socket = new TcpClient();
-                await socket.ConnectAsync("127.0.0.1", Port);
+                await socket.ConnectAsync("127.0.0.1", Port, timeout.Token);
                 var buffer = new byte[4];
-                if (await socket.GetStream().ReadAsync(buffer) == 4)
+                if (await socket.GetStream().ReadAsync(buffer, timeout.Token) == 4)
                 {
                     return;
                 }
+            }
+            catch (OperationCanceledException)
+            {
+                // Accepted but sshd didn't answer in time.
             }
             catch (SocketException)
             {
@@ -121,11 +129,26 @@ public sealed class OpenSshServer : IAsyncLifetime
     {
         try
         {
-            using var process = Process.Start(new ProcessStartInfo(fileName, arguments) { RedirectStandardOutput = true, RedirectStandardError = true, UseShellExecute = false })!;
-            var output = await process.StandardOutput.ReadToEndAsync();
-            var error = await process.StandardError.ReadToEndAsync();
-            await process.WaitForExitAsync();
-            return (process.ExitCode == 0, process.ExitCode == 0 ? output : error);
+            using var process = Process.Start(new ProcessStartInfo(fileName, arguments) { RedirectStandardOutput = true, RedirectStandardInput = true, RedirectStandardError = true, UseShellExecute = false })!;
+            process.StandardInput.Close();
+
+            // Both pipes are read at once, so a tool that fills one while the other is being read can't block, and a
+            // tool that never finishes fails its test after the time limit instead of hanging the whole run.
+            using var timeout = new CancellationTokenSource(ToolTimeLimit);
+            var output = process.StandardOutput.ReadToEndAsync(timeout.Token);
+            var error = process.StandardError.ReadToEndAsync(timeout.Token);
+            try
+            {
+                await process.WaitForExitAsync(timeout.Token);
+                await Task.WhenAll(output, error);
+            }
+            catch (OperationCanceledException)
+            {
+                process.Kill(entireProcessTree: true);
+                return (false, $"{fileName} {string.Join(' ', arguments)} didn't finish within {ToolTimeLimit.TotalSeconds:0} seconds.");
+            }
+
+            return (process.ExitCode == 0, process.ExitCode == 0 ? await output : await error);
         }
         catch (System.ComponentModel.Win32Exception exception)
         {
