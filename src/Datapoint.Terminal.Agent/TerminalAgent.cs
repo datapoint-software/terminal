@@ -158,6 +158,7 @@ public sealed partial class TerminalAgent : IDisposable
 
             _history.RemoveRange(1, _history.Count - 1);
             Usage.ForgetContext();
+            ForgetCarried();
             ForgetWebGuard();
             EndIgnoringPermissions();
             StopRollout();
@@ -193,6 +194,7 @@ public sealed partial class TerminalAgent : IDisposable
             var attached = ExcerptBlock(excerpt);
             _seen.Add(newOutput + attached);
             NoteUserMessage(message);
+            NoteUserWords(message);
             _history.Add(new ChatMessage(ChatRole.User, DescribeTerminals() + newOutput + opening + attached));
             await RunStepsAsync(task.Token).ConfigureAwait(false);
             SetStatus(AgentStatus.Idle);
@@ -254,6 +256,7 @@ public sealed partial class TerminalAgent : IDisposable
             var results = new ChatMessage(ChatRole.Tool, []);
             _history.Add(results);
             await RunCallsAsync(calls, results, cancellationToken).ConfigureAwait(false);
+            StartNextBatchAfresh();
 
             ClearRedirect();
         }
@@ -359,6 +362,7 @@ public sealed partial class TerminalAgent : IDisposable
         _plan = null;
         _proposedPlan = null;
         _offeredPlanMode = false;
+        _nextBatch = null;
         ForgetApprovals();
         EndRun();
         foreach (var terminal in Terminals)

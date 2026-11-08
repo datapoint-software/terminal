@@ -20,7 +20,8 @@ public sealed partial class TerminalAgent
 
         var instructions = await source(cancellationToken).ConfigureAwait(false);
         _history[0] = new ChatMessage(ChatRole.System, SystemPrompt.Text + MemoryBlock(instructions.Memory) + InstructionsBlock(instructions.Instructions));
-        return IgnoredBlock(instructions.Ignored) + DataBlock(instructions.Data) + message;
+        _preface = IgnoredBlock(instructions.Ignored) + DataBlock(instructions.Data);
+        return _preface + message;
     }
 
     private string MemoryBlock(IReadOnlyList<InstructionFile> files)

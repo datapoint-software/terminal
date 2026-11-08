@@ -84,10 +84,16 @@ public sealed class TerminalAgentSkillRunTests : IDisposable
 
     private static ScriptedChatClient Script(List<string> results, params Func<IReadOnlyList<ChatMessage>, ChatResponse>[] calls)
     {
-        var steps = calls.Select((call, index) => index == 0 ? call : messages => { results.Add(LastToolResult(messages)); return call(messages); }).ToList();
-        steps.Add(messages => { results.Add(LastToolResult(messages)); return Text("OK."); });
+        var steps = calls.Select((call, index) => index == 0 ? call : messages => { results.Add(Result(messages)); return call(messages); }).ToList();
+        steps.Add(messages => { results.Add(Result(messages)); return Text("OK."); });
         return new ScriptedChatClient([.. steps]);
     }
+
+    // A batch that moves the rollout on starts a fresh conversation, which carries what host_done said.
+    private static string Result(IReadOnlyList<ChatMessage> messages) =>
+        messages[^1].Role == ChatRole.User && messages[^1].Text.IndexOf("The rollout now: ", StringComparison.Ordinal) is var start and >= 0
+            ? messages[^1].Text[(start + "The rollout now: ".Length)..].TrimEnd('\n')
+            : LastToolResult(messages);
 
     [Fact]
     public async Task Rolls_out_one_host_at_a_time_checking_each_one()
@@ -111,26 +117,48 @@ public sealed class TerminalAgentSkillRunTests : IDisposable
         Assert.Contains(_events, e => e.Kind == AgentEventKind.RolloutChanged && e.Rollout!.Outcome == RolloutOutcome.Completed);
     }
 
-    // What a finished, healthy host's commands printed isn't sent again; the commands, exit codes and summary are.
+    // Product decision 132: the next batch starts from a fresh conversation, carrying what its work needs, not what web1 printed.
     [Fact]
-    public async Task Leaves_a_finished_hosts_output_out_of_the_conversation_once_the_rollout_moves_on()
+    public async Task Starts_the_next_batch_in_a_fresh_conversation_with_the_summary_and_notes()
     {
         WriteSkill(Quick());
         IReadOnlyList<ChatMessage>? next = null;
         var client = new ScriptedChatClient(
             RunSkill("web1", "web2"),
             Command("web1", "df -h /"),
-            Done("web1"),
+            Tool("host_done", new { host = "web1", succeeded = true, summary = "Patched.", notes = "apt needs -o Dpkg::Options::=--force-confold." }),
             messages => { next = [.. messages]; return Text("OK."); });
         using var agent = NewAgent(client);
 
         await agent.SendAsync("Patch the web servers", Token);
 
-        var results = next!.SelectMany(message => message.Contents).OfType<FunctionResultContent>().Select(result => result.Result?.ToString() ?? string.Empty).ToList();
-        var df = Assert.Single(results, result => result.Contains("left out once web1", StringComparison.Ordinal));
-        Assert.Equal("Exit code: 0\n[Output left out once web1 was done and healthy, to keep the conversation short. Your summary then: Patched.]", df);
-        Assert.DoesNotContain(results, result => result.Contains("ran df -h /", StringComparison.Ordinal));
+        Assert.Equal(2, next!.Count);
+        Assert.Equal(ChatRole.System, next[0].Role);
+        var carried = next[1].Text;
+        Assert.Contains("<user_message>\nPatch the web servers\n</user_message>", carried, StringComparison.Ordinal);
+        Assert.Contains("1. `sudo apt-get upgrade -y`", carried, StringComparison.Ordinal);
+        Assert.Contains("- web1: Patched.", carried, StringComparison.Ordinal);
+        Assert.Contains("- From web1: apt needs -o Dpkg::Options::=--force-confold.", carried, StringComparison.Ordinal);
+        Assert.Contains("Next: web2 (batch 2 of 2).", carried, StringComparison.Ordinal);
+        Assert.DoesNotContain("ran df -h /", carried, StringComparison.Ordinal);
         Assert.Contains(_events, e => e.Kind == AgentEventKind.CommandFinished && string.Equals(e.Output, "ran df -h /", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public async Task Keeps_the_conversation_when_the_rollout_ends()
+    {
+        WriteSkill(Quick());
+        IReadOnlyList<ChatMessage>? last = null;
+        var client = new ScriptedChatClient(
+            RunSkill("web1"),
+            Done("web1"),
+            messages => { last = [.. messages]; return Text("OK."); });
+        using var agent = NewAgent(client);
+
+        await agent.SendAsync("Patch web1", Token);
+
+        Assert.True(last!.Count > 2);
+        Assert.Contains("The rollout is complete.", LastToolResult(last), StringComparison.Ordinal);
     }
 
     [Fact]

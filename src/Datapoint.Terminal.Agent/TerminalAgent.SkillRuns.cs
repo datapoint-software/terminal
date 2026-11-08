@@ -34,12 +34,15 @@ public sealed partial class TerminalAgent
         new ToolFunction(
             "host_done",
             "Reports that you've finished a skill's steps on one host of the rollout, or that they failed there. Waits while the "
-            + "application checks the host's health, then says which hosts are next or how the rollout ended.",
+            + "application checks the host's health, then says which hosts are next or how the rollout ended. When the next "
+            + "batch starts, the conversation starts afresh, carrying the user's messages, the skill, and each host's summary "
+            + "and notes: put in them what the next hosts' work needs.",
             """
             {"type":"object","properties":{
               "host":{"type":"string","description":"The host, as named in the rollout."},
               "succeeded":{"type":"boolean","description":"False when a step failed and you couldn't finish."},
-              "summary":{"type":"string","description":"What happened there, in a short sentence."}},
+              "summary":{"type":"string","description":"What happened there, in a short sentence."},
+              "notes":{"type":"string","description":"Anything the next hosts' work should know from this one, e.g. a step that needed a different flag. Leave out when there's nothing."}},
              "required":["host","succeeded"]}
             """,
             HostDoneAsync),
@@ -82,6 +85,8 @@ public sealed partial class TerminalAgent
     {
         _run?.Dispose();
         _run = run;
+        _hostSummaries.Clear();
+        _hostNotes.Clear();
         run.Changed += (_, _) => Raise(new AgentEventArgs(AgentEventKind.RolloutChanged, run.Skill.Title) { Rollout = run.Snapshot() });
     }
 
@@ -163,7 +168,7 @@ public sealed partial class TerminalAgent
         }
 
         MarkDone(run, host.Name, arguments);
-        NoteHostSummary(host.Name, arguments);
+        NoteHostDone(host.Name, arguments);
         var working = run.Current.Where(item => item.State == RolloutHostState.Working).Select(item => item.Name).ToList();
         return working.Count > 0
             ? $"Noted. Still to finish in this batch: {Listed(working)}. Call host_done for each."
@@ -209,8 +214,10 @@ public sealed partial class TerminalAgent
             return Ended(run);
         }
 
-        TrimFinishedHosts(run.Current);
-        return Next(run);
+        var batch = run.Snapshot().Batch;
+        var next = Next(run);
+        _nextBatch = run.Snapshot().Batch != batch && !run.IsOver ? next : null;
+        return next;
     }
 
     private static string Next(SkillRun run)
