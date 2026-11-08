@@ -37,7 +37,8 @@ public sealed partial class TerminalAgent
               "timeout":{"type":"string","description":"When to give up on a host, e.g. \"15m\"."},
               "on_failure":{"type":"string","enum":["stop","continue","ask"],"description":"What to do with the remaining hosts if one fails."},
               "steps":{"type":"string","description":"The steps as Markdown, starting with a # title."},
-              "replace":{"type":"boolean","description":"True to replace a skill of the same name, after reading it."}},
+              "name":{"type":"string","description":"To update a skill, its name as listed in the user's message; the title may change. Leave out for a new skill."},
+              "replace":{"type":"boolean","description":"True to replace the skill, after reading it."}},
              "required":["title","description","steps"]}
             """,
             SaveSkillAsync),
@@ -119,6 +120,24 @@ public sealed partial class TerminalAgent
             .ToString();
     }
 
+    // An update keeps the skill's folder, named when it was first saved, even when its title changes; otherwise a reworded
+    // title would save a second copy beside the first. A new skill with an existing one's title is most likely that update.
+    private static (string Name, string? Problem) SkillTarget(SkillFolder folder, AIFunctionArguments arguments, string title)
+    {
+        if ((ToolArguments.GetString(arguments, "name") ?? string.Empty).Trim() is { Length: > 0 } given)
+        {
+            return folder.Find(given) is { } existing
+                ? (existing.Name, null)
+                : (given, $"there's no skill called \"{given}\". Leave name out to save a new skill.");
+        }
+
+        var name = SkillDocument.NameFor(title);
+        return folder.List().FirstOrDefault(skill => !string.Equals(skill.Name, name, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(skill.Title, title, StringComparison.OrdinalIgnoreCase)) is { } same
+            ? (name, $"the skill \"{same.Name}\" already has this title. To update it, read it, then save with name \"{same.Name}\" and replace set.")
+            : (name, null);
+    }
+
     private Task<string> SaveSkillAsync(AIFunctionArguments arguments, CancellationToken cancellationToken)
     {
         if (Skills is not { CanWrite: true } folder)
@@ -127,17 +146,12 @@ public sealed partial class TerminalAgent
         }
 
         var title = (ToolArguments.GetString(arguments, "title") ?? string.Empty).Trim();
-        var name = SkillDocument.NameFor(title);
+        var (name, target) = SkillTarget(folder, arguments, title);
         var path = folder.FileFor(name);
-        var (text, problem) = BuildSkill(arguments, name, title);
-        if (problem is not null || folder.IsIgnored(path))
+        var (text, built) = BuildSkill(arguments, name, title);
+        if ((target ?? built ?? WriteProblem(folder, path, name, arguments)) is { } problem)
         {
-            return Task.FromResult("Not saved: " + (problem ?? $"skills/{name} is listed in .terminalignore."));
-        }
-
-        if (File.Exists(path) && !IsReplacing(arguments))
-        {
-            return Task.FromResult($"Not saved: there's already a skill called \"{name}\". Read it, then save with replace set, keeping what the user wrote.");
+            return Task.FromResult("Not saved: " + problem);
         }
 
         if (!TryWriteSkill(path, text!))
@@ -148,6 +162,11 @@ public sealed partial class TerminalAgent
         Raise(new AgentEventArgs(AgentEventKind.Notice, $"Saved the skill \"{title}\" in skills/{name}.") { Path = path });
         return Task.FromResult($"Saved as skills/{name}/{SkillDocument.FileName}.");
     }
+
+    private static string? WriteProblem(SkillFolder folder, string path, string name, AIFunctionArguments arguments) =>
+        folder.IsIgnored(path) ? $"skills/{name} is listed in .terminalignore."
+        : File.Exists(path) && !IsReplacing(arguments) ? $"there's already a skill called \"{name}\". Read it, then save with replace set, keeping what the user wrote."
+        : null;
 
     private static bool IsReplacing(AIFunctionArguments arguments) =>
         ToolArguments.GetString(arguments, "replace") is { } value && bool.TryParse(value, out var flag) && flag;

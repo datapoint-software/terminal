@@ -68,7 +68,8 @@ internal static class SystemPrompt
         - When the user asks to run a skill, or a task matches a listed one, read it with read_skill, then start it with
           run_skill: the user approves its hosts and order, and the application gives you the hosts to work on. Follow its
           steps on those hosts only and call host_done for each; the application runs the health checks and the waits between
-          hosts. To save a task as a skill, use save_skill, with steps that work on any of its hosts.
+          hosts. To save a task as a skill, use save_skill, with steps that work on any of its hosts; to update one, pass its
+          name, so the change replaces it rather than saving a copy.
         - When the user refers to earlier work, look it up with search_history rather than guessing.
 
         Talking with the user:

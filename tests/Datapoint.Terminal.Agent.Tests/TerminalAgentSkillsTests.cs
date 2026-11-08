@@ -73,6 +73,42 @@ public sealed class TerminalAgentSkillsTests : IDisposable
         Assert.Contains("\"patch-and-reboot\": Installs updates and reboots.", client.Requests[0][^1].Text, StringComparison.Ordinal);
     }
 
+    private static Func<IReadOnlyList<ChatMessage>, ChatResponse> Update(string name, string title) =>
+        Tool("save_skill", JsonSerializer.Serialize(new Dictionary<string, object>(StringComparer.Ordinal)
+        {
+            ["name"] = name,
+            ["title"] = title,
+            ["description"] = "Installs updates and reboots, one host at a time.",
+            ["steps"] = "1. `sudo apt-get upgrade -y`\n2. `sudo reboot`",
+            ["replace"] = true,
+        }));
+
+    [Fact]
+    public async Task Updates_a_skill_in_its_own_folder_when_its_title_changes()
+    {
+        await RunAsync(true, Save());
+        var (results, _) = await RunAsync(true, Update("patch-and-reboot", "Patch and reboot the web servers"), Update("patch-all", "Patch all"));
+
+        Assert.Equal("Saved as skills/patch-and-reboot/SKILL.md.", results[0]);
+        Assert.StartsWith("Not saved: there's no skill called \"patch-all\"", results[1], StringComparison.Ordinal);
+        var skill = Assert.Single(new SkillFolder(_folder, _ => false, CanWrite: false, () => true).List());
+        Assert.Equal(("patch-and-reboot", "Patch and reboot the web servers"), (skill.Name, skill.Title));
+    }
+
+    [Fact]
+    public async Task Points_a_new_skill_with_an_existing_title_to_the_skill_it_most_likely_updates()
+    {
+        await RunAsync(true, Save());
+        // As if first saved under another title, with the same heading: its folder and name come from that title.
+        Directory.Move(Path.Combine(_folder, "patch-and-reboot"), Path.Combine(_folder, "patching"));
+        var moved = Path.Combine(_folder, "patching", SkillDocument.FileName);
+        await File.WriteAllTextAsync(moved, (await File.ReadAllTextAsync(moved, Token)).Replace("name: patch-and-reboot", "name: patching", StringComparison.Ordinal), Token);
+        var (results, _) = await RunAsync(true, Save());
+
+        Assert.StartsWith("Not saved: the skill \"patching\" already has this title.", results[0], StringComparison.Ordinal);
+        Assert.Single(Directory.GetDirectories(_folder));
+    }
+
     [Fact]
     public async Task Replaces_a_skill_only_when_asked()
     {
