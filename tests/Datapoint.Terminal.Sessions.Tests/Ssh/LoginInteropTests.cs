@@ -12,12 +12,17 @@ public sealed class LoginInteropTests(OpenSshServer server) : IClassFixture<Open
 
     public void Dispose() => Directory.Delete(_folder, recursive: true);
 
-    private async Task<string> GenerateKeyAsync(string type, string? passphrase = null)
+    // A key only read from its file isn't authorized, so the test needs no server.
+    private async Task<string> GenerateKeyAsync(string type, string? passphrase = null, bool authorize = true)
     {
         var path = Path.Combine(_folder, "id_" + type);
         var (generated, output) = await OpenSshServer.RunToolAsync("ssh-keygen", "-q", "-t", type, "-N", passphrase ?? string.Empty, "-C", "test", "-f", path);
         Assert.SkipUnless(generated, "ssh-keygen isn't available: " + output);
-        await server.AuthorizeAsync(await File.ReadAllTextAsync(path + ".pub", Token));
+        if (authorize)
+        {
+            await server.AuthorizeAsync(await File.ReadAllTextAsync(path + ".pub", Token));
+        }
+
         return path;
     }
 
@@ -42,7 +47,7 @@ public sealed class LoginInteropTests(OpenSshServer server) : IClassFixture<Open
     [Fact]
     public async Task Reports_a_key_protected_by_a_passphrase()
     {
-        var path = await GenerateKeyAsync("ed25519", passphrase: "secret phrase");
+        var path = await GenerateKeyAsync("ed25519", passphrase: "secret phrase", authorize: false);
 
         var key = OpenSshKeyFile.Load(path);
 
