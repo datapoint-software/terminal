@@ -15,6 +15,7 @@ internal sealed class CommandRules
 
     private readonly FrozenDictionary<string, CommandRule> _rules;
     private readonly FrozenDictionary<string, CommandRule> _windowsRules;
+    private readonly FrozenDictionary<string, string[]> _programWrites;
 
     private CommandRules(IReadOnlyList<string> writingOptions, IReadOnlyList<CommandRule> rules)
     {
@@ -22,6 +23,9 @@ internal sealed class CommandRules
         _rules = rules.Where(rule => !rule.IsWindows).ToFrozenDictionary(rule => rule.Command, StringComparer.Ordinal);
         _windowsRules = rules.Where(rule => rule.IsWindows).ToFrozenDictionary(rule => rule.Command, StringComparer.OrdinalIgnoreCase);
         Commands = [.. rules.Select(rule => rule.Command)];
+        _programWrites = rules.Where(rule => !rule.IsWindows)
+            .GroupBy(rule => rule.Command.Split(' ')[0], StringComparer.Ordinal)
+            .ToFrozenDictionary(group => group.Key, group => group.SelectMany(rule => rule.Writes).Distinct(StringComparer.Ordinal).ToArray(), StringComparer.Ordinal);
     }
 
     public static CommandRules BuiltIn { get; } = LoadBuiltIn();
@@ -32,6 +36,11 @@ internal sealed class CommandRules
 
     public CommandRule? Find(string command) =>
         _rules.GetValueOrDefault(command) ?? _windowsRules.GetValueOrDefault(command);
+
+    // Every writing option listed for the program, for a command the user taught: "git notes add" stays a change with -f
+    // whichever git command the option was listed for.
+    public IReadOnlyList<string> WritesFor(string program) =>
+        [.. WritingOptions.Concat(_programWrites.GetValueOrDefault(program, [])).Distinct(StringComparer.Ordinal)];
 
     public static CommandRules Parse(string json)
     {

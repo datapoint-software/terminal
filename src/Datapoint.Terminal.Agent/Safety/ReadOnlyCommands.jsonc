@@ -1,5 +1,5 @@
-// Commands that only read (product decision 112). The agent runs them without asking in Ask mode and while it looks; anything
-// not listed here, or listed but given a writing option, counts as a change and asks first. When in doubt, leave it out: a
+// Commands that only read (product decision 112). The agent runs them without asking in "Ask for risky" mode, in Plan mode
+// without a plan, and while it looks; anything not listed here, or listed but given a writing option, counts as a change. When in doubt, leave it out: a
 // command missing from this list costs the user a click, one wrongly listed can change a machine without asking.
 //
 // Each group lists commands as the words they start with: the program, then any subcommand, e.g. "docker node ls". The rest

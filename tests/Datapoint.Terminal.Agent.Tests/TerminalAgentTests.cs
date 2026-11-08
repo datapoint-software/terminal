@@ -100,6 +100,18 @@ public sealed class TerminalAgentTests
     }
 
     [Fact]
+    public async Task Runs_commands_the_user_taught_as_read_only_without_asking()
+    {
+        var client = new ScriptedChatClient(RunCommand("vault status -format=json"), RunCommand("vault secrets list"), _ => Text("Done."));
+        using var agent = Create(client, ApprovalMode.AskForRisky);
+        agent.LearnedCommands = LearnedCommands.From(["vault status"]);
+
+        await agent.SendAsync("Check vault", Token);
+
+        Assert.Equal("vault secrets list", Assert.Single(_user.Proposals).Command);
+    }
+
+    [Fact]
     public async Task Still_asks_about_trust_in_plan_mode_and_the_plan_ends_with_the_task()
     {
         var client = new ScriptedChatClient(

@@ -30,7 +30,8 @@ public static class CommandClassifier
 
     private static readonly char[] s_separators = ['|', ';', '&'];
 
-    public static CommandRisk Classify(string command)
+    // Learned commands are the ones the user taught (product decision 112); null for the shipped list alone.
+    public static CommandRisk Classify(string command, LearnedCommands? learned = null)
     {
         ArgumentNullException.ThrowIfNull(command);
         if (s_trustMarkers.Any(marker => command.Contains(marker, StringComparison.Ordinal)))
@@ -46,7 +47,7 @@ public static class CommandClassifier
         }
 
         var parts = command.Split(s_separators, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-        return parts.Length > 0 && parts.All(IsReadOnlyPart) ? CommandRisk.ReadOnly : CommandRisk.Changes;
+        return parts.Length > 0 && parts.All(part => IsReadOnlyPart(part, learned)) ? CommandRisk.ReadOnly : CommandRisk.Changes;
     }
 
     // Whether the command can send something to another machine. Best effort: a script or interpreter can always open a
@@ -80,7 +81,7 @@ public static class CommandClassifier
         return s_networkAtStart.Contains(program) || (string.Equals(program, "git", StringComparison.Ordinal) && words.Skip(1).Any(s_gitNetwork.Contains));
     }
 
-    private static bool IsReadOnlyPart(string part)
+    private static bool IsReadOnlyPart(string part, LearnedCommands? learned)
     {
         var words = part.Split([' ', '\t'], StringSplitOptions.RemoveEmptyEntries);
         var index = 0;
@@ -99,10 +100,10 @@ public static class CommandClassifier
             return false;
         }
 
-        return FindRule(program, words, index + 1) is { } rule && rule.Permits(part, words[(index + rule.Length)..]);
+        return FindRule(program, words, index + 1, learned) is { } rule && rule.Permits(part, words[(index + rule.Length)..]);
     }
 
-    private static bool IsAssignment(string word) => word.Contains('=', StringComparison.Ordinal) && !word.StartsWith('-');
+    internal static bool IsAssignment(string word) => word.Contains('=', StringComparison.Ordinal) && !word.StartsWith('-');
 
     // Variables can make a reading program run something else (LD_PRELOAD, GIT_EXTERNAL_DIFF, LESSOPEN, a pager), so only
     // ones that change how output looks keep a command reading.
@@ -132,12 +133,12 @@ public static class CommandClassifier
     }
 
     // The longest listed command the words start with, e.g. "docker node ls" before "docker".
-    private static CommandRule? FindRule(string program, string[] words, int start)
+    private static CommandRule? FindRule(string program, string[] words, int start, LearnedCommands? learned)
     {
         for (var count = Math.Min(CommandRules.MaxWords, words.Length - start + 1); count >= 1; count--)
         {
             var command = string.Join(' ', words.Skip(start).Take(count - 1).Prepend(program));
-            if (CommandRules.BuiltIn.Find(command) is { } rule)
+            if ((CommandRules.BuiltIn.Find(command) ?? learned?.Find(command)) is { } rule)
             {
                 return rule;
             }

@@ -17,6 +17,10 @@ public sealed partial class TerminalAgent
 
     public AgentPlan? Plan => _plan;
 
+    // The commands the user taught to treat as read-only, from their own settings (product decision 112). Replaced whole, so
+    // the agent's thread always reads a complete list.
+    public LearnedCommands LearnedCommands { get; set; } = LearnedCommands.Empty;
+
     private List<AITool> PlanTools() =>
     [
         new ToolFunction(

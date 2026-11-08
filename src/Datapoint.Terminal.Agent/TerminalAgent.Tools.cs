@@ -94,7 +94,7 @@ public sealed partial class TerminalAgent
             return "Not run: " + problem;
         }
 
-        var plan = CheckPlan(terminal, CommandClassifier.Classify(proposed!), PlanStep(arguments));
+        var plan = CheckPlan(terminal, CommandClassifier.Classify(proposed!, LearnedCommands), PlanStep(arguments));
         if (plan.Problem is not null)
         {
             return "Not run: " + plan.Problem;
@@ -213,7 +213,7 @@ public sealed partial class TerminalAgent
 
     private async Task<CommandApproval> ApproveAsync(AgentTerminal terminal, string command, string purpose, PlanCheck plan, CancellationToken cancellationToken)
     {
-        var risk = CommandClassifier.Classify(command);
+        var risk = CommandClassifier.Classify(command, LearnedCommands);
         var ignored = IgnoredFileCheck?.Invoke(terminal, command);
         var outgoing = OutgoingCheck(command);
         if (!NeedsAsking(terminal, risk, ignored, plan, outgoing))
