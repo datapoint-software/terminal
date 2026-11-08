@@ -13,17 +13,24 @@ public sealed class TerminalAgentLookTests
     private readonly FakeTerminal _web2 = new();
     private readonly FakeTerminalOpener _opener = new([new AgentConnection("db1", "production")]);
     private readonly List<string?> _results = [];
+    private readonly List<AgentEventArgs> _events = [];
+
+    private const string Message = "Before I plan the drain I'd like to look at web1 and db1, to see what would have to move.";
 
     private static CancellationToken Token => TestContext.Current.CancellationToken;
 
     private static Dictionary<string, object?> Arguments(params (string Name, object? Value)[] values) =>
         values.ToDictionary(value => value.Name, value => value.Value, StringComparer.Ordinal);
 
-    private static Func<IReadOnlyList<ChatMessage>, ChatResponse> Look(params string[] hosts)
+    private static Func<IReadOnlyList<ChatMessage>, ChatResponse> Look(params string[] hosts) => _ => Call("ask_to_look", LookArguments(hosts));
+
+    private static Dictionary<string, object?> LookArguments(params string[] hosts)
     {
         var json = JsonSerializer.Serialize(hosts.Select(host => new { host, reason = "To see what runs there, since the plan moves it." }));
-        return _ => Call("ask_to_look", Arguments(("title", "Drain web1"), ("hosts", JsonDocument.Parse(json).RootElement.Clone())));
+        return Arguments(("message", Message), ("title", "Drain web1"), ("hosts", JsonDocument.Parse(json).RootElement.Clone()));
     }
+
+    private IEnumerable<string> Replies => _events.Where(e => e.Kind == AgentEventKind.Reply).Select(e => e.Text);
 
     private static Func<IReadOnlyList<ChatMessage>, ChatResponse> Run(string terminal, string command) =>
         _ => Call("run_command", Arguments(("terminal", terminal), ("command", command), ("purpose", "look")));
@@ -42,6 +49,7 @@ public sealed class TerminalAgentLookTests
         _opener.Agent = agent;
         agent.AddTerminal(new AgentTerminal("web1", _web1, "production"));
         agent.AddTerminal(new AgentTerminal("web2", _web2, "production"));
+        agent.EventRaised += (_, e) => _events.Add(e);
         await agent.SendAsync("Drain web1", Token);
         return agent;
     }
@@ -56,6 +64,25 @@ public sealed class TerminalAgentLookTests
         Assert.Equal("Drain web1", proposal.Look!.Title);
         Assert.Equal([("web1", "production", false), ("db1", "production", true)], proposal.Look.Hosts.Select(host => (host.Name, host.Environment, host.IsConnection)));
         Assert.Equal("Allowed. Read-only commands on web1, db1 run without asking until the task ends. Open db1 with open_terminal first. Run one simple command at a time, then propose your plan with what you found.", _results[0]);
+    }
+
+    [Fact]
+    public async Task Says_why_it_wants_to_look_before_asking()
+    {
+        using var agent = await RunAsync(ApprovalMode.Ask, Look("web1", "db1"));
+
+        var said = _events.FindIndex(e => e.Kind == AgentEventKind.Reply && string.Equals(e.Text, Message, StringComparison.Ordinal));
+        var asked = _events.FindIndex(e => e.Kind == AgentEventKind.StatusChanged && e.Status == AgentStatus.WaitingForApproval);
+        Assert.InRange(said, 0, asked - 1);
+    }
+
+    [Fact]
+    public async Task Doesnt_repeat_itself_when_it_already_wrote_why()
+    {
+        var both = new ChatResponse(new ChatMessage(ChatRole.Assistant, [new TextContent("Let me look first."), new FunctionCallContent("call-1", "ask_to_look", LookArguments("web1"))]));
+        using var agent = await RunAsync(ApprovalMode.Ask, _ => both);
+
+        Assert.Equal(["Let me look first.", "Done."], Replies.ToList());
     }
 
     [Fact]

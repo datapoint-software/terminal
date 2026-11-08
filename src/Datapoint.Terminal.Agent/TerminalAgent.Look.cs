@@ -24,12 +24,13 @@ public sealed partial class TerminalAgent
             + "that may change a system still asks.",
             """
             {"type":"object","properties":{
+              "message":{"type":"string","description":"Your message to the user, shown in the chat above the request: in a few plain sentences, what you're about to check and why the plan needs it, e.g. \"Before I plan the updates I'd like to look at the three nodes: what's pending on b and c, and what would have to move while each one drains.\" Don't also write it as text."},
               "title":{"type":"string","description":"The task in a few words, e.g. \"Drain swarm-b\"."},
               "hosts":{"type":"array","description":"Each host to look at.","items":{"type":"object","properties":{
                 "host":{"type":"string","description":"An open terminal or a connection, as listed in the user's message."},
                 "reason":{"type":"string","description":"What you'll look for there and why the plan needs it, in one or two plain sentences, e.g. \"Which services run on b and whether any keep data on its local disks, since those can't move when it drains.\""}},
                "required":["host","reason"]}}},
-             "required":["title","hosts"]}
+             "required":["message","title","hosts"]}
             """,
             AskToLookAsync),
     ];
@@ -41,6 +42,7 @@ public sealed partial class TerminalAgent
             return problem;
         }
 
+        SayBeforeAsking(arguments);
         if (Mode != ApprovalMode.IgnorePermissions)
         {
             SetStatus(AgentStatus.WaitingForApproval);
@@ -62,6 +64,19 @@ public sealed partial class TerminalAgent
         return "Allowed. Read-only commands on " + string.Join(", ", look.Hosts.Select(host => host.Name)) + " run without asking until the task ends."
             + (toOpen.Count == 0 ? string.Empty : " Open " + string.Join(", ", toOpen) + " with open_terminal first.")
             + " Run one simple command at a time, then propose your plan with what you found.";
+    }
+
+    // The card says what will be looked at on each host; the message, in the agent's own words, says why it's asking now. It
+    // reads as a reply, unless the agent already wrote one in this step.
+    private void SayBeforeAsking(AIFunctionArguments arguments)
+    {
+        if (_hasRepliedThisStep || ToolArguments.GetString(arguments, "message")?.Trim() is not { Length: > 0 } message)
+        {
+            return;
+        }
+
+        _hasRepliedThisStep = true;
+        Raise(new AgentEventArgs(AgentEventKind.Reply, message));
     }
 
     private AgentLook? ReadLook(AIFunctionArguments arguments, out string problem)

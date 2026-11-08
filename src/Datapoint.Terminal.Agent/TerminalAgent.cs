@@ -219,6 +219,9 @@ public sealed partial class TerminalAgent : IDisposable
         }
     }
 
+    // Whether the model's latest response had text for the user, so a tool that carries a message doesn't repeat it.
+    private bool _hasRepliedThisStep;
+
     private async Task RunStepsAsync(CancellationToken cancellationToken)
     {
         for (var step = 0; step < _options.MaxStepsPerTask; step++)
@@ -232,7 +235,8 @@ public sealed partial class TerminalAgent : IDisposable
             SetStatus(AgentStatus.Thinking);
             var response = await GetResponseAsync(cancellationToken).ConfigureAwait(false);
             _history.AddMessages(response);
-            if (!string.IsNullOrWhiteSpace(response.Text))
+            _hasRepliedThisStep = !string.IsNullOrWhiteSpace(response.Text);
+            if (_hasRepliedThisStep)
             {
                 Raise(new AgentEventArgs(AgentEventKind.Reply, response.Text));
             }
