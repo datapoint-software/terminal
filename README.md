@@ -40,7 +40,9 @@ docker build -t datapoint-terminal-sshd:test tests/ssh-server
 - [Product](docs/product.md): what the application does, for whom, and the decisions taken so far, with the questions still open.
 - [Engineering](docs/engineering.md): the technical stack, the terminal emulator's design and the repository conventions, with the decisions taken so far and the questions still open.
 - [Autopilot notes](docs/autopilot.md): implementation decisions taken during development, kept for review.
-- [Contributing](CLAUDE.md): how we work in this repository, with branch names, commit messages, merge requests and versions. It's written for people and for AI coding assistants alike.
+- [Contributing](CONTRIBUTING.md): how to set up, make a change and open a pull request.
+- [How we work](CLAUDE.md): the full rules for branch names, commit messages, pull requests and versions, followed by people and AI coding assistants alike.
+- [Security policy](SECURITY.md): how to report a vulnerability privately.
 
 ## Known risks
 
@@ -66,6 +68,6 @@ Datapoint Terminal is free software, licensed under the [GNU Affero General Publ
 
 Datapoint also offers Datapoint Terminal under a commercial license, for organizations that can't accept the AGPL.
 
-Contributors sign the [Contributor License Agreement](CLA.md) before their first contribution is merged. To report a security issue, don't open a public issue: contact Datapoint at https://datapoint.software/.
+Contributors sign the [Contributor License Agreement](CLA.md) before their first contribution is merged. To report a security issue, don't open a public issue: follow the [security policy](SECURITY.md).
 
 Copyright © 2026 Datapoint - Sistemas de Informação, Lda.
