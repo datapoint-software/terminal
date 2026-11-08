@@ -241,7 +241,7 @@
                           <TextBlock Classes="quiet" Text="{Binding When}" />
                           <TextBlock Classes="secondary" Text="{Binding Who}" />
                         </StackPanel>
-                        <SelectableTextBlock Grid.Column="1" Text="{Binding Text}" FontSize="{StaticResource ReadingSize}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                        <md:MarkdownView Grid.Column="1" Text="{Binding Text}" VerticalAlignment="Center" />
                       </Grid>
                     </Border>
                   </DataTemplate>

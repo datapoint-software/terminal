@@ -54,7 +54,7 @@ public sealed class DocumentViewTests : IDisposable
             [
                 new HostLogEntry(new DateTimeOffset(2026, 11, 7, 14, 32, 0, TimeSpan.Zero), "joao", true, "Patched and rebooted. Kernel 6.1.0-27 to 6.1.0-28.", "a.md"),
                 new HostLogEntry(new DateTimeOffset(2026, 11, 3, 9, 10, 0, TimeSpan.Zero), "rita", false, "Renewed the TLS certificate.", "b.md"),
-                new HostLogEntry(new DateTimeOffset(2026, 10, 28, 22, 5, 0, TimeSpan.Zero), string.Empty, true, "Raised client_max_body_size to 50m.", "c.md"),
+                new HostLogEntry(new DateTimeOffset(2026, 10, 28, 22, 5, 0, TimeSpan.Zero), string.Empty, true, "Raised `client_max_body_size` to **50m**.", "c.md"),
                 new HostLogEntry(new DateTimeOffset(2026, 10, 1, 8, 0, 0, TimeSpan.Zero), "joao", false, "Installed nginx.", "d.md"),
             ],
             userName: "joao");
@@ -74,6 +74,17 @@ public sealed class DocumentViewTests : IDisposable
         Directory.CreateDirectory("rendered");
         using var frame = window.CaptureRenderedFrame();
         frame?.Save($"rendered/{name}.png", new PngBitmapEncoderOptions());
+    }
+
+    [AvaloniaFact]
+    public void Renders_log_entries_as_markdown()
+    {
+        var (window, view, _) = Show(HostNotes);
+
+        var texts = view.GetVisualDescendants().OfType<SelectableTextBlock>().Select(InlineText.Of).ToList();
+
+        Assert.Contains("Raised client_max_body_size to 50m.", texts, StringComparer.Ordinal);
+        window.Close();
     }
 
     [AvaloniaFact]
