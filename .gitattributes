@@ -1,0 +1,6 @@
+# Text files are checked out with LF on every system, as .editorconfig
+# writes them, so tests and generated files compare the same everywhere;
+# Windows batch files keep CRLF, which cmd needs.
+* text=auto eol=lf
+*.cmd text eol=crlf
+*.bat text eol=crlf
