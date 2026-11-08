@@ -9,7 +9,7 @@ namespace Datapoint.Terminal.Shell;
 
 // Product decision 120: one area for each kind of document, with its own header and tabs. The area takes space only while
 // something is open in it. Product decision 121: all but the workspace's own files collapse to a strip.
-public sealed partial class DocumentPane : UserControl
+public sealed partial class DocumentPane : UserControl, ILocalizable
 {
     public DocumentPane()
         : this(AreaKind.Workspace)
@@ -20,25 +20,37 @@ public sealed partial class DocumentPane : UserControl
     {
         InitializeComponent();
         Kind = kind;
-        Title = TitleOf(kind);
+        Tabs.ItemsSource = Documents;
+        RailItems.ItemsSource = Documents;
+        CanCollapse = kind != AreaKind.Workspace;
+        CollapseButton.IsVisible = CanCollapse;
+        ShowNames();
+        Localizer.Instance.Register(this);
+        CollapseButton.Click += (_, _) => CollapseRequested?.Invoke(this, EventArgs.Empty);
+        ExpandButton.Click += (_, _) => ExpandRequested?.Invoke(null);
+        Tabs.SelectionChanged += (_, _) => SelectionChanged?.Invoke(this, EventArgs.Empty);
+        Documents.CollectionChanged += (_, _) => Summary.Text = MainWindow.OpenCount(Documents.Count);
+    }
+
+    // Product decision 150.
+    public void OnLanguageChanged()
+    {
+        ShowNames();
+        Summary.Text = MainWindow.OpenCount(Documents.Count);
+    }
+
+    private void ShowNames()
+    {
+        Title = TitleOf(Kind);
         TitleText.Text = Title;
         AutomationProperties.SetName(this, Title);
         AutomationProperties.SetName(Tabs, Title);
-        Tabs.ItemsSource = Documents;
-        RailItems.ItemsSource = Documents;
         AutomationProperties.SetName(Rail, Title);
-        CanCollapse = kind != AreaKind.Workspace;
-        CollapseButton.IsVisible = CanCollapse;
         foreach (var (button, text) in new[] { (CollapseButton, Strings.Format(Strings.CollapseArea, Title)), (ExpandButton, Strings.Format(Strings.ExpandArea, Title)) })
         {
             ToolTip.SetTip(button, text);
             AutomationProperties.SetName(button, text);
         }
-
-        CollapseButton.Click += (_, _) => CollapseRequested?.Invoke(this, EventArgs.Empty);
-        ExpandButton.Click += (_, _) => ExpandRequested?.Invoke(null);
-        Tabs.SelectionChanged += (_, _) => SelectionChanged?.Invoke(this, EventArgs.Empty);
-        Documents.CollectionChanged += (_, _) => Summary.Text = MainWindow.OpenCount(Documents.Count);
     }
 
     public event EventHandler? SelectionChanged;
@@ -56,7 +68,7 @@ public sealed partial class DocumentPane : UserControl
 
     public AreaKind Kind { get; }
 
-    public string Title { get; }
+    public string Title { get; private set; } = string.Empty;
 
     public ObservableCollection<IOpenDocument> Documents { get; } = [];
 

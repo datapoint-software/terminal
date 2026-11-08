@@ -8,7 +8,7 @@ using Datapoint.Terminal.Themes;
 namespace Datapoint.Terminal.Settings;
 
 // Settings › Appearance (product decisions 44 and 110): the window's theme, and the terminal's theme, font and size.
-public sealed partial class AppearanceViewModel : ObservableObject
+public sealed partial class AppearanceViewModel : LocalizedObject
 {
     private readonly SettingsViewModel _settings;
     private bool _isLoading;
@@ -34,13 +34,7 @@ public sealed partial class AppearanceViewModel : ObservableObject
     public IReadOnlyList<TextChoice> WindowThemes { get; } =
         [new(() => Strings.WindowThemeSystem), new(() => Strings.WindowThemeLight), new(() => Strings.WindowThemeDark), new(() => Strings.WindowThemeTerminal)];
 
-    // In the order of AppLanguage's values. Each language is named in itself, so it can be found whatever is shown now.
-    public IReadOnlyList<TextChoice> Languages { get; } =
-    [
-        new(() => Strings.Format(Strings.AppearanceLanguageSystem, LanguageName(Localizer.Resolve(AppLanguage.System, Localizer.Instance.SystemCulture)))),
-        new(() => Strings.LanguageEnglish),
-        new(() => Strings.LanguagePortuguese),
-    ];
+    public IReadOnlyList<TextChoice> Languages { get; } = LanguageChoices.Create();
 
     [ObservableProperty]
     public partial int SelectedLanguage { get; set; }
@@ -145,9 +139,6 @@ public sealed partial class AppearanceViewModel : ObservableObject
 
         return -1;
     }
-
-    private static string LanguageName(System.Globalization.CultureInfo culture) =>
-        string.Equals(culture.TwoLetterISOLanguageName, "pt", StringComparison.Ordinal) ? Strings.LanguagePortuguese : Strings.LanguageEnglish;
 
     partial void OnReduceMotionChanged(bool value)
     {

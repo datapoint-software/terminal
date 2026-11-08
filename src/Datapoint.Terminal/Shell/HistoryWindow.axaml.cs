@@ -30,7 +30,7 @@ public sealed partial class HistoryWindow : Window
             return;
         }
 
-        RetentionBox.ItemsSource = s_retention.Select(RetentionLabel).ToList();
+        RetentionBox.ItemsSource = s_retention.Select(days => new TextChoice(() => RetentionLabel(days))).ToList();
         RetentionBox.SelectedIndex = Math.Max(0, Array.IndexOf(s_retention, access.RetentionDays));
         RetentionBox.SelectionChanged += (_, _) => _ = ChangeRetentionAsync();
         SearchBox.TextChanged += (_, _) => { _searchDelay.Stop(); _searchDelay.Start(); };

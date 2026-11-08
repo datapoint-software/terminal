@@ -13,12 +13,16 @@ public sealed class Localizer
 
     private readonly List<WeakReference<ILocalizable>> _targets = [];
     private readonly Lock _lock = new();
+    private int _pruneAt = 64;
 
     private Localizer(CultureInfo systemCulture)
     {
         SystemCulture = systemCulture;
         Culture = Resolve(AppLanguage.System, systemCulture);
     }
+
+    // Every language we have a catalog for.
+    public static IReadOnlyList<CultureInfo> Cultures { get; } = [s_english, s_portuguese];
 
     public static Localizer Instance { get; } = new(CultureInfo.CurrentUICulture);
 
@@ -64,7 +68,13 @@ public sealed class Localizer
         ArgumentNullException.ThrowIfNull(target);
         lock (_lock)
         {
-            _targets.RemoveAll(reference => !reference.TryGetTarget(out _));
+            // Pruned only when the list has doubled, so registering stays cheap however many there are.
+            if (_targets.Count >= _pruneAt)
+            {
+                _targets.RemoveAll(reference => !reference.TryGetTarget(out _));
+                _pruneAt = Math.Max(64, _targets.Count * 2);
+            }
+
             _targets.Add(new WeakReference<ILocalizable>(target));
         }
     }

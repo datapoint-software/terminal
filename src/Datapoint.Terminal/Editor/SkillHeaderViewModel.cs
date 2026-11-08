@@ -11,7 +11,7 @@ namespace Datapoint.Terminal.Editor;
 // The form above a skill's steps (product decision 103): when to use it, the labels of the hosts it runs on, with the hosts
 // they match now, and how it rolls out. Each change is written to the skill's header at once; one that doesn't read stays
 // on screen with the reason and isn't written.
-public sealed partial class SkillHeaderViewModel : ObservableObject
+public sealed partial class SkillHeaderViewModel : LocalizedObject
 {
     private const double MaxMinutes = 1440;
 

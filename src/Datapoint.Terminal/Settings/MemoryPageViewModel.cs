@@ -5,7 +5,7 @@ using Datapoint.Terminal.Resources;
 namespace Datapoint.Terminal.Settings;
 
 // Settings › Memory (product decision 102): what the agent remembers about the user, everywhere and in the workspace in front.
-public sealed partial class MemoryPageViewModel : ObservableObject
+public sealed partial class MemoryPageViewModel : LocalizedObject
 {
     public ObservableCollection<MemorySectionViewModel> Sections { get; } = [];
 
@@ -19,13 +19,13 @@ public sealed partial class MemoryPageViewModel : ObservableObject
             return;
         }
 
-        Add(new MemorySectionViewModel(Strings.MemoryEverywhere, places.GlobalPath, canWrite: true, Strings.MemoryClearEverywhere));
+        Add(new MemorySectionViewModel(() => Strings.MemoryEverywhere, places.GlobalPath, canWrite: true, () => Strings.MemoryClearEverywhere));
         if (places is not { WorkspacePath: { } path, WorkspaceName: { } name })
         {
             return;
         }
 
-        Add(new MemorySectionViewModel(Strings.Format(Strings.MemoryInWorkspace, name), path, places.CanWriteWorkspace, Strings.ClearMemoryMessage));
+        Add(new MemorySectionViewModel(() => Strings.Format(Strings.MemoryInWorkspace, name), path, places.CanWriteWorkspace, () => Strings.ClearMemoryMessage));
     }
 
     // Notes the agent added while the page was open.

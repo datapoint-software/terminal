@@ -6,7 +6,7 @@ using Datapoint.Terminal.Security.Credentials;
 namespace Datapoint.Terminal.Settings;
 
 // Settings › Web (product decision 105): whether the agent asks before using the web, and who runs its searches.
-public sealed partial class WebViewModel : ObservableObject
+public sealed partial class WebViewModel : LocalizedObject
 {
     private static readonly WebSearchService[] s_services =
         [WebSearchService.Provider, WebSearchService.Brave, WebSearchService.Tavily, WebSearchService.Searxng, WebSearchService.Off];
@@ -22,8 +22,8 @@ public sealed partial class WebViewModel : ObservableObject
         Load();
     }
 
-    public IReadOnlyList<string> Services { get; } =
-        [Strings.WebServiceProvider, Strings.WebServiceBrave, Strings.WebServiceTavily, Strings.WebServiceSearxng, Strings.WebServiceOff];
+    public IReadOnlyList<TextChoice> Services { get; } =
+        [new(() => Strings.WebServiceProvider), new(() => Strings.WebServiceBrave), new(() => Strings.WebServiceTavily), new(() => Strings.WebServiceSearxng), new(() => Strings.WebServiceOff)];
 
     [ObservableProperty]
     public partial bool AlwaysAllow { get; set; }

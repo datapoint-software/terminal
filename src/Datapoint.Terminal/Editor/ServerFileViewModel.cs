@@ -8,7 +8,7 @@ namespace Datapoint.Terminal.Editor;
 
 // A file on the machine a terminal runs on, open for editing. Nothing is saved until the user reviews the change; the window
 // then saves it through that terminal, where the user sees the command.
-public sealed partial class ServerFileViewModel : ObservableObject, IOpenDocument
+public sealed partial class ServerFileViewModel : LocalizedObject, IOpenDocument
 {
     public const int MaxBytes = 1024 * 1024;
 

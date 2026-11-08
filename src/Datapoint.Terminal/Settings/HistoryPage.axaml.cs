@@ -10,7 +10,7 @@ namespace Datapoint.Terminal.Settings;
 
 // Settings › History (product decision 52): how long history is kept, for every workspace, and clearing it per connection in
 // the workspace whose window Settings was opened from.
-public sealed partial class HistoryPage : UserControl
+public sealed partial class HistoryPage : UserControl, ILocalizable
 {
     private IHistoryAccess? _access;
     private bool _isLoading;
@@ -18,9 +18,13 @@ public sealed partial class HistoryPage : UserControl
     public HistoryPage()
     {
         InitializeComponent();
-        RetentionBox.ItemsSource = HistoryWindow.s_retention.Select(HistoryWindow.RetentionLabel).ToList();
+        RetentionBox.ItemsSource = HistoryWindow.s_retention.Select(days => new TextChoice(() => HistoryWindow.RetentionLabel(days))).ToList();
         RetentionBox.SelectionChanged += (_, _) => _ = ChangeRetentionAsync();
+        Localizer.Instance.Register(this);
     }
+
+    // Product decision 150: the rows are built in code, so they're built again in the new language.
+    public void OnLanguageChanged() => Fill();
 
     public IHistoryAccess? Access
     {

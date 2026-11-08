@@ -6,7 +6,7 @@ namespace Datapoint.Terminal.Chat;
 
 // A comment on a plan under review: the text the user selected, if any, the step it's on, and what they want changed.
 // It's a draft until saved, and sent with the others when the user sends the plan back to be revised.
-public sealed partial class PlanCommentViewModel(string? quote, int? step, string? stepTitle, Action<PlanCommentViewModel> removed) : ObservableObject
+public sealed partial class PlanCommentViewModel(string? quote, int? step, string? stepTitle, Action<PlanCommentViewModel> removed) : LocalizedObject
 {
     private string _saved = string.Empty;
 

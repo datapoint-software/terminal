@@ -5,7 +5,7 @@ using Datapoint.Terminal.Resources;
 namespace Datapoint.Terminal.Settings;
 
 // One note in memory, edited in place.
-public sealed partial class MemoryNoteViewModel(string text, MemorySectionViewModel section) : ObservableObject
+public sealed partial class MemoryNoteViewModel(string text, MemorySectionViewModel section) : LocalizedObject
 {
     public string Text { get; } = text;
 

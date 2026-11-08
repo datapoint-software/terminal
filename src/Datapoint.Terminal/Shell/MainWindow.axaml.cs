@@ -15,7 +15,7 @@ using Microsoft.Extensions.AI;
 namespace Datapoint.Terminal.Shell;
 
 [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1001", Justification = "A window's lifetime ends with Closed, where they are disposed.")]
-public sealed partial class MainWindow : Window, ITerminalOpener
+public sealed partial class MainWindow : Window, ITerminalOpener, ILocalizable
 {
     private readonly ChatViewModel _chat = new(new AvaloniaUiThread());
     private readonly SecretRedactor _redactor = new();
@@ -65,6 +65,7 @@ public sealed partial class MainWindow : Window, ITerminalOpener
         SetUpFind();
         SetUpSidebar();
         NativeMenu.SetMenu(this, BuildMenu());
+        Localizer.Instance.Register(this);
         LayOutPanes();
         AddHandler(KeyDownEvent, OnShortcutKeyDown, Avalonia.Interactivity.RoutingStrategies.Tunnel);
         Opened += (_, _) => _ = OnOpenedAsync();

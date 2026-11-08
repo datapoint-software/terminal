@@ -9,7 +9,7 @@ namespace Datapoint.Terminal.Chat;
 // Product decision 111: a plan reviewed as a page in the documents area. The user reads each step, comments on any part of
 // it, and either sends the comments back for the agent to revise the plan or approves it. A revision replaces the plan on
 // the same page, keeping the comments already sent.
-public sealed partial class PlanReviewViewModel : ObservableObject, IOpenDocument
+public sealed partial class PlanReviewViewModel : LocalizedObject, IOpenDocument
 {
     private readonly Action<PlanReviewViewModel> _close;
     private bool _isSending;

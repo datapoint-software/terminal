@@ -5,7 +5,7 @@ using Datapoint.Terminal.Resources;
 namespace Datapoint.Terminal.Settings;
 
 // One saved login on the Passwords page: whether it's used without asking, and a button to forget it.
-public sealed partial class SavedLoginViewModel : ObservableObject
+public sealed partial class SavedLoginViewModel : LocalizedObject
 {
     private readonly Action<string, bool>? _setUsesWithoutAsking;
     private readonly Action<string> _forget;

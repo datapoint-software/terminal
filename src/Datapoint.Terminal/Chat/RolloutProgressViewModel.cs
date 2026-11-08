@@ -8,7 +8,7 @@ namespace Datapoint.Terminal.Chat;
 
 // A skill's rollout as it goes (mock-ups 4 and 5): each host's state, the health check, and Pause and Stop. Pinned above the
 // conversation while it runs, like a plan; once it's over it stays, folded to its result, where it started.
-public sealed partial class RolloutProgressViewModel : ObservableObject
+public sealed partial class RolloutProgressViewModel : LocalizedObject
 {
     private readonly Action<bool> _pause;
     private readonly Action _stop;

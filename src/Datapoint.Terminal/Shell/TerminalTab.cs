@@ -7,7 +7,7 @@ using Datapoint.Terminal.Sessions;
 
 namespace Datapoint.Terminal.Shell;
 
-public sealed partial class TerminalTab : ObservableObject
+public sealed partial class TerminalTab : LocalizedObject
 {
     private readonly Action<TerminalTab> _close;
 

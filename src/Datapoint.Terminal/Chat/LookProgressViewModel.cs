@@ -6,7 +6,7 @@ namespace Datapoint.Terminal.Chat;
 
 // Product decision 111: what the agent does while it looks, gathered by host on one card instead of a line per command, so
 // the user can see at a glance what it read where. It ends when the agent proposes its plan or the task ends.
-public sealed partial class LookProgressViewModel(AgentLook look) : ObservableObject
+public sealed partial class LookProgressViewModel(AgentLook look) : LocalizedObject
 {
     public IReadOnlyList<LookProgressHostViewModel> Hosts { get; } = [.. look.Hosts.Select((host, index) => new LookProgressHostViewModel(host, index == 0))];
 

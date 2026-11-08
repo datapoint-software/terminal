@@ -36,7 +36,7 @@ public sealed class SettingsStore(string path)
         {
             var aside = $"{Path}.unreadable-{DateTime.UtcNow:yyyyMMddHHmmss}";
             File.Move(Path, aside);
-            Problem = $"The settings file couldn't be read ({exception.Message}). It was kept as {aside}, and defaults are used.";
+            Problem = Resources.Strings.Format(Resources.Strings.SettingsUnreadable, exception.Message, aside);
             return new AppSettings();
         }
     }

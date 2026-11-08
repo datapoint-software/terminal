@@ -20,7 +20,7 @@ public sealed partial class MainWindow
     // Connections are reviewed first, as from the New Tab menu, so a looser change from outside still waits for the user.
     private async Task<string?> OpenForAgentAsync(string name)
     {
-        if (string.Equals(name, Strings.TabLocal, StringComparison.OrdinalIgnoreCase))
+        if (Strings.MatchesAny(nameof(Strings.TabLocal), name, StringComparison.OrdinalIgnoreCase))
         {
             return (await OpenLocalTabAsync(select: false).ConfigureAwait(true))?.Name;
         }

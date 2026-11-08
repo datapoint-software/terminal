@@ -8,9 +8,9 @@ using Datapoint.Terminal.Resources;
 namespace Datapoint.Terminal.Settings;
 
 // One memory file: the notes kept everywhere, or in one workspace.
-public sealed partial class MemorySectionViewModel(string title, string path, bool canWrite, string clearMessage) : ObservableObject
+public sealed partial class MemorySectionViewModel(Func<string> title, string path, bool canWrite, Func<string> clearMessage) : LocalizedObject
 {
-    public string Title { get; } = title;
+    public string Title => title();
 
     public string Path { get; } = path;
 
@@ -58,7 +58,7 @@ public sealed partial class MemorySectionViewModel(string title, string path, bo
     [RelayCommand]
     private async Task ClearAsync()
     {
-        if (!CanWrite || (Confirm is { } confirm && !await confirm(Strings.Format(Strings.MemoryClearTitle, Title), clearMessage).ConfigureAwait(true)))
+        if (!CanWrite || (Confirm is { } confirm && !await confirm(Strings.Format(Strings.MemoryClearTitle, Title), clearMessage()).ConfigureAwait(true)))
         {
             return;
         }

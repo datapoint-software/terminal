@@ -150,7 +150,7 @@ public sealed partial class MainWindow
     }
 
     private void RefreshOpenTerminals() => _sidebar.SetOpenTerminals(_tabs
-        .Where(tab => tab.IsRemote || !string.Equals(tab.ConnectionName, Strings.TabLocal, StringComparison.Ordinal))
+        .Where(tab => tab.IsRemote || !Strings.MatchesAny(nameof(Strings.TabLocal), tab.ConnectionName))
         .GroupBy(tab => tab.ConnectionName ?? string.Empty, StringComparer.OrdinalIgnoreCase)
         .ToDictionary(group => group.Key, group => group.Count(), StringComparer.OrdinalIgnoreCase));
 

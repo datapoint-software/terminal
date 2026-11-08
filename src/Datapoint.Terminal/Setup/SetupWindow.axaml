@@ -72,6 +72,11 @@
           <TextBlock Text="{res:Tr SetupWelcomeAppearance}" />
         </StackPanel>
         <TextBlock Classes="secondary" Text="{res:Tr SetupWelcomeLater}" TextWrapping="Wrap" />
+        <StackPanel Orientation="Horizontal" Spacing="10">
+          <TextBlock Text="{res:Tr AppearanceLanguage}" VerticalAlignment="Center" />
+          <ComboBox x:Name="LanguageChoice" MinWidth="200" ItemsSource="{Binding Languages}" SelectedIndex="{Binding SelectedLanguage}"
+                    AutomationProperties.Name="{res:Tr AppearanceLanguage}" />
+        </StackPanel>
       </StackPanel>
 
       <!-- 2. The AI provider. -->

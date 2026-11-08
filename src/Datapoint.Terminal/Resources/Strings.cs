@@ -2085,7 +2085,18 @@ public static class Strings
 
     public static string LanguagePortuguese => Get(nameof(LanguagePortuguese));
 
+    public static string SettingsUnreadable => Get(nameof(SettingsUnreadable));
+
+    public static string SettingsNewerVersion => Get(nameof(SettingsNewerVersion));
+
+    public static string ThemeImportTooLarge => Get(nameof(ThemeImportTooLarge));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
+
+    // Whether a name we gave something, such as the local tab's, is that resource in any language we have: one given
+    // before the language changed is still recognized after (product decision 150).
+    public static bool MatchesAny(string name, string? value, StringComparison comparison = StringComparison.Ordinal) =>
+        value is not null && Localizer.Cultures.Any(culture => string.Equals(s_resources.GetString(name, culture), value, comparison));
 
     // The text for a resource key in the interface's language.
     public static string Get(string name) => s_resources.GetString(name, Localizer.Instance.Culture) ?? name;

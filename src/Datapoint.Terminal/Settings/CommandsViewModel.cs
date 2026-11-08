@@ -6,7 +6,7 @@ namespace Datapoint.Terminal.Settings;
 
 // Settings › Commands (product decision 112): the commands the user taught the agent to treat as read-only, and the ones
 // they approved this session that the check counted as changes, to teach with one click.
-public sealed partial class CommandsViewModel : ObservableObject
+public sealed partial class CommandsViewModel : LocalizedObject
 {
     private readonly SettingsViewModel _settings;
 

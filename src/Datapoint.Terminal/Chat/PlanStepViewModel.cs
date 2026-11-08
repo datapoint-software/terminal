@@ -6,7 +6,7 @@ using Datapoint.Terminal.Resources;
 namespace Datapoint.Terminal.Chat;
 
 // One step of a plan, as the approval card shows it and as the checklist tracks it once the plan is approved.
-public sealed partial class PlanStepViewModel : ObservableObject
+public sealed partial class PlanStepViewModel : LocalizedObject
 {
     private static readonly string[] s_connectionWords = ["connection", "session", "reboot", "restart", "disconnect", "ssh"];
 

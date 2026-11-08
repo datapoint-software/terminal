@@ -8,7 +8,7 @@ using Microsoft.Extensions.AI;
 namespace Datapoint.Terminal.Settings;
 
 // Every change is saved at once, as in macOS settings.
-public sealed partial class ProviderViewModel : ObservableObject
+public sealed partial class ProviderViewModel : LocalizedObject
 {
     private readonly SettingsViewModel _owner;
     private readonly bool _isLoaded;
@@ -85,9 +85,7 @@ public sealed partial class ProviderViewModel : ObservableObject
     // prices come with them; Other… takes a model by name, with its own values. A compatible server's model is always typed.
     public IReadOnlyList<ModelOption> ModelChoices => IsCompatible
         ? []
-        : [.. ProviderCatalog.Known.Where(model => model.Kind == Kind.Kind).Select(model => new ModelOption(model, model.Name)), s_other];
-
-    private static readonly ModelOption s_other = new(null, Strings.ProviderModelOther);
+        : [.. ProviderCatalog.Known.Where(model => model.Kind == Kind.Kind).Select(model => new ModelOption(model, model.Name)), new ModelOption(null, Strings.ProviderModelOther)];
 
     public ModelOption? SelectedModelChoice
     {

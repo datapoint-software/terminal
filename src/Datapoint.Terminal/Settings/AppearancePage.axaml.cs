@@ -38,7 +38,7 @@ public sealed partial class AppearancePage : UserControl
         {
             if (new FileInfo(path).Length > MaxThemeBytes)
             {
-                Show(Strings.Format(Strings.ThemeImportFailed, name, "it's too large to be a theme"));
+                Show(Strings.Format(Strings.ThemeImportFailed, name, Strings.ThemeImportTooLarge));
                 return;
             }
 

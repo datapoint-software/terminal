@@ -8,7 +8,7 @@ namespace Datapoint.Terminal.Sidebar;
 
 // Product decision 100: the workspace, its hosts, its skills and its instructions, by name. The sidebar opens and edits what
 // the application created; it doesn't create, rename or delete files. The window says what happens when one is chosen.
-public sealed partial class SidebarViewModel(string workspaceFolder) : ObservableObject
+public sealed partial class SidebarViewModel(string workspaceFolder) : LocalizedObject
 {
     public string WorkspaceFolder { get; } = workspaceFolder;
 

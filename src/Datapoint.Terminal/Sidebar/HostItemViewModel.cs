@@ -6,7 +6,7 @@ namespace Datapoint.Terminal.Sidebar;
 
 // One of the workspace's hosts, with a small mark for its environment: red for production, amber for staging, the accent for
 // any other label, and none without one. Screen readers hear the label instead.
-public sealed partial class HostItemViewModel(WorkspaceConnection connection) : ObservableObject
+public sealed partial class HostItemViewModel(WorkspaceConnection connection) : LocalizedObject
 {
     public WorkspaceConnection Connection { get; } = connection;
 

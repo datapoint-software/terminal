@@ -5,7 +5,7 @@ using Datapoint.Terminal.Themes;
 namespace Datapoint.Terminal.Settings;
 
 // One theme in Settings › Appearance, with the colours its small preview uses. BuiltIn is set for the three built-in choices.
-public sealed partial class ThemeCard(ColorTheme theme, string name, string note, Shell.TerminalTheme? builtIn) : ObservableObject
+public sealed partial class ThemeCard(ColorTheme theme, string name, string note, Shell.TerminalTheme? builtIn) : Resources.LocalizedObject
 {
     public ColorTheme Theme { get; } = theme;
 

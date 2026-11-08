@@ -7,7 +7,7 @@ namespace Datapoint.Terminal.Chat;
 
 // One list to click or pick by number; the last row opens a box for an answer in the user's own words, unless the answer
 // grants something (web access), which only a choice may do.
-public sealed partial class QuestionViewModel : ObservableObject
+public sealed partial class QuestionViewModel : LocalizedObject
 {
     private readonly TaskCompletionSource<string?> _answer = new(TaskCreationOptions.RunContinuationsAsynchronously);
 

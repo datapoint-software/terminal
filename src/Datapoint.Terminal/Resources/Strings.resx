@@ -3121,12 +3121,21 @@ Fingerprint: {2}</value>
     <value>System ({0})</value>
   </data>
   <data name="AppearanceLanguageHint" xml:space="preserve">
-    <value>Changes the application's text at once, and the language the agent replies in from its next message. Commands, files and host documentation stay in the language they're written in.</value>
+    <value>Changes the application's text at once. The agent uses the new language from the next conversation; one under way keeps its language. Commands, files and host documentation stay in the language they're written in.</value>
   </data>
   <data name="LanguageEnglish" xml:space="preserve">
     <value>English</value>
   </data>
   <data name="LanguagePortuguese" xml:space="preserve">
     <value>Português (Portugal)</value>
+  </data>
+  <data name="SettingsUnreadable" xml:space="preserve">
+    <value>The settings file couldn't be read ({0}). It was kept as {1}, and defaults are used.</value>
+  </data>
+  <data name="SettingsNewerVersion" xml:space="preserve">
+    <value>A newer version of Datapoint Terminal wrote these settings; changes here won't be saved.</value>
+  </data>
+  <data name="ThemeImportTooLarge" xml:space="preserve">
+    <value>it's too large to be a theme</value>
   </data>
 </root>

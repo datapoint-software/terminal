@@ -6,7 +6,7 @@ namespace Datapoint.Terminal.Settings;
 
 // Settings › Passwords (product decision 113): the SSH logins whose password is saved, whether each is used without asking,
 // and forgetting them. Passwords are saved where they're typed, in the login window, so this page never shows one.
-public sealed partial class PasswordsViewModel : ObservableObject
+public sealed partial class PasswordsViewModel : LocalizedObject
 {
     private readonly SettingsViewModel _settings;
 

@@ -8,7 +8,7 @@ namespace Datapoint.Terminal.Editor;
 
 // The line above a host's documentation, with its environment, labels, address and open terminals and a way to open one; and
 // its maintenance log below, newest first, a few entries until the user asks for all.
-public sealed partial class HostHeaderViewModel(string name, string? environment, string? address, Action openTerminal) : ObservableObject
+public sealed partial class HostHeaderViewModel(string name, string? environment, string? address, Action openTerminal) : LocalizedObject
 {
     public string Name { get; } = name;
 

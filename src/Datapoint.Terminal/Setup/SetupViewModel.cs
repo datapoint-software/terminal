@@ -13,7 +13,7 @@ namespace Datapoint.Terminal.Setup;
 
 // Product decision 146: first-run setup, in four steps (welcome, AI provider, appearance, ready). Every step can be set aside,
 // and everything in it can be changed later in Settings. Appearance applies as it's chosen, so the window itself is the preview.
-public sealed partial class SetupViewModel : ObservableObject
+public sealed partial class SetupViewModel : LocalizedObject
 {
     public const int StepCount = 4;
 
@@ -34,12 +34,13 @@ public sealed partial class SetupViewModel : ObservableObject
         _environment = environment ?? Environment.GetEnvironmentVariable;
         Choices =
         [
-            new(ProviderKind.Anthropic, Strings.ProviderKindAnthropic, Strings.SetupAnthropicDetail),
-            new(ProviderKind.OpenAI, Strings.ProviderKindOpenAI, Strings.SetupOpenAIDetail),
-            new(ProviderKind.OpenAICompatible, Strings.SetupOpenWeightTitle, Strings.SetupOpenWeightDetail),
+            new(ProviderKind.Anthropic, () => Strings.ProviderKindAnthropic, () => Strings.SetupAnthropicDetail),
+            new(ProviderKind.OpenAI, () => Strings.ProviderKindOpenAI, () => Strings.SetupOpenAIDetail),
+            new(ProviderKind.OpenAICompatible, () => Strings.SetupOpenWeightTitle, () => Strings.SetupOpenWeightDetail),
         ];
         Choice = Choices[0];
         SelectedWindowTheme = (int)settings.WindowTheme;
+        SelectedLanguage = (int)settings.Language;
         SelectedTerminalTheme = Array.IndexOf(s_terminalThemes, settings.TerminalTheme) is var index and >= 0 ? index : 0;
         _isLoading = false;
     }
@@ -50,9 +51,9 @@ public sealed partial class SetupViewModel : ObservableObject
     public IReadOnlyList<ProviderChoice> Choices { get; }
 
     // In the order of WindowTheme's values.
-    public IReadOnlyList<string> WindowThemes { get; } = [Strings.SetupThemeSystem, Strings.WindowThemeLight, Strings.WindowThemeDark, Strings.WindowThemeTerminal];
+    public IReadOnlyList<TextChoice> WindowThemes { get; } = [new(() => Strings.SetupThemeSystem), new(() => Strings.WindowThemeLight), new(() => Strings.WindowThemeDark), new(() => Strings.WindowThemeTerminal)];
 
-    public IReadOnlyList<string> TerminalThemes { get; } = [Strings.SetupThemeSystem, Strings.WindowThemeDark, Strings.WindowThemeLight];
+    public IReadOnlyList<TextChoice> TerminalThemes { get; } = [new(() => Strings.SetupThemeSystem), new(() => Strings.WindowThemeDark), new(() => Strings.WindowThemeLight)];
 
     private static readonly TerminalTheme[] s_terminalThemes = [TerminalTheme.System, TerminalTheme.Dark, TerminalTheme.Light];
 
@@ -158,6 +159,12 @@ public sealed partial class SetupViewModel : ObservableObject
         TerminalTheme.Dark => Strings.SetupReadyDark,
         _ => Strings.SetupReadyMatchesSystem,
     });
+
+    public IReadOnlyList<TextChoice> Languages { get; } = LanguageChoices.Create();
+
+    // Product decision 150: chosen first, so the rest of setup reads in it.
+    [ObservableProperty]
+    public partial int SelectedLanguage { get; set; }
 
     [ObservableProperty]
     public partial int SelectedWindowTheme { get; set; }
@@ -387,6 +394,16 @@ public sealed partial class SetupViewModel : ObservableObject
     {
         Problem = string.Empty;
         TestResult = string.Empty;
+    }
+
+    partial void OnSelectedLanguageChanged(int value)
+    {
+        if (_isLoading || !Enum.IsDefined((AppLanguage)value) || (AppLanguage)value == _settings.Language)
+        {
+            return;
+        }
+
+        _settings.SetLanguage((AppLanguage)value);
     }
 
     partial void OnSelectedWindowThemeChanged(int value)

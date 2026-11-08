@@ -9,13 +9,14 @@ using Datapoint.Terminal.Shell;
 namespace Datapoint.Terminal.Chat;
 
 // The agent calls in from background threads; everything the view sees changes on the user interface thread.
-public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDisposable
+public sealed partial class ChatViewModel : LocalizedObject, IAgentUser, IDisposable
 {
     private readonly IUiThread _ui;
     private TerminalAgent? _agent;
     private ChatItemViewModel? _streaming;
     private ChatItemViewModel? _command;
     private LookProgressViewModel? _look;
+    private string? _statusTerminal;
 
     public ChatViewModel(IUiThread ui)
     {
@@ -23,10 +24,10 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
         _ui = ui;
         Modes =
         [
-            new(ApprovalMode.Ask, Strings.ModeAsk, Strings.ModeAskHelp),
-            new(ApprovalMode.AskForRisky, Strings.ModeAskForRisky, Strings.ModeAskForRiskyHelp),
-            new(ApprovalMode.Plan, Strings.ModePlan, Strings.ModePlanHelp),
-            new(ApprovalMode.IgnorePermissions, Strings.ModeIgnorePermissions, Strings.ModeIgnorePermissionsHelp),
+            new(ApprovalMode.Ask, () => Strings.ModeAsk, () => Strings.ModeAskHelp),
+            new(ApprovalMode.AskForRisky, () => Strings.ModeAskForRisky, () => Strings.ModeAskForRiskyHelp),
+            new(ApprovalMode.Plan, () => Strings.ModePlan, () => Strings.ModePlanHelp),
+            new(ApprovalMode.IgnorePermissions, () => Strings.ModeIgnorePermissions, () => Strings.ModeIgnorePermissionsHelp),
         ];
         SelectedMode = Modes[0];
         StatusText = Strings.StatusNoProvider;
@@ -757,6 +758,30 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
         }
 
         Status = status;
+        _statusTerminal = terminal;
+        ShowStatus();
+    }
+
+    // Product decision 150: what's shown now is said again in the new language; messages already in the chat stay as they were.
+    public override void OnLanguageChanged()
+    {
+        base.OnLanguageChanged();
+        if (IsConnected)
+        {
+            ShowStatus();
+        }
+        else
+        {
+            StatusText = Strings.StatusNoProvider;
+        }
+
+        RefreshPendingOutput();
+        RefreshUsage();
+    }
+
+    private void ShowStatus()
+    {
+        var (status, terminal) = (Status, _statusTerminal);
         StatusText = status switch
         {
             AgentStatus.Thinking => Strings.StatusThinking,

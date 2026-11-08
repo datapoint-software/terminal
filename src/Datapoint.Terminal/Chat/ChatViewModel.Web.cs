@@ -44,12 +44,14 @@ public sealed partial class ChatViewModel
             Heading = Strings.WebAccessHeading,
             Details = string.Join("\n\n", details.Select(EscapeMarkdown)),
         };
+        // The answer is matched against the labels it was asked with, which the language changing meanwhile doesn't alter.
+        var labels = new WebLabels(Strings.WebAllowOnce, Strings.WebAllowAlways, Strings.WebDeny);
         var view = new QuestionViewModel(question, allowsOwnWords: false);
-        view.Answered = answer => RecordWebAnswer(view, answer);
+        view.Answered = answer => RecordWebAnswer(view, answer, labels);
         _ui.Post(() => Question = view);
         var registration = cancellationToken.Register(view.Cancel);
         var answer = await FinishAsync(view.Response, registration, () => ReferenceEquals(Question, view), () => Question = null).ConfigureAwait(false);
-        return Access(answer);
+        return Access(answer, labels);
     }
 
     // Allowing always is offered only when it would change something: not when it's on, nor for an address that asks anyway.
@@ -68,24 +70,26 @@ public sealed partial class ChatViewModel
         return options;
     }
 
-    private static WebAccess Access(string? answer) => answer switch
+    private static WebAccess Access(string? answer, WebLabels labels) => answer switch
     {
-        var label when string.Equals(label, Strings.WebAllowAlways, StringComparison.Ordinal) => WebAccess.Always,
-        var label when string.Equals(label, Strings.WebAllowOnce, StringComparison.Ordinal) => WebAccess.Once,
+        var label when string.Equals(label, labels.Always, StringComparison.Ordinal) => WebAccess.Always,
+        var label when string.Equals(label, labels.Once, StringComparison.Ordinal) => WebAccess.Once,
         _ => WebAccess.Denied,
     };
 
     // The choice stays in the conversation as the outcome of what was asked; skipping is not allowing.
-    private void RecordWebAnswer(QuestionViewModel question, string? answer)
+    private void RecordWebAnswer(QuestionViewModel question, string? answer, WebLabels labels)
     {
-        Items.Add(Asked(question, answer ?? Strings.WebDeny));
-        if (!string.Equals(answer, Strings.WebAllowAlways, StringComparison.Ordinal))
+        Items.Add(Asked(question, answer ?? labels.Deny));
+        if (!string.Equals(answer, labels.Always, StringComparison.Ordinal))
         {
             return;
         }
 
         WebAlwaysAllowed?.Invoke(this, EventArgs.Empty);
     }
+
+    private sealed record WebLabels(string Once, string Always, string Deny);
 
     // What the agent searched for or read, with each page as a link; the view shows each link's address beside it.
     private static ChatItemViewModel WebItem(AgentEventArgs e)

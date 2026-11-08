@@ -7,7 +7,7 @@ namespace Datapoint.Terminal.Chat;
 
 // An approved plan as it runs. While the task lasts it's pinned above the conversation; when the task ends it stays, folded
 // to its result, where the plan was approved.
-public sealed partial class PlanProgressViewModel : ObservableObject
+public sealed partial class PlanProgressViewModel : LocalizedObject
 {
     public PlanProgressViewModel(AgentPlan plan)
     {

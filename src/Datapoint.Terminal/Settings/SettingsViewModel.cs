@@ -10,7 +10,7 @@ using Microsoft.Extensions.AI;
 
 namespace Datapoint.Terminal.Settings;
 
-public sealed partial class SettingsViewModel : ObservableObject
+public sealed partial class SettingsViewModel : LocalizedObject
 {
     private readonly SettingsStore _store;
     private readonly Func<ProviderAccount, string?, IChatClient> _createClient;
@@ -29,9 +29,9 @@ public sealed partial class SettingsViewModel : ObservableObject
         LoginPasswords = new LoginPasswords(keys.Store);
         Kinds =
         [
-            new(ProviderKind.Anthropic, Strings.ProviderKindAnthropic),
-            new(ProviderKind.OpenAI, Strings.ProviderKindOpenAI),
-            new(ProviderKind.OpenAICompatible, Strings.ProviderKindCompatible),
+            new(ProviderKind.Anthropic, () => Strings.ProviderKindAnthropic),
+            new(ProviderKind.OpenAI, () => Strings.ProviderKindOpenAI),
+            new(ProviderKind.OpenAICompatible, () => Strings.ProviderKindCompatible),
         ];
         WorkspaceModes = settings.WorkspaceModes;
         RecentWorkspaces = settings.RecentWorkspaces;
@@ -363,7 +363,7 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     public string? SelectedProviderId { get; private set; }
 
-    public string? Problem => _store.Problem ?? (_store.IsReadOnly ? "A newer version of Datapoint Terminal wrote these settings; changes here won't be saved." : null);
+    public string? Problem => _store.Problem ?? (_store.IsReadOnly ? Resources.Strings.SettingsNewerVersion : null);
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasSelection))]

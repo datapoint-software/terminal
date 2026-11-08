@@ -218,7 +218,8 @@ The emulator parses everything a shell prints, and output can arrive at hundreds
   - **View models that build text derive from `LocalizedObject`,** whose properties are read again when the language changes, and compute text in getters rather than storing it.
   - **Lists of choices hold `TextChoice` items,** which keep their identity when the language changes, so a list keeps what's chosen.
   - **Code that builds controls** (menus, dialogs) implements `ILocalizable` and rebuilds their text.
-  - **Text already shown as a record** (chat messages, notices) keeps the language it was written in.
+  - **The conversation is exempt:** its messages, notices and cards keep the language the conversation started in, and modal dialogs keep theirs until they close.
+  - **Never match on translated text.** A name we gave something (the local tab's) is recognized with `Strings.MatchesAny`; an answer is matched against the labels it was asked with.
 - **Languages:** English (`Strings.resx`) and European Portuguese (`Strings.pt-PT.resx`). Adding a language means adding its catalog and its row in `AppLanguage`. Portuguese follows Portugal's spelling and vocabulary (*ficheiro*, *ecrã*, *utilizador*) and the glossary in [docs/glossary-pt-PT.md](glossary-pt-PT.md).
 - **Interface language only:** dates and numbers keep the system's regional format (`CurrentCulture`); only `CurrentUICulture` follows the setting.
 - **Tests run in English** whatever the machine's language; tests that change the language run alone, in the `LanguageSwitching` collection.
