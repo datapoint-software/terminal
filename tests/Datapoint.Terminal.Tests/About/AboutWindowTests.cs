@@ -24,7 +24,7 @@ public sealed class AboutWindowTests
         }
 
         var attribution = window.FindControl<WrapPanel>("Attribution")!;
-        Assert.StartsWith("Version 0.", window.FindControl<SelectableTextBlock>("VersionText")!.Text, StringComparison.Ordinal);
+        Assert.StartsWith($"Version {AboutInfo.Version().Version}", window.FindControl<SelectableTextBlock>("VersionText")!.Text, StringComparison.Ordinal);
         var words = attribution.Children.Select(child => child is HyperlinkButton link ? (string)link.Content! : ((TextBlock)child).Text);
         Assert.Equal("Based on Datapoint Terminal by Datapoint - Sistemas de Informação, Lda.", string.Join(' ', words));
         Assert.Equal("Based on Datapoint Terminal by Datapoint - Sistemas de Informação, Lda.", Avalonia.Automation.AutomationProperties.GetName(attribution));
@@ -61,6 +61,7 @@ public sealed class AboutWindowTests
     [Theory]
     [InlineData("0.1.0+6065426e7e3ba8e0b9363086a28d13ab1229b13", "0.1.0", "6065426")]
     [InlineData("0.1.0", "0.1.0", null)]
+    [InlineData("1.0.0-alpha.1+6065426e7e3ba8e0b9363086a28d13ab1229b13", "1.0.0-alpha.1", "6065426")]
     [InlineData("1.0.0-rc.1+abc", "1.0.0-rc.1", "abc")]
     public void Reads_the_version_and_the_commit_it_was_built_from(string informational, string version, string? commit)
     {
