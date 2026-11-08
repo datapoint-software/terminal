@@ -3,29 +3,37 @@ using System.Text;
 
 namespace Datapoint.Terminal.Shell.Areas;
 
-// Moves areas around a layout and saves it as text, e.g. "row(640;agent,column(280;terminals,documents))".
+// Moves areas around a layout and saves it as text, e.g. "row(640;row(420;agent,plan),column(280;terminals,documents))".
 public static class AreaLayout
 {
     private const double AgentMinimumWidth = 320;
     private const double AreaMinimumWidth = 200;
     private const double AreaMinimumHeight = 120;
 
+    // A plan's steps and commands need more room than other areas to be read.
+    private const double PlanMinimumWidth = 480;
+
     public static AreaNode Default() => FromSide(TerminalSide.Right);
 
     // The layout from before areas could be moved: the terminals on one side of the chat, documents below them or, with the
-    // terminals at the bottom, to their right.
+    // terminals at the bottom, to their right. The plan opens to the chat's right, where the conversation about it is.
     public static AreaNode FromSide(TerminalSide side)
     {
         var agent = new AreaLeaf(AreaKind.Agent);
         var terminals = new AreaLeaf(AreaKind.Terminals);
         var documents = new AreaLeaf(AreaKind.Documents);
-        return side switch
+        AreaNode layout = side switch
         {
             TerminalSide.Left => new AreaSplit(isRow: true, new AreaSplit(isRow: false, terminals, documents, 280), agent, 640),
             TerminalSide.Bottom => new AreaSplit(isRow: false, agent, new AreaSplit(isRow: true, terminals, documents, 420), 300),
             _ => new AreaSplit(isRow: true, agent, new AreaSplit(isRow: false, terminals, documents, 280), 640),
         };
+        return WithPlan(layout);
     }
+
+    // Layouts saved before the plan had its own area (product decision 119) get it where a new layout has it.
+    private static AreaNode WithPlan(AreaNode layout) =>
+        layout.Contains(AreaKind.Plan) ? layout : Insert(layout, new AreaLeaf(AreaKind.Plan), AreaKind.Agent, AreaEdge.Right);
 
     // The area taken out and put on one edge of another area, or of the whole window when there's no target.
     public static AreaNode Move(AreaNode root, AreaKind moved, AreaKind? target, AreaEdge edge)
@@ -47,7 +55,12 @@ public static class AreaLayout
         return node switch
         {
             AreaLeaf leaf when !isShown(leaf.Kind) => 0,
-            AreaLeaf leaf => !isRow ? AreaMinimumHeight : leaf.Kind == AreaKind.Agent ? AgentMinimumWidth : AreaMinimumWidth,
+            AreaLeaf leaf => !isRow ? AreaMinimumHeight : leaf.Kind switch
+            {
+                AreaKind.Agent => AgentMinimumWidth,
+                AreaKind.Plan => PlanMinimumWidth,
+                _ => AreaMinimumWidth,
+            },
             AreaSplit split when split.IsRow == isRow => SumOfShown(split, isRow, isShown),
             AreaSplit split => Math.Max(MinimumLength(split.First, isRow, isShown), MinimumLength(split.Second, isRow, isShown)),
             _ => 0,
@@ -89,7 +102,8 @@ public static class AreaLayout
         _ => string.Empty,
     };
 
-    // Null for text that isn't a layout of all three areas, each once, e.g. from a newer version or edited by hand.
+    // Null for text that isn't a layout of every area once, e.g. from a newer version or edited by hand. A layout saved before
+    // the plan had its own area is read with the plan added.
     public static AreaNode? Parse(string? text)
     {
         if (string.IsNullOrWhiteSpace(text))
@@ -99,7 +113,9 @@ public static class AreaLayout
 
         var reader = new Reader(text.Replace(" ", string.Empty, StringComparison.Ordinal));
         var node = reader.Node();
-        return node is not null && reader.IsAtEnd && Enum.GetValues<AreaKind>().All(kind => Count(node, kind) == 1) ? node : null;
+        return node is not null && reader.IsAtEnd && Enum.GetValues<AreaKind>().All(kind => Count(node, kind) == 1 || (kind == AreaKind.Plan && Count(node, kind) == 0))
+            ? WithPlan(node)
+            : null;
     }
 
     private static double SumOfShown(AreaSplit split, bool isRow, Func<AreaKind, bool> isShown)
@@ -146,7 +162,12 @@ public static class AreaLayout
     {
         var isRow = edge is AreaEdge.Left or AreaEdge.Right;
         var split = edge is AreaEdge.Left or AreaEdge.Top ? new AreaSplit(isRow, moved, node, 0) : new AreaSplit(isRow, node, moved, 0);
-        split.Size = split.Fixed is AreaLeaf { Kind: AreaKind.Terminals } ? (isRow ? 640 : 300) : (isRow ? 420 : 280);
+        split.Size = split.Fixed switch
+        {
+            AreaLeaf { Kind: AreaKind.Terminals } => isRow ? 640 : 300,
+            AreaLeaf { Kind: AreaKind.Plan } => isRow ? 680 : 360,
+            _ => isRow ? 420 : 280,
+        };
         return split;
     }
 

@@ -5,8 +5,8 @@ using Datapoint.Terminal.Shell.Areas;
 
 namespace Datapoint.Terminal.Shell;
 
-// Product decisions 104 and 109: the agent, the terminals and the documents sit where the user dragged them, the same in every
-// window. Documents take space only while one is open. Product decision 115: a shortcut collapses the terminals to a strip
+// Product decisions 104, 109 and 119: the agent, the terminals, the documents and the plan sit where the user dragged them,
+// the same in every window. Documents and the plan take space only while one is open. Product decision 115: a shortcut collapses the terminals to a strip
 // that names each one and shows what the agent is doing there, and only the user expands them again.
 public sealed partial class MainWindow
 {
@@ -17,6 +17,7 @@ public sealed partial class MainWindow
     private bool IsShown(AreaKind kind) => kind switch
     {
         AreaKind.Documents => _documents.Count > 0,
+        AreaKind.Plan => _plans.Count > 0,
         _ => true,
     };
 
@@ -24,6 +25,7 @@ public sealed partial class MainWindow
     {
         AreaKind.Terminals => TerminalPane,
         AreaKind.Documents => DocumentArea,
+        AreaKind.Plan => PlanArea,
         _ => Chat,
     };
 
@@ -31,12 +33,14 @@ public sealed partial class MainWindow
     {
         AreaKind.Terminals => Strings.TabsName,
         AreaKind.Documents => Strings.DocumentTabsName,
+        AreaKind.Plan => Strings.PlanAreaName,
         _ => Strings.ChatTitle,
     };
 
     // The settings of a version without moving areas say only which side the terminals were on.
     private void SetUpAreas()
     {
+        SetUpPlans();
         _layout = AreaLayout.Parse(_settings.AreaLayout) ?? AreaLayout.FromSide(_settings.TerminalSide);
         _areaView = new AreaView(Body, Enum.GetValues<AreaKind>().ToDictionary(kind => kind, AreaControl));
         _areaView.Resized += (_, _) => OnAreaResized();
@@ -219,8 +223,8 @@ public sealed partial class MainWindow
 
     private void UpdateLayoutMenu() => _toggleTerminalsItem?.Header = _areTerminalsCollapsed ? Strings.MenuExpandTerminals : Strings.MenuCollapseTerminals;
 
-    // F6 moves the keyboard between the window's areas, as in most desktop applications: the chat, the terminals and the
-    // documents, skipping any that are hidden. Collapsed terminals are reached at the strip's first button.
+    // F6 moves the keyboard between the window's areas, as in most desktop applications: the chat, the terminals, the
+    // documents and the plan, skipping any that are hidden. Collapsed terminals are reached at the strip's first button.
     private void MoveAreaFocus(int step)
     {
         var areas = new List<(Control Area, Action Focus)> { (Chat, Chat.FocusInput) };
@@ -237,6 +241,11 @@ public sealed partial class MainWindow
         if (DocumentArea.IsEffectivelyVisible)
         {
             areas.Add((DocumentArea, FocusShownDocument));
+        }
+
+        if (PlanArea.IsEffectivelyVisible)
+        {
+            areas.Add((PlanArea, () => _planView?.Focus()));
         }
 
         var current = areas.FindIndex(area => area.Area.IsKeyboardFocusWithin);

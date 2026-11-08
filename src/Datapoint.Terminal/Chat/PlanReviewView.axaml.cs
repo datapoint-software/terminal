@@ -12,6 +12,9 @@ public sealed partial class PlanReviewView : UserControl
 {
     private const int MaxQuote = 300;
 
+    // Narrower than this, the comments go below the plan rather than beside it, so the plan keeps a readable width.
+    private const double CommentsBesideWidth = 680;
+
     // A text block loses its selection when it loses the keyboard, as it does when a step's Comment button is clicked, so the
     // selection is kept from the last time the user selected something in the plan.
     private (string Text, int? Step)? _lastSelection;
@@ -25,6 +28,15 @@ public sealed partial class PlanReviewView : UserControl
         PlanBody.AddHandler(PointerReleasedEvent, OnPointerReleased, RoutingStrategies.Tunnel, handledEventsToo: true);
         PlanBody.AddHandler(KeyUpEvent, (_, _) => _lastSelection = Selection(), RoutingStrategies.Tunnel, handledEventsToo: true);
         PlanScroll.ScrollChanged += (_, _) => CommentSelectionButton.IsVisible = false;
+        SizeChanged += (_, e) => PlaceComments(e.NewSize.Width >= CommentsBesideWidth);
+    }
+
+    private void PlaceComments(bool beside)
+    {
+        DockPanel.SetDock(CommentsPane, beside ? Dock.Right : Dock.Bottom);
+        CommentsPane.Width = beside ? 260 : double.NaN;
+        CommentsPane.MaxHeight = beside ? double.PositiveInfinity : 220;
+        CommentsPane.BorderThickness = beside ? new Thickness(1, 0, 0, 0) : new Thickness(0, 1, 0, 0);
     }
 
     private PlanReviewViewModel? Review => DataContext as PlanReviewViewModel;

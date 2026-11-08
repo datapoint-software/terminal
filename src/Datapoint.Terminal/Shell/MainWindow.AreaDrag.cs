@@ -26,6 +26,7 @@ public sealed partial class MainWindow
             (AreaKind.Agent, Chat.DragHandle),
             (AreaKind.Terminals, (Control)TerminalsHeader),
             (AreaKind.Documents, DocumentsHeader),
+            (AreaKind.Plan, PlanHeader),
         })
         {
             header.PointerPressed += (_, e) => OnHeaderPressed(kind, header, e);

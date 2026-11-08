@@ -7,23 +7,26 @@ public sealed class AreaLayoutTests
 {
     private static bool All(AreaKind kind) => true;
 
+    private static bool NoPlan(AreaKind kind) => kind != AreaKind.Plan;
+
     [Theory]
-    [InlineData(TerminalSide.Right, "row(640;agent,column(280;terminals,documents))")]
-    [InlineData(TerminalSide.Left, "row(640;column(280;terminals,documents),agent)")]
-    [InlineData(TerminalSide.Bottom, "column(300;agent,row(420;terminals,documents))")]
+    [InlineData(TerminalSide.Right, "row(640;row(680;agent,plan),column(280;terminals,documents))")]
+    [InlineData(TerminalSide.Left, "row(640;column(280;terminals,documents),row(680;agent,plan))")]
+    [InlineData(TerminalSide.Bottom, "column(300;row(680;agent,plan),row(420;terminals,documents))")]
     public void Starts_from_the_side_the_terminals_were_on(TerminalSide side, string expected) =>
         Assert.Equal(expected, AreaLayout.Format(AreaLayout.FromSide(side)));
 
     [Theory]
-    [InlineData(AreaKind.Agent, AreaKind.Documents, AreaEdge.Right, "column(280;terminals,row(420;documents,agent))")]
-    [InlineData(AreaKind.Documents, AreaKind.Agent, AreaEdge.Left, "row(640;row(420;documents,agent),terminals)")]
-    [InlineData(AreaKind.Terminals, AreaKind.Agent, AreaEdge.Bottom, "row(640;column(300;agent,terminals),documents)")]
+    [InlineData(AreaKind.Agent, AreaKind.Documents, AreaEdge.Right, "row(640;plan,column(280;terminals,row(420;documents,agent)))")]
+    [InlineData(AreaKind.Documents, AreaKind.Agent, AreaEdge.Left, "row(640;row(680;row(420;documents,agent),plan),terminals)")]
+    [InlineData(AreaKind.Terminals, AreaKind.Agent, AreaEdge.Bottom, "row(640;row(680;column(300;agent,terminals),plan),documents)")]
+    [InlineData(AreaKind.Plan, AreaKind.Documents, AreaEdge.Right, "row(640;agent,column(280;terminals,row(680;documents,plan)))")]
     public void Moves_an_area_beside_another(AreaKind moved, AreaKind target, AreaEdge edge, string expected) =>
         Assert.Equal(expected, AreaLayout.Format(AreaLayout.Move(AreaLayout.Default(), moved, target, edge)));
 
     [Theory]
-    [InlineData(AreaEdge.Left, "row(420;documents,row(640;agent,terminals))")]
-    [InlineData(AreaEdge.Bottom, "column(280;row(640;agent,terminals),documents)")]
+    [InlineData(AreaEdge.Left, "row(420;documents,row(640;row(680;agent,plan),terminals))")]
+    [InlineData(AreaEdge.Bottom, "column(280;row(640;row(680;agent,plan),terminals),documents)")]
     public void Moves_an_area_to_an_edge_of_the_window(AreaEdge edge, string expected) =>
         Assert.Equal(expected, AreaLayout.Format(AreaLayout.Move(AreaLayout.Default(), AreaKind.Documents, null, edge)));
 
@@ -38,10 +41,14 @@ public sealed class AreaLayoutTests
     [Fact]
     public void Reads_back_what_it_saves()
     {
-        const string text = "column(312;row(420;documents,agent),terminals)";
+        const string text = "column(312;row(680;documents,plan),row(500;agent,terminals))";
 
         Assert.Equal(text, AreaLayout.Format(AreaLayout.Parse(text)!));
     }
+
+    [Fact]
+    public void Adds_the_plan_beside_the_agent_to_a_layout_saved_before_it_had_its_own_area() =>
+        Assert.Equal("column(312;row(420;documents,row(680;agent,plan)),terminals)", AreaLayout.Format(AreaLayout.Parse("column(312;row(420;documents,agent),terminals)")!));
 
     [Theory]
     [InlineData("")]
@@ -53,6 +60,7 @@ public sealed class AreaLayoutTests
     [InlineData("row(-5;agent,column(280;terminals,documents))")]
     [InlineData("grid(640;agent,column(280;terminals,documents))")]
     [InlineData("row(640;agent,column(280;terminals,sidebar))")]
+    [InlineData("row(640;row(680;agent,plan),column(280;plan,documents))")]
     public void Refuses_text_that_is_not_a_layout_of_every_area_once(string text) =>
         Assert.Null(AreaLayout.Parse(text));
 
@@ -61,9 +69,10 @@ public sealed class AreaLayoutTests
     {
         var layout = AreaLayout.Default();
 
-        Assert.Equal(320 + 1 + 200, AreaLayout.MinimumLength(layout, isRow: true, All));
+        Assert.Equal(320 + 1 + 200, AreaLayout.MinimumLength(layout, isRow: true, NoPlan));
+        Assert.Equal(320 + 1 + 480 + 1 + 200, AreaLayout.MinimumLength(layout, isRow: true, All));
         Assert.Equal(120 + 1 + 120, AreaLayout.MinimumLength(layout, isRow: false, All));
-        Assert.Equal(120, AreaLayout.MinimumLength(layout, isRow: false, kind => kind != AreaKind.Documents));
+        Assert.Equal(120, AreaLayout.MinimumLength(layout, isRow: false, kind => kind is not (AreaKind.Documents or AreaKind.Plan)));
     }
 
     [Fact]
@@ -71,9 +80,20 @@ public sealed class AreaLayoutTests
     {
         var layout = (AreaSplit)AreaLayout.Default();
 
-        AreaLayout.Fit(layout, 800, 600, All);
+        AreaLayout.Fit(layout, 800, 600, NoPlan);
 
         Assert.Equal(800 - 320 - 1, layout.Size);
+    }
+
+    [Fact]
+    public void Leaves_an_open_plan_room_to_be_read()
+    {
+        var layout = (AreaSplit)AreaLayout.Default();
+
+        AreaLayout.Fit(layout, 1100, 600, All);
+
+        Assert.Equal(1100 - 320 - 1 - 480 - 1, layout.Size);
+        Assert.Equal(480, ((AreaSplit)layout.First).Size);
     }
 
     [Fact]

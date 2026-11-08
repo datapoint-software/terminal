@@ -90,7 +90,7 @@ public sealed partial class MainWindow
     {
         var shown = ShownDocument;
         var hostFile = ShownHostFile;
-        DocumentHost.Content = (Control?)shown?.View ?? (Control?)hostFile ?? (DocumentTabs.SelectedItem is Datapoint.Terminal.Chat.PlanReviewViewModel ? _planView : null);
+        DocumentHost.Content = (Control?)shown?.View ?? hostFile;
         if (hostFile is not null)
         {
             Dispatcher.UIThread.Post(hostFile.FocusText, DispatcherPriority.Background);
@@ -147,10 +147,10 @@ public sealed partial class MainWindow
         SelectedTab?.View.Focus();
     }
 
-    // Cmd+W closes the tab in the pane that has the keyboard: a document's, or the terminal's.
+    // Cmd+W closes the tab in the pane that has the keyboard: the plan's, a document's, or the terminal's.
     private void CloseShownTab()
     {
-        switch (DocumentArea.IsKeyboardFocusWithin ? DocumentTabs.SelectedItem : null)
+        switch (PlanArea.IsKeyboardFocusWithin ? _planReview : DocumentArea.IsKeyboardFocusWithin ? DocumentTabs.SelectedItem : null)
         {
             case DocumentViewModel document:
                 CloseDocument(document);
@@ -329,7 +329,6 @@ public sealed partial class MainWindow
     private string SectionOf(object? item) => item switch
     {
         ServerFileViewModel => Strings.DocumentsServerFiles,
-        Datapoint.Terminal.Chat.PlanReviewViewModel => Strings.DocumentsPlans,
         DocumentViewModel { Host: not null } => Strings.SidebarHosts,
         DocumentViewModel document when IsSkillFile(document.Path) => Strings.SidebarSkills,
         DocumentViewModel document when string.Equals(document.Path, InstructionsPath, StringComparison.Ordinal) => Strings.SidebarWorkspaceSection,

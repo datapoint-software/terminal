@@ -1698,8 +1698,6 @@ public static class Strings
 
     public static string PlanCommentSelectionTip => Get(nameof(PlanCommentSelectionTip));
 
-    public static string DocumentsPlans => Get(nameof(DocumentsPlans));
-
     public static string PlanCommentQuoteStep => Get(nameof(PlanCommentQuoteStep));
 
     public static string PlanCommentLabel => Get(nameof(PlanCommentLabel));
@@ -1851,6 +1849,8 @@ public static class Strings
     public static string PlanRejectFeedback => Get(nameof(PlanRejectFeedback));
 
     public static string PlanRejectComments => Get(nameof(PlanRejectComments));
+
+    public static string PlanAreaName => Get(nameof(PlanAreaName));
 
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 

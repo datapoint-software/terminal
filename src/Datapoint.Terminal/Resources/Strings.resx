@@ -2550,9 +2550,6 @@ Fingerprint: {2}</value>
   <data name="PlanCommentSelectionTip" xml:space="preserve">
     <value>Comment on the selected text</value>
   </data>
-  <data name="DocumentsPlans" xml:space="preserve">
-    <value>Plans</value>
-  </data>
   <data name="PlanCommentQuoteStep" xml:space="preserve">
     <value>Step {0}: {1}</value>
   </data>
@@ -2780,5 +2777,8 @@ Fingerprint: {2}</value>
   </data>
   <data name="PlanRejectComments" xml:space="preserve">
     <value>My comments on it:</value>
+  </data>
+  <data name="PlanAreaName" xml:space="preserve">
+    <value>Plan</value>
   </data>
 </root>

@@ -146,7 +146,7 @@ public sealed partial class MainWindow : Window, ITerminalOpener
 
     // A document shown over the terminals names the window, so the title says what's in front of the user.
     private void UpdateTitle() =>
-        Title = WindowTitles.For(Workspace.Name, (DocumentArea.IsKeyboardFocusWithin ? DocumentTabs.SelectedItem as Editor.IOpenDocument : null)?.Name ?? SelectedTab?.ShellTitle, _chat.NeedsUser);
+        Title = WindowTitles.For(Workspace.Name, (PlanArea.IsKeyboardFocusWithin ? _planReview : DocumentArea.IsKeyboardFocusWithin ? DocumentTabs.SelectedItem as Editor.IOpenDocument : null)?.Name ?? SelectedTab?.ShellTitle, _chat.NeedsUser);
 
     private void ApplySettings()
     {

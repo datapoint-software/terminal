@@ -120,7 +120,7 @@
     </Border>
 
     <!-- The comments, beside the plan: each with the text it's about, and Edit and Delete until it's sent. -->
-    <Border DockPanel.Dock="Right" Width="260" Background="{DynamicResource PaneBrush}" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="1,0,0,0">
+    <Border x:Name="CommentsPane" DockPanel.Dock="Right" Width="260" Background="{DynamicResource PaneBrush}" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="1,0,0,0">
       <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Spacing="10" Margin="14,16">
           <TextBlock Classes="secondary" FontSize="{StaticResource SmallSize}" FontWeight="SemiBold" LetterSpacing="0.7" Text="{Binding Source={x:Static res:Strings.PlanCommentsTitle}, Converter={x:Static c:TextCase.Upper}}" />

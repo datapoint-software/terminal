@@ -159,11 +159,11 @@ public sealed partial class MainWindow
         CloseTab(tab);
     }
 
-    // Focus goes to its button, so the keyboard isn't left on a closed terminal, unless it's in a document.
+    // Focus goes to its button, so the keyboard isn't left on a closed terminal, unless it's in a document or the plan.
     private void ShowNoTerminals()
     {
         NoTerminals.IsVisible = true;
-        if (DocumentArea.IsKeyboardFocusWithin)
+        if (DocumentArea.IsKeyboardFocusWithin || PlanArea.IsKeyboardFocusWithin)
         {
             return;
         }
