@@ -287,7 +287,11 @@ public sealed partial class MainWindow
         Close();
     }
 
-    private void ShowTerminalCount() => TerminalsSummary.Text = OpenCount(_tabs.Count);
+    private void ShowTerminalCount()
+    {
+        TerminalsSummary.Text = OpenCount(_tabs.Count);
+        TerminalTabStrip.IsVisible = _tabs.Count > 0;
+    }
 
     internal static string OpenCount(int count) => count switch
     {

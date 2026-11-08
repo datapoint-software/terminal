@@ -134,7 +134,8 @@
           </StackPanel>
         </Grid>
       </Border>
-      <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
+      <!-- Hidden with no terminal open, so an empty strip doesn't draw a second line under the header. -->
+      <Border x:Name="TerminalTabStrip" DockPanel.Dock="Top" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
         <DockPanel>
           <!-- Scrolls with the wheel, the trackpad and the arrow keys; a bar would lie over the tabs, as Fluent's bars overlay. -->
           <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
