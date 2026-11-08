@@ -22,7 +22,7 @@ public sealed partial class MainWindow : Window, ITerminalOpener, ILocalizable
     private readonly WorkspaceWindows _windows;
     private readonly SettingsViewModel _settings;
     private readonly Avalonia.Threading.DispatcherTimer _pendingOutputTimer = new() { Interval = TimeSpan.FromSeconds(1) };
-    private readonly NativeMenu _recentMenu = [];
+    private NativeMenu _recentMenu = [];
     private TerminalAgent? _agent;
     private string? _clientSignature;
     private ProviderAccount? _provider;

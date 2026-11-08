@@ -19,6 +19,8 @@ public sealed partial class MainWindow
 
     private NativeMenu BuildMenu()
     {
+        // Built again when the language changes (decision 150), and a submenu can belong to only one item.
+        _recentMenu = [];
         var file = new NativeMenu();
         file.Add(Item(Strings.MenuNewWorkspace, Shortcut(Key.N, shift: true), () => _ = _windows.PickAsync(this, isNew: true)));
         file.Add(Item(Strings.MenuOpenWorkspace, Shortcut(Key.O), () => _ = _windows.PickAsync(this, isNew: false)));
