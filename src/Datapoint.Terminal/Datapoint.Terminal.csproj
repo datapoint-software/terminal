@@ -19,6 +19,7 @@
     <PackageReference Include="CommunityToolkit.Mvvm" />
     <PackageReference Include="Markdig" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Velopack" />
   </ItemGroup>
   <!-- Shown in the About window (AboutInfo); the AGPL asks the application to show its license. -->
   <ItemGroup>

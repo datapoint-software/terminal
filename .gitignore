@@ -4,6 +4,10 @@ obj/
 artifacts/
 TestResults/
 
+# Packaging output (dotnet publish and vpk pack), as the release workflow writes it
+/publish/
+/releases/
+
 # Secrets: never commit them (see CLAUDE.md). Private keys, certificates (including code-signing ones) and environment files.
 *.pem
 *.key
