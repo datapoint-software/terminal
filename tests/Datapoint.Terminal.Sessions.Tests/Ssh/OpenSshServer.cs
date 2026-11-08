@@ -15,7 +15,7 @@ public sealed class OpenSshServer : IAsyncLifetime
     public const string UserName = "tester";
     public const string Password = "correct horse battery staple";
 
-    private static readonly TimeSpan ToolTimeLimit = TimeSpan.FromMinutes(2);
+    private static readonly TimeSpan s_toolTimeLimit = TimeSpan.FromMinutes(2);
 
     private string? _container;
 
@@ -134,7 +134,7 @@ public sealed class OpenSshServer : IAsyncLifetime
 
             // Both pipes are read at once, so a tool that fills one while the other is being read can't block, and a
             // tool that never finishes fails its test after the time limit instead of hanging the whole run.
-            using var timeout = new CancellationTokenSource(ToolTimeLimit);
+            using var timeout = new CancellationTokenSource(s_toolTimeLimit);
             var output = process.StandardOutput.ReadToEndAsync(timeout.Token);
             var error = process.StandardError.ReadToEndAsync(timeout.Token);
             try
@@ -145,7 +145,7 @@ public sealed class OpenSshServer : IAsyncLifetime
             catch (OperationCanceledException)
             {
                 process.Kill(entireProcessTree: true);
-                return (false, $"{fileName} {string.Join(' ', arguments)} didn't finish within {ToolTimeLimit.TotalSeconds:0} seconds.");
+                return (false, $"{fileName} {string.Join(' ', arguments)} didn't finish within {s_toolTimeLimit.TotalSeconds:0} seconds.");
             }
 
             return (process.ExitCode == 0, process.ExitCode == 0 ? await output : await error);
