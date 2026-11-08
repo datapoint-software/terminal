@@ -196,14 +196,22 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
     [NotifyPropertyChangedFor(nameof(HasContext), nameof(ContextSweep), nameof(ContextText), nameof(ContextDetail))]
     public partial long ContextUsed { get; private set; }
 
-    // Shown once a request has used some, even when the window isn't known, since the session's usage opens from it.
-    public bool HasContext => ContextUsed > 0;
+    // Shown once a request has used some, even when the window isn't known, since the session's usage opens from it; and while
+    // the conversation is summarized, when the size isn't known again until the next reply (product decision 133).
+    public bool HasContext => ContextUsed > 0 || IsSummarizing;
 
-    public double ContextSweep => HasContext && ContextWindow > 0 ? 360.0 * Math.Min(1.0, (double)ContextUsed / ContextWindow!.Value) : 0;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasContext), nameof(ContextText), nameof(ContextDetail), nameof(IsContextKnown))]
+    public partial bool IsSummarizing { get; private set; }
 
-    public string ContextText => ShortTokens(ContextUsed);
+    public bool IsContextKnown => !IsSummarizing;
 
-    public string ContextDetail => !HasContext ? string.Empty
+    public double ContextSweep => ContextUsed > 0 && ContextWindow > 0 ? 360.0 * Math.Min(1.0, (double)ContextUsed / ContextWindow!.Value) : 0;
+
+    public string ContextText => IsSummarizing ? Strings.ContextSummarizing : ShortTokens(ContextUsed);
+
+    public string ContextDetail => IsSummarizing ? Strings.ContextSummarizingDetail
+        : !HasContext ? string.Empty
         : ContextWindow > 0 ? Strings.Format(Strings.ContextUsedDetail, ContextUsed, ContextWindow!.Value)
         : Strings.Format(Strings.ContextUsedUnknownWindow, ContextUsed);
 
@@ -218,6 +226,7 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
     {
         var usage = _agent?.Usage;
         ContextUsed = usage?.ContextTokens ?? 0;
+        IsSummarizing = _agent?.IsSummarizing == true;
         OnPropertyChanged(nameof(HasContext));
         OnPropertyChanged(nameof(ContextSweep));
         OnPropertyChanged(nameof(ContextDetail));

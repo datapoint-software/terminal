@@ -2901,4 +2901,10 @@ Fingerprint: {2}</value>
   <data name="HistoryOutput" xml:space="preserve">
     <value>Output in {0}, sent to the agent</value>
   </data>
+  <data name="ContextSummarizing" xml:space="preserve">
+    <value>Summarizing…</value>
+  </data>
+  <data name="ContextSummarizingDetail" xml:space="preserve">
+    <value>Summarizing the conversation to keep it short. The context size shows again after the next reply.</value>
+  </data>
 </root>

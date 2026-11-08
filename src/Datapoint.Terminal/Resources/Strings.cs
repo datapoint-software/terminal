@@ -1933,6 +1933,10 @@ public static class Strings
 
     public static string HistoryOutput => Get(nameof(HistoryOutput));
 
+    public static string ContextSummarizing => Get(nameof(ContextSummarizing));
+
+    public static string ContextSummarizingDetail => Get(nameof(ContextSummarizingDetail));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

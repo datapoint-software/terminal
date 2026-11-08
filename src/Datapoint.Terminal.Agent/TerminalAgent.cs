@@ -289,7 +289,7 @@ public sealed partial class TerminalAgent : IDisposable
         return updates.ToChatResponse();
     }
 
-    private void RecordUsage(ChatResponse response, List<FunctionCallContent> calls)
+    private void RecordUsage(ChatResponse response, List<FunctionCallContent> calls, bool endsSummary = true)
     {
         _usageTerminal = calls.Select(call => call.Arguments?.TryGetValue("terminal", out var name) == true ? name?.ToString() : null)
             .FirstOrDefault(name => name is not null && Terminals.Any(terminal => string.Equals(terminal.Name, name, StringComparison.Ordinal)))
@@ -297,6 +297,7 @@ public sealed partial class TerminalAgent : IDisposable
         var usage = Agent.Usage.TokenUsage.From(response.Usage);
         Usage.Record(_usageTerminal, usage);
         Usage.NoteContext(usage);
+        _isSummarizing &= !endsSummary;
         Raise(new AgentEventArgs(AgentEventKind.UsageChanged, string.Empty));
     }
 
@@ -365,6 +366,7 @@ public sealed partial class TerminalAgent : IDisposable
         _offeredPlanMode = false;
         _nextBatch = null;
         _summaryFailed = false;
+        SetSummarizing(false);
         ForgetApprovals();
         EndRun();
         foreach (var terminal in Terminals)

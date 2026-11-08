@@ -443,6 +443,84 @@ public sealed class ChatViewTests
         Assert.Equal([null, "New", null], review.PlanSteps.Select(step => step.ChangeText), StringComparer.Ordinal);
         Assert.False(review.IsRevision);
     }
+    // While the conversation is summarized, the ring turns into a spinner that says so, instead of going blank until the next
+    // reply reports the new size.
+    [AvaloniaFact]
+    public async Task Shows_a_spinner_instead_of_the_context_size_while_summarizing()
+    {
+        using var chat = new ChatViewModel(new ImmediateUiThread()) { ModelName = "Claude Opus 5.5" };
+        var gate = new TaskCompletionSource();
+        var client = new GatedChatClient(gate.Task,
+            new ChatResponse(new ChatMessage(ChatRole.Assistant, "nginx is running.")) { Usage = new UsageDetails { InputTokenCount = 110_000, OutputTokenCount = 500 } },
+            new ChatResponse(new ChatMessage(ChatRole.Assistant, "Checked nginx on web1.")),
+            new ChatResponse(new ChatMessage(ChatRole.Assistant, "Done.")) { Usage = new UsageDetails { InputTokenCount = 3_000, OutputTokenCount = 100 } });
+        using var agent = new TerminalAgent(client, chat, new SecretRedactor());
+        chat.Attach(agent, "privacy notice");
+        chat.ContextWindow = 1_000_000;
+        await agent.SendAsync("Is nginx running?", TestContext.Current.CancellationToken);
+        var view = new ChatView { DataContext = chat };
+        var window = new Window { Width = 420, Height = 300, Content = view };
+        window.Show();
+
+        var second = agent.SendAsync("And now?", TestContext.Current.CancellationToken);
+        for (var wait = 0; wait < 200 && !chat.IsSummarizing; wait++)
+        {
+            Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+            await Task.Delay(10, TestContext.Current.CancellationToken);
+        }
+
+        Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+        Assert.True(chat.IsSummarizing);
+        Assert.Equal("Summarizing…", chat.ContextText);
+        var ring = view.FindControl<Button>("ContextUse")!;
+        Assert.True(ring.IsEffectivelyVisible);
+        Assert.Single(ring.GetVisualDescendants().OfType<Datapoint.Terminal.Components.Spinner>(), spinner => spinner.IsEffectivelyVisible);
+        Directory.CreateDirectory("rendered");
+        using (var frame = window.CaptureRenderedFrame())
+        {
+            frame?.Save("rendered/chat-context-summarizing.png", new PngBitmapEncoderOptions());
+        }
+
+        gate.SetResult();
+        await second;
+        chat.RefreshUsage();
+        Assert.False(chat.IsSummarizing);
+        Assert.Equal("3k", chat.ContextText);
+        window.Close();
+    }
+
+    // Answers in order; the second request waits for the gate, so a test can look while it's pending.
+    private sealed class GatedChatClient(Task gate, params ChatResponse[] responses) : IChatClient
+    {
+        private int _next;
+
+        public Task<ChatResponse> GetResponseAsync(IEnumerable<ChatMessage> messages, ChatOptions? options = null, CancellationToken cancellationToken = default) =>
+            throw new NotSupportedException();
+
+        public async IAsyncEnumerable<ChatResponseUpdate> GetStreamingResponseAsync(
+            IEnumerable<ChatMessage> messages,
+            ChatOptions? options = null,
+            [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            var index = _next++;
+            if (index == 1)
+            {
+                await gate.WaitAsync(cancellationToken).ConfigureAwait(false);
+            }
+
+            foreach (var update in responses[Math.Min(index, responses.Length - 1)].ToChatResponseUpdates())
+            {
+                yield return update;
+            }
+        }
+
+        public object? GetService(Type serviceType, object? serviceKey = null) => null;
+
+        public void Dispose()
+        {
+        }
+    }
+
     // Product decision 133: the summary a long conversation was replaced by is in the chat, folded under the notice.
     [AvaloniaFact]
     public void Shows_the_summary_a_long_conversation_was_replaced_by()

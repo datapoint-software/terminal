@@ -563,7 +563,8 @@
               ToolTip.Tip="{x:Static res:Strings.ContextUseHelp}" AutomationProperties.Name="{Binding ContextDetail}"
               AutomationProperties.HelpText="{x:Static res:Strings.ContextUseHelp}">
         <StackPanel Orientation="Horizontal" Spacing="5">
-          <Panel Width="12" Height="12" VerticalAlignment="Center">
+          <c:Spinner IsVisible="{Binding IsSummarizing}" VerticalAlignment="Center" />
+          <Panel Width="12" Height="12" VerticalAlignment="Center" IsVisible="{Binding IsContextKnown}">
             <Ellipse Stroke="{DynamicResource SeparatorBrush}" StrokeThickness="1.5" />
             <Arc StartAngle="-90" SweepAngle="{Binding ContextSweep}" Stroke="{DynamicResource AccentBrush}" StrokeThickness="1.5" StrokeLineCap="Round" />
           </Panel>

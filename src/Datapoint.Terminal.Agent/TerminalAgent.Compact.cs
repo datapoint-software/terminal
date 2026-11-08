@@ -23,6 +23,23 @@ public sealed partial class TerminalAgent
     // request at every step.
     private bool _summaryFailed;
 
+    private volatile bool _isSummarizing;
+
+    // From asking for a summary until the first reply after it says how large the new conversation is, so the context size
+    // shown doesn't go blank in between.
+    public bool IsSummarizing => _isSummarizing;
+
+    private void SetSummarizing(bool value)
+    {
+        if (_isSummarizing == value)
+        {
+            return;
+        }
+
+        _isSummarizing = value;
+        Raise(new AgentEventArgs(AgentEventKind.UsageChanged, string.Empty));
+    }
+
     private async Task CompactIfLongAsync(CancellationToken cancellationToken)
     {
         if (CompactAtTokens is not { } limit || Usage.ContextTokens is not { } tokens || tokens < limit || _summaryFailed || _history.Count < 3)
@@ -31,6 +48,20 @@ public sealed partial class TerminalAgent
         }
 
         SetStatus(AgentStatus.Thinking);
+        SetSummarizing(true);
+        try
+        {
+            await SummarizeAsync(tokens, cancellationToken).ConfigureAwait(false);
+        }
+        catch
+        {
+            SetSummarizing(false);
+            throw;
+        }
+    }
+
+    private async Task SummarizeAsync(long tokens, CancellationToken cancellationToken)
+    {
         List<ChatMessage> request = [.. _history, new(ChatRole.User, SummaryRequest)];
         var updates = new List<ChatResponseUpdate>();
         await foreach (var update in _client.GetStreamingResponseAsync(request, _chatOptions, cancellationToken).ConfigureAwait(false))
@@ -39,11 +70,12 @@ public sealed partial class TerminalAgent
         }
 
         var response = updates.ToChatResponse();
-        RecordUsage(response, []);
+        RecordUsage(response, [], endsSummary: false);
         var summary = response.Text.Trim();
         if (summary.Length == 0)
         {
             _summaryFailed = true;
+            SetSummarizing(false);
             return;
         }
 
