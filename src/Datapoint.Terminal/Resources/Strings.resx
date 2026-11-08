@@ -2784,4 +2784,16 @@ Fingerprint: {2}</value>
   <data name="ExpandArea" xml:space="preserve">
     <value>Expand {0}</value>
   </data>
+  <data name="TerminalConnectionLost" xml:space="preserve">
+    <value>The connection to {0} was lost. Reconnecting…</value>
+  </data>
+  <data name="TerminalReconnected" xml:space="preserve">
+    <value>Reconnected to {0}.</value>
+  </data>
+  <data name="TerminalReconnectStopped" xml:space="preserve">
+    <value>Couldn't reconnect to {0}. Press Enter to try again, or close the tab.</value>
+  </data>
+  <data name="TerminalReconnecting" xml:space="preserve">
+    <value>Reconnecting to {0}…</value>
+  </data>
 </root>

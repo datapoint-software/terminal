@@ -7,11 +7,11 @@ namespace Datapoint.Terminal.Sessions;
 
 public sealed class TerminalConnection : ITerminalHost, IAsyncDisposable
 {
-    private readonly ITerminalSession _session;
-    private readonly Channel<byte[]> _input = Channel.CreateUnbounded<byte[]>(new UnboundedChannelOptions { SingleReader = true });
-    private readonly CancellationTokenSource _lifetime = new();
-    private readonly Task _reader;
-    private readonly Task _writer;
+    private ITerminalSession _session;
+    private Channel<byte[]> _input = NewInput();
+    private CancellationTokenSource _lifetime = new();
+    private Task _reader;
+    private Task _writer;
 
     // The prelude, such as a reopened tab's earlier output, is shown before anything the session prints.
     public TerminalConnection(ITerminalSession session, int columns, int rows, ReadOnlyMemory<byte> prelude = default)
@@ -46,6 +46,29 @@ public sealed class TerminalConnection : ITerminalHost, IAsyncDisposable
     public Task<int?> Exited => _session.Exited;
 
     public bool? IsInputHidden => _session.IsInputHidden;
+
+    // After the session ended, e.g. when the connection to a host dropped, carries on in the same terminal with a new one, so
+    // what it showed stays above. Modes a program left set, such as the alternate screen, are reset, since that program is
+    // gone. Ended is raised again when the new session ends.
+    [SuppressMessage("Usage", "VSTHRD003", Justification = "Both loops are ours; the reader has already finished when the session ended.")]
+    public async Task ResumeAsync(ITerminalSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        await _lifetime.CancelAsync().ConfigureAwait(false);
+        await Task.WhenAll(_reader, _writer).ConfigureAwait(false);
+        await _session.DisposeAsync().ConfigureAwait(false);
+        _lifetime.Dispose();
+        _session = session;
+        _input = NewInput();
+        _lifetime = new CancellationTokenSource();
+        Terminal.Feed("\e[?1049l\e[!p"u8);
+        Terminal.ShellIntegrationNonce = session.ShellIntegrationNonce;
+        LiveFromLine = Terminal.Primary.FirstVisibleLine + Terminal.Cursor.Row;
+        _reader = Task.Run(() => ReadLoopAsync(_lifetime.Token), CancellationToken.None);
+        _writer = Task.Run(() => WriteLoopAsync(_lifetime.Token), CancellationToken.None);
+    }
+
+    private static Channel<byte[]> NewInput() => Channel.CreateUnbounded<byte[]>(new UnboundedChannelOptions { SingleReader = true });
 
     public void Send(ReadOnlySpan<byte> data) => _input.Writer.TryWrite(data.ToArray());
 

@@ -42,6 +42,15 @@ public sealed partial class TerminalTab : ObservableObject
     // The SSH connection this tab's terminal runs over, which a split of it shares rather than logging in again.
     public Sessions.Ssh.SharedSshClient? SharedClient { get; set; }
 
+    // Between its connection dropping and logging in again; the terminal stays, with what it showed (product decision 124).
+    public bool IsDisconnected { get; set; }
+
+    // While the app keeps trying to log in again; once it stops, Enter in the terminal tries again.
+    public bool IsRetrying { get; set; }
+
+    // The connection this tab ran over before it dropped, so splits that shared it share the new one too.
+    public Sessions.Ssh.SharedSshClient? LostClient { get; set; }
+
     // Ports forwarded for this tab's connection, stopped with it.
     public ICollection<IAsyncDisposable> Forwards { get; } = [];
 

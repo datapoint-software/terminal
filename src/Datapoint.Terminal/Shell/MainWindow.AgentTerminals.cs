@@ -45,6 +45,13 @@ public sealed partial class MainWindow
     // chat; prompts, e.g. for a password, still show, since only the user can answer them.
     private async Task<string?> ReconnectForAgentAsync(string name)
     {
+        // A tab whose connection dropped logs in again itself (product decision 124); the agent waits for it rather than
+        // opening another.
+        if (_tabs.FirstOrDefault(tab => tab.IsDisconnected && string.Equals(tab.ConnectionName, name, StringComparison.OrdinalIgnoreCase)) is { } dropped)
+        {
+            return await WaitForReconnectAsync(dropped).ConfigureAwait(true);
+        }
+
         await ReviewConnectionsAsync(reload: true).ConfigureAwait(true);
         if (Connections.FirstOrDefault(item => string.Equals(item.Name, name, StringComparison.OrdinalIgnoreCase)) is not { } connection)
         {
@@ -60,6 +67,19 @@ public sealed partial class MainWindow
         {
             _isReconnecting = false;
         }
+    }
+
+    // Starts trying again if the tab had given up; null if it isn't back within a little while, and the agent asks again.
+    private async Task<string?> WaitForReconnectAsync(TerminalTab tab)
+    {
+        _ = KeepReconnectingAsync(tab);
+        var until = DateTimeOffset.UtcNow + TimeSpan.FromSeconds(15);
+        while (tab.IsDisconnected && tab.IsRetrying && _tabs.Contains(tab) && DateTimeOffset.UtcNow < until)
+        {
+            await Task.Delay(250).ConfigureAwait(true);
+        }
+
+        return tab.IsDisconnected || !_tabs.Contains(tab) ? null : tab.Name;
     }
 
     private void ConnectNotice(string text)

@@ -43,13 +43,7 @@ public sealed partial class MainWindow
     private void Attach(TerminalTab tab, TerminalConnection connection, string? environment, bool select = true, IHostFiles? files = null, string? place = null)
     {
         tab.Connection = connection;
-        tab.AgentTerminal = new AgentTerminal(tab.Name, new ConnectionTerminal(connection), environment)
-        {
-            IsRemote = tab.IsRemote,
-            Connection = tab.ConnectionName,
-            Files = files,
-            Place = place,
-        };
+        tab.AgentTerminal = NewAgentTerminal(tab, environment, files, place);
         StartRecording(tab, connection);
         connection.OutputArrived += (_, _) => tab.View.NotifyOutput();
         tab.View.CommandMarkClicked += (_, e) => OnCommandMarkClicked(tab, e.Command);
@@ -61,9 +55,15 @@ public sealed partial class MainWindow
             tab.ShellTitle = connection.Terminal.Title;
             UpdateTitle();
         });
-        connection.Ended += (_, _) => Dispatcher.UIThread.Post(() => CloseTab(tab));
+        connection.Ended += (_, _) => Dispatcher.UIThread.Post(() => _ = OnConnectionEndedAsync(tab));
         tab.View.Input += (_, e) =>
         {
+            if (tab.IsDisconnected)
+            {
+                RetryOnEnter(tab, e.Data);
+                return;
+            }
+
             _chat.OnUserTyped(tab.AgentTerminal);
             connection.Send(e.Data);
         };
@@ -80,6 +80,15 @@ public sealed partial class MainWindow
 
         Tabs.SelectedItem = tab;
     }
+
+    private static AgentTerminal NewAgentTerminal(TerminalTab tab, string? environment, IHostFiles? files, string? place) =>
+        new(tab.Name, new ConnectionTerminal(tab.Connection!), environment)
+        {
+            IsRemote = tab.IsRemote,
+            Connection = tab.ConnectionName,
+            Files = files,
+            Place = place,
+        };
 
     private string NextTabName(string baseName)
     {

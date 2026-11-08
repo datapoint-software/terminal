@@ -1855,6 +1855,14 @@ public static class Strings
 
     public static string ExpandArea => Get(nameof(ExpandArea));
 
+    public static string TerminalConnectionLost => Get(nameof(TerminalConnectionLost));
+
+    public static string TerminalReconnected => Get(nameof(TerminalReconnected));
+
+    public static string TerminalReconnectStopped => Get(nameof(TerminalReconnectStopped));
+
+    public static string TerminalReconnecting => Get(nameof(TerminalReconnecting));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;
