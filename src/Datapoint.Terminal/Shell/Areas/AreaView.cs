@@ -8,7 +8,7 @@ namespace Datapoint.Terminal.Shell.Areas;
 
 // Builds a layout into nested grids, each split a hairline with a wider invisible handle for dragging. Areas that are hidden
 // take no space and wait in a hidden panel, so they keep their state and stay in the window. A collapsed area keeps only the
-// size its own control asks for, beside the area it meets, with no divider to drag.
+// size its own control asks for, beside the area it meets, with no divider to drag; several can be collapsed at once.
 public sealed class AreaView
 {
     private readonly Panel _host;
@@ -16,7 +16,11 @@ public sealed class AreaView
     private readonly Panel _content = new();
     private readonly Panel _hidden = new() { IsVisible = false };
     private string? _shown;
-    private AreaKind? _collapsed;
+    private IReadOnlySet<AreaKind> _collapsed = new HashSet<AreaKind>();
+
+    // Each collapsed control built, area or grid of collapsed areas, with the areas it holds.
+    private readonly Dictionary<Control, List<AreaKind>> _collapsedControls = [];
+    private readonly Dictionary<AreaKind, bool> _beside = [];
 
     public AreaView(Panel host, IReadOnlyDictionary<AreaKind, Control> areas)
     {
@@ -30,16 +34,17 @@ public sealed class AreaView
     // After the user drags a divider; the split's size has been updated.
     public event EventHandler? Resized;
 
-    // Whether the collapsed area sits beside the one it meets, rather than above or below it, so it's a column, not a row.
-    public bool IsCollapsedBeside { get; private set; }
+    // Whether a collapsed area sits beside the one it meets, rather than above or below it, so it's a column, not a row.
+    public bool IsCollapsedBeside(AreaKind kind) => _beside.GetValueOrDefault(kind, true);
 
     // The layout last built, whose splits take the sizes the user drags the dividers to.
     public AreaNode? Shown { get; private set; }
 
-    public void Show(AreaNode root, Func<AreaKind, bool> isShown, AreaKind? collapsed = null)
+    public void Show(AreaNode root, Func<AreaKind, bool> isShown, IReadOnlySet<AreaKind>? collapsed = null)
     {
         ArgumentNullException.ThrowIfNull(isShown);
-        var key = new StringBuilder(collapsed is { } kind ? kind + ":" : string.Empty);
+        collapsed ??= new HashSet<AreaKind>();
+        var key = new StringBuilder(string.Join(',', collapsed.Order()) + ":");
         Describe(root, isShown, key);
         if (string.Equals(key.ToString(), _shown, StringComparison.Ordinal))
         {
@@ -55,6 +60,8 @@ public sealed class AreaView
         var focused = TopLevel.GetTopLevel(_host)?.FocusManager?.GetFocusedElement() as Control;
         _shown = key.ToString();
         _collapsed = collapsed;
+        _collapsedControls.Clear();
+        _beside.Clear();
         Shown = root;
         foreach (var area in _areas.Values)
         {
@@ -154,18 +161,31 @@ public sealed class AreaView
         }
     }
 
-    private Control? Build(AreaNode node, Func<AreaKind, bool> isShown)
+    private Control? Build(AreaNode node, Func<AreaKind, bool> isShown) => node switch
     {
-        if (node is AreaLeaf leaf)
-        {
-            return isShown(leaf.Kind) ? _areas[leaf.Kind] : null;
-        }
+        AreaLeaf leaf => BuildLeaf(leaf, isShown),
+        AreaSplit split => BuildSplit(split, isShown),
+        _ => null,
+    };
 
-        if (node is not AreaSplit split)
+    private Control? BuildLeaf(AreaLeaf leaf, Func<AreaKind, bool> isShown)
+    {
+        if (!isShown(leaf.Kind))
         {
             return null;
         }
 
+        var area = _areas[leaf.Kind];
+        if (_collapsed.Contains(leaf.Kind))
+        {
+            _collapsedControls[area] = [leaf.Kind];
+        }
+
+        return area;
+    }
+
+    private Control? BuildSplit(AreaSplit split, Func<AreaKind, bool> isShown)
+    {
         var first = Build(split.First, isShown);
         var second = Build(split.Second, isShown);
         if (first is null || second is null)
@@ -173,19 +193,34 @@ public sealed class AreaView
             return first ?? second;
         }
 
-        if (_collapsed is { } kind && (ReferenceEquals(first, _areas[kind]) || ReferenceEquals(second, _areas[kind])))
-        {
-            IsCollapsedBeside = split.IsRow;
-            return Collapsed(split, first, second, ReferenceEquals(first, _areas[kind]));
-        }
-
-        return Split(split, first, second, isShown);
+        var firstKinds = _collapsedControls.GetValueOrDefault(first);
+        var secondKinds = _collapsedControls.GetValueOrDefault(second);
+        return firstKinds is null && secondKinds is null ? Split(split, first, second, isShown) : WithCollapsed(split, first, second, firstKinds, secondKinds);
     }
 
-    private static Grid Collapsed(AreaSplit split, Control first, Control second, bool isFirstCollapsed)
+    private Grid WithCollapsed(AreaSplit split, Control first, Control second, List<AreaKind>? firstKinds, List<AreaKind>? secondKinds)
+    {
+        // Collapsed areas together are one collapsed part, sharing its length; it lies against the first area it meets that
+        // isn't collapsed, beside it or across it.
+        if (firstKinds is not null && secondKinds is not null)
+        {
+            var both = Collapsed(split, first, second, isFirstCollapsed: false, isSecondCollapsed: false);
+            _collapsedControls[both] = [.. firstKinds, .. secondKinds];
+            return both;
+        }
+
+        foreach (var kind in firstKinds ?? secondKinds ?? [])
+        {
+            _beside.TryAdd(kind, split.IsRow);
+        }
+
+        return Collapsed(split, first, second, firstKinds is not null, secondKinds is not null);
+    }
+
+    private static Grid Collapsed(AreaSplit split, Control first, Control second, bool isFirstCollapsed, bool isSecondCollapsed)
     {
         var grid = new Grid { Tag = split };
-        GridLength[] lengths = isFirstCollapsed ? [GridLength.Auto, new GridLength(1), GridLength.Star] : [GridLength.Star, new GridLength(1), GridLength.Auto];
+        GridLength[] lengths = [isFirstCollapsed ? GridLength.Auto : GridLength.Star, new GridLength(1), isSecondCollapsed ? GridLength.Auto : GridLength.Star];
         if (split.IsRow)
         {
             grid.ColumnDefinitions.AddRange(lengths.Select(length => new ColumnDefinition(length)));

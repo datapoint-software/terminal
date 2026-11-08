@@ -227,6 +227,7 @@
     </Panel>
     <!-- The plan under review, in an area of its own beside the documents (product decision 119). One plan at a time, so the
          header names the area and closes it, with no tab. -->
+    <Panel x:Name="PlanPane">
     <DockPanel x:Name="PlanArea" AutomationProperties.Name="{x:Static res:Strings.PlanAreaName}">
       <Border x:Name="PlanHeader" DockPanel.Dock="Top" Background="Transparent" Height="{StaticResource PaneHeaderHeight}" Padding="16,0,10,0" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
         <Grid ColumnDefinitions="*,Auto">
@@ -234,13 +235,36 @@
             <TextBlock Classes="title" Text="{x:Static res:Strings.PlanAreaName}" />
             <TextBlock x:Name="PlanSummary" Classes="secondary" TextTrimming="CharacterEllipsis" />
           </StackPanel>
-          <Button x:Name="ClosePlanButton" Grid.Column="1" Classes="icon" VerticalAlignment="Center" Click="OnClosePlanClicked">
-            <PathIcon Data="{StaticResource CloseGlyph}" />
-          </Button>
+          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="2" VerticalAlignment="Center">
+            <Button x:Name="CollapsePlanButton" Classes="icon" Click="OnCollapsePlanClicked">
+              <PathIcon Data="{StaticResource PanelGlyph}" />
+            </Button>
+            <Button x:Name="ClosePlanButton" Classes="icon" Click="OnClosePlanClicked">
+              <PathIcon Data="{StaticResource CloseGlyph}" />
+            </Button>
+          </StackPanel>
         </Grid>
       </Border>
       <ContentControl x:Name="PlanHost" />
     </DockPanel>
+    <!-- Collapsed (product decision 121): a strip naming the plan and where its review stands. -->
+    <Border x:Name="PlanRail" Classes="rail" IsVisible="False" Background="{DynamicResource PaneBrush}"
+            AutomationProperties.Name="{x:Static res:Strings.PlanAreaName}">
+      <StackPanel Classes="railpanel" Spacing="4" Margin="6">
+        <Button x:Name="ExpandPlanButton" Classes="icon" Click="OnExpandPlanClicked" HorizontalAlignment="Center">
+          <PathIcon Data="{StaticResource PanelGlyph}" />
+        </Button>
+        <Button x:Name="PlanRailTab" Classes="railtab" Click="OnExpandPlanClicked">
+          <LayoutTransformControl Classes="railname">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <Ellipse Width="7" Height="7" Fill="{DynamicResource WaitingBrush}" x:Name="PlanRailWaiting" VerticalAlignment="Center" />
+              <TextBlock Text="{x:Static res:Strings.PlanAreaName}" VerticalAlignment="Center" />
+            </StackPanel>
+          </LayoutTransformControl>
+        </Button>
+      </StackPanel>
+    </Border>
+    </Panel>
     <chat:ChatView x:Name="Chat" AutomationProperties.AutomationId="Chat" />
     </Panel>
     <!-- Where a dragged area would land, shown over the others until it's dropped. -->

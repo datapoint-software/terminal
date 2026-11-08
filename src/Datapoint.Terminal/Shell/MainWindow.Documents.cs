@@ -38,6 +38,17 @@ public sealed partial class MainWindow
         foreach (var pane in _documentPanes.Values)
         {
             pane.SelectionChanged += (_, _) => ShowSelectedDocument(pane);
+            pane.CollapseRequested += (_, _) => CollapseArea(pane.Kind);
+            pane.ExpandRequested = document =>
+            {
+                ExpandArea(pane.Kind);
+                if (document is not null)
+                {
+                    pane.Select(document);
+                }
+
+                FocusShownDocument(pane);
+            };
             pane.Documents.CollectionChanged += (_, _) => LayOutPanes();
             pane.GotFocus += (_, _) =>
             {
@@ -111,10 +122,11 @@ public sealed partial class MainWindow
 
     private DocumentPane? PaneHolding(IOpenDocument document) => _documentPanes.Values.FirstOrDefault(pane => pane.Documents.Contains(document));
 
-    // In its pane, added if it isn't there yet, and in front.
+    // In its pane, added if it isn't there yet, and in front, with the pane expanded: the user asked to see it.
     private void ShowDocument(IOpenDocument document)
     {
         var pane = PaneHolding(document) ?? PaneFor(document);
+        ExpandArea(pane.Kind);
         if (!pane.Documents.Contains(document))
         {
             pane.Documents.Add(document);

@@ -4,6 +4,7 @@ using Avalonia.Threading;
 using Datapoint.Terminal.Chat;
 using Datapoint.Terminal.Editor;
 using Datapoint.Terminal.Resources;
+using Datapoint.Terminal.Shell.Areas;
 
 namespace Datapoint.Terminal.Shell;
 
@@ -11,7 +12,8 @@ namespace Datapoint.Terminal.Shell;
 // plan, without taking the keyboard, and follows the agent's revisions, so the user sees each new version where they left
 // the last. Asking to show it also puts the keyboard there. Product decision 119: the page has an area of its own, which
 // takes space only while a plan is open and can be moved like any other. Its header names it and closes it; there's no tab,
-// as there's only ever one plan.
+// as there's only ever one plan. Product decision 121: it collapses to a strip, and stays collapsed when the agent proposes a
+// new version, until the user asks to see it.
 public sealed partial class MainWindow
 {
     private readonly ObservableCollection<IOpenDocument> _plans = [];
@@ -22,6 +24,7 @@ public sealed partial class MainWindow
     {
         _plans.CollectionChanged += (_, _) => LayOutPanes();
         PlanArea.GotFocus += (_, _) => UpdateTitle();
+        SetUpPlanButtons();
     }
 
     private void ShowPlan(ApprovalViewModel plan, bool requested)
@@ -45,6 +48,7 @@ public sealed partial class MainWindow
             return;
         }
 
+        ExpandArea(AreaKind.Plan);
         Dispatcher.UIThread.Post(() => _planView?.Focus(), DispatcherPriority.Background);
     }
 
@@ -55,6 +59,26 @@ public sealed partial class MainWindow
         var close = _planReview?.CloseName ?? string.Empty;
         ToolTip.SetTip(ClosePlanButton, close);
         Avalonia.Automation.AutomationProperties.SetName(ClosePlanButton, close);
+        PlanRailWaiting.IsVisible = _planReview is { IsWaiting: true };
+        ToolTip.SetTip(PlanRailTab, PlanSummary.Text);
+        Avalonia.Automation.AutomationProperties.SetName(PlanRailTab, Strings.PlanAreaName + ", " + PlanSummary.Text);
+    }
+
+    private void SetUpPlanButtons()
+    {
+        foreach (var (button, text) in new[] { ((Control)CollapsePlanButton, Strings.Format(Strings.CollapseArea, Strings.PlanAreaName)), (ExpandPlanButton, Strings.Format(Strings.ExpandArea, Strings.PlanAreaName)) })
+        {
+            ToolTip.SetTip(button, text);
+            Avalonia.Automation.AutomationProperties.SetName(button, text);
+        }
+    }
+
+    private void OnCollapsePlanClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => CollapseArea(AreaKind.Plan);
+
+    private void OnExpandPlanClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        ExpandArea(AreaKind.Plan);
+        _planView?.Focus();
     }
 
     private void OnClosePlanClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)

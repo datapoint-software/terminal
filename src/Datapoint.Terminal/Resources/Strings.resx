@@ -2781,4 +2781,10 @@ Fingerprint: {2}</value>
   <data name="PlanAreaName" xml:space="preserve">
     <value>Plan</value>
   </data>
+  <data name="CollapseArea" xml:space="preserve">
+    <value>Collapse {0}</value>
+  </data>
+  <data name="ExpandArea" xml:space="preserve">
+    <value>Expand {0}</value>
+  </data>
 </root>

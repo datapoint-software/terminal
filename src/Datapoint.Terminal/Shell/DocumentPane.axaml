@@ -2,13 +2,19 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:ed="clr-namespace:Datapoint.Terminal.Editor"
              x:Class="Datapoint.Terminal.Shell.DocumentPane">
-  <DockPanel>
+  <Panel>
+  <DockPanel x:Name="Full">
     <!-- Named after the kind of document it holds; dragging it moves the area (product decisions 109 and 120). -->
     <Border x:Name="Header" DockPanel.Dock="Top" Background="Transparent" Height="{StaticResource PaneHeaderHeight}" Padding="16,0,10,0" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
-      <StackPanel Spacing="2" VerticalAlignment="Center">
-        <TextBlock x:Name="TitleText" Classes="title" />
-        <TextBlock x:Name="Summary" Classes="secondary" TextTrimming="CharacterEllipsis" />
-      </StackPanel>
+      <Grid ColumnDefinitions="*,Auto">
+        <StackPanel Spacing="2" VerticalAlignment="Center">
+          <TextBlock x:Name="TitleText" Classes="title" />
+          <TextBlock x:Name="Summary" Classes="secondary" TextTrimming="CharacterEllipsis" />
+        </StackPanel>
+        <Button x:Name="CollapseButton" Grid.Column="1" Classes="icon" VerticalAlignment="Center">
+          <PathIcon Data="{DynamicResource PanelGlyph}" />
+        </Button>
+      </Grid>
     </Border>
     <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
       <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
@@ -33,4 +39,35 @@
     </Border>
     <ContentControl x:Name="Host" />
   </DockPanel>
+  <!-- Collapsed (product decision 121): a strip with a button for each document, read from bottom to top beside the area it
+       meets, or across it, as the terminals' strip is. -->
+  <Border x:Name="Rail" Classes="rail" IsVisible="False" Background="{DynamicResource PaneBrush}">
+    <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden">
+      <StackPanel Classes="railpanel" Spacing="4" Margin="6">
+        <Button x:Name="ExpandButton" Classes="icon" HorizontalAlignment="Center">
+          <PathIcon Data="{DynamicResource PanelGlyph}" />
+        </Button>
+        <ItemsControl x:Name="RailItems">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <StackPanel Classes="railpanel" Spacing="4" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="ed:IOpenDocument">
+              <Button Classes="railtab" Click="OnRailTabClicked" ToolTip.Tip="{Binding ToolTip}" AutomationProperties.Name="{Binding AccessibleName}">
+                <LayoutTransformControl Classes="railname">
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <Ellipse Width="7" Height="7" Fill="{DynamicResource LabelBrush}" IsVisible="{Binding IsUnsaved}" VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                  </StackPanel>
+                </LayoutTransformControl>
+              </Button>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+    </ScrollViewer>
+  </Border>
+  </Panel>
 </UserControl>

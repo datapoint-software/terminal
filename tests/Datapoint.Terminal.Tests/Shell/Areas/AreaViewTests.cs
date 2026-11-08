@@ -25,7 +25,7 @@ public sealed class AreaViewTests
 
     private static bool Usual(AreaKind kind) => kind is AreaKind.Agent or AreaKind.Terminals;
 
-    private (Window Window, AreaView View) Show(AreaNode layout, Func<AreaKind, bool> isShown, AreaKind? collapsed = null, double width = 1000)
+    private (Window Window, AreaView View) Show(AreaNode layout, Func<AreaKind, bool> isShown, IReadOnlySet<AreaKind>? collapsed = null, double width = 1000)
     {
         var host = new Panel();
         var view = new AreaView(host, _areas);
@@ -73,9 +73,9 @@ public sealed class AreaViewTests
     public void Gives_a_collapsed_area_only_the_size_it_asks_for_beside_the_agent()
     {
         _areas[AreaKind.Terminals] = new Border { Width = 40 };
-        var (window, view) = Show(AreaLayout.Default(), Usual, AreaKind.Terminals);
+        var (window, view) = Show(AreaLayout.Default(), Usual, new HashSet<AreaKind> { AreaKind.Terminals });
 
-        Assert.True(view.IsCollapsedBeside);
+        Assert.True(view.IsCollapsedBeside(AreaKind.Terminals));
         Assert.Equal(959, _areas[AreaKind.Agent].Bounds.Width);
         Assert.Equal(960, _areas[AreaKind.Terminals].TranslatePoint(default, window)?.X);
         Assert.Empty(window.GetVisualDescendants().OfType<GridSplitter>());
@@ -86,9 +86,9 @@ public sealed class AreaViewTests
     public void Lays_a_collapsed_area_across_the_one_below_it()
     {
         _areas[AreaKind.Terminals] = new Border { Height = 36 };
-        var (window, view) = Show(AreaLayout.Default(), NoPlan, AreaKind.Terminals);
+        var (window, view) = Show(AreaLayout.Default(), NoPlan, new HashSet<AreaKind> { AreaKind.Terminals });
 
-        Assert.False(view.IsCollapsedBeside);
+        Assert.False(view.IsCollapsedBeside(AreaKind.Terminals));
         Assert.Equal(36, _areas[AreaKind.Terminals].Bounds.Height);
         Assert.Equal(663, _areas[AreaKind.Hosts].Bounds.Height);
         Assert.Equal(359, _areas[AreaKind.Agent].Bounds.Width);
@@ -122,6 +122,23 @@ public sealed class AreaViewTests
         Assert.Equal(new Avalonia.Rect(0, 0, 320, 700), _areas[AreaKind.Agent].Bounds);
         Assert.Equal(new Avalonia.Rect(321, 0, 480, 700), _areas[AreaKind.Plan].Bounds);
         Assert.Equal(802, _areas[AreaKind.Terminals].TranslatePoint(default, window)?.X);
+        window.Close();
+    }
+
+    [AvaloniaFact]
+    public void Collapses_several_areas_each_against_what_it_meets()
+    {
+        _areas[AreaKind.Terminals] = new Border { Width = 40 };
+        _areas[AreaKind.Plan] = new Border { Width = 40 };
+        _areas[AreaKind.Hosts] = new Border { Width = 40 };
+        var (window, view) = Show(AreaLayout.Default(), kind => kind is not (AreaKind.Skills or AreaKind.Workspace or AreaKind.ServerFiles), new HashSet<AreaKind> { AreaKind.Terminals, AreaKind.Plan, AreaKind.Hosts });
+
+        Assert.True(view.IsCollapsedBeside(AreaKind.Plan));
+        Assert.True(view.IsCollapsedBeside(AreaKind.Terminals));
+        Assert.True(view.IsCollapsedBeside(AreaKind.Hosts));
+        Assert.Equal(40, _areas[AreaKind.Plan].Bounds.Width);
+        Assert.Equal(1000 - 40 - 1 - 40 - 1, _areas[AreaKind.Agent].Bounds.Width);
+        Assert.Equal(_areas[AreaKind.Terminals].Bounds.Height, _areas[AreaKind.Hosts].Bounds.Height, 1.0);
         window.Close();
     }
 }

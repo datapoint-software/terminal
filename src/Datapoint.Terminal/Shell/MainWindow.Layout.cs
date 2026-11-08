@@ -7,13 +7,17 @@ using Datapoint.Terminal.Shell.Areas;
 namespace Datapoint.Terminal.Shell;
 
 // Product decisions 104, 109, 119 and 120: the agent, the terminals, each kind of document and the plan sit where the user
-// dragged them, the same in every window. A kind of document, and the plan, take space only while one is open. Product decision 115: a shortcut collapses the terminals to a strip
+// dragged them, the same in every window. A kind of document, and the plan, take space only while one is open. Product
+// decisions 115 and 121: the terminals, the plan and each kind of document but the workspace's own collapse to a strip that
+// names what's in them, and only the user expands them again. Product decision 115: a shortcut collapses the terminals to a strip
 // that names each one and shows what the agent is doing there, and only the user expands them again.
 public sealed partial class MainWindow
 {
     private AreaNode _layout = AreaLayout.Default();
     private AreaView? _areaView;
-    private bool _areTerminalsCollapsed;
+    private readonly HashSet<AreaKind> _collapsedAreas = [];
+
+    private bool _areTerminalsCollapsed => _collapsedAreas.Contains(AreaKind.Terminals);
 
     private bool IsShown(AreaKind kind) => kind switch
     {
@@ -25,7 +29,7 @@ public sealed partial class MainWindow
     private Control AreaControl(AreaKind kind) => kind switch
     {
         AreaKind.Terminals => TerminalPane,
-        AreaKind.Plan => PlanArea,
+        AreaKind.Plan => PlanPane,
         _ when _documentPanes.TryGetValue(kind, out var pane) => pane,
         _ => Chat,
     };
@@ -120,9 +124,64 @@ public sealed partial class MainWindow
             return;
         }
 
-        _areTerminalsCollapsed = true;
+        CollapseArea(AreaKind.Terminals);
+    }
+
+    // The keyboard goes to the chat if it was in the area, so it isn't left in something hidden.
+    private void CollapseArea(AreaKind kind)
+    {
+        var hadKeyboard = AreaControl(kind).IsKeyboardFocusWithin;
+        _collapsedAreas.Add(kind);
         LayOutPanes();
+        if (!hadKeyboard && kind != AreaKind.Terminals)
+        {
+            return;
+        }
+
         Chat.FocusInput();
+    }
+
+    private void ExpandArea(AreaKind kind)
+    {
+        if (!_collapsedAreas.Remove(kind))
+        {
+            return;
+        }
+
+        LayOutPanes();
+    }
+
+    private void ToggleArea(AreaKind kind)
+    {
+        if (kind == AreaKind.Terminals)
+        {
+            ToggleTerminals();
+        }
+        else if (_collapsedAreas.Contains(kind))
+        {
+            ExpandArea(kind);
+            FocusArea(kind);
+        }
+        else
+        {
+            CollapseArea(kind);
+        }
+    }
+
+    private void FocusArea(AreaKind kind)
+    {
+        if (kind == AreaKind.Plan)
+        {
+            _planView?.Focus();
+            return;
+        }
+
+        if (!_documentPanes.TryGetValue(kind, out var pane))
+        {
+            return;
+        }
+
+        FocusShownDocument(pane);
     }
 
     private void OnCollapseTerminalsClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => ToggleTerminals();
@@ -135,7 +194,7 @@ public sealed partial class MainWindow
     // that one in front and the keyboard in it.
     private void ShowTerminal(TerminalTab? tab)
     {
-        _areTerminalsCollapsed = false;
+        _collapsedAreas.Remove(AreaKind.Terminals);
         LayOutPanes();
         if (tab is not null && _tabs.Contains(tab))
         {
@@ -151,10 +210,20 @@ public sealed partial class MainWindow
     {
         TerminalArea.IsVisible = !_areTerminalsCollapsed;
         TerminalRail.IsVisible = _areTerminalsCollapsed;
-        _areaView?.Show(FittedLayout(), IsShown, _areTerminalsCollapsed ? AreaKind.Terminals : null);
-        TerminalRail.Classes.Set("across", _areaView is { IsCollapsedBeside: false });
+        PlanArea.IsVisible = !_collapsedAreas.Contains(AreaKind.Plan);
+        PlanRail.IsVisible = !PlanArea.IsVisible;
+        _areaView?.Show(FittedLayout(), IsShown, _collapsedAreas);
+        TerminalRail.Classes.Set("across", IsAcross(AreaKind.Terminals));
+        PlanRail.Classes.Set("across", IsAcross(AreaKind.Plan));
+        foreach (var pane in _documentPanes.Values)
+        {
+            pane.SetCollapsed(_collapsedAreas.Contains(pane.Kind), IsAcross(pane.Kind));
+        }
+
         UpdateLayoutMenu();
     }
+
+    private bool IsAcross(AreaKind kind) => _areaView is { } view && !view.IsCollapsedBeside(kind);
 
     // The agent's commands lead to their step in the chat; the user's own failed ones offer the agent's help.
     private void OnCommandMarkClicked(TerminalTab tab, Emulator.ShellIntegration.CommandRecord command)
@@ -179,12 +248,22 @@ public sealed partial class MainWindow
     }
 
     private NativeMenuItem? _toggleTerminalsItem;
+    private readonly Dictionary<AreaKind, NativeMenuItem> _toggleAreaItems = [];
+
+    // The areas that collapse besides the terminals, which have their own shortcut. The agent and the workspace's own files don't.
+    private static readonly AreaKind[] s_collapsible = [AreaKind.Plan, AreaKind.Hosts, AreaKind.Skills, AreaKind.ServerFiles];
 
     private NativeMenu BuildViewMenu()
     {
         var view = new NativeMenu();
         _toggleTerminalsItem = Item(Strings.MenuCollapseTerminals, Shortcut(Key.J), ToggleTerminals);
         view.Add(_toggleTerminalsItem);
+        foreach (var kind in s_collapsible)
+        {
+            _toggleAreaItems[kind] = Item(Strings.Format(Strings.CollapseArea, AreaName(kind)), null, () => ToggleArea(kind));
+            view.Add(_toggleAreaItems[kind]);
+        }
+
         view.Add(SidebarMenuItem());
         view.Add(Item(Strings.MenuNextArea, new KeyGesture(Key.F6), () => MoveAreaFocus(1)));
         view.Add(Item(Strings.MenuPreviousArea, new KeyGesture(Key.F6, KeyModifiers.Shift), () => MoveAreaFocus(-1)));
@@ -222,7 +301,16 @@ public sealed partial class MainWindow
         return new NativeMenuItem(Strings.Format(Strings.MenuMoveArea, AreaName(moved))) { Menu = menu };
     }
 
-    private void UpdateLayoutMenu() => _toggleTerminalsItem?.Header = _areTerminalsCollapsed ? Strings.MenuExpandTerminals : Strings.MenuCollapseTerminals;
+    // Only an area that's open can be collapsed or expanded.
+    private void UpdateLayoutMenu()
+    {
+        _toggleTerminalsItem?.Header = _areTerminalsCollapsed ? Strings.MenuExpandTerminals : Strings.MenuCollapseTerminals;
+        foreach (var (kind, item) in _toggleAreaItems)
+        {
+            item.Header = Strings.Format(_collapsedAreas.Contains(kind) ? Strings.ExpandArea : Strings.CollapseArea, AreaName(kind));
+            item.IsEnabled = IsShown(kind);
+        }
+    }
 
     // F6 moves the keyboard between the window's areas, as in most desktop applications: the chat, the terminals, the
     // documents of each kind and the plan, skipping any that are hidden. Collapsed terminals are reached at the strip's first button.
@@ -241,12 +329,17 @@ public sealed partial class MainWindow
 
         foreach (var pane in _documentPanes.Values.Where(pane => pane.IsEffectivelyVisible))
         {
-            areas.Add((pane, () => FocusShownDocument(pane)));
+            areas.Add((pane, pane.IsCollapsed ? () => pane.ExpandControl.Focus() : () => FocusShownDocument(pane)));
         }
 
         if (PlanArea.IsEffectivelyVisible)
         {
             areas.Add((PlanArea, () => _planView?.Focus()));
+        }
+
+        if (PlanRail.IsEffectivelyVisible)
+        {
+            areas.Add((PlanRail, () => ExpandPlanButton.Focus()));
         }
 
         var current = areas.FindIndex(area => area.Area.IsKeyboardFocusWithin);

@@ -8,7 +8,7 @@ using Datapoint.Terminal.Shell.Areas;
 namespace Datapoint.Terminal.Shell;
 
 // Product decision 120: one area for each kind of document, with its own header and tabs. The area takes space only while
-// something is open in it.
+// something is open in it. Product decision 121: all but the workspace's own files collapse to a strip.
 public sealed partial class DocumentPane : UserControl
 {
     public DocumentPane()
@@ -25,11 +25,34 @@ public sealed partial class DocumentPane : UserControl
         AutomationProperties.SetName(this, Title);
         AutomationProperties.SetName(Tabs, Title);
         Tabs.ItemsSource = Documents;
+        RailItems.ItemsSource = Documents;
+        AutomationProperties.SetName(Rail, Title);
+        CanCollapse = kind != AreaKind.Workspace;
+        CollapseButton.IsVisible = CanCollapse;
+        foreach (var (button, text) in new[] { (CollapseButton, Strings.Format(Strings.CollapseArea, Title)), (ExpandButton, Strings.Format(Strings.ExpandArea, Title)) })
+        {
+            ToolTip.SetTip(button, text);
+            AutomationProperties.SetName(button, text);
+        }
+
+        CollapseButton.Click += (_, _) => CollapseRequested?.Invoke(this, EventArgs.Empty);
+        ExpandButton.Click += (_, _) => ExpandRequested?.Invoke(null);
         Tabs.SelectionChanged += (_, _) => SelectionChanged?.Invoke(this, EventArgs.Empty);
         Documents.CollectionChanged += (_, _) => Summary.Text = MainWindow.OpenCount(Documents.Count);
     }
 
     public event EventHandler? SelectionChanged;
+
+    public event EventHandler? CollapseRequested;
+
+    // With the document whose button in the strip was chosen, if one was.
+    public Action<IOpenDocument?>? ExpandRequested { get; set; }
+
+    public bool CanCollapse { get; }
+
+    public bool IsCollapsed => Rail.IsVisible;
+
+    public Button ExpandControl => ExpandButton;
 
     public AreaKind Kind { get; }
 
@@ -44,6 +67,16 @@ public sealed partial class DocumentPane : UserControl
     public ContentControl Page => Host;
 
     public void Select(IOpenDocument document) => Tabs.SelectedItem = document;
+
+    // Across is a strip lying above or below the area it meets, rather than beside it.
+    public void SetCollapsed(bool collapsed, bool across)
+    {
+        Full.IsVisible = !collapsed;
+        Rail.IsVisible = collapsed;
+        Rail.Classes.Set("across", across);
+    }
+
+    private void OnRailTabClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => ExpandRequested?.Invoke((sender as Control)?.DataContext as IOpenDocument);
 
     public static string TitleOf(AreaKind kind) => kind switch
     {
