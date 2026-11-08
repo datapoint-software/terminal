@@ -31,6 +31,7 @@
             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
               <Panel Classes="mark" IsVisible="{Binding IsFolded}" Classes.running="{Binding MarkIsRunning}"
                      Classes.succeeded="{Binding MarkIsSucceeded}" Classes.failed="{Binding MarkIsFailed}">
+                <c:Spinner IsVisible="{Binding MarkIsRunning}" />
                 <Ellipse Classes="ring" />
                 <Ellipse Classes="dot" Width="6" Height="6" />
                 <Path Classes="check" Data="{StaticResource CheckGlyph}" />
@@ -49,7 +50,7 @@
             <StackPanel Spacing="6">
               <ProgressBar Classes="plan" Minimum="0" Maximum="100" Value="{Binding Percent}" />
               <TextBlock Classes="secondary" Text="{Binding StatusText}" />
-              <ItemsControl ItemsSource="{Binding Steps}">
+              <ItemsControl ItemsSource="{Binding Shown}">
                 <ItemsControl.ItemsPanel>
                   <ItemsPanelTemplate>
                     <StackPanel Spacing="6" />
@@ -59,6 +60,7 @@
                   <DataTemplate x:DataType="chat:PlanStepViewModel">
                     <Grid ColumnDefinitions="16,*" ColumnSpacing="8" Focusable="True" AutomationProperties.Name="{Binding AccessibleName}">
                       <Panel Classes="mark" Classes.running="{Binding IsRunning}" Classes.succeeded="{Binding IsSucceeded}" Classes.failed="{Binding IsFailed}">
+                        <c:Spinner IsVisible="{Binding IsRunning}" />
                         <Ellipse Classes="ring" />
                         <Ellipse Classes="dot" Width="6" Height="6" />
                         <Path Classes="check" Data="{StaticResource CheckGlyph}" />
@@ -108,6 +110,7 @@
                         <Grid ColumnDefinitions="16,*" ColumnSpacing="10" Focusable="True" AutomationProperties.Name="{Binding AccessibleName}">
                           <Panel Classes="mark" VerticalAlignment="Top" Margin="0,1,0,0" Classes.running="{Binding IsRunning}"
                                  Classes.succeeded="{Binding IsSucceeded}" Classes.failed="{Binding IsFailed}">
+                            <c:Spinner IsVisible="{Binding IsRunning}" />
                             <Ellipse Classes="ring" />
                             <Ellipse Classes="dot" Width="6" Height="6" />
                             <Path Classes="check" Data="{StaticResource CheckGlyph}" />
@@ -278,12 +281,9 @@
       <Setter Property="StrokeLineCap" Value="Round" />
       <Setter Property="StrokeJoin" Value="Round" />
     </Style>
+    <!-- The step being worked on turns, as everything in progress does (product decision 122). -->
     <Style Selector="Panel.mark.running Ellipse.ring">
-      <Setter Property="Stroke" Value="{DynamicResource AccentBrush}" />
-    </Style>
-    <Style Selector="Panel.mark.running Ellipse.dot">
-      <Setter Property="IsVisible" Value="True" />
-      <Setter Property="Fill" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="IsVisible" Value="False" />
     </Style>
     <Style Selector="Panel.mark.succeeded Ellipse.ring">
       <Setter Property="Stroke" Value="{DynamicResource SyntaxAddedBrush}" />

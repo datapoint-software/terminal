@@ -14,11 +14,19 @@ public sealed partial class PlanProgressViewModel : ObservableObject
         ArgumentNullException.ThrowIfNull(plan);
         Title = plan.Title ?? plan.Summary;
         Steps = PlanStepViewModel.For(plan);
+        Shown = [.. Steps];
     }
 
     public string Title { get; }
 
+    // The plan's steps in its own order, as the agent numbers them.
     public IReadOnlyList<PlanStepViewModel> Steps { get; }
+
+    // The steps as the checklist lists them: those over first, in the order they ended, then the one being worked on, then
+    // the rest in the plan's order, so a step the agent skipped moves down below what it did instead (product decision 122).
+    public System.Collections.ObjectModel.ObservableCollection<PlanStepViewModel> Shown { get; }
+
+    private readonly List<PlanStepViewModel> _over = [];
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsInConversation))]
@@ -45,19 +53,21 @@ public sealed partial class PlanProgressViewModel : ObservableObject
 
     public double Percent => Steps.Count == 0 ? 0 : 100.0 * Steps.Count(step => step.IsOver) / Steps.Count;
 
-    // The step the agent is on: the running one, else the latest it has reached.
-    public PlanStepViewModel? Current =>
-        Steps.FirstOrDefault(step => step.IsRunning) ?? Steps.LastOrDefault(step => step.State != PlanStepState.Pending);
+    // The step the agent is on: the running one, else the latest it has ended.
+    public PlanStepViewModel? Current => _working ?? _over.LastOrDefault();
+
+    // Where the current step is in the list, which may differ from its number in the plan once steps are done out of order.
+    private int Position => Current is { } current ? Shown.IndexOf(current) + 1 : 0;
 
     public string StatusText => (Current, FailedCount) switch
     {
         (null, _) => Strings.Format(Strings.PlanNotStarted, StepCount(Steps.Count)),
-        ({ } current, 0) => Strings.Format(Strings.PlanProgress, current.Number, Steps.Count),
-        ({ } current, var failed) => Strings.Format(Strings.PlanProgressFailed, current.Number, Steps.Count, failed),
+        (_, 0) => Strings.Format(Strings.PlanProgress, Position, Steps.Count),
+        (_, var failed) => Strings.Format(Strings.PlanProgressFailed, Position, Steps.Count, failed),
     };
 
     public string FoldedText => IsEnded ? EndedText
-        : Current is { } current ? Strings.Format(Strings.PlanFolded, current.Number, Steps.Count, current.Title)
+        : Current is { } current ? Strings.Format(Strings.PlanFolded, Position, Steps.Count, current.Title)
         : StatusText;
 
     public PlanStepState MarkState => IsEnded
@@ -92,6 +102,12 @@ public sealed partial class PlanProgressViewModel : ObservableObject
 
     public static string StepCount(int count) => count == 1 ? Strings.PlanStepCountOne : Strings.Format(Strings.PlanStepCount, count);
 
+    // The step the agent is working on stays running from its first command until it starts another step or the task ends,
+    // so checking a step's result, or thinking about it between commands, still shows as working on it. Its latest finished
+    // command's result becomes the step's when it's left; one left before any of its commands finished hasn't been done.
+    private PlanStepViewModel? _working;
+    private (PlanStepState State, int? ExitCode)? _workingOutcome;
+
     public void Update(int number, PlanStepState state, int? exitCode)
     {
         if (number < 1 || number > Steps.Count)
@@ -99,13 +115,77 @@ public sealed partial class PlanProgressViewModel : ObservableObject
             return;
         }
 
-        Steps[number - 1].Mark(state, exitCode);
+        var step = Steps[number - 1];
+        if (state == PlanStepState.Running)
+        {
+            if (!ReferenceEquals(step, _working))
+            {
+                LeaveWorkingStep();
+                _workingOutcome = null;
+            }
+
+            _over.Remove(step);
+            _working = step;
+            step.Mark(state, exitCode);
+        }
+        else if (ReferenceEquals(step, _working))
+        {
+            _workingOutcome = (state, exitCode);
+        }
+        else
+        {
+            MarkOver(step, state, exitCode);
+        }
+
+        Arrange();
         OnPropertyChanged(string.Empty);
+    }
+
+    private void LeaveWorkingStep()
+    {
+        if (_working is not { } step)
+        {
+            return;
+        }
+
+        _working = null;
+        if (_workingOutcome is { } outcome)
+        {
+            MarkOver(step, outcome.State, outcome.ExitCode);
+            return;
+        }
+
+        step.Mark(PlanStepState.Pending, exitCode: null);
+    }
+
+    private void MarkOver(PlanStepViewModel step, PlanStepState state, int? exitCode)
+    {
+        step.Mark(state, exitCode);
+        _over.Remove(step);
+        _over.Add(step);
+    }
+
+    // Moves rather than rebuilds the list, so a step the keyboard is on keeps its place in the tab order.
+    private void Arrange()
+    {
+        var order = _over.Concat(_working is { } working ? [working] : []).Concat(Steps.Where(step => !_over.Contains(step) && !ReferenceEquals(step, _working))).ToList();
+        for (var index = 0; index < order.Count; index++)
+        {
+            var from = Shown.IndexOf(order[index]);
+            if (from == index)
+            {
+                continue;
+            }
+
+            Shown.Move(from, index);
+        }
     }
 
     // The task is over: unpinned and folded to its result, where the plan was approved in the conversation.
     public void End()
     {
+        LeaveWorkingStep();
+        Arrange();
         IsEnded = true;
         IsPinned = false;
         IsExpanded = false;

@@ -366,4 +366,40 @@ public sealed class ChatViewTests
         Assert.Equal("Plan stopped · 2 of 5 done, 1 failed", active.HeaderText);
         Assert.Equal("Step 3, failed: Install all updates", active.Steps[2].AccessibleName);
     }
+    [Fact]
+    public void Lists_the_steps_done_first_in_the_order_they_ended_and_spins_the_one_being_worked_on()
+    {
+        var progress = new PlanProgressViewModel(new AgentPlan(
+            "Check, drain, update, reboot.",
+            [
+                new AgentPlanStep("docker node ls", "Check the swarm"),
+                new AgentPlanStep("docker node update --availability drain web1", "Drain"),
+                new AgentPlanStep("apt-get -y upgrade", "Update"),
+                new AgentPlanStep("reboot", "Reboot"),
+            ],
+            "None."));
+
+        progress.Update(1, PlanStepState.Running, null);
+        progress.Update(1, PlanStepState.Succeeded, 0);
+        progress.Update(3, PlanStepState.Running, null);
+        progress.Update(3, PlanStepState.Succeeded, 0);
+
+        // Between its commands the step is still being worked on.
+        Assert.True(progress.Steps[2].IsRunning);
+        Assert.Equal([1, 3, 2, 4], progress.Shown.Select(step => step.Number));
+        Assert.Equal("Step 2 of 4", progress.StatusText);
+
+        progress.Update(2, PlanStepState.Running, null);
+
+        Assert.True(progress.Steps[2].IsSucceeded);
+        Assert.Equal([1, 3, 2, 4], progress.Shown.Select(step => step.Number));
+
+        progress.Update(2, PlanStepState.Failed, 1);
+        progress.Update(4, PlanStepState.Running, null);
+        progress.End();
+
+        // The last step never finished, so it isn't counted as done.
+        Assert.True(progress.Steps[3].IsPending);
+        Assert.Equal("Plan stopped · 2 of 4 done, 1 failed", progress.HeaderText);
+    }
 }
