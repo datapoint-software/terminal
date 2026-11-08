@@ -21,6 +21,7 @@ This project is in early design. Nothing is built yet.
   In Plan mode, with Ignore permissions, or with the web allowed always, review what the agent does after it has read web content.
 
 - **Looking without asking.** Once the user allows the agent to look at some hosts before planning (product decision 111), its read-only commands there run without asking until the task ends. They show in the terminal as they run, but what they print, file contents included, goes to the AI provider, masked only for the secrets the application recognizes. Which commands count as read-only is the application's own check, from the command's text; a command it misjudges runs without asking too.
+- **Commands counted as read-only.** Which commands run without asking where only changes need approval is the application's own check, from the command's text against a shipped list and the commands the user taught (product decision 112). It doesn't see shell aliases or functions, so an alias named like a reading program passes, and a taught command passes with any option the list doesn't know writes (e.g. teaching `docker swarm ca` also lets `docker swarm ca --rotate` run unasked). Taught commands live only in the user's own settings, so a workspace's files can't add to them.
 
 ## License
 
