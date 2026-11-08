@@ -75,13 +75,37 @@ public sealed class ConnectionTerminal : IAgentTerminal
         }
     }
 
-    public string GetVisibleText() => Emulator.GetVisibleText();
+    // Product decision 141: output restored from an earlier session, shown dimmed above a divider when a tab reopens, isn't
+    // live, and read as part of the screen it was taken for the terminal's current state, along with what was below the
+    // divider. It's left out of what the agent reads, with a line saying so; the user still sees it.
+    public string GetVisibleText()
+    {
+        lock (Emulator.SyncRoot)
+        {
+            var first = Emulator.Primary.FirstVisibleLine;
+            var live = _connection.LiveFromLine;
+            if (Emulator.IsAlternateScreen || live <= first)
+            {
+                return Emulator.GetVisibleText();
+            }
+
+            var last = first + Emulator.Rows - 1;
+            var restored = Math.Min(live, last + 1) - first;
+            var text = live > last ? string.Empty : Emulator.GetLineText(live, last).TrimEnd('\n');
+            return RestoredNote(restored) + text;
+        }
+    }
+
+    internal static string RestoredNote(long lines) =>
+        $"[{lines} line{(lines == 1 ? string.Empty : "s")} at the top of the screen, output restored from an earlier session of this "
+        + "connection and its divider, left out: they aren't live. What follows is all from this session.]\n";
 
     public string GetTextSince(long line)
     {
         lock (Emulator.SyncRoot)
         {
             var last = Emulator.Primary.FirstVisibleLine + Emulator.Cursor.Row;
+            line = Math.Max(line, _connection.LiveFromLine);
             return line > last ? string.Empty : Emulator.GetLineText(line, last);
         }
     }
