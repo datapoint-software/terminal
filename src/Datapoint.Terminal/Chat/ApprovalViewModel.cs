@@ -42,7 +42,7 @@ public sealed partial class ApprovalViewModel : ObservableObject
     // A plan shows its steps and rollback; the command box is for everything else.
     public bool IsPlan => PlanSteps.Count > 0;
 
-    public bool ShowsCommand => !IsPlan && !IsLook;
+    public bool ShowsCommand => !IsPlan && !IsLook && Kind != ProposalKind.PlanMode;
 
     public IReadOnlyList<PlanStepViewModel> PlanSteps { get; }
 
@@ -103,7 +103,7 @@ public sealed partial class ApprovalViewModel : ObservableObject
     public bool IsAfterWeb { get; }
 
     // Opening a terminal names a connection, which isn't the user's to edit; they can decline and say which one instead.
-    public bool IsCommandReadOnly => Kind is ProposalKind.OpenTerminal or ProposalKind.Plan or ProposalKind.EditFile or ProposalKind.Rollout or ProposalKind.Look;
+    public bool IsCommandReadOnly => Kind is ProposalKind.OpenTerminal or ProposalKind.Plan or ProposalKind.EditFile or ProposalKind.Rollout or ProposalKind.Look or ProposalKind.PlanMode;
 
     public string? PlanText { get; }
 
@@ -121,6 +121,7 @@ public sealed partial class ApprovalViewModel : ObservableObject
         ProposalKind.EditFile => Strings.ApprovalApplyEdit,
         ProposalKind.Rollout => Strings.ApprovalStartRollout,
         ProposalKind.Look => Strings.ApprovalLookAllow,
+        ProposalKind.PlanMode => Strings.ApprovalPlanModeSwitch,
         _ => Strings.ApprovalRun,
     };
 
@@ -130,7 +131,7 @@ public sealed partial class ApprovalViewModel : ObservableObject
 
     public CommandRisk Risk { get; }
 
-    public string DeclineLabel => IsLook ? Strings.ApprovalLookDecline : Strings.ApprovalDecline;
+    public string DeclineLabel => IsLook ? Strings.ApprovalLookDecline : Kind == ProposalKind.PlanMode ? Strings.ApprovalPlanModeDecline : Strings.ApprovalDecline;
 
     public string Heading => (Kind, IgnoredFile, Risk) switch
     {
@@ -140,6 +141,7 @@ public sealed partial class ApprovalViewModel : ObservableObject
         (ProposalKind.Plan, _, _) => PlanTitle is { } title ? Strings.Format(Strings.ApprovalHeadingPlanNamed, title) : Strings.ApprovalHeadingPlan,
         (ProposalKind.EditFile, _, _) => Strings.ApprovalHeadingEdit,
         (ProposalKind.Rollout, _, _) => Strings.ApprovalHeadingRollout,
+        (ProposalKind.PlanMode, _, _) => Strings.Format(Strings.ApprovalHeadingPlanMode, Command),
         (_, not null, _) => Strings.ApprovalHeadingIgnored,
         (_, _, CommandRisk.AlwaysAsk) => Strings.ApprovalHeadingTrust,
         _ => Strings.ApprovalHeading,
@@ -155,6 +157,7 @@ public sealed partial class ApprovalViewModel : ObservableObject
         ProposalKind.Plan => Strings.ApprovalRiskPlan,
         ProposalKind.EditFile => Strings.ApprovalRiskEdit,
         ProposalKind.Rollout => Strings.ApprovalRiskRollout,
+        ProposalKind.PlanMode => Strings.ApprovalRiskPlanMode,
         ProposalKind.SendKeys when Risk != CommandRisk.AlwaysAsk => Strings.ApprovalRiskKeys,
         _ => null,
     };
@@ -244,6 +247,7 @@ public sealed partial class ApprovalViewModel : ObservableObject
     private static string Where(CommandProposal proposal) => (proposal.Kind, proposal.Environment) switch
     {
         (ProposalKind.Look, _) => Strings.ApprovalLookWhere,
+        (ProposalKind.PlanMode, _) => proposal.Terminal.Length == 0 ? Strings.ApprovalPlanModeAnyHost : Strings.Format(Strings.ApprovalPlanModeHosts, proposal.Terminal),
         (ProposalKind.Plan, _) when proposal.Terminal.Length == 0 => Strings.ApprovalPlanAnyTerminal,
         (ProposalKind.Rollout, null) => Strings.Format(Strings.ApprovalRolloutHosts, proposal.Terminal),
         (ProposalKind.Rollout, { } environment) => Strings.Format(Strings.ApprovalRolloutHostsEnvironment, proposal.Terminal, environment),

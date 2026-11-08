@@ -2721,4 +2721,22 @@ Fingerprint: {2}</value>
   <data name="PasswordsNotForgotten" xml:space="preserve">
     <value>The password for {0} couldn't be forgotten: {1}</value>
   </data>
+  <data name="ApprovalHeadingPlanMode" xml:space="preserve">
+    <value>Plan “{0}” before changing anything?</value>
+  </data>
+  <data name="ApprovalPlanModeSwitch" xml:space="preserve">
+    <value>Switch to Plan mode</value>
+  </data>
+  <data name="ApprovalPlanModeDecline" xml:space="preserve">
+    <value>Continue without a plan</value>
+  </data>
+  <data name="ApprovalRiskPlanMode" xml:space="preserve">
+    <value>In Plan mode, the agent looks with read-only commands, then shows you a plan. Nothing that changes a system runs until you approve it, and its steps then run without asking. Plan mode stays on for this workspace until you change it.</value>
+  </data>
+  <data name="ApprovalPlanModeAnyHost" xml:space="preserve">
+    <value>In this workspace</value>
+  </data>
+  <data name="ApprovalPlanModeHosts" xml:space="preserve">
+    <value>Changes {0}</value>
+  </data>
 </root>

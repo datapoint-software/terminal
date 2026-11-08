@@ -67,6 +67,7 @@ public sealed partial class TerminalAgent
     private List<AITool> FeatureTools() =>
     [
         .. OpenTools(),
+        .. PlanModeTools(),
         .. LookTools(),
         .. PlanTools(),
         .. FileTools(),

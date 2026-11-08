@@ -60,6 +60,23 @@ public sealed class ChatViewTests
     }
 
     [AvaloniaFact]
+    public void Offers_to_plan_a_change_first()
+    {
+        using var chat = new ChatViewModel(new ImmediateUiThread());
+        chat.Items.Add(new ChatItemViewModel(ChatItemKind.User, "Upgrade nginx on the web servers"));
+        _ = chat.RequestApprovalAsync(new CommandProposal("Upgrade nginx", "It restarts nginx on two production servers, one at a time.", CommandRisk.Changes, "web-1, web-2") { Kind = ProposalKind.PlanMode }, CancellationToken.None);
+        var window = new Window { Width = 420, Height = 520, Content = new ChatView { DataContext = chat } };
+        window.Show();
+
+        Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+        using var frame = window.CaptureRenderedFrame();
+        Directory.CreateDirectory("rendered");
+        frame?.Save("rendered/chat-plan-mode-offer.png", new PngBitmapEncoderOptions());
+
+        Assert.Contains(window.GetVisualDescendants().OfType<Button>(), button => button.IsEffectivelyVisible && Equals(button.Content, Datapoint.Terminal.Resources.Strings.ApprovalPlanModeSwitch));
+    }
+
+    [AvaloniaFact]
     public void Renders_the_composer_in_dark_mode()
     {
         using var chat = new ChatViewModel(new ImmediateUiThread());

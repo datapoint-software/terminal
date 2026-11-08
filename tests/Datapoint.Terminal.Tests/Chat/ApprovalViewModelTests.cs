@@ -56,6 +56,19 @@ public sealed class ApprovalViewModelTests
     }
 
     [Fact]
+    public void An_offer_to_plan_says_what_switching_to_Plan_mode_means()
+    {
+        var approval = new ApprovalViewModel(new CommandProposal("Upgrade nginx", "It restarts nginx on two production servers.", CommandRisk.Changes, "web1, web2") { Kind = ProposalKind.PlanMode });
+
+        Assert.Equal(Strings.Format(Strings.ApprovalHeadingPlanMode, "Upgrade nginx"), approval.Heading);
+        Assert.Equal((Strings.ApprovalPlanModeSwitch, Strings.ApprovalPlanModeDecline), (approval.RunLabel, approval.DeclineLabel));
+        Assert.Equal(Strings.ApprovalRiskPlanMode, approval.RiskText);
+        Assert.Equal(Strings.Format(Strings.ApprovalPlanModeHosts, "web1, web2"), approval.TerminalText);
+        Assert.False(approval.ShowsCommand);
+        Assert.Null(approval.ReadOnlySuggestion);
+    }
+
+    [Fact]
     public void Opening_a_terminal_names_the_connection_and_cannot_be_edited()
     {
         var proposal = new CommandProposal("web1", "Check the logs", CommandRisk.Changes, "web1", "production") { Kind = ProposalKind.OpenTerminal };

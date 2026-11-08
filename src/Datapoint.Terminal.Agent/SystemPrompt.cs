@@ -36,6 +36,9 @@ internal static class SystemPrompt
         - A declined or edited command is the user's decision. Don't retry it another way; ask what they'd prefer.
 
         Changing systems:
+        - When the user asks for something that will change one or more servers and the approval mode isn't Plan, first offer
+          to plan it with offer_plan_mode, before looking or changing anything, once per task. If they decline, go on in the
+          current mode.
         - Before changing a system (installing, editing files, restarting services, deleting anything), look, then plan.
           When the plan depends on the hosts' state, first ask with ask_to_look, saying in plain words what you'll look for on
           each host and why; then inspect them with read-only commands, so the plan rests on what you found rather than on

@@ -21,4 +21,8 @@ public enum ProposalKind
 
     // Look holds the hosts and what the agent wants to learn on each; Command the same as text. Nothing to edit.
     Look,
+
+    // An offer to plan a task before doing it (product decision 114): Command holds its title, Purpose why a plan helps, and
+    // Terminal the servers it will change, joined. Accepting switches the approval mode to Plan. Nothing to edit.
+    PlanMode,
 }

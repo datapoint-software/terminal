@@ -1812,6 +1812,18 @@ public static class Strings
 
     public static string PasswordsNotForgotten => Get(nameof(PasswordsNotForgotten));
 
+    public static string ApprovalHeadingPlanMode => Get(nameof(ApprovalHeadingPlanMode));
+
+    public static string ApprovalPlanModeSwitch => Get(nameof(ApprovalPlanModeSwitch));
+
+    public static string ApprovalPlanModeDecline => Get(nameof(ApprovalPlanModeDecline));
+
+    public static string ApprovalRiskPlanMode => Get(nameof(ApprovalRiskPlanMode));
+
+    public static string ApprovalPlanModeAnyHost => Get(nameof(ApprovalPlanModeAnyHost));
+
+    public static string ApprovalPlanModeHosts => Get(nameof(ApprovalPlanModeHosts));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;
