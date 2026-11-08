@@ -225,6 +225,23 @@ public sealed class PlanReviewTests
     }
 
     [Fact]
+    public async Task Rejecting_declines_the_plan_with_the_comments_as_reasons()
+    {
+        var approval = Propose(s_plan);
+        var review = new PlanReviewViewModel(approval, _ => { });
+        Comment(review, null, null, "The kernel can wait until next month.");
+
+        review.RejectCommand.Execute(null);
+        var decision = await approval.Decision;
+        await Task.Yield();
+
+        Assert.False(decision.Approved);
+        Assert.Equal(Strings.PlanRejectFeedback + "\n" + Strings.PlanRejectComments + "\n- On the plan: The kernel can wait until next month.", decision.Feedback);
+        Assert.False(review.IsUnsaved);
+        Assert.False(review.RejectCommand.CanExecute(null));
+    }
+
+    [Fact]
     public void A_draft_cancelled_before_saving_goes_away()
     {
         var review = new PlanReviewViewModel(Propose(s_plan), _ => { });

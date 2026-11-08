@@ -93,11 +93,12 @@
   </UserControl.Styles>
 
   <DockPanel>
-    <!-- What the review needs from the user, always in view: the comments to send, and approving. -->
+    <!-- What the review needs from the user, always in view: rejecting, the comments to send, and approving. -->
     <Border DockPanel.Dock="Bottom" Background="{DynamicResource WindowBrush}" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,1,0,0">
       <Panel Margin="16,10">
         <DockPanel IsVisible="{Binding !IsConfirmingApprove}">
           <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="8" IsVisible="{Binding IsWaiting}">
+            <Button Content="{x:Static res:Strings.PlanReject}" Command="{Binding RejectCommand}" />
             <Button Content="{x:Static res:Strings.PlanSendComments}" Command="{Binding SendCommentsCommand}" />
             <Button Classes="primary" Content="{x:Static res:Strings.PlanApprove}" Command="{Binding ApproveCommand}" />
           </StackPanel>

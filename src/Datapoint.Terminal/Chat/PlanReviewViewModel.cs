@@ -55,7 +55,7 @@ public sealed partial class PlanReviewViewModel : ObservableObject, IOpenDocumen
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsWaiting), nameof(StatusText), nameof(IsApproved))]
-    [NotifyCanExecuteChangedFor(nameof(SendCommentsCommand), nameof(ApproveCommand), nameof(ApproveAnywayCommand))]
+    [NotifyCanExecuteChangedFor(nameof(SendCommentsCommand), nameof(ApproveCommand), nameof(ApproveAnywayCommand), nameof(RejectCommand))]
     public partial PlanReviewState State { get; private set; }
 
     public bool IsWaiting => State == PlanReviewState.Waiting;
@@ -127,6 +127,24 @@ public sealed partial class PlanReviewViewModel : ObservableObject, IOpenDocumen
     }
 
     private bool CanSend() => IsWaiting && PendingCount > 0;
+
+    // Ends the review without a revision: the agent is told not to run or propose the plan again, with any comments the user
+    // wrote as their reasons.
+    [RelayCommand(CanExecute = nameof(IsWaiting))]
+    private void Reject()
+    {
+        var pending = Comments.Where(comment => comment.IsPending).ToList();
+        Plan.Feedback = pending.Count == 0 ? Strings.PlanRejectFeedback
+            : Strings.PlanRejectFeedback + "\n" + Strings.PlanRejectComments + "\n" + string.Join('\n', pending.Select(comment => "- " + comment.Feedback));
+        foreach (var comment in pending)
+        {
+            comment.IsSent = true;
+        }
+
+        IsConfirmingApprove = false;
+        Plan.DeclineCommand.Execute(null);
+        Refresh();
+    }
 
     [RelayCommand(CanExecute = nameof(IsWaiting))]
     private void Approve()
