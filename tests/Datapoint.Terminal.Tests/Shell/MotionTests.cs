@@ -22,11 +22,28 @@ public sealed class MotionTests
         return done();
     }
 
+    [Fact]
+    public void Reduces_motion_when_the_system_asks_even_if_settings_allow_it()
+    {
+        MotionPreference.Apply(reduce: false);
+        MotionPreference.SystemOverride = () => true;
+        try
+        {
+            Assert.False(MotionPreference.IsEnabled);
+        }
+        finally
+        {
+            MotionPreference.Apply(reduce: true);
+            MotionPreference.SystemOverride = null;
+        }
+    }
+
     [AvaloniaFact]
     public void Fades_a_menu_in_and_puts_off_its_closing_until_it_has_faded_out()
     {
         OverlayMotion.Start();
         MotionPreference.Apply(reduce: false);
+        MotionPreference.SystemOverride = () => false;
         try
         {
             var button = new Button { Content = "Open" };
@@ -56,6 +73,7 @@ public sealed class MotionTests
         finally
         {
             MotionPreference.Apply(reduce: true);
+            MotionPreference.SystemOverride = null;
         }
     }
 
@@ -63,6 +81,7 @@ public sealed class MotionTests
     public void Folds_a_pinned_card_away_with_its_last_content_and_back_in()
     {
         MotionPreference.Apply(reduce: false);
+        MotionPreference.SystemOverride = () => false;
         try
         {
             var card = new ContentControl { Padding = new Avalonia.Thickness(12, 8) };
@@ -87,6 +106,7 @@ public sealed class MotionTests
         finally
         {
             MotionPreference.Apply(reduce: true);
+            MotionPreference.SystemOverride = null;
         }
     }
 }

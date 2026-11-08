@@ -8,7 +8,10 @@ public static class MotionPreference
 {
     private static bool s_isReducedInSettings;
 
-    public static bool IsEnabled => !s_isReducedInSettings && !IsReducedBySystem();
+    public static bool IsEnabled => !s_isReducedInSettings && !(SystemOverride ?? IsReducedBySystem)();
+
+    // Tests set the system's answer, so they don't depend on the machine they run on: CI machines often reduce motion.
+    internal static Func<bool>? SystemOverride { get; set; }
 
     public static void Apply(bool reduce) => s_isReducedInSettings = reduce;
 
