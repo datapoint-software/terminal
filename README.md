@@ -6,6 +6,16 @@ An AI-powered terminal: a desktop application for macOS, Linux and Windows where
 
 Datapoint Terminal is in early development and hasn't been released yet; the first release will be 1.0.0-alpha.1, a test build. Continuous integration is set up to build and test it on macOS, Linux and Windows, and tagging a version builds installers for each (see [Packaging, signing and updates](docs/engineering.md#packaging-signing-and-updates)); they aren't signed yet, so macOS and Windows warn before opening them, and the application doesn't update itself yet. It's been used on macOS so far; Linux and Windows are supported by design but haven't been tried, and some features may not work there yet. Expect anything to change before version 1.0.
 
+## Installing a test build
+
+Test builds are on the [releases page](https://github.com/datapoint-software/terminal/releases), one set of files per system and processor: `arm64` for Apple silicon and ARM PCs, `x64` for Intel and AMD. They aren't signed yet, so each system warns before opening them; check that you downloaded them from that page before going past the warning.
+
+- **macOS:** open `DatapointTerminal-osx-arm64-Setup.pkg` (or `osx-x64` on an Intel Mac). When macOS says it can't check it for malicious software, open System Settings › Privacy & Security, scroll to Security, choose Open Anyway and confirm. Do the same the first time you open Datapoint Terminal if macOS stops it again. `DatapointTerminal-osx-…-Portable.zip` holds the application to copy to Applications yourself instead.
+- **Windows:** run `DatapointTerminal-win-x64-Setup.exe` (or `win-arm64`). When SmartScreen says it protected your PC, choose More info, then Run anyway. `DatapointTerminal-win-…-Portable.zip` runs without installing.
+- **Linux:** download the `.AppImage` for your processor, make it executable (`chmod +x DatapointTerminal*.AppImage`) and run it. If it doesn't start, install FUSE 2 (`libfuse2` on most distributions, `libfuse2t64` on Ubuntu 24.04 and later).
+
+The application doesn't update itself yet: to update, install the newer build over the old one. Settings and saved connections live in your user folder, not with the application, so they stay.
+
 ## Building and running
 
 You need the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) (10.0.403 or later; `global.json` pins it).
