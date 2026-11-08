@@ -56,7 +56,7 @@ public sealed partial class TerminalAgent
             }
         }
 
-        Raise(new AgentEventArgs(AgentEventKind.Notice, $"Opening a terminal for {connection.Name}: {purpose}"));
+        Raise(new AgentEventArgs(AgentEventKind.Notice, $"Opening a terminal for {connection.Name}: {purpose}") { Terminal = connection.Name });
         var terminal = await opener.OpenAsync(connection.Name, cancellationToken).ConfigureAwait(false);
         return terminal is null
             ? "Not opened: the connection failed; the user can see why in the chat."

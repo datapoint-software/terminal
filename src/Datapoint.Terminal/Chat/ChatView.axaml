@@ -160,9 +160,6 @@
       <Setter Property="Height" Value="7" />
       <Setter Property="Fill" Value="{DynamicResource IdleBrush}" />
     </Style>
-    <Style Selector="Ellipse.status.working">
-      <Setter Property="Fill" Value="{DynamicResource AccentBrush}" />
-    </Style>
     <Style Selector="Ellipse.status.waiting">
       <Setter Property="Fill" Value="{DynamicResource WaitingBrush}" />
     </Style>
@@ -420,14 +417,9 @@
               <TextBlock Classes="secondary" FontSize="{StaticResource SmallSize}" Text="{Binding LookScopeText}" TextWrapping="Wrap" />
             </Border>
           </StackPanel>
-          <!-- A plan: its hosts and how many steps need care here; the steps themselves are reviewed in the documents area. -->
-          <StackPanel Spacing="6" IsVisible="{Binding IsPlan}">
-            <DockPanel IsVisible="{Binding HasPlanHosts}">
-              <TextBlock DockPanel.Dock="Left" Classes="secondary" FontSize="{StaticResource SmallSize}" Text="{x:Static res:Strings.PlanStepOn}" VerticalAlignment="Top" Margin="0,3,6,0" />
-              <ItemsControl ItemsSource="{Binding PlanHosts}" ItemTemplate="{StaticResource HostChip}" ItemsPanel="{StaticResource ChipsPanel}" />
-            </DockPanel>
-            <TextBlock Classes="secondary" FontSize="{StaticResource SmallSize}" Text="{Binding StepCountText}" TextWrapping="Wrap" />
-          </StackPanel>
+          <!-- A plan (product decision 117): only that it's ready, since it opens in the documents area, where it's read,
+               commented on and approved. -->
+          <TextBlock Text="{Binding PlanReadyText}" TextWrapping="Wrap" IsVisible="{Binding IsPlan}" />
           <!-- Capped, so a long diff scrolls inside the box and Run and Decline stay in view. -->
           <TextBox x:Name="ApprovalCommand" Classes="code" Text="{Binding Command}" IsReadOnly="{Binding IsCommandReadOnly}" TextWrapping="Wrap" Background="{DynamicResource CodeBrush}"
                    MaxHeight="280" ScrollViewer.VerticalScrollBarVisibility="Auto" IsVisible="{Binding ShowsCommand}"
@@ -454,8 +446,7 @@
             <Button Classes="plain" Content="{x:Static res:Strings.ApprovalReply}" Command="{Binding ReplyCommand}" IsVisible="{Binding !IsReplying}" />
           </WrapPanel>
           <WrapPanel IsVisible="{Binding IsPlan}">
-            <Button Margin="0,0,8,0" Content="{x:Static res:Strings.PlanReview}" Command="{Binding ReviewCommand}" />
-            <Button Classes="primary" Content="{Binding RunLabel}" Command="{Binding RunCommand}" />
+            <Button Content="{x:Static res:Strings.PlanShow}" Command="{Binding ReviewCommand}" />
           </WrapPanel>
         </StackPanel>
       </Border>
@@ -553,8 +544,12 @@
       <Grid ColumnDefinitions="*,Auto" Margin="0,6,-4,0">
       <!-- What the agent is doing, next to where the user writes to it, announced to screen readers as it changes. -->
       <StackPanel Orientation="Horizontal" Spacing="6" Margin="4,0,8,0" VerticalAlignment="Center">
-        <Ellipse Classes="status" Classes.working="{Binding IsWorking}" Classes.waiting="{Binding NeedsUser}"
-                 Classes.stopped="{Binding IsInterrupted}" VerticalAlignment="Center" />
+        <!-- A spinner while the agent works, a dot while it waits, is idle or stopped. -->
+        <Panel Width="12" Height="12" VerticalAlignment="Center">
+          <c:Spinner IsVisible="{Binding IsWorking}" />
+          <Ellipse Classes="status" Classes.waiting="{Binding NeedsUser}" Classes.stopped="{Binding IsInterrupted}"
+                   HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{Binding !IsWorking}" />
+        </Panel>
         <TextBlock Classes="secondary" Text="{Binding StatusText}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding StatusText}"
                    VerticalAlignment="Center" AutomationProperties.LiveSetting="Polite" />
       </StackPanel>
@@ -602,7 +597,8 @@
 
     <!-- The conversation, a centred reading column however wide the window is; the scroll bar stays at the pane's edge. -->
     <ScrollViewer x:Name="Scroller" Padding="16,8">
-      <ItemsControl x:Name="ItemList" ItemsSource="{Binding Items}" MaxWidth="{StaticResource ReadingWidth}">
+      <StackPanel MaxWidth="{StaticResource ReadingWidth}">
+      <ItemsControl x:Name="ItemList" ItemsSource="{Binding Items}">
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="chat:ChatItemViewModel">
             <Panel>
@@ -633,14 +629,18 @@
                       <DataTemplate x:DataType="chat:LookProgressHostViewModel">
                         <Border Classes="lookHost" Classes.first="{Binding IsFirst}">
                           <StackPanel Spacing="4">
-                            <ContentControl Content="{Binding Chip}" ContentTemplate="{StaticResource HostChip}" HorizontalAlignment="Left" Margin="0,0,0,-4" />
+                            <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,-4">
+                              <ContentControl Content="{Binding Chip}" ContentTemplate="{StaticResource HostChip}" />
+                              <TextBlock Classes="secondary" FontSize="{StaticResource SmallSize}" Text="{Binding State}" VerticalAlignment="Center"
+                                         IsVisible="{Binding State, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                            </StackPanel>
                             <ItemsControl ItemsSource="{Binding Commands}">
                               <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="chat:LookCommandViewModel">
                                   <Grid ColumnDefinitions="14,*" ColumnSpacing="4" Margin="0,1">
                                     <Panel VerticalAlignment="Top" Margin="0,1,0,0">
                                       <TextBlock Text="✓" Foreground="{DynamicResource SyntaxAddedBrush}" FontSize="{StaticResource SmallSize}" IsVisible="{Binding IsDone}" />
-                                      <TextBlock Text="●" Foreground="{DynamicResource AccentBrush}" FontSize="{StaticResource CaptionSize}" IsVisible="{Binding IsRunning}" />
+                                      <c:Spinner IsVisible="{Binding IsRunning}" Margin="0,2,0,0" HorizontalAlignment="Left" />
                                       <TextBlock Text="✗" Foreground="{DynamicResource DangerBrush}" FontSize="{StaticResource SmallSize}" IsVisible="{Binding IsFailed}" />
                                     </Panel>
                                     <SelectableTextBlock Grid.Column="1" Classes="mono secondary" Text="{Binding Command}" TextWrapping="Wrap" />
@@ -674,6 +674,12 @@
           </DataTemplate>
         </ItemsControl.ItemTemplate>
       </ItemsControl>
+      <!-- The agent working before anything shows: a line at the end of the conversation, so the wait reads as work. -->
+      <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,8" IsVisible="{Binding ShowsThinking}">
+        <c:Spinner VerticalAlignment="Center" />
+        <TextBlock Classes="secondary" Text="{Binding ThinkingText}" VerticalAlignment="Center" TextWrapping="Wrap" />
+      </StackPanel>
+      </StackPanel>
     </ScrollViewer>
   </DockPanel>
 </UserControl>

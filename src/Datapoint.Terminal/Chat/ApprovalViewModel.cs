@@ -91,6 +91,8 @@ public sealed partial class ApprovalViewModel : ObservableObject
     // How many steps, and how many need care, e.g. "5 steps · 1 ends the SSH session".
     public string StepCountText { get; }
 
+    public string PlanReadyText => Strings.Format(Strings.PlanReadyText, StepCountText);
+
     public string? Rollback { get; }
 
     public bool HasRollback => Rollback is not null;
@@ -138,7 +140,7 @@ public sealed partial class ApprovalViewModel : ObservableObject
         (ProposalKind.Look, _, _) => Purpose,
         (ProposalKind.OpenTerminal, _, _) => Strings.ApprovalHeadingOpen,
         (ProposalKind.SendKeys, _, _) => Strings.ApprovalHeadingKeys,
-        (ProposalKind.Plan, _, _) => PlanTitle is { } title ? Strings.Format(Strings.ApprovalHeadingPlanNamed, title) : Strings.ApprovalHeadingPlan,
+        (ProposalKind.Plan, _, _) => PlanTitle is { } title ? Strings.Format(Strings.PlanReadyHeadingNamed, title) : Strings.PlanReadyHeading,
         (ProposalKind.EditFile, _, _) => Strings.ApprovalHeadingEdit,
         (ProposalKind.Rollout, _, _) => Strings.ApprovalHeadingRollout,
         (ProposalKind.PlanMode, _, _) => Strings.Format(Strings.ApprovalHeadingPlanMode, Command),

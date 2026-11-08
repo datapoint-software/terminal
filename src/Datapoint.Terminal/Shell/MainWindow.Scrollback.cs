@@ -24,8 +24,9 @@ public sealed partial class MainWindow
     {
         try
         {
+            // The earlier session shows in the terminal itself; while the agent looks at the host, the chat stays on the look.
             var work = WithHistory(store => store.LastWorkOn(connection), null);
-            if (work is { } last)
+            if (work is { } last && !_chat.IsLookingAt(connection))
             {
                 var when = Describe(last.Time).ToLower(CultureInfo.CurrentCulture);
                 var text = last.Reply is { } reply

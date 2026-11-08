@@ -3,8 +3,9 @@ using Datapoint.Terminal.Chat;
 
 namespace Datapoint.Terminal.Shell;
 
-// Product decision 111: one page in the documents area for the plan under review. It opens when the user asks to review a
-// plan, and once open it follows the agent's revisions, so the user sees each new version where they left the last.
+// Product decision 111: one page in the documents area for the plan under review. Product decision 117: it opens as soon as
+// the agent proposes a plan, in front but without taking the keyboard, and follows the agent's revisions, so the user sees
+// each new version where they left the last. Asking to show it also puts the keyboard there.
 public sealed partial class MainWindow
 {
     private PlanReviewViewModel? _planReview;
@@ -14,11 +15,6 @@ public sealed partial class MainWindow
     {
         if (_planReview is null)
         {
-            if (!requested)
-            {
-                return;
-            }
-
             _planReview = new PlanReviewViewModel(plan, ClosePlan);
             _planView = new PlanReviewView { DataContext = _planReview };
             _documents.Add(_planReview);
@@ -28,12 +24,12 @@ public sealed partial class MainWindow
             _planReview.Load(plan);
         }
 
+        DocumentTabs.SelectedItem = _planReview;
         if (!requested)
         {
             return;
         }
 
-        DocumentTabs.SelectedItem = _planReview;
         Dispatcher.UIThread.Post(() => _planView?.Focus(), DispatcherPriority.Background);
     }
 

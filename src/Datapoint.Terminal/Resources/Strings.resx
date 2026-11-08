@@ -1146,9 +1146,6 @@ Fingerprint: {2}</value>
   <data name="PlanStepAccessible" xml:space="preserve">
     <value>Step {0}, {1}: {2}</value>
   </data>
-  <data name="ApprovalHeadingPlanNamed" xml:space="preserve">
-    <value>Plan: {0}</value>
-  </data>
   <data name="PlanStepCount" xml:space="preserve">
     <value>{0} steps</value>
   </data>
@@ -2466,9 +2463,6 @@ Fingerprint: {2}</value>
   <data name="PlanCommentSent" xml:space="preserve">
     <value>Sent</value>
   </data>
-  <data name="PlanReview" xml:space="preserve">
-    <value>Review plan</value>
-  </data>
   <data name="PlanDocumentName" xml:space="preserve">
     <value>Plan</value>
   </data>
@@ -2756,5 +2750,32 @@ Fingerprint: {2}</value>
   </data>
   <data name="NotifyTerminalInput" xml:space="preserve">
     <value>{0} is waiting for you to type in it.</value>
+  </data>
+  <data name="PlanReadyText" xml:space="preserve">
+    <value>{0}. It's open in the documents area: read it, comment on any step, then approve it there.</value>
+  </data>
+  <data name="PlanReadyHeading" xml:space="preserve">
+    <value>The plan is ready</value>
+  </data>
+  <data name="PlanReadyHeadingNamed" xml:space="preserve">
+    <value>The plan is ready: {0}</value>
+  </data>
+  <data name="PlanShow" xml:space="preserve">
+    <value>Show the plan</value>
+  </data>
+  <data name="ChatThinking" xml:space="preserve">
+    <value>Thinking…</value>
+  </data>
+  <data name="ChatThinkingAboutFindings" xml:space="preserve">
+    <value>Going through what it found…</value>
+  </data>
+  <data name="StatusLookingAt" xml:space="preserve">
+    <value>Looking at {0}</value>
+  </data>
+  <data name="LookOpening" xml:space="preserve">
+    <value>Opening a terminal…</value>
+  </data>
+  <data name="LookConnecting" xml:space="preserve">
+    <value>Connecting…</value>
   </data>
 </root>

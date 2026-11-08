@@ -253,12 +253,63 @@ public sealed class ChatViewTests
         frame?.Save("rendered/chat-plan.png", new PngBitmapEncoderOptions());
 
         Assert.Equal("In Local · ssh session to root@swarm-a", chat.Approval!.TerminalText);
-        Assert.Equal("Plan: Update swarm-a", chat.Approval.Heading);
+        Assert.Equal("The plan is ready: Update swarm-a", chat.Approval.Heading);
         Assert.Equal("5 steps · 1 ends the SSH session", chat.Approval.StepCountText);
         var reboot = chat.Approval.PlanSteps[3];
         Assert.Equal(["Ends the SSH session"], reboot.Warnings);
-        var run = window.GetVisualDescendants().OfType<Button>().Single(button => button.IsEffectivelyVisible && Equals(button.Content, chat.Approval.RunLabel));
-        Assert.InRange(run.TranslatePoint(new Point(0, run.Bounds.Height), window)!.Value.Y, 0, window.Height);
+        Assert.Equal("5 steps · 1 ends the SSH session. It's open in the documents area: read it, comment on any step, then approve it there.", chat.Approval.PlanReadyText);
+        var buttons = window.GetVisualDescendants().OfType<Button>().Where(button => button.IsEffectivelyVisible).Select(button => button.Content).ToList();
+        Assert.Contains("Show the plan", buttons);
+        Assert.DoesNotContain(chat.Approval.RunLabel, buttons);
+    }
+
+    [AvaloniaFact]
+    public void Shows_looking_on_one_card_with_each_hosts_progress()
+    {
+        using var chat = new ChatViewModel(new ImmediateUiThread());
+        chat.Items.Add(new ChatItemViewModel(ChatItemKind.User, "We need to apply the missing updates to node b and c"));
+        var look = new AgentLook("Update Swarm nodes b and c", [new AgentLookHost("swarm-b", "Pending updates.", "production") { IsConnection = true }, new AgentLookHost("swarm-c", "Pending updates.", "production") { IsConnection = true }]);
+        _ = chat.RequestApprovalAsync(new CommandProposal(look.Text, look.Title, CommandRisk.ReadOnly, string.Empty) { Kind = ProposalKind.Look, Look = look }, CancellationToken.None);
+        chat.Approval!.RunCommand.Execute(null);
+        chat.Show(new AgentEventArgs(AgentEventKind.Notice, "Opening a terminal for swarm-b: Check pending updates.") { Terminal = "swarm-b" });
+        Assert.True(chat.NoteLookHost("swarm-b", null));
+        chat.Show(new AgentEventArgs(AgentEventKind.CommandStarted, "Updates") { Terminal = "swarm-b", Command = "apt list --upgradable" });
+        chat.Show(new AgentEventArgs(AgentEventKind.CommandFinished, "Updates") { Terminal = "swarm-b", Command = "apt list --upgradable", ExitCode = 0 });
+        chat.Show(new AgentEventArgs(AgentEventKind.Notice, "Opening a terminal for swarm-c: Check pending updates.") { Terminal = "swarm-c" });
+        Assert.True(chat.NoteLookHost("swarm-c", "Connecting…"));
+        chat.Show(new AgentEventArgs(AgentEventKind.StatusChanged, string.Empty) { Status = AgentStatus.RunningCommand, Terminal = "swarm-b" });
+        chat.Show(new AgentEventArgs(AgentEventKind.CommandStarted, "Reboot") { Terminal = "swarm-b", Command = "ls /var/run/reboot-required" });
+        var window = new Window { Width = 420, Height = 560, Content = new ChatView { DataContext = chat } };
+        window.Show();
+
+        Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+        using var frame = window.CaptureRenderedFrame();
+        Directory.CreateDirectory("rendered");
+        frame?.Save("rendered/chat-look-progress.png", new PngBitmapEncoderOptions());
+
+        Assert.DoesNotContain(chat.Items, item => item.Kind == ChatItemKind.Notice);
+        Assert.Equal("Looking at swarm-b", chat.StatusText);
+        Assert.True(chat.IsLookingAt("swarm-c"));
+        Assert.False(chat.IsLookingAt("swarm-a"));
+    }
+
+    [AvaloniaFact]
+    public void Shows_the_agent_thinking_until_its_reply_starts()
+    {
+        using var chat = new ChatViewModel(new ImmediateUiThread());
+        chat.Items.Add(new ChatItemViewModel(ChatItemKind.User, "Which nodes need updates?"));
+
+        chat.Show(new AgentEventArgs(AgentEventKind.StatusChanged, string.Empty) { Status = AgentStatus.Thinking });
+        var window = new Window { Width = 420, Height = 300, Content = new ChatView { DataContext = chat } };
+        window.Show();
+        Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+        using var frame = window.CaptureRenderedFrame();
+        Directory.CreateDirectory("rendered");
+        frame?.Save("rendered/chat-thinking.png", new PngBitmapEncoderOptions());
+        Assert.True(chat.ShowsThinking);
+
+        chat.Show(new AgentEventArgs(AgentEventKind.TextDelta, "Both "));
+        Assert.False(chat.ShowsThinking);
     }
 
     [AvaloniaFact]

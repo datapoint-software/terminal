@@ -36,7 +36,7 @@ public sealed partial class TerminalAgent
               "terminal":{"type":"string","description":"The terminal the plan is mostly about, as listed in the user's message."},
               "title":{"type":"string","description":"The task in a few words, e.g. \"Drain swarm-b for a kernel update\"."},
               "summary":{"type":"string","description":"What the plan achieves, in one sentence."},
-              "findings":{"type":"string","description":"What you found while looking that the plan rests on, as a short Markdown list naming the hosts."},
+              "findings":{"type":"string","description":"What you found while looking that the plan rests on, as a short Markdown list naming the hosts. It's your message to the user in the chat before the plan, and heads the plan; don't also write it as text."},
               "steps":{"type":"array","description":"The steps in order.","items":{"type":"object","properties":{
                 "title":{"type":"string","description":"The action in a few words, e.g. \"Move the Postgres leader off swarm-b\"."},
                 "terminals":{"type":"array","items":{"type":"string"},"description":"The hosts the step runs on: open terminals or listed connections. Never write them into the other fields."},
@@ -60,6 +60,7 @@ public sealed partial class TerminalAgent
 
         var summary = plan.Summary;
         var terminal = FindTerminal(arguments, out _);
+        SayFirst(plan.Findings);
         SetStatus(AgentStatus.WaitingForApproval, terminal);
         var proposal = new CommandProposal(plan.Text, summary, CommandRisk.Changes, terminal?.Name ?? string.Empty, terminal?.Environment) { Kind = ProposalKind.Plan, Plan = plan, Session = terminal?.Terminal.GetState().Session, Environments = EnvironmentsOf(plan), PreviousPlan = _proposedPlan };
         _proposedPlan = plan;

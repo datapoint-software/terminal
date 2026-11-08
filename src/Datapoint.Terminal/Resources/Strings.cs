@@ -762,8 +762,6 @@ public static class Strings
 
     public static string PlanStepAccessible => Get(nameof(PlanStepAccessible));
 
-    public static string ApprovalHeadingPlanNamed => Get(nameof(ApprovalHeadingPlanNamed));
-
     public static string PlanStepCount => Get(nameof(PlanStepCount));
 
     public static string PlanStepCountOne => Get(nameof(PlanStepCountOne));
@@ -1642,8 +1640,6 @@ public static class Strings
 
     public static string PlanCommentSent => Get(nameof(PlanCommentSent));
 
-    public static string PlanReview => Get(nameof(PlanReview));
-
     public static string PlanDocumentName => Get(nameof(PlanDocumentName));
 
     public static string PlanDocumentUnsent => Get(nameof(PlanDocumentUnsent));
@@ -1835,6 +1831,24 @@ public static class Strings
     public static string ChatTerminalInputShow => Get(nameof(ChatTerminalInputShow));
 
     public static string NotifyTerminalInput => Get(nameof(NotifyTerminalInput));
+
+    public static string PlanReadyText => Get(nameof(PlanReadyText));
+
+    public static string PlanReadyHeading => Get(nameof(PlanReadyHeading));
+
+    public static string PlanReadyHeadingNamed => Get(nameof(PlanReadyHeadingNamed));
+
+    public static string PlanShow => Get(nameof(PlanShow));
+
+    public static string ChatThinking => Get(nameof(ChatThinking));
+
+    public static string ChatThinkingAboutFindings => Get(nameof(ChatThinkingAboutFindings));
+
+    public static string StatusLookingAt => Get(nameof(StatusLookingAt));
+
+    public static string LookOpening => Get(nameof(LookOpening));
+
+    public static string LookConnecting => Get(nameof(LookConnecting));
 
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 

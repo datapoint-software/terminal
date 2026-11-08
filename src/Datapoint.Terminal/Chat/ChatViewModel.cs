@@ -154,6 +154,19 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
 
     public void AddNotice(string text) => Items.Add(new ChatItemViewModel(ChatItemKind.Notice, text));
 
+    // Product decision 117: while the agent looks, how a host's terminal is coming along shows on the Looking card instead
+    // of a line in the chat. False when no look covers the host, so the caller adds its notice.
+    public bool NoteLookHost(string host, string? state) => _look?.Note(host, state) == true;
+
+    public bool IsLookingAt(string host) => _look?.Covers(host) == true;
+
+    // The agent thinking with nothing on screen yet, shown as a line at the end of the conversation.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ThinkingText))]
+    public partial bool ShowsThinking { get; private set; }
+
+    public string ThinkingText => _look is not null ? Strings.ChatThinkingAboutFindings : Strings.ChatThinking;
+
     public void AddNotice(string text, string actionLabel, Action action) => Items.Add(new ChatItemViewModel(ChatItemKind.Notice, text)
     {
         ActionLabel = actionLabel,
@@ -489,8 +502,7 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
                 ShowCommand(e);
                 break;
             case AgentEventKind.Notice:
-                _streaming = null;
-                Items.Add(new ChatItemViewModel(ChatItemKind.Notice, e.Text));
+                ShowNotice(e);
                 break;
             case AgentEventKind.StatusChanged:
                 ChangeStatus(e);
@@ -602,6 +614,7 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
 
     private void AppendDelta(string text)
     {
+        ShowsThinking = false;
         if (_streaming is null)
         {
             _streaming = new ChatItemViewModel(ChatItemKind.Agent, string.Empty);
@@ -613,6 +626,7 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
 
     private void FinishReply(string text)
     {
+        ShowsThinking = false;
         if (_streaming is null)
         {
             Items.Add(new ChatItemViewModel(ChatItemKind.Agent, text));
@@ -667,10 +681,21 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
     private void ChangeStatus(AgentEventArgs e)
     {
         InputTerminal = e.Status == AgentStatus.WaitingForUser ? e.Terminal : null;
-        SetStatus(e.Status);
+        SetStatus(e.Status, e.Terminal);
     }
 
-    private void SetStatus(AgentStatus status)
+    private void ShowNotice(AgentEventArgs e)
+    {
+        _streaming = null;
+        if (e.Terminal is { } terminal && NoteLookHost(terminal, Strings.LookOpening))
+        {
+            return;
+        }
+
+        Items.Add(new ChatItemViewModel(ChatItemKind.Notice, e.Text));
+    }
+
+    private void SetStatus(AgentStatus status, string? terminal = null)
     {
         if (status == AgentStatus.Thinking)
         {
@@ -685,9 +710,11 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
         }
 
         Status = status;
+        ShowsThinking = status == AgentStatus.Thinking;
         StatusText = status switch
         {
             AgentStatus.Thinking => Strings.StatusThinking,
+            AgentStatus.RunningCommand when terminal is not null && IsLookingAt(terminal) => Strings.Format(Strings.StatusLookingAt, terminal),
             AgentStatus.RunningCommand => Strings.StatusRunningCommand,
             AgentStatus.WaitingForApproval => Strings.StatusWaitingForApproval,
             AgentStatus.WaitingForUser => Strings.StatusWaitingForUser,

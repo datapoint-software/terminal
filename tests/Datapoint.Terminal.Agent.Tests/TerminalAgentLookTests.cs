@@ -86,6 +86,17 @@ public sealed class TerminalAgentLookTests
     }
 
     [Fact]
+    public async Task Says_what_it_found_before_its_plan()
+    {
+        var plan = Arguments(("summary", "Drain web1"), ("findings", "- web1 runs the API."), ("steps", JsonDocument.Parse("""[{"command":"docker node update --availability drain web1","purpose":"Move its tasks","terminals":["web1"]}]""").RootElement.Clone()));
+        using var agent = await RunAsync(ApprovalMode.Ask, _ => Call("propose_plan", plan));
+
+        var said = _events.FindIndex(e => e.Kind == AgentEventKind.Reply && string.Equals(e.Text, "- web1 runs the API.", StringComparison.Ordinal));
+        var asked = _events.FindIndex(e => e.Kind == AgentEventKind.StatusChanged && e.Status == AgentStatus.WaitingForApproval);
+        Assert.InRange(said, 0, asked - 1);
+    }
+
+    [Fact]
     public async Task Runs_read_only_commands_on_those_hosts_without_asking_once_allowed()
     {
         using var agent = await RunAsync(ApprovalMode.Ask, Look("web1"), Run("web1", "uptime"), Run("web1", "sudo systemctl restart nginx"), Run("web2", "uptime"));

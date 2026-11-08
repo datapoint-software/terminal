@@ -42,7 +42,7 @@ public sealed partial class TerminalAgent
             return problem;
         }
 
-        SayBeforeAsking(arguments);
+        SayFirst(ToolArguments.GetString(arguments, "message"));
         if (Mode != ApprovalMode.IgnorePermissions)
         {
             SetStatus(AgentStatus.WaitingForApproval);
@@ -66,11 +66,11 @@ public sealed partial class TerminalAgent
             + " Run one simple command at a time, then propose your plan with what you found.";
     }
 
-    // The card says what will be looked at on each host; the message, in the agent's own words, says why it's asking now. It
-    // reads as a reply, unless the agent already wrote one in this step.
-    private void SayBeforeAsking(AIFunctionArguments arguments)
+    // A card says what's asked; a message in the agent's own words comes first: why it wants to look, or what it found
+    // before its plan. It reads as a reply, unless the agent already wrote one in this step.
+    private void SayFirst(string? text)
     {
-        if (_hasRepliedThisStep || ToolArguments.GetString(arguments, "message")?.Trim() is not { Length: > 0 } message)
+        if (_hasRepliedThisStep || text?.Trim() is not { Length: > 0 } message)
         {
             return;
         }

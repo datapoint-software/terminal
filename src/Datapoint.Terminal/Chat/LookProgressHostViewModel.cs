@@ -1,11 +1,16 @@
 using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Datapoint.Terminal.Agent;
 
 namespace Datapoint.Terminal.Chat;
 
-// A host on the Looking card, with the commands the agent ran there.
-public sealed class LookProgressHostViewModel(AgentLookHost host, bool isFirst)
+// A host on the Looking card, with the commands the agent ran there, and, until the first one, how its terminal is coming
+// along (opening, connecting) in place of a line each in the chat.
+public sealed partial class LookProgressHostViewModel(AgentLookHost host, bool isFirst) : ObservableObject
 {
+    [ObservableProperty]
+    public partial string? State { get; set; }
+
     public HostChipViewModel Chip { get; } = new(host.Name, host.Environment);
 
     public bool IsFirst => isFirst;

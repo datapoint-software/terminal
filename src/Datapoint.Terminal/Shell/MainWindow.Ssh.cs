@@ -38,7 +38,11 @@ public sealed partial class MainWindow
             return null;
         }
 
-        ConnectNotice(Strings.Format(Strings.NoticeConnecting, connection.Name));
+        if (!_chat.NoteLookHost(connection.Name, Strings.LookConnecting))
+        {
+            ConnectNotice(Strings.Format(Strings.NoticeConnecting, connection.Name));
+        }
+
         try
         {
             var (session, shared) = await LogInAsync(connection, config, host, jumps).ConfigureAwait(true);
@@ -56,6 +60,12 @@ public sealed partial class MainWindow
     private void NoteIntegration(WorkspaceConnection connection, SshTerminalSession session)
     {
         if (connection.Container is not null || connection.ShellIntegration == false)
+        {
+            return;
+        }
+
+        // Integration being on is routine while the agent looks; its absence changes what the agent can tell, so it still shows.
+        if (session.ShellIntegrationNonce is not null && _chat.NoteLookHost(connection.Name, null))
         {
             return;
         }

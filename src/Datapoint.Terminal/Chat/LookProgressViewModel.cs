@@ -30,10 +30,25 @@ public sealed partial class LookProgressViewModel(AgentLook look) : ObservableOb
             return false;
         }
 
+        host.State = null;
         host.Commands.Add(new LookCommandViewModel(command));
         CommandCount++;
         return true;
     }
+
+    // False when the look is over or doesn't cover the host, so the chat says it on a line of its own.
+    public bool Note(string host, string? state)
+    {
+        if (IsOver || Hosts.FirstOrDefault(item => item.Owns(host)) is not { } item)
+        {
+            return false;
+        }
+
+        item.State = state;
+        return true;
+    }
+
+    public bool Covers(string host) => !IsOver && Hosts.Any(item => item.Owns(host));
 
     public bool Finish(string terminal, string command, int? exitCode)
     {
@@ -53,6 +68,11 @@ public sealed partial class LookProgressViewModel(AgentLook look) : ObservableOb
         foreach (var item in Hosts.SelectMany(host => host.Commands).Where(item => item.IsRunning))
         {
             item.IsRunning = false;
+        }
+
+        foreach (var host in Hosts)
+        {
+            host.State = null;
         }
 
         IsOver = true;
