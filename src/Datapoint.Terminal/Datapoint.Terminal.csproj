@@ -29,6 +29,8 @@
   <!-- Every window's icon, which macOS shows in the Dock and Linux in the title bar and taskbar (product decision 149). -->
   <ItemGroup>
     <AvaloniaResource Include="..\..\branding\terminal-icon.png" Link="Assets\terminal-icon.png" />
+    <!-- The Dock's icon on macOS, drawn on Apple's grid (MacDockIcon). -->
+    <EmbeddedResource Include="..\..\branding\terminal-icon.icns" LogicalName="Datapoint.Terminal.Branding.terminal-icon.icns" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Datapoint.Terminal.Tests" />

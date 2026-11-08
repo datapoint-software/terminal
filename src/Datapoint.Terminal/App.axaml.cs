@@ -18,6 +18,11 @@ public sealed partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            if (OperatingSystem.IsMacOS())
+            {
+                MacDockIcon.Apply();
+            }
+
             var store = new SettingsStore(SettingsStore.DefaultPath);
             var keys = new ProviderKeys(CredentialStores.ForThisSystem(), Environment.GetEnvironmentVariable);
             var settings = new SettingsViewModel(store, MainWindow.FirstRun(store.Load()), keys, MainWindow.CreateClient);
