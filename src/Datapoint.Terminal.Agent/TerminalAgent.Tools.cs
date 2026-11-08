@@ -396,7 +396,7 @@ public sealed partial class TerminalAgent
     // Terminal text is marked as data so the model doesn't take it for instructions.
     private string Untrusted(string text)
     {
-        var redacted = _redactor.Redact(text);
+        var redacted = RepeatedLines.Collapse(_redactor.Redact(text));
         var limit = OutputLimit;
         if (redacted.Length > limit)
         {

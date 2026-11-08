@@ -1,11 +1,12 @@
 using Datapoint.Terminal.Agent.Safety;
 using Datapoint.Terminal.Agent.Tests.Fakes;
+using Datapoint.Terminal.Agent.Tools;
 using Microsoft.Extensions.AI;
 using static Datapoint.Terminal.Agent.Tests.Fakes.ScriptedChatClient;
 
 namespace Datapoint.Terminal.Agent.Tests;
 
-// Product decision 136.
+// Product decisions 136 and 137: unchanged screens, and lines repeated in a row.
 public sealed class TerminalAgentReadsTests
 {
     private static CancellationToken Token => TestContext.Current.CancellationToken;
@@ -51,4 +52,12 @@ public sealed class TerminalAgentReadsTests
 
         Assert.All(results, result => Assert.Contains("<terminal_output>", result, StringComparison.Ordinal));
     }
+
+    [Theory]
+    [InlineData("a\nb\nc", "a\nb\nc")]
+    [InlineData("retry\nretry", "retry\nretry")]
+    [InlineData("start\nretry\nretry\nretry\nretry\ndone", "start\nretry\n[the line above repeats 3 more times]\ndone")]
+    [InlineData("x\n\n\n\n\ny", "x\n\n[the line above repeats 3 more times]\ny")]
+    [InlineData("GET /health 200\nGET /health 200\nGET /health 500\nGET /health 200", "GET /health 200\nGET /health 200\nGET /health 500\nGET /health 200")]
+    public void Collapses_only_exact_runs_of_three_or_more(string text, string expected) => Assert.Equal(expected, RepeatedLines.Collapse(text));
 }
