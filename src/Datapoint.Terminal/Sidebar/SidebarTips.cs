@@ -53,13 +53,22 @@ internal sealed class SidebarTips(IReadOnlyList<(Control Target, string Title, s
         _index = index;
         var isLast = !tips.Skip(index + 1).Any(tip => tip.Target.IsEffectivelyVisible);
         var next = new Button { Content = isLast ? Strings.TipDone : Strings.TipNext };
-        var flyout = new Flyout { Content = Content(tips[index].Title, tips[index].Text, index, isLast, next), Placement = PlacementMode.RightEdgeAlignedTop };
+        var target = tips[index].Target;
+        var flyout = new Flyout
+        {
+            Content = Bubble(Content(tips[index].Title, tips[index].Text, index, isLast, next)),
+            Placement = PlacementMode.RightEdgeAlignedTop,
+
+            // The arrow sits below the bubble's rounded corner, so the bubble moves up to bring it level with the part's middle.
+            VerticalOffset = (target.Bounds.Height / 2) - ArrowTop - (ArrowHeight / 2),
+        };
+        flyout.FlyoutPresenterClasses.Add("tip");
         flyout.Opened += (_, _) => next.Focus();
 
         // Closed other than by the tour, as by a click elsewhere, ends it.
         flyout.Closed += (_, _) => OnClosed(flyout);
         Replace(flyout);
-        flyout.ShowAt(tips[index].Target);
+        flyout.ShowAt(target);
     }
 
     private void OnClosed(Flyout flyout)
@@ -80,6 +89,27 @@ internal sealed class SidebarTips(IReadOnlyList<(Control Target, string Title, s
         previous?.Hide();
         _isMoving = false;
     }
+
+    private static Grid Bubble(StackPanel content)
+    {
+        var fill = new Avalonia.Controls.Shapes.Path { Data = Geometry.Parse("M9,0 L1,8 L9,16 Z") };
+        fill.Bind(Avalonia.Controls.Shapes.Shape.FillProperty, fill.GetResourceObservable("CardBrush"));
+        var edge = new Avalonia.Controls.Shapes.Path { Data = Geometry.Parse("M9,0 L1,8 L9,16"), StrokeThickness = 1 };
+        edge.Bind(Avalonia.Controls.Shapes.Shape.StrokeProperty, edge.GetResourceObservable("SeparatorBrush"));
+        var arrow = new Panel { Width = 9, Height = ArrowHeight, VerticalAlignment = VerticalAlignment.Top, Margin = new Avalonia.Thickness(0, ArrowTop, -1, 0), ZIndex = 1, Children = { fill, edge } };
+        var bubble = new Border { Child = content, Padding = new Avalonia.Thickness(14, 12), CornerRadius = new Avalonia.CornerRadius(8), BorderThickness = new Avalonia.Thickness(1) };
+        bubble.Bind(Border.BackgroundProperty, bubble.GetResourceObservable("CardBrush"));
+        bubble.Bind(Border.BorderBrushProperty, bubble.GetResourceObservable("SeparatorBrush"));
+        var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*"), Margin = new Avalonia.Thickness(2, 0, 0, 0) };
+        grid.Children.Add(arrow);
+        grid.Children.Add(bubble);
+        Grid.SetColumn(bubble, 1);
+        return grid;
+    }
+
+    private const double ArrowHeight = 16;
+
+    private const double ArrowTop = 12;
 
     private StackPanel Content(string title, string text, int index, bool isLast, Button next)
     {
