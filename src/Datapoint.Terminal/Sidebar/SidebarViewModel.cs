@@ -59,6 +59,8 @@ public sealed partial class SidebarViewModel(string workspaceFolder) : Observabl
 
     public Action<WorkspaceConnection>? HostRemoved { get; set; }
 
+    public Action<WorkspaceConnection>? HostEditRequested { get; set; }
+
     public Action<string>? HostAdded { get; set; }
 
     public Action<SkillItemViewModel>? SkillChosen { get; set; }
@@ -154,6 +156,9 @@ public sealed partial class SidebarViewModel(string workspaceFolder) : Observabl
 
     [RelayCommand]
     private void RemoveHost(HostItemViewModel host) => HostRemoved?.Invoke(host.Connection);
+
+    [RelayCommand]
+    private void EditHost(HostItemViewModel host) => HostEditRequested?.Invoke(host.Connection);
 
     [RelayCommand]
     private void ChooseSkill(SkillItemViewModel skill) => SkillChosen?.Invoke(skill);

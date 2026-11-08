@@ -79,6 +79,8 @@
                     <MenuItem Header="{x:Static res:Strings.SidebarOpenTerminal}"
                               Command="{Binding $parent[side:SidebarView].((side:SidebarViewModel)DataContext).OpenTerminalCommand}" CommandParameter="{Binding}" />
                     <Separator />
+                    <MenuItem Header="{x:Static res:Strings.SidebarEditHost}"
+                              Command="{Binding $parent[side:SidebarView].((side:SidebarViewModel)DataContext).EditHostCommand}" CommandParameter="{Binding}" />
                     <MenuItem Header="{x:Static res:Strings.SidebarRemoveHost}"
                               Command="{Binding $parent[side:SidebarView].((side:SidebarViewModel)DataContext).RemoveHostCommand}" CommandParameter="{Binding}" />
                   </MenuFlyout>

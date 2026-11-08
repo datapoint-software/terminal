@@ -1889,6 +1889,28 @@ public static class Strings
 
     public static string TokensMillions => Get(nameof(TokensMillions));
 
+    public static string EditHostTitle => Get(nameof(EditHostTitle));
+
+    public static string EditHostHeading => Get(nameof(EditHostHeading));
+
+    public static string EditHostSave => Get(nameof(EditHostSave));
+
+    public static string EditHostNameFixed => Get(nameof(EditHostNameFixed));
+
+    public static string EditHostLeavingProduction => Get(nameof(EditHostLeavingProduction));
+
+    public static string EditHostMoving => Get(nameof(EditHostMoving));
+
+    public static string SidebarEditHost => Get(nameof(SidebarEditHost));
+
+    public static string DocumentEditHost => Get(nameof(DocumentEditHost));
+
+    public static string NoticeHostEdited => Get(nameof(NoticeHostEdited));
+
+    public static string NoticeHostEditedOpen => Get(nameof(NoticeHostEditedOpen));
+
+    public static string NoticeWorkspaceReadOnlyNotEdited => Get(nameof(NoticeWorkspaceReadOnlyNotEdited));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

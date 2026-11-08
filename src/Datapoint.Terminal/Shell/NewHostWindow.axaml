@@ -20,7 +20,7 @@
   </Window.Styles>
 
   <StackPanel Margin="24,20">
-    <TextBlock Classes="dialogTitle" Text="{x:Static res:Strings.NewHostTitle}" />
+    <TextBlock x:Name="TitleText" Classes="dialogTitle" Text="{x:Static res:Strings.NewHostTitle}" />
     <TextBlock Classes="secondary" Margin="0,2,0,14" Text="{x:Static res:Strings.NewHostCaption}" />
     <Border Classes="group">
       <StackPanel>
@@ -61,6 +61,10 @@
     </Border>
     <TextBlock x:Name="ProductionNote" Classes="secondary" Margin="4,6,4,0" IsVisible="False"
                Text="{x:Static res:Strings.NewHostProductionNote}" />
+    <TextBlock x:Name="LeavingProductionNote" Classes="secondary" Margin="4,6,4,0" IsVisible="False" TextWrapping="Wrap"
+               Text="{x:Static res:Strings.EditHostLeavingProduction}" />
+    <TextBlock x:Name="MovingNote" Classes="secondary" Margin="4,6,4,0" IsVisible="False" TextWrapping="Wrap"
+               Text="{x:Static res:Strings.EditHostMoving}" />
     <WrapPanel x:Name="LabelPanel" Margin="4,10,0,0" ItemSpacing="6" LineSpacing="6" IsVisible="False">
       <TextBlock Classes="secondary" Margin="0,0,4,0" VerticalAlignment="Center" Text="{x:Static res:Strings.NewHostLabelsUsed}" />
     </WrapPanel>

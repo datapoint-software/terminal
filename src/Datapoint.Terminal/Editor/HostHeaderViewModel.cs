@@ -12,19 +12,30 @@ public sealed partial class HostHeaderViewModel(string name, string? environment
 {
     public string Name { get; } = name;
 
-    public string? Environment { get; } = environment;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasEnvironment), nameof(IsProduction))]
+    public partial string? Environment { get; set; } = environment;
 
     public bool HasEnvironment => Environment is not null;
 
     public bool IsProduction => Agent.EnvironmentLabels.IsProduction(Environment);
 
-    public IReadOnlyList<string> Labels { get; init => field = value ?? []; } = [];
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasLabels))]
+    public partial IReadOnlyList<string> Labels { get; set; } = [];
 
     public bool HasLabels => Labels.Count > 0;
 
-    public string? Address { get; } = address;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasAddress))]
+    public partial string? Address { get; set; } = address;
 
     public bool HasAddress => !string.IsNullOrEmpty(Address);
+
+    // Null where the workspace can't be changed, e.g. a read-only folder, and the button isn't shown.
+    public Action? EditHost { get; init; }
+
+    public bool CanEdit => EditHost is not null;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasOpenText))]
@@ -76,4 +87,7 @@ public sealed partial class HostHeaderViewModel(string name, string? environment
 
     [RelayCommand]
     private void OpenTerminal() => openTerminal();
+
+    [RelayCommand]
+    private void Edit() => EditHost?.Invoke();
 }

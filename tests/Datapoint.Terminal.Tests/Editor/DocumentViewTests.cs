@@ -48,7 +48,7 @@ public sealed class DocumentViewTests : IDisposable
         File.WriteAllText(path, text);
         var document = new DocumentViewModel(MarkdownFile.Open(path, out _)!)
         {
-            Host = new HostHeaderViewModel("web1", "production", "deploy@web1.example.com", () => { }) { OpenText = "1 open", Labels = ["web", "debian"] },
+            Host = new HostHeaderViewModel("web1", "production", "deploy@web1.example.com", () => { }) { OpenText = "1 open", Labels = ["web", "debian"], EditHost = () => { } },
         };
         document.Host.SetLog(
             [

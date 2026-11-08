@@ -2835,4 +2835,37 @@ Fingerprint: {2}</value>
   <data name="TokensMillions" xml:space="preserve">
     <value>{0:0.0}M</value>
   </data>
+  <data name="EditHostTitle" xml:space="preserve">
+    <value>Edit Host</value>
+  </data>
+  <data name="EditHostHeading" xml:space="preserve">
+    <value>Edit {0}</value>
+  </data>
+  <data name="EditHostSave" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="EditHostNameFixed" xml:space="preserve">
+    <value>The name can't be changed: the host's documentation is kept under it.</value>
+  </data>
+  <data name="EditHostLeavingProduction" xml:space="preserve">
+    <value>This host will no longer be treated as production: its tabs won't be marked in red, and the agent's commands there will follow the tab's approval mode.</value>
+  </data>
+  <data name="EditHostMoving" xml:space="preserve">
+    <value>The host's document, maintenance log and the agent's notes stay with this host. If the new address is a different machine, update them.</value>
+  </data>
+  <data name="SidebarEditHost" xml:space="preserve">
+    <value>Edit Host…</value>
+  </data>
+  <data name="DocumentEditHost" xml:space="preserve">
+    <value>Edit Host…</value>
+  </data>
+  <data name="NoticeHostEdited" xml:space="preserve">
+    <value>Saved the changes to {0}.</value>
+  </data>
+  <data name="NoticeHostEditedOpen" xml:space="preserve">
+    <value>Saved the changes to {0}. Terminals already open on it keep their address, user and port until they're opened again.</value>
+  </data>
+  <data name="NoticeWorkspaceReadOnlyNotEdited" xml:space="preserve">
+    <value>{0} wasn't changed: this workspace's folder is read-only.</value>
+  </data>
 </root>

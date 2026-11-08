@@ -277,8 +277,11 @@ public sealed partial class MainWindow
             return null;
         }
 
-        var header = new HostHeaderViewModel(connection.Name, connection.Environment, AddressOf(connection), () => _ = OpenConnectionAsync(connection))
+        // By name when clicked, so the button opens the host as it is after an edit.
+        var name = connection.Name;
+        var header = new HostHeaderViewModel(name, connection.Environment, AddressOf(connection), () => _ = OpenConnectionAsync(HostNamed(name) ?? connection))
         {
+            EditHost = Workspace.IsReadOnly ? null : () => _ = EditHostAsync(name),
             OpenText = OpenTextFor(connection.Name),
             Labels = connection.Labels ?? [],
         };

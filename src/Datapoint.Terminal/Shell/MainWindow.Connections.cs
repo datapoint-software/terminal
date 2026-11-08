@@ -166,5 +166,67 @@ public sealed partial class MainWindow
         }
     }
 
+    private WorkspaceConnection? HostNamed(string name) => Connections.FirstOrDefault(connection => IsNamed(connection, name));
+
+    // Everything but the name, which is also the folder of the host's documentation. Saving it is the user confirming it, so
+    // a looser value isn't held for review the way a change from outside is (product decision 92).
+    private async Task EditHostAsync(string name)
+    {
+        if (Workspace.IsReadOnly)
+        {
+            _chat.AddNotice(Strings.Format(Strings.NoticeWorkspaceReadOnlyNotEdited, name));
+            return;
+        }
+
+        await ReviewConnectionsAsync(reload: true).ConfigureAwait(true);
+        if (HostNamed(name) is not { } host)
+        {
+            return;
+        }
+
+        var all = SshConfig.Load().HostAliases().ToList();
+        var edited = await NewHostWindow.EditAsync(this, host, Connections, OtherSshHosts(Connections), all).ConfigureAwait(true);
+        if (edited is null || edited == host)
+        {
+            return;
+        }
+
+        try
+        {
+            var saved = Workspace.Settings.Connections;
+            Workspace.SaveSettings(Workspace.Settings with { Connections = saved.Any(item => IsNamed(item, name)) ? [.. saved.Select(item => IsNamed(item, name) ? edited : item)] : [.. saved, edited] }, _redactor);
+            Confirm([.. Connections.Select(item => IsNamed(item, name) ? edited : item)]);
+        }
+        catch (Exception exception) when (exception is WorkspaceException or IOException or UnauthorizedAccessException)
+        {
+            _chat.AddNotice(exception.Message);
+            return;
+        }
+
+        ShowEditedHost(host, edited);
+    }
+
+    private void ShowEditedHost(WorkspaceConnection before, WorkspaceConnection after)
+    {
+        var open = _tabs.Where(tab => string.Equals(tab.ConnectionName, after.Name, StringComparison.OrdinalIgnoreCase)).ToList();
+        foreach (var tab in open)
+        {
+            tab.ChangeEnvironment(after.Environment);
+        }
+
+        foreach (var header in AllDocuments.OfType<Editor.DocumentViewModel>().Select(document => document.Host).OfType<Editor.HostHeaderViewModel>().Where(header => IsNamed(after, header.Name)))
+        {
+            header.Environment = after.Environment;
+            header.Labels = after.Labels ?? [];
+            header.Address = AddressOf(after);
+        }
+
+        var moved = !string.Equals(before.SshHost, after.SshHost, StringComparison.Ordinal)
+            || !string.Equals(before.Host, after.Host, StringComparison.Ordinal)
+            || !string.Equals(before.User, after.User, StringComparison.Ordinal)
+            || before.Port != after.Port;
+        _chat.AddNotice(Strings.Format(moved && open.Count > 0 ? Strings.NoticeHostEditedOpen : Strings.NoticeHostEdited, after.Name));
+    }
+
     private static bool IsNamed(WorkspaceConnection connection, string name) => string.Equals(connection.Name, name, StringComparison.OrdinalIgnoreCase);
 }

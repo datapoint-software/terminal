@@ -164,4 +164,57 @@ public sealed class NewHostTests
         Assert.True(window.FindControl<TextBlock>("Problem")!.IsVisible);
         Assert.False(window.FindControl<WrapPanel>("AliasPanel")!.IsVisible);
     }
+
+    [Fact]
+    public void Edits_a_host_without_renaming_it_or_losing_what_the_sheet_doesnt_show()
+    {
+        var host = new WorkspaceConnection { Name = "web1", Host = "web1.example.com", User = "deploy", Port = 2222, Environment = "production", Labels = ["web"], Model = "claude-opus-5-5", Forwards = ["5432 db:5432"] };
+        var form = new NewHostForm(Existing, ["bastion"], host);
+
+        Assert.Equal(("web1.example.com", "deploy", "2222", "web", 3), (form.Address, form.User, form.Port, form.Labels, form.EnvironmentIndex));
+        form.Name = "renamed";
+        form.Address = "10.0.0.5";
+        form.EnvironmentIndex = 2;
+        Assert.True(form.IsLeavingProduction);
+        Assert.True(form.IsMoving);
+        var (connection, problem) = form.Build();
+
+        Assert.Null(problem);
+        Assert.Equal(host with { Host = "10.0.0.5", Environment = "staging", Labels = connection!.Labels }, connection);
+        Assert.Equal(["web"], connection.Labels!);
+    }
+
+    [Fact]
+    public void Keeps_an_alias_and_an_environment_written_by_hand_when_they_arent_changed()
+    {
+        var host = new WorkspaceConnection { Name = "nas", SshHost = "old-alias", Environment = "qa" };
+        var form = new NewHostForm(Existing, ["bastion"], host);
+
+        Assert.Equal("qa", form.Environment);
+        Assert.False(form.IsMoving);
+        Assert.False(form.IsLeavingProduction);
+        Assert.Equal(host, form.Build().Connection);
+    }
+
+    [AvaloniaFact]
+    public void Opens_with_the_hosts_values_and_says_what_a_change_means()
+    {
+        var host = new WorkspaceConnection { Name = "web1", Host = "web1.example.com", User = "deploy", Environment = "production", Labels = ["web", "Debian"] };
+        var window = new NewHostWindow(new NewHostForm(Existing, ["bastion", "nas"], host), ["bastion", "nas"]);
+        window.Show();
+        Dispatcher.UIThread.RunJobs();
+        var name = window.FindControl<TextBox>("NameBox")!;
+        Assert.Equal(("web1", true), (name.Text, name.IsReadOnly));
+        Assert.Equal("deploy", window.FindControl<TextBox>("UserBox")!.Text);
+        Assert.False(window.FindControl<TextBlock>("ProductionNote")!.IsVisible);
+
+        window.FindControl<TextBox>("AddressBox")!.Text = "10.0.0.5";
+        window.FindControl<ListBox>("EnvironmentList")!.SelectedIndex = 1;
+        Dispatcher.UIThread.RunJobs();
+        window.CaptureRenderedFrame()?.Save("rendered/edit-host.png", new PngBitmapEncoderOptions());
+
+        Assert.True(window.FindControl<TextBlock>("LeavingProductionNote")!.IsVisible);
+        Assert.True(window.FindControl<TextBlock>("MovingNote")!.IsVisible);
+        Assert.Equal("Save", window.FindControl<Button>("AddButton")!.Content);
+    }
 }

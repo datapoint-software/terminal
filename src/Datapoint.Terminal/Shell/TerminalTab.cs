@@ -67,6 +67,22 @@ public sealed partial class TerminalTab : ObservableObject
 
     public bool IsProduction => Agent.EnvironmentLabels.IsProduction(Environment);
 
+    // After the user edits the host: the badge, the danger colour and what screen readers say follow the new environment.
+    public void ChangeEnvironment(string? environment)
+    {
+        if (AgentTerminal is not { } terminal || string.Equals(terminal.Environment, environment, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        terminal.Environment = environment;
+        OnPropertyChanged(nameof(Environment));
+        OnPropertyChanged(nameof(HasEnvironment));
+        OnPropertyChanged(nameof(IsProduction));
+        OnPropertyChanged(nameof(Label));
+        OnPropertyChanged(nameof(AccessibleName));
+    }
+
     [ObservableProperty]
     public partial string ShellTitle { get; set; } = string.Empty;
 

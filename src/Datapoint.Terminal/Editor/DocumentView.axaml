@@ -66,6 +66,8 @@
           <!-- A host's documentation starts with the host: where it is and whether a terminal is open on it. -->
           <DockPanel IsVisible="{Binding HasHost}" Margin="0,0,0,20">
             <Button DockPanel.Dock="Right" Classes="primary" Content="{x:Static res:Strings.DocumentOpenTerminal}" Command="{Binding Host.OpenTerminalCommand, FallbackValue={x:Null}}" VerticalAlignment="Center" />
+            <Button DockPanel.Dock="Right" Margin="0,0,8,0" Content="{x:Static res:Strings.DocumentEditHost}" Command="{Binding Host.EditCommand, FallbackValue={x:Null}}"
+                    IsVisible="{Binding Host.CanEdit, FallbackValue=False}" VerticalAlignment="Center" />
             <WrapPanel ItemSpacing="8" LineSpacing="6" VerticalAlignment="Center">
               <c:Badge Text="{Binding Host.Environment, FallbackValue={x:Null}}" IsVisible="{Binding Host.HasEnvironment, FallbackValue=False}"
                        Classes.danger="{Binding Host.IsProduction, FallbackValue=False}" />

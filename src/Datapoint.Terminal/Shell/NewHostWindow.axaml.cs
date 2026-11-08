@@ -6,7 +6,8 @@ using Datapoint.Terminal.Resources;
 
 namespace Datapoint.Terminal.Shell;
 
-// Add a Host: a host the workspace lists for everyone, by address or by an alias from the user's SSH config.
+// Add a Host: a host the workspace lists for everyone, by address or by an alias from the user's SSH config. The same sheet edits
+// a host the workspace lists, all but its name.
 public sealed partial class NewHostWindow : Window
 {
     private const int MostAliases = 12;
@@ -25,14 +26,23 @@ public sealed partial class NewHostWindow : Window
         ArgumentNullException.ThrowIfNull(aliases);
         _form = form;
         InitializeComponent();
-        EnvironmentList.ItemsSource = new[]
-        {
+        string[] offered =
+        [
             Strings.NewHostEnvironmentNone,
             Strings.NewHostEnvironmentDevelopment,
             Strings.NewHostEnvironmentStaging,
             Strings.NewHostEnvironmentProduction,
-        };
-        EnvironmentList.SelectionChanged += (_, _) => ProductionNote.IsVisible = NewHostForm.Environments.ElementAtOrDefault(EnvironmentList.SelectedIndex) is { } label && Agent.EnvironmentLabels.IsProduction(label);
+        ];
+        EnvironmentList.ItemsSource = form.Choices.Select((choice, index) => index < offered.Length ? offered[index] : choice).ToList();
+        EnvironmentList.SelectedIndex = Math.Max(form.EnvironmentIndex, 0);
+        if (form.IsEditing)
+        {
+            ShowHost();
+        }
+
+        // Only once the boxes hold the host's values, since showing the notes reads them all back into the form.
+        EnvironmentList.SelectionChanged += (_, _) => ShowNotes();
+        AddressBox.TextChanged += (_, _) => ShowNotes();
         foreach (var alias in aliases.Take(MostAliases))
         {
             var chip = new Button { Content = alias, Classes = { "chip" } };
@@ -63,13 +73,47 @@ public sealed partial class NewHostWindow : Window
             e.Handled = true;
             Close(null);
         };
-        Opened += (_, _) => NameBox.Focus();
+        Opened += (_, _) => (form.IsEditing ? AddressBox : NameBox).Focus();
+        ShowNotes();
     }
 
     public static Task<WorkspaceConnection?> AskAsync(Window owner, IReadOnlyCollection<WorkspaceConnection> existing, IReadOnlyList<string> aliases)
     {
         ArgumentNullException.ThrowIfNull(owner);
         return new NewHostWindow(new NewHostForm(existing, aliases), aliases).ShowDialog<WorkspaceConnection?>(owner);
+    }
+
+    // Offers the SSH config's other aliases as chips, while every alias, the host's own included, counts as one when typed.
+    public static Task<WorkspaceConnection?> EditAsync(Window owner, WorkspaceConnection host, IReadOnlyCollection<WorkspaceConnection> existing, IReadOnlyList<string> aliases, IReadOnlyCollection<string> allAliases)
+    {
+        ArgumentNullException.ThrowIfNull(owner);
+        return new NewHostWindow(new NewHostForm(existing, allAliases, host), aliases).ShowDialog<WorkspaceConnection?>(owner);
+    }
+
+    private void ShowHost()
+    {
+        Title = Strings.EditHostTitle;
+        TitleText.Text = Strings.Format(Strings.EditHostHeading, _form.Name);
+        AddButton.Content = Strings.EditHostSave;
+        // Shown as text rather than a box, so it doesn't look like something to type into.
+        NameBox.IsReadOnly = true;
+        NameBox.Focusable = false;
+        NameBox.Background = Avalonia.Media.Brushes.Transparent;
+        NameBox.BorderThickness = default;
+        ToolTip.SetTip(NameBox, Strings.EditHostNameFixed);
+        NameBox.Text = _form.Name;
+        AddressBox.Text = _form.Address;
+        UserBox.Text = _form.User;
+        PortBox.Text = _form.Port;
+        LabelsBox.Text = _form.Labels;
+    }
+
+    private void ShowNotes()
+    {
+        Read();
+        ProductionNote.IsVisible = _form.IsProduction && !(_form.Editing is { } host && Agent.EnvironmentLabels.IsProduction(host.Environment));
+        LeavingProductionNote.IsVisible = _form.IsLeavingProduction;
+        MovingNote.IsVisible = _form.IsMoving;
     }
 
     private void UseAlias(string alias)

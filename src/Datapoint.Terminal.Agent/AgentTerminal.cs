@@ -22,7 +22,14 @@ public sealed class AgentTerminal
 
     public IAgentTerminal Terminal { get; }
 
-    public string? Environment { get; }
+    // Changes when the user edits the host, so production rules apply to a terminal already open on it.
+    public string? Environment
+    {
+        get => Volatile.Read(ref _environment);
+        set => Volatile.Write(ref _environment, value);
+    }
+
+    private string? _environment;
 
     // On another machine, whose files the workspace's .terminalignore doesn't describe.
     public bool IsRemote { get; init; }
