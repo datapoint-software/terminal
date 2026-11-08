@@ -326,23 +326,16 @@
   </UserControl.Styles>
 
   <DockPanel>
-    <!-- Header: what the agent is doing, announced to screen readers as it changes. The same status sits above the message
-         box, where the user looks while waiting; only this copy is announced, so it isn't read twice. -->
+    <!-- Header: the agent and the model it talks to, which is chosen in settings (product decision 123). What the agent is
+         doing sits above the message box, where the user looks while waiting. -->
     <!-- Dragging the header moves the chat elsewhere in the window (product decision 109). -->
     <Border x:Name="Header" DockPanel.Dock="Top" Height="{StaticResource PaneHeaderHeight}" Padding="16,0,10,0" Background="Transparent" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
       <Grid ColumnDefinitions="*,Auto">
         <StackPanel Spacing="2" VerticalAlignment="Center">
           <TextBlock Classes="title" Text="{x:Static res:Strings.ChatTitle}" />
-          <StackPanel Orientation="Horizontal" Spacing="6">
-            <Panel Width="12" Height="12" VerticalAlignment="Center">
-              <c:Spinner IsVisible="{Binding IsWorking}" />
-              <Ellipse Classes="status" Classes.waiting="{Binding NeedsUser}" Classes.stopped="{Binding IsInterrupted}"
-                       HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{Binding !IsWorking}" />
-            </Panel>
-            <!-- One line, so the header keeps the sidebar's height; the whole status is in the tooltip. -->
-            <TextBlock Classes="secondary" Text="{Binding StatusText}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding StatusText}"
-                       AutomationProperties.LiveSetting="Polite" />
-          </StackPanel>
+          <!-- One line, so the header keeps the sidebar's height. -->
+          <TextBlock x:Name="ModelName" Classes="secondary" Text="{Binding ModelName}" IsVisible="{Binding HasModelName}"
+                     TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding ModelName}" />
         </StackPanel>
         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="2" VerticalAlignment="Center">
           <Button Classes="icon" Command="{Binding StopCommand}" IsVisible="{Binding CanStop}"
@@ -531,7 +524,7 @@
       </Grid>
 
       <!-- What the agent is doing, right above where the user writes to it: a spinner while it works, a dot while it waits,
-           is idle or stopped. -->
+           is idle or stopped. Announced to screen readers as it changes. -->
       <StackPanel x:Name="ComposerStatus" Orientation="Horizontal" Spacing="6" Margin="4,0,8,6">
         <Panel Width="12" Height="12" VerticalAlignment="Center">
           <c:Spinner IsVisible="{Binding IsWorking}" />
@@ -539,10 +532,10 @@
                    HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{Binding !IsWorking}" />
         </Panel>
         <TextBlock Classes="secondary" Text="{Binding StatusText}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding StatusText}"
-                   VerticalAlignment="Center" />
+                   VerticalAlignment="Center" AutomationProperties.LiveSetting="Polite" />
       </StackPanel>
 
-      <!-- Composer: a rounded field with the send button inside, and quiet menus for the model and approval under it. -->
+      <!-- Composer: a rounded field with the send button inside, and a quiet menu for approval under it. -->
       <Border Classes="composer">
         <Grid ColumnDefinitions="*,Auto">
           <TextBox x:Name="DraftBox" Classes="bare" Padding="12,10,6,10" MinHeight="38" Text="{Binding Draft}" PlaceholderText="{Binding DraftPlaceholder}"
@@ -565,23 +558,6 @@
                  TextTrimming="CharacterEllipsis" Margin="4,0,8,0" ToolTip.Tip="{Binding UsageDetail}" Focusable="True"
                  AutomationProperties.Name="{Binding UsageSummary}" AutomationProperties.HelpText="{Binding UsageDetail}" />
       <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="2">
-        <ComboBox Classes="menu" ItemsSource="{Binding ModelChoices}" SelectedItem="{Binding SelectedModel}"
-                  IsVisible="{Binding HasModelChoices}" ToolTip.Tip="{x:Static res:Strings.ChatModel}"
-                  AutomationProperties.Name="{x:Static res:Strings.ChatModel}">
-          <ComboBox.SelectionBoxItemTemplate>
-            <DataTemplate x:DataType="chat:ModelChoice">
-              <TextBlock Text="{Binding Name}" />
-            </DataTemplate>
-          </ComboBox.SelectionBoxItemTemplate>
-          <ComboBox.ItemTemplate>
-            <DataTemplate x:DataType="chat:ModelChoice">
-              <StackPanel>
-                <TextBlock Text="{Binding Name}" />
-                <TextBlock Classes="secondary" Text="{Binding Provider}" IsVisible="{Binding HasProvider}" />
-              </StackPanel>
-            </DataTemplate>
-          </ComboBox.ItemTemplate>
-        </ComboBox>
         <ComboBox Classes="menu" ItemsSource="{Binding Modes}" SelectedItem="{Binding SelectedMode}"
                   ToolTip.Tip="{Binding SelectedMode.Help}" AutomationProperties.Name="{x:Static res:Strings.ChatMode}">
           <ComboBox.SelectionBoxItemTemplate>

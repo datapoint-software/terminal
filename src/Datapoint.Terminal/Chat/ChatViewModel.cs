@@ -16,7 +16,6 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
     private ChatItemViewModel? _streaming;
     private ChatItemViewModel? _command;
     private LookProgressViewModel? _look;
-    private bool _isSettingModels;
 
     public ChatViewModel(IUiThread ui)
     {
@@ -75,14 +74,12 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
 
     public bool NeedsProvider => !IsConnected;
 
-    public ObservableCollection<ModelChoice> ModelChoices { get; } = [];
-
+    // The model the conversation goes to, by its friendly name; chosen in settings (product decision 123).
     [ObservableProperty]
-    public partial ModelChoice? SelectedModel { get; set; }
+    [NotifyPropertyChangedFor(nameof(HasModelName))]
+    public partial string? ModelName { get; set; }
 
-    public bool HasModelChoices => ModelChoices.Count > 0;
-
-    public Action<ModelChoice>? ModelChosen { get; set; }
+    public bool HasModelName => !string.IsNullOrEmpty(ModelName);
 
     public Action? SettingsRequested { get; set; }
 
@@ -135,21 +132,6 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
         Items.Add(new ChatItemViewModel(ChatItemKind.Notice, privacyNotice));
         OnPropertyChanged(nameof(HasAgent));
         NotifyCommands();
-    }
-
-    public void SetModels(IEnumerable<ModelChoice> choices, ModelChoice? selected)
-    {
-        ArgumentNullException.ThrowIfNull(choices);
-        _isSettingModels = true;
-        ModelChoices.Clear();
-        foreach (var choice in choices)
-        {
-            ModelChoices.Add(choice);
-        }
-
-        SelectedModel = selected;
-        _isSettingModels = false;
-        OnPropertyChanged(nameof(HasModelChoices));
     }
 
     public void AddNotice(string text) => Items.Add(new ChatItemViewModel(ChatItemKind.Notice, text));
@@ -294,16 +276,6 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
         OnPropertyChanged(nameof(NeedsUser));
         OnPropertyChanged(nameof(IsInterrupted));
         OnPropertyChanged(nameof(CanStop));
-    }
-
-    partial void OnSelectedModelChanged(ModelChoice? value)
-    {
-        if (_isSettingModels || value is null)
-        {
-            return;
-        }
-
-        ModelChosen?.Invoke(value);
     }
 
     [RelayCommand]

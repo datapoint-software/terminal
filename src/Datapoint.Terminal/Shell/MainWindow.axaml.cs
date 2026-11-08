@@ -117,7 +117,6 @@ public sealed partial class MainWindow : Window, ITerminalOpener
         _chat.PlanShown = ShowPlan;
         _chat.MessageSent = message => Record(HistoryEntryKind.User, message);
         _chat.Cleared = EndConversation;
-        _chat.ModelChosen = choice => _ = ChooseModelAsync(choice);
         _chat.ConfirmIgnorePermissions = ConfirmIgnorePermissionsAsync;
         _chat.WebAlwaysAllowed += (_, _) => _settings.SetAlwaysAllowWeb(true);
         _chat.ReadOnlyApproved = OnReadOnlyApproved;
@@ -153,7 +152,6 @@ public sealed partial class MainWindow : Window, ITerminalOpener
         var current = _settings.Current;
         var provider = current.SelectedProvider;
         ApplyWebSettings();
-        _chat.SetModels(ModelChoices(current), provider is null ? null : Choice(provider, provider.Model, current));
         if (provider is not null)
         {
             _agent?.OutputLimit = OutputLimits.For(provider.ContextWindow, provider.OutputLimit);
@@ -164,6 +162,7 @@ public sealed partial class MainWindow : Window, ITerminalOpener
         {
             _chat.IsConnected = false;
             _clientSignature = null;
+            ApplyModelName();
             return;
         }
 
@@ -174,7 +173,14 @@ public sealed partial class MainWindow : Window, ITerminalOpener
             return;
         }
 
+        if (NeedsSwitchConfirmed(provider))
+        {
+            _ = ConfirmSwitchAsync(provider, key, signature);
+            return;
+        }
+
         Connect(provider, key, signature);
+        ApplyModelName();
     }
 
     private void Connect(ProviderAccount provider, string? key, string signature)
@@ -255,16 +261,6 @@ public sealed partial class MainWindow : Window, ITerminalOpener
         !string.IsNullOrWhiteSpace(provider.Model)
         && (!ProviderCatalog.NeedsKey(provider.Kind) || !string.IsNullOrEmpty(key))
         && (provider.Kind != ProviderKind.OpenAICompatible || Uri.TryCreate(provider.Endpoint, UriKind.Absolute, out _));
-
-    private static IEnumerable<ModelChoice> ModelChoices(AppSettings settings) =>
-        settings.Providers.SelectMany(provider =>
-            ProviderCatalog.Models(provider.Kind).Append(provider.Model)
-                .Where(model => !string.IsNullOrWhiteSpace(model))
-                .Distinct(StringComparer.Ordinal)
-                .Select(model => Choice(provider, model, settings)));
-
-    private static ModelChoice Choice(ProviderAccount provider, string model, AppSettings settings) =>
-        new(provider.Id, model, ProviderCatalog.DisplayName(model), settings.Providers.Count > 1 ? provider.Name : string.Empty);
 
     private async Task StopAsync()
     {

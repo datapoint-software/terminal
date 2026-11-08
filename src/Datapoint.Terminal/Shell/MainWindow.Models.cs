@@ -1,27 +1,52 @@
-using Datapoint.Terminal.Chat;
 using Datapoint.Terminal.Resources;
 using Datapoint.Terminal.Settings;
 
 namespace Datapoint.Terminal.Shell;
 
-// Product decision 55: a switch that sends the conversation somewhere new, or into a smaller context window, is confirmed first.
+// Product decision 55: a switch that sends the conversation somewhere new, or into a smaller context window, is confirmed
+// first. The model is chosen in settings (decision 123), so the switch is confirmed when settings change.
 public sealed partial class MainWindow
 {
-    private async Task ChooseModelAsync(ModelChoice choice)
+    private bool _isConfirmingSwitch;
+
+    private bool NeedsSwitchConfirmed(ProviderAccount target) =>
+        _agent is { HasConversation: true } && _provider is { } current && SwitchWarnings(current, target).Count > 0;
+
+    private async Task ConfirmSwitchAsync(ProviderAccount target, string? key, string signature)
     {
-        var target = _settings.Current.Providers.FirstOrDefault(item => string.Equals(item.Id, choice.ProviderId, StringComparison.Ordinal));
-        if (target is null || _agent is not { HasConversation: true } || _provider is not { } current
-            || await ConfirmSwitchAsync(current, target).ConfigureAwait(true))
+        if (_isConfirmingSwitch || _provider is not { } current)
         {
-            _settings.Choose(choice.ProviderId, choice.Model);
             return;
         }
 
-        // Put the picker back on the model in use.
-        ApplySettings();
+        _isConfirmingSwitch = true;
+        try
+        {
+            var answer = await ChoiceWindow.AskAsync(
+                this,
+                Strings.SwitchTitle,
+                string.Join("\n\n", SwitchWarnings(current, target)),
+                details: null,
+                hasDefault: false,
+                Strings.Cancel,
+                Strings.SwitchConfirm).ConfigureAwait(true);
+            if (answer == 1)
+            {
+                Connect(target, key, signature);
+                ApplyModelName();
+                return;
+            }
+
+            // Back to the model in use, so settings show what the conversation is really sent to.
+            _settings.Choose(current.Id, current.Model);
+        }
+        finally
+        {
+            _isConfirmingSwitch = false;
+        }
     }
 
-    private async Task<bool> ConfirmSwitchAsync(ProviderAccount current, ProviderAccount target)
+    private static List<string> SwitchWarnings(ProviderAccount current, ProviderAccount target)
     {
         var warnings = new List<string>();
         if (current.IsLocal && !target.IsLocal)
@@ -34,19 +59,9 @@ public sealed partial class MainWindow
             warnings.Add(Strings.Format(Strings.SwitchSmallerContext, to, from));
         }
 
-        if (warnings.Count == 0)
-        {
-            return true;
-        }
-
-        var answer = await ChoiceWindow.AskAsync(
-            this,
-            Strings.SwitchTitle,
-            string.Join("\n\n", warnings),
-            details: null,
-            hasDefault: false,
-            Strings.Cancel,
-            Strings.SwitchConfirm).ConfigureAwait(true);
-        return answer == 1;
+        return warnings;
     }
+
+    // The model the conversation is sent to, by its friendly name, in the agent's header.
+    private void ApplyModelName() => _chat.ModelName = _provider is { } provider && _chat.IsConnected ? ProviderCatalog.DisplayName(provider.Model) : null;
 }

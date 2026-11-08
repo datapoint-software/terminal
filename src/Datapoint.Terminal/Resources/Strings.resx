@@ -252,9 +252,6 @@
   <data name="MarkdownImageFailed" xml:space="preserve">
     <value>The image couldn't be loaded.</value>
   </data>
-  <data name="ChatModel" xml:space="preserve">
-    <value>Model</value>
-  </data>
   <data name="MenuFile" xml:space="preserve">
     <value>_File</value>
   </data>

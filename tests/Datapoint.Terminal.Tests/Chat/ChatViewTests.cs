@@ -21,7 +21,7 @@ public sealed class ChatViewTests
         chat.Items.Add(new ChatItemViewModel(ChatItemKind.User, "Is nginx running?"));
         chat.Items.Add(new ChatItemViewModel(ChatItemKind.Command, "systemctl status nginx") { Detail = "Check the service · Exit code 0" });
         chat.Items.Add(new ChatItemViewModel(ChatItemKind.Agent, "It's running, but the config has a warning. I'd like to reload it."));
-        chat.SetModels([new ModelChoice("a", "claude-opus-5-5", "Opus 5.5", string.Empty), new ModelChoice("a", "claude-sonnet-5-5", "Sonnet 5.5", string.Empty)], new ModelChoice("a", "claude-opus-5-5", "Opus 5.5", string.Empty));
+        chat.ModelName = "Opus 5.5";
         _ = chat.RequestApprovalAsync(new CommandProposal("sudo systemctl reload nginx", "Reload nginx to apply the fixed config", CommandRisk.Changes, "web-1", "production"), CancellationToken.None);
         var focusTarget = new TextBox();
         var window = new Window
@@ -39,6 +39,8 @@ public sealed class ChatViewTests
         frame?.Save("rendered/chat-approval.png", new PngBitmapEncoderOptions());
 
         Assert.True(focusTarget.IsFocused);
+        Assert.True(window.GetVisualDescendants().OfType<TextBlock>().Single(block => string.Equals(block.Name, "ModelName", StringComparison.Ordinal)).IsEffectivelyVisible);
+        Assert.DoesNotContain(window.GetVisualDescendants().OfType<ComboBox>(), box => box.ItemCount > 0 && box.Items[0] is not ModeOption);
         Assert.NotNull(frame);
     }
 
@@ -116,7 +118,7 @@ public sealed class ChatViewTests
         using var chat = new ChatViewModel(new ImmediateUiThread());
         chat.Items.Add(new ChatItemViewModel(ChatItemKind.User, "Is nginx running?"));
         chat.Items.Add(new ChatItemViewModel(ChatItemKind.Agent, "Yes. **nginx** is `active (running)`."));
-        chat.SetModels([new ModelChoice("a", "claude-opus-5-5", "Opus 5.5", string.Empty)], new ModelChoice("a", "claude-opus-5-5", "Opus 5.5", string.Empty));
+        chat.ModelName = "Opus 5.5";
         var window = new Window { Width = 380, Height = 360, RequestedThemeVariant = Avalonia.Styling.ThemeVariant.Dark, Content = new ChatView { DataContext = chat } };
         window.Show();
 
@@ -295,9 +297,9 @@ public sealed class ChatViewTests
     }
 
     [AvaloniaFact]
-    public void Shows_what_the_agent_is_doing_above_the_message_box_and_in_the_header()
+    public void Shows_what_the_agent_is_doing_above_the_message_box_and_the_model_in_the_header()
     {
-        using var chat = new ChatViewModel(new ImmediateUiThread());
+        using var chat = new ChatViewModel(new ImmediateUiThread()) { ModelName = "Opus 5.5" };
         chat.Items.Add(new ChatItemViewModel(ChatItemKind.User, "Which nodes need updates?"));
 
         chat.Show(new AgentEventArgs(AgentEventKind.StatusChanged, string.Empty) { Status = AgentStatus.Thinking });
@@ -310,9 +312,10 @@ public sealed class ChatViewTests
         frame?.Save("rendered/chat-thinking.png", new PngBitmapEncoderOptions());
 
         var texts = view.GetLogicalDescendants().OfType<TextBlock>().Where(text => text.IsEffectivelyVisible && string.Equals(text.Text, chat.StatusText, StringComparison.Ordinal)).ToList();
-        Assert.Equal(2, texts.Count);
-        Assert.Single(texts, text => Avalonia.Automation.AutomationProperties.GetLiveSetting(text) == Avalonia.Automation.AutomationLiveSetting.Polite);
+        var status = Assert.Single(texts);
+        Assert.Equal(Avalonia.Automation.AutomationLiveSetting.Polite, Avalonia.Automation.AutomationProperties.GetLiveSetting(status));
         Assert.True(view.FindControl<StackPanel>("ComposerStatus")!.IsEffectivelyVisible);
+        Assert.Equal("Opus 5.5", view.FindControl<TextBlock>("ModelName")!.Text);
     }
 
     [AvaloniaFact]

@@ -168,7 +168,6 @@ public static class Strings
 
     public static string MarkdownImageFailed => Get(nameof(MarkdownImageFailed));
 
-    public static string ChatModel => Get(nameof(ChatModel));
 
     public static string MenuFile => Get(nameof(MenuFile));
 
