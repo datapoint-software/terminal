@@ -111,6 +111,28 @@ public sealed class TerminalAgentSkillRunTests : IDisposable
         Assert.Contains(_events, e => e.Kind == AgentEventKind.RolloutChanged && e.Rollout!.Outcome == RolloutOutcome.Completed);
     }
 
+    // What a finished, healthy host's commands printed isn't sent again; the commands, exit codes and summary are.
+    [Fact]
+    public async Task Leaves_a_finished_hosts_output_out_of_the_conversation_once_the_rollout_moves_on()
+    {
+        WriteSkill(Quick());
+        IReadOnlyList<ChatMessage>? next = null;
+        var client = new ScriptedChatClient(
+            RunSkill("web1", "web2"),
+            Command("web1", "df -h /"),
+            Done("web1"),
+            messages => { next = [.. messages]; return Text("OK."); });
+        using var agent = NewAgent(client);
+
+        await agent.SendAsync("Patch the web servers", Token);
+
+        var results = next!.SelectMany(message => message.Contents).OfType<FunctionResultContent>().Select(result => result.Result?.ToString() ?? string.Empty).ToList();
+        var df = Assert.Single(results, result => result.Contains("left out once web1", StringComparison.Ordinal));
+        Assert.Equal("Exit code: 0\n[Output left out once web1 was done and healthy, to keep the conversation short. Your summary then: Patched.]", df);
+        Assert.DoesNotContain(results, result => result.Contains("ran df -h /", StringComparison.Ordinal));
+        Assert.Contains(_events, e => e.Kind == AgentEventKind.CommandFinished && string.Equals(e.Output, "ran df -h /", StringComparison.Ordinal));
+    }
+
     [Fact]
     public async Task Runs_on_every_host_with_the_labels_when_none_are_named()
     {

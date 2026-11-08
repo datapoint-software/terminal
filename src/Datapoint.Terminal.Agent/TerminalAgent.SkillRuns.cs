@@ -163,6 +163,7 @@ public sealed partial class TerminalAgent
         }
 
         MarkDone(run, host.Name, arguments);
+        NoteHostSummary(host.Name, arguments);
         var working = run.Current.Where(item => item.State == RolloutHostState.Working).Select(item => item.Name).ToList();
         return working.Count > 0
             ? $"Noted. Still to finish in this batch: {Listed(working)}. Call host_done for each."
@@ -203,7 +204,13 @@ public sealed partial class TerminalAgent
             SetStatus(AgentStatus.Thinking);
         }
 
-        return run.IsOver ? Ended(run) : Next(run);
+        if (run.IsOver)
+        {
+            return Ended(run);
+        }
+
+        TrimFinishedHosts(run.Current);
+        return Next(run);
     }
 
     private static string Next(SkillRun run)
