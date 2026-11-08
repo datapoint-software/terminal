@@ -26,6 +26,9 @@ public sealed partial class MainWindow : IHistoryAccess
             case AgentEventKind.Notice:
                 Record(HistoryEntryKind.Notice, e.Text);
                 break;
+            case AgentEventKind.OutputShown:
+                Record(HistoryEntryKind.Output, string.Empty, e.Terminal, e.Output, connection: e.Connection);
+                break;
         }
     }
 

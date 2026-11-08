@@ -133,13 +133,17 @@ public sealed partial class HistoryWindow : Window
     {
         var heading = $"{entry.Time.ToLocalTime().ToString("t", CultureInfo.CurrentCulture)} · {Kind(entry)}";
         var panel = new StackPanel { Spacing = 4, Children = { new TextBlock { Text = heading, Classes = { "secondary" } } } };
-        if (entry.Kind != HistoryEntryKind.Command)
+        if (entry.Kind is not (HistoryEntryKind.Command or HistoryEntryKind.Output))
         {
             panel.Children.Add(new SelectableTextBlock { Text = entry.Text, TextWrapping = TextWrapping.Wrap });
             return panel;
         }
 
-        panel.Children.Add(new Border { Classes = { "code" }, Child = new SelectableTextBlock { Text = entry.Text, Classes = { "mono" }, TextWrapping = TextWrapping.Wrap } });
+        if (entry.Text.Length > 0)
+        {
+            panel.Children.Add(new Border { Classes = { "code" }, Child = new SelectableTextBlock { Text = entry.Text, Classes = { "mono" }, TextWrapping = TextWrapping.Wrap } });
+        }
+
         if (entry.Detail is { Length: > 0 } output)
         {
             panel.Children.Add(new Border { Classes = { "code" }, Child = new SelectableTextBlock { Text = output, Classes = { "mono" }, TextWrapping = TextWrapping.Wrap } });
@@ -155,6 +159,7 @@ public sealed partial class HistoryWindow : Window
         HistoryEntryKind.Command => entry.ExitCode is { } code
             ? Strings.Format(Strings.HistoryCommandExit, entry.Terminal, code)
             : Strings.Format(Strings.HistoryCommand, entry.Terminal),
+        HistoryEntryKind.Output => Strings.Format(Strings.HistoryOutput, entry.Terminal),
         _ => Strings.HistoryNotice,
     };
 

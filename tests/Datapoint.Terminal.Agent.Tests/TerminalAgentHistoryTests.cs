@@ -76,6 +76,21 @@ public sealed class TerminalAgentHistoryTests
     }
 
     [Fact]
+    public async Task Shows_output_from_between_tasks_without_a_command()
+    {
+        var result = await SearchAsync((_, _) => [new HistoryEntry(1, s_time, HistoryEntryKind.Output, string.Empty, "web1", "$ sudo systemctl restart nginx\nJob for nginx.service failed.", Connection: "web1") { Id = 9 }]);
+
+        Assert.Contains(
+            "[#9 2026-11-01 ",
+            result,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            " output in \"web1\" between tasks, e.g. from the user's own commands]\nOutput, 2 lines; 2 with the words:\n1:$ sudo systemctl restart nginx\n2:Job for nginx.service failed.\n",
+            result,
+            StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task Says_when_nothing_matches()
     {
         Assert.Equal("Nothing found.", await SearchAsync((_, _) => []));

@@ -2898,4 +2898,7 @@ Fingerprint: {2}</value>
   <data name="NoticeSummaryLabel" xml:space="preserve">
     <value>Summary</value>
   </data>
+  <data name="HistoryOutput" xml:space="preserve">
+    <value>Output in {0}, sent to the agent</value>
+  </data>
 </root>

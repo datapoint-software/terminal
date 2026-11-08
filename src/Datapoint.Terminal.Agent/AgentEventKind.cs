@@ -30,4 +30,8 @@ public enum AgentEventKind
 
     // A web search or page read finished: Text is the query or address, WebKind which it was, Sources what it found.
     WebUsed,
+
+    // What a terminal printed since the agent last saw it, such as the user's own commands, went to the model with the user's
+    // message: Terminal and Connection say where, Output is the text, redacted.
+    OutputShown,
 }

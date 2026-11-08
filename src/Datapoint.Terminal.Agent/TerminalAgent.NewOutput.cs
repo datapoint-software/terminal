@@ -37,6 +37,7 @@ public sealed partial class TerminalAgent
             }
 
             text.Append("[New output in \"").Append(terminal.Name).Append("\" since you last saw it:]\n").Append(Untrusted(output)).Append('\n');
+            Raise(new AgentEventArgs(AgentEventKind.OutputShown, string.Empty) { Terminal = terminal.Name, Connection = terminal.Connection, Output = _redactor.Redact(output) });
         }
 
         return text.ToString();
