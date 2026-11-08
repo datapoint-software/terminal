@@ -2104,6 +2104,8 @@ public static class Strings
 
     public static string RolloutPauseAfterBatch => Get(nameof(RolloutPauseAfterBatch));
 
+    public static string MenuSettingsMac => Get(nameof(MenuSettingsMac));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     // Whether a name we gave something, such as the local tab's, is that resource in any language we have: one given

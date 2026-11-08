@@ -3156,4 +3156,7 @@ Fingerprint: {2}</value>
   <data name="RolloutPauseAfterBatch" xml:space="preserve">
     <value>Pause after this batch</value>
   </data>
+  <data name="MenuSettingsMac" xml:space="preserve">
+    <value>Settings…</value>
+  </data>
 </root>

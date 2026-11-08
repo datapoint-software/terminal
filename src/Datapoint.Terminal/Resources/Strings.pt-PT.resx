@@ -3150,4 +3150,7 @@ Impressão digital: {2}</value>
   <data name="FileTypeProperties" xml:space="preserve">
     <value>Propriedades</value>
   </data>
+  <data name="MenuSettingsMac" xml:space="preserve">
+    <value>Definições…</value>
+  </data>
 </root>

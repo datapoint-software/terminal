@@ -27,12 +27,13 @@
     <StyleInclude Source="avares://Datapoint.Terminal/Styles/Surfaces.axaml" />
     <StyleInclude Source="avares://Datapoint.Terminal/Styles/Overlays.axaml" />
   </Application.Styles>
-  <!-- macOS application menu: About first, then Settings… with Cmd+, as every Mac app has. -->
+  <!-- macOS application menu: About first, then Settings… with Cmd+, as every Mac app has. Its own text, without the
+       underscore that marks a shortcut letter elsewhere: macOS menus have none. -->
   <NativeMenu.Menu>
     <NativeMenu>
       <NativeMenuItem Header="{res:Tr MenuAbout}" Click="OnAboutClicked" />
       <NativeMenuItemSeparator />
-      <NativeMenuItem Header="Settings…" Gesture="Meta+OemComma" Click="OnSettingsClicked" />
+      <NativeMenuItem Header="{res:Tr MenuSettingsMac}" Gesture="Meta+OemComma" Click="OnSettingsClicked" />
     </NativeMenu>
   </NativeMenu.Menu>
 </Application>
