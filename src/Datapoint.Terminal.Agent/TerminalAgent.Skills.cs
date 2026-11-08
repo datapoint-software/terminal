@@ -101,12 +101,14 @@ public sealed partial class TerminalAgent
     }
 
     // Where and how the skill runs, with the hosts its labels match now, so the plan the model shows the user is the real one.
+    // The whole description too: the list in each message cuts it short, and updating the skill means saving it again.
     private string DescribeSkill(Skill skill)
     {
         var rollout = skill.Rollout;
         var hosts = SkillHosts(skill);
         var text = new StringBuilder()
             .Append("Skill \"").Append(skill.Name).Append("\" (").Append(skill.Title).Append(").\n")
+            .Append("Description: ").Append(_redactor.Redact(skill.Description).ReplaceLineEndings(" ")).Append('\n')
             .Append("Runs on ").Append(skill.Labels.Count == 0 ? "every host" : "hosts labeled " + string.Join(" and ", skill.Labels))
             .Append(hosts.Count == 0 ? string.Empty : " — now " + string.Join(", ", hosts)).Append(".\n")
             .Append("Rollout: ").Append(rollout.Order switch

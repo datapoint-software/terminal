@@ -127,6 +127,7 @@ public sealed class TerminalAgentSkillsTests : IDisposable
 
         var (results, _) = await RunAsync(true, Tool("read_skill", """{"name":"Patch and reboot"}"""));
 
+        Assert.Contains("Description: Installs updates and reboots.\n", results[0], StringComparison.Ordinal);
         Assert.Contains("Runs on hosts labeled web — now web1.", results[0], StringComparison.Ordinal);
         Assert.Contains("one host at a time; after each, `systemctl is-active nginx` must pass for 5m", results[0], StringComparison.Ordinal);
         Assert.Contains("1. `sudo apt-get upgrade -y`", results[0], StringComparison.Ordinal);
