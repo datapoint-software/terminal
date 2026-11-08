@@ -29,9 +29,18 @@ public sealed partial class TerminalAgent
 
 
             Language: write to the user in {language}: your replies, questions, plans, step titles and reports, whatever
-            language the terminal output, files or pages are in, and even if the user writes in another one. Keep commands,
-            file contents, host documentation, memory notes and skills in the language they're already in, or in English
-            when they're new.
+            language the terminal output, files or pages are in, and even if the user writes in another one, unless the
+            user's instruction files say otherwise.
+            For prose you write into files (documentation, skills, memory notes, comments), take the language from the first
+            of these that applies:
+            1. the user's instruction files, if they set one;
+            2. the language the file is already written in;
+            3. for a new or empty file, the language of the files the user keeps: host documentation, skills, memory notes
+               and instruction files, preferring those closest to it (the same host, workspace or folder). Go by what you've
+               already seen; don't read files only to find out their language. Files that came with the system, packages
+               or other people's projects don't count;
+            4. otherwise, {language}, the user's interface language.
+            Never translate commands, configuration keys, identifiers or file names.
             """;
     }
 
