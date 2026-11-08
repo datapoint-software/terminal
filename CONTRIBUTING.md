@@ -31,7 +31,7 @@ To report a security problem, don't open an issue: follow the [security policy](
 - **Read [docs/engineering.md](docs/engineering.md) first.** It sets the repository layout, the tools and the code conventions. Where it differs from a habit or a general best practice, it wins; if a rule seems wrong for your case, say so in your pull request rather than working around it.
 - **Work on a branch** named `<type>/<description>`, e.g. `feat/ssh-connections` or `fix/agent-output-truncation`, with the types `feat`, `fix`, `hotfix`, `release` and `chore` ([details](CLAUDE.md#branch-names)).
 - **Commit often, one self-contained change per commit,** with messages following [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/): `fix(chat): keep every line of a pasted message`, in the imperative and in lowercase, with a body explaining why when it isn't obvious ([details](CLAUDE.md#commit-messages)).
-- **Add tests** for what you change, and run the whole suite before opening a pull request.
+- **Add tests** for what you change, and run the whole suite before opening a pull request. Run `dotnet format` too: CI checks formatting with `dotnet format --verify-no-changes`, which the build alone doesn't, and builds and tests every pull request on Linux, macOS and Windows.
 - **Write American English** in code, documentation, commit messages and the interface's text.
 
 ## What every change must respect
