@@ -15,7 +15,8 @@ public sealed partial class TerminalAgent
         new ToolFunction(
             "run_command",
             "Types a shell command into one of the user's terminals, presses Enter, and returns its output and exit code once it "
-            + "finishes. The user sees it run and may have to approve it first. One command per call, on a single line.",
+            + "finishes. The user sees it run and may have to approve it first. One command per call, on a single line; for "
+            + "independent read-only checks, make several calls in the same reply.",
             """
             {"type":"object","properties":{
               "terminal":{"type":"string","description":"The name of the terminal, as listed in the user's message. May be left out when only one is open."},

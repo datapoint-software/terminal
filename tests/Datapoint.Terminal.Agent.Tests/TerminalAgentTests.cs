@@ -410,6 +410,27 @@ public sealed class TerminalAgentTests
         Assert.Equal(["touch b"], _terminal.Typed);
     }
 
+    // Independent checks asked for in one reply cost one request: each runs in turn and all their outputs go back together.
+    [Fact]
+    public async Task Runs_every_command_of_a_reply_and_answers_them_in_one_request()
+    {
+        IReadOnlyList<ChatMessage>? seen = null;
+        var client = new ScriptedChatClient(
+            _ => new ChatResponse(new ChatMessage(ChatRole.Assistant,
+            [
+                new FunctionCallContent("call-1", "run_command", Arguments(("terminal", "Local"), ("command", "df -h"), ("purpose", "to check disk"))),
+                new FunctionCallContent("call-2", "run_command", Arguments(("terminal", "Local"), ("command", "uptime"), ("purpose", "to check load"))),
+            ])),
+            messages => { seen = messages; return Text("Done."); });
+        using var agent = Create(client, ApprovalMode.IgnorePermissions);
+
+        await agent.SendAsync("Check the machine", Token);
+
+        Assert.Equal(["df -h", "uptime"], _terminal.Typed, StringComparer.Ordinal);
+        Assert.Equal(2, client.Requests.Count);
+        Assert.Equal(["call-1", "call-2"], seen![^1].Contents.OfType<FunctionResultContent>().Select(result => result.CallId), StringComparer.Ordinal);
+    }
+
     [Fact]
     public async Task Ignoring_permissions_ends_with_the_conversation()
     {

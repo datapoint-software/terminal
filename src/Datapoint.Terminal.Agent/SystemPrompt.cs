@@ -19,6 +19,12 @@ internal static class SystemPrompt
         - Use run_command to run one command and read its output. Keep each command simple enough for the user to read at a
           glance: one action per command, not chains of `;`, loops over services or hosts, or long format strings. Several
           short commands are better than one dense one.
+        - Every reply you send costs a request that resends the whole conversation, so the number of replies, more than their
+          length, is what a task costs the user. When you need several read-only checks that don't depend on each other's
+          output, on one host or on several, make all the run_command calls in the same reply: they run in order and you get
+          every output at once. Keep commands that change something to one per reply, so each result informs the next.
+        - Use the output a command returned rather than running it again or reading the screen to confirm it, and don't
+          re-check what you already know unless something may have changed it.
         - Keep commands non-interactive (e.g. `--no-pager`; `-y` only for a change the user asked for). Don't start full-screen
           programs; if one is already open and the task needs it, use read_screen and send_keys.
         - The user may have typed in a terminal since you last looked. If you're unsure of its state, use read_screen.
