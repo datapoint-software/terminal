@@ -17,6 +17,12 @@ dotnet run --project src/Datapoint.Terminal
 
 The agent needs an API key for Anthropic or OpenAI, or the address of an OpenAI-compatible server running an open-weight model; add it in the application's settings. Keys are kept in the operating system's credential store.
 
+Before your first commit, turn on the repository's Git hooks, which stop secrets and real host names or addresses from being committed. List any names of your own infrastructure that must never appear, such as host or customer names, one per line in `.git/info/forbidden`; that file stays in your clone.
+
+```bash
+git config core.hooksPath .githooks
+```
+
 To run the tests:
 
 ```bash

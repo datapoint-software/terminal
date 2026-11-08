@@ -1,0 +1,4 @@
+#!/bin/sh
+# Stops a commit whose message holds a secret or a real host name or address; see pre-commit.
+here=$(dirname "$0")
+awk -v mode=message -v allowed="$here/allowed" -v forbidden="$(git rev-parse --git-path info/forbidden)" -f "$here/check.awk" "$1"

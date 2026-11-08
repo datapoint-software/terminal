@@ -44,6 +44,7 @@ tests/
   Datapoint.Terminal.Emulator.Fuzz/        Fuzzing targets for the parser and screen model
   Datapoint.Terminal.Emulator.Benchmarks/  BenchmarkDotNet benchmarks
 tools/                             Repository scripts, such as the third-party notices generator
+.githooks/                         Git hooks that stop secrets and real host names or addresses from being committed
 docs/  branding/
 Datapoint.Terminal.slnx  Directory.Build.props  Directory.Packages.props  global.json  .editorconfig
 ```
@@ -559,6 +560,7 @@ Decisions in the order they were taken, with the reason. Newest last.
 | 14 | 2026-11-06 | `bcrypt_pbkdf` is ported from OpenBSD's reference implementation onto BouncyCastle's Blowfish, as the one documented exception to "never implement a primitive". | Neither .NET nor BouncyCastle provides it, and users' encrypted OpenSSH key files need it; test vectors keep it honest, and FIPS mode never uses it. |
 | 15 | 2026-11-06 | Update packages are verified with a signature before they're applied: Velopack's, if it has one, or our own on the update feed. Checked in the first prototype. | Software that runs shells on users' machines can't trust HTTPS alone for its updates. |
 | 16 | 2026-11-06 | Adopt the [SSH security rules](#ssh-security-rules): strict key exchange, no CBC, compression, group exchange, SHA-1 key exchange, SSHFP or X11 forwarding; host keys accepted only by the user; strict names from untrusted sources; bounded parsing. | Each rule answers a published attack on SSH clients; leaving features out removes whole classes of them. |
+| 17 | 2026-11-08 | Git hooks in `.githooks/` check what's committed, and each commit message, for secrets and real infrastructure details: API keys and tokens, long base64 such as a private key, IP addresses outside the documentation ranges, and the words a clone lists in `.git/info/forbidden`. Public values that look like these are listed in `.githooks/allowed`. They're written in POSIX shell and awk, and each clone turns them on with `git config core.hooksPath .githooks`. | The repository is public, and a real host name and address once came in through realistic test examples and had to be removed by rewriting the history. Shell and awk come with Git on every platform, so there's nothing to install; a scanner such as gitleaks would need installing on every machine, and its rules for internal names would have to be committed, publishing those names. The forbidden words stay in each clone for the same reason. |
 
 ## Open questions
 
