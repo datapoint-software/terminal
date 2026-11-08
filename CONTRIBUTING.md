@@ -24,7 +24,7 @@ To report a security problem, don't open an issue: follow the [security policy](
    dotnet test
    ```
 
-   The SSH tests need [Docker](https://www.docker.com/) and the test server's image (`docker build -t datapoint-terminal-sshd:test tests/ssh-server`); without them they're skipped.
+   The SSH tests need [Docker](https://www.docker.com/) and the test server's image (`docker build -t datapoint-terminal-sshd:test tests/ssh-server`); without them they're skipped. CI doesn't run the session tests (`Datapoint.Terminal.Sessions.Tests`, shells and SSH), so run them yourself when you change those areas.
 
 ## Making a change
 
