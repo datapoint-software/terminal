@@ -45,5 +45,7 @@
     <PackageReference Include="xunit.v3.mtp-v2" />
     <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
     <Using Include="Xunit" />
+    <!-- Names any test still running after a minute, so a test that hangs in CI can be found from the log. -->
+    <Content Include="$(MSBuildThisFileDirectory)tests/xunit.runner.json" Link="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>
