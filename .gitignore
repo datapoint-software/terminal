@@ -1,12 +1,26 @@
+# .NET build and test output
 bin/
 obj/
 artifacts/
 TestResults/
+
+# Secrets: never commit them (see CLAUDE.md). Private keys, certificates (including code-signing ones) and environment files.
+*.pem
+*.key
+*.pfx
+*.p12
+.env
+.env.*
+
+# Claude Code: personal settings and agent worktrees
+.claude/settings.local.json
+.claude/worktrees/
+
+# Editors and operating systems
 *.user
 .vs/
 .idea/
 .vscode/
 .DS_Store
+Thumbs.db
 *.swp
-.env
-.env.*
