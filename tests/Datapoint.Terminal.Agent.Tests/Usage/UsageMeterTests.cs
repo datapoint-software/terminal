@@ -12,7 +12,7 @@ public sealed class UsageMeterTests
         meter.Price = new TokenPrice(1m, 1m);
         meter.Record("db1", 1_000_000, 0);
 
-        Assert.Equal(new UsageTotal(2_000_000, 100_000, 5.5m, 2, 0), meter.Session);
+        Assert.Equal((2_000_000L, 100_000L, (decimal?)5.5m, 2, 0), (meter.Session.InputTokens, meter.Session.OutputTokens, meter.Session.Cost, meter.Session.Requests, meter.Session.Unreported));
         Assert.Equal(4.5m, meter.Terminals["web1"].Cost);
         Assert.Equal(1m, meter.Terminals["db1"].Cost);
     }
@@ -59,6 +59,20 @@ public sealed class UsageMeterTests
         // 100k uncached at 3, 800k read at 0.3, 100k written at 3.75.
         Assert.Equal(0.3m + 0.24m + 0.375m, meter.Session.Cost);
         Assert.Equal(800_000, meter.Session.CachedInputTokens);
+        Assert.Equal(100_000, meter.Session.CacheWriteTokens);
+        Assert.Equal(new CostParts(0.3m, 0.24m, 0.375m, 0m), meter.Session.Parts);
+    }
+
+    [Fact]
+    public void Leaves_the_split_unknown_once_a_request_had_no_price()
+    {
+        var meter = new UsageMeter { Price = new TokenPrice(3m, 15m) };
+        meter.Record("web1", 1000, 10);
+        meter.Price = null;
+        meter.Record("web1", 1000, 10);
+
+        Assert.Null(meter.Session.Parts);
+        Assert.Null(meter.Session.Cost);
     }
 
     [Fact]

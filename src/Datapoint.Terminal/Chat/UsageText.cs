@@ -17,10 +17,38 @@ public static class UsageText
         return total.Unreported > 0 ? text + " " + Strings.Format(Strings.UsageUnreported, total.Unreported) : text;
     }
 
-    // How much of the input came from the provider's prompt cache, which costs less; empty when none did.
-    public static string Cached(UsageTotal total) => total.CachedInputTokens > 0
-        ? Strings.Format(Strings.UsageCached, Tokens(total.CachedInputTokens), Tokens(total.InputTokens))
-        : string.Empty;
+    // Where the tokens and the money went: how many requests, the input sent anew, read from and written to the prompt cache,
+    // and the output, each priced when the price is known. Every step of a task resends the conversation, so the number of
+    // requests is what most of the cost follows.
+    public static string Breakdown(UsageTotal total)
+    {
+        ArgumentNullException.ThrowIfNull(total);
+        if (total.Requests == 0 || total.Tokens == 0)
+        {
+            return string.Empty;
+        }
+
+        var newInput = Math.Max(0, total.InputTokens - total.CachedInputTokens - total.CacheWriteTokens);
+        var lines = new List<string>
+        {
+            Strings.Format(Strings.UsageRequests, total.Requests, Tokens(total.InputTokens / total.Requests)),
+            Strings.Format(Strings.UsagePartNew, Tokens(newInput)) + Part(total.Parts?.NewInput),
+        };
+        if (total.CachedInputTokens > 0)
+        {
+            lines.Add(Strings.Format(Strings.UsagePartCacheRead, Tokens(total.CachedInputTokens)) + Part(total.Parts?.CacheRead));
+        }
+
+        if (total.CacheWriteTokens > 0)
+        {
+            lines.Add(Strings.Format(Strings.UsagePartCacheWrite, Tokens(total.CacheWriteTokens)) + Part(total.Parts?.CacheWrite));
+        }
+
+        lines.Add(Strings.Format(Strings.UsagePartOutput, Tokens(total.OutputTokens)) + Part(total.Parts?.Output));
+        return string.Join('\n', lines);
+    }
+
+    private static string Part(decimal? cost) => cost is { } amount ? " · " + Money(amount) : string.Empty;
 
     public static string PerTerminal(IReadOnlyDictionary<string, UsageTotal> terminals) =>
         string.Join('\n', terminals.OrderBy(pair => pair.Key, StringComparer.CurrentCulture)

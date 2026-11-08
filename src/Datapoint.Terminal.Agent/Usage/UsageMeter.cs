@@ -80,13 +80,13 @@ public sealed class UsageMeter
     // usage is null when the provider reported no counts; the request still counts.
     public void Record(string? terminal, TokenUsage? usage)
     {
-        var cost = usage is null ? 0m : Price?.CostOf(usage);
+        var parts = usage is null ? CostParts.Zero : Price?.PartsOf(usage);
         lock (_lock)
         {
-            _session = _session.Add(usage, cost);
+            _session = _session.Add(usage, parts);
             if (terminal is not null)
             {
-                _terminals[terminal] = _terminals.GetValueOrDefault(terminal, UsageTotal.Empty).Add(usage, cost);
+                _terminals[terminal] = _terminals.GetValueOrDefault(terminal, UsageTotal.Empty).Add(usage, parts);
             }
         }
     }

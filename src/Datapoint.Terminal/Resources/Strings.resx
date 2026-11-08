@@ -2874,4 +2874,19 @@ Fingerprint: {2}</value>
   <data name="ContextUsedUnknownWindow" xml:space="preserve">
     <value>{0:N0} tokens of context used</value>
   </data>
+  <data name="UsageRequests" xml:space="preserve">
+    <value>Requests to the model: {0:N0}, about {1} input tokens each</value>
+  </data>
+  <data name="UsagePartNew" xml:space="preserve">
+    <value>New input: {0} tokens</value>
+  </data>
+  <data name="UsagePartCacheRead" xml:space="preserve">
+    <value>Read from the cache: {0} tokens</value>
+  </data>
+  <data name="UsagePartCacheWrite" xml:space="preserve">
+    <value>Written to the cache: {0} tokens</value>
+  </data>
+  <data name="UsagePartOutput" xml:space="preserve">
+    <value>Output: {0} tokens</value>
+  </data>
 </root>

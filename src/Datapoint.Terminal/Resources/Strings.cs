@@ -1915,6 +1915,16 @@ public static class Strings
 
     public static string ContextUsedUnknownWindow => Get(nameof(ContextUsedUnknownWindow));
 
+    public static string UsageRequests => Get(nameof(UsageRequests));
+
+    public static string UsagePartNew => Get(nameof(UsagePartNew));
+
+    public static string UsagePartCacheRead => Get(nameof(UsagePartCacheRead));
+
+    public static string UsagePartCacheWrite => Get(nameof(UsagePartCacheWrite));
+
+    public static string UsagePartOutput => Get(nameof(UsagePartOutput));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

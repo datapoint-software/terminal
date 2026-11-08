@@ -229,7 +229,7 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
         }
 
         UsageSummary = UsageText.Summary(usage.Session, usage.Budget);
-        UsageDetail = string.Join('\n', new[] { UsageText.PerTerminal(usage.Terminals), UsageText.Cached(usage.Session) }.Where(line => line.Length > 0));
+        UsageDetail = string.Join('\n', new[] { UsageText.Breakdown(usage.Session), UsageText.PerTerminal(usage.Terminals) }.Where(line => line.Length > 0));
     }
 
     // Explain and fix (product.md): part of a terminal that goes with the next message, said before it's sent like new output.

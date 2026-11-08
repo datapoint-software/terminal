@@ -8,15 +8,25 @@ public sealed record UsageTotal(long InputTokens, long OutputTokens, decimal? Co
     // The part of InputTokens read from the provider's prompt cache.
     public long CachedInputTokens { get; init; }
 
+    // The part of InputTokens written to it, which Anthropic charges more for than new input.
+    public long CacheWriteTokens { get; init; }
+
+    // Cost by what was charged for; null, like Cost, once a request had no price.
+    public CostParts? Parts { get; init; } = CostParts.Zero;
+
     public long Tokens => InputTokens + OutputTokens;
 
-    public UsageTotal Add(TokenUsage? usage, decimal? cost) => new(
-        InputTokens + (usage?.Input ?? 0),
-        OutputTokens + (usage?.Output ?? 0),
-        Cost is { } total && cost is { } more ? total + more : null,
-        Requests + 1,
-        Unreported + (usage is null ? 1 : 0))
+    // parts is null when the request had no price.
+    public UsageTotal Add(TokenUsage? usage, CostParts? parts)
     {
-        CachedInputTokens = CachedInputTokens + (usage?.CacheRead ?? 0),
-    };
+        var counted = usage ?? new TokenUsage(0, 0);
+        return new(InputTokens + counted.Input, OutputTokens + counted.Output, Sum(Cost, parts?.Total), Requests + 1, Unreported + (usage is null ? 1 : 0))
+        {
+            CachedInputTokens = CachedInputTokens + counted.CacheRead,
+            CacheWriteTokens = CacheWriteTokens + counted.CacheWrite,
+            Parts = Parts is { } sum && parts is { } added ? sum.Add(added) : null,
+        };
+    }
+
+    private static decimal? Sum(decimal? total, decimal? more) => total is { } a && more is { } b ? a + b : null;
 }

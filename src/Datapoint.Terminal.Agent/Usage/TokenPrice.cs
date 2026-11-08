@@ -16,18 +16,21 @@ public sealed record TokenPrice(decimal InputPerMillion, decimal OutputPerMillio
 
     public decimal CostOf(long input, long output) => CostOf(new TokenUsage(input, output));
 
-    public decimal CostOf(TokenUsage usage)
+    public decimal CostOf(TokenUsage usage) => PartsOf(usage).Total;
+
+    public CostParts PartsOf(TokenUsage usage)
     {
         ArgumentNullException.ThrowIfNull(usage);
         if (LongPrompt is { } longer && usage.Input > LongPromptAbove)
         {
-            return longer.CostOf(usage);
+            return longer.PartsOf(usage);
         }
 
         var uncached = Math.Max(0, usage.Input - usage.CacheRead - usage.CacheWrite);
-        return ((uncached * InputPerMillion)
-            + (usage.CacheRead * (CachedInputPerMillion ?? InputPerMillion))
-            + (usage.CacheWrite * (CacheWritePerMillion ?? InputPerMillion))
-            + (usage.Output * OutputPerMillion)) / 1_000_000m;
+        return new CostParts(
+            uncached * InputPerMillion / 1_000_000m,
+            usage.CacheRead * (CachedInputPerMillion ?? InputPerMillion) / 1_000_000m,
+            usage.CacheWrite * (CacheWritePerMillion ?? InputPerMillion) / 1_000_000m,
+            usage.Output * OutputPerMillion / 1_000_000m);
     }
 }
