@@ -232,7 +232,7 @@
     <value>Copy code</value>
   </data>
   <data name="MarkdownSelectAll" xml:space="preserve">
-    <value>Select All</value>
+    <value>Select all</value>
   </data>
   <data name="MarkdownOpenLinkQuestion" xml:space="preserve">
     <value>Open this link in your browser?</value>
@@ -256,22 +256,22 @@
     <value>_File</value>
   </data>
   <data name="MenuNewWorkspace" xml:space="preserve">
-    <value>_New Workspace…</value>
+    <value>_New workspace…</value>
   </data>
   <data name="MenuOpenWorkspace" xml:space="preserve">
-    <value>_Open Workspace…</value>
+    <value>_Open workspace…</value>
   </data>
   <data name="MenuOpenRecent" xml:space="preserve">
-    <value>Open _Recent</value>
+    <value>Open _recent</value>
   </data>
   <data name="MenuClearRecent" xml:space="preserve">
-    <value>Clear Recent</value>
+    <value>Clear recent</value>
   </data>
   <data name="MenuSettings" xml:space="preserve">
     <value>_Settings…</value>
   </data>
   <data name="MenuCloseWindow" xml:space="preserve">
-    <value>_Close Window</value>
+    <value>_Close window</value>
   </data>
   <data name="PickerNewWorkspace" xml:space="preserve">
     <value>Choose or create a folder for the new workspace</value>
@@ -307,16 +307,16 @@
     <value>_Terminal</value>
   </data>
   <data name="MenuNewTab" xml:space="preserve">
-    <value>New _Tab</value>
+    <value>New _tab</value>
   </data>
   <data name="MenuCloseTab" xml:space="preserve">
-    <value>Close Ta_b</value>
+    <value>Close ta_b</value>
   </data>
   <data name="MenuNextTab" xml:space="preserve">
-    <value>_Next Tab</value>
+    <value>_Next tab</value>
   </data>
   <data name="MenuPreviousTab" xml:space="preserve">
-    <value>_Previous Tab</value>
+    <value>_Previous tab</value>
   </data>
   <data name="TabNew" xml:space="preserve">
     <value>New tab</value>
@@ -355,10 +355,10 @@
     <value>{0} is in your ~/.ssh/config but not in this workspace. Adding it lists it in workspace.json, which is shared with the workspace, and lets the agent keep documentation for it in hosts/. You can also open it once without adding it.</value>
   </data>
   <data name="AddHostAdd" xml:space="preserve">
-    <value>Add to Workspace</value>
+    <value>Add to workspace</value>
   </data>
   <data name="AddHostOpenOnce" xml:space="preserve">
-    <value>Open Without Adding</value>
+    <value>Open without adding</value>
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
@@ -408,10 +408,10 @@ Fingerprint: {2}</value>
     <value>Cancel</value>
   </data>
   <data name="HostKeyOnce" xml:space="preserve">
-    <value>Connect Once</value>
+    <value>Connect once</value>
   </data>
   <data name="HostKeyTrust" xml:space="preserve">
-    <value>Trust and Connect</value>
+    <value>Trust and connect</value>
   </data>
   <data name="HostKeyChangedTitle" xml:space="preserve">
     <value>The identity of {0} has changed</value>
@@ -442,7 +442,7 @@ Fingerprint: {2}</value>
     <value>{0}: {1}</value>
   </data>
   <data name="MenuWorkspaceTrust" xml:space="preserve">
-    <value>Workspace Trust…</value>
+    <value>Workspace trust…</value>
   </data>
   <data name="TrustTitle" xml:space="preserve">
     <value>Trust {0}?</value>
@@ -463,10 +463,10 @@ Fingerprint: {2}</value>
     <value>{0} (new)</value>
   </data>
   <data name="TrustDont" xml:space="preserve">
-    <value>Don't Trust</value>
+    <value>Don't trust</value>
   </data>
   <data name="TrustTrust" xml:space="preserve">
-    <value>Trust Workspace</value>
+    <value>Trust workspace</value>
   </data>
   <data name="NoticeInstructions" xml:space="preserve">
     <value>The agent follows the instructions in {0}.</value>
@@ -487,10 +487,10 @@ Fingerprint: {2}</value>
     <value>workspace.json in {0} was changed outside Datapoint Terminal, e.g. by a git pull or a teammate. These changes make connections less strict or point them somewhere else, so they wait for you. Until you accept them, the connections keep the settings you last confirmed.</value>
   </data>
   <data name="ReviewKeep" xml:space="preserve">
-    <value>Keep Confirmed Settings</value>
+    <value>Keep confirmed settings</value>
   </data>
   <data name="ReviewAccept" xml:space="preserve">
-    <value>Accept Changes</value>
+    <value>Accept changes</value>
   </data>
   <data name="ReviewNewConnection" xml:space="preserve">
     <value>{0}: new connection to {1}</value>
@@ -511,7 +511,7 @@ Fingerprint: {2}</value>
     <value>{0} changed since the agent last read it.</value>
   </data>
   <data name="ShowChanges" xml:space="preserve">
-    <value>Show Changes</value>
+    <value>Show changes</value>
   </data>
   <data name="InstructionChangesTitle" xml:space="preserve">
     <value>Changes to {0}</value>
@@ -538,7 +538,7 @@ Fingerprint: {2}</value>
     <value>In {0}, {1}.</value>
   </data>
   <data name="CloseTabConfirm" xml:space="preserve">
-    <value>Close Tab</value>
+    <value>Close tab</value>
   </data>
   <data name="CloseWindowTitle" xml:space="preserve">
     <value>Close this window?</value>
@@ -547,7 +547,7 @@ Fingerprint: {2}</value>
     <value>Closing the window closes all its tabs. Some are still in use:</value>
   </data>
   <data name="CloseWindowConfirm" xml:space="preserve">
-    <value>Close Window</value>
+    <value>Close window</value>
   </data>
   <data name="CloseTabLine" xml:space="preserve">
     <value>{0}: {1}</value>
@@ -571,22 +571,22 @@ Fingerprint: {2}</value>
     <value>Waiting for you — {0}</value>
   </data>
   <data name="SecretTitle" xml:space="preserve">
-    <value>Possible Secret in a File</value>
+    <value>Possible secret in a file</value>
   </data>
   <data name="SecretMessage" xml:space="preserve">
     <value>{0} is about to be sent to the AI provider with your message, and the lines below look like they hold a secret. Send it masked, with each match replaced by “{1}”, send it as written, or don't send it. “Not a Secret” sends these matches as written and remembers them, in this application's settings, so they aren't flagged again.</value>
   </data>
   <data name="SecretSkip" xml:space="preserve">
-    <value>Don't Send</value>
+    <value>Don't send</value>
   </data>
   <data name="SecretAsWritten" xml:space="preserve">
-    <value>Send As Written</value>
+    <value>Send as written</value>
   </data>
   <data name="SecretNotSecret" xml:space="preserve">
-    <value>Not a Secret</value>
+    <value>Not a secret</value>
   </data>
   <data name="SecretMasked" xml:space="preserve">
-    <value>Send Masked</value>
+    <value>Send masked</value>
   </data>
   <data name="SecretLine" xml:space="preserve">
     <value>Line {0}: {1}</value>
@@ -664,7 +664,7 @@ Fingerprint: {2}</value>
     <value>For {0} days</value>
   </data>
   <data name="HistoryClear" xml:space="preserve">
-    <value>Clear History…</value>
+    <value>Clear history…</value>
   </data>
   <data name="HistoryList" xml:space="preserve">
     <value>Conversations</value>
@@ -700,7 +700,7 @@ Fingerprint: {2}</value>
     <value>Keeping history {0} deletes everything older right away, and from now on as it ages. This can't be undone.</value>
   </data>
   <data name="HistoryShortenConfirm" xml:space="preserve">
-    <value>Delete Older History</value>
+    <value>Delete older history</value>
   </data>
   <data name="HistoryClearTitle" xml:space="preserve">
     <value>Clear history?</value>
@@ -712,7 +712,7 @@ Fingerprint: {2}</value>
     <value>Clear {0}</value>
   </data>
   <data name="HistoryClearAll" xml:space="preserve">
-    <value>Clear Everything</value>
+    <value>Clear everything</value>
   </data>
   <data name="HistoryClearedAll" xml:space="preserve">
     <value>All history was cleared.</value>
@@ -724,7 +724,7 @@ Fingerprint: {2}</value>
     <value>The history couldn't be read or changed: {0}</value>
   </data>
   <data name="MenuShowHistory" xml:space="preserve">
-    <value>Show History</value>
+    <value>Show history</value>
   </data>
   <data name="ApprovalSend" xml:space="preserve">
     <value>Send</value>
@@ -772,10 +772,10 @@ Fingerprint: {2}</value>
     <value>View</value>
   </data>
   <data name="MenuCollapseTerminals" xml:space="preserve">
-    <value>Collapse Terminals</value>
+    <value>Collapse terminals</value>
   </data>
   <data name="MenuExpandTerminals" xml:space="preserve">
-    <value>Expand Terminals</value>
+    <value>Expand terminals</value>
   </data>
   <data name="FindPlaceholder" xml:space="preserve">
     <value>Find in terminal</value>
@@ -799,19 +799,19 @@ Fingerprint: {2}</value>
     <value>Find…</value>
   </data>
   <data name="MenuBiggerText" xml:space="preserve">
-    <value>Bigger Text</value>
+    <value>Bigger text</value>
   </data>
   <data name="MenuSmallerText" xml:space="preserve">
-    <value>Smaller Text</value>
+    <value>Smaller text</value>
   </data>
   <data name="MenuActualSize" xml:space="preserve">
-    <value>Actual Size</value>
+    <value>Actual size</value>
   </data>
   <data name="MenuTheme" xml:space="preserve">
-    <value>Terminal Theme</value>
+    <value>Terminal theme</value>
   </data>
   <data name="MenuThemeSystem" xml:space="preserve">
-    <value>Match System</value>
+    <value>Match system</value>
   </data>
   <data name="MenuThemeDark" xml:space="preserve">
     <value>Dark</value>
@@ -820,7 +820,7 @@ Fingerprint: {2}</value>
     <value>Light</value>
   </data>
   <data name="MenuFont" xml:space="preserve">
-    <value>Terminal Font</value>
+    <value>Terminal font</value>
   </data>
   <data name="MenuFontDefault" xml:space="preserve">
     <value>Default</value>
@@ -835,25 +835,25 @@ Fingerprint: {2}</value>
     <value>The agent has a question for you.</value>
   </data>
   <data name="MenuNotifications" xml:space="preserve">
-    <value>Notify When the Agent Finishes or Waits</value>
+    <value>Notify when the agent finishes or waits</value>
   </data>
   <data name="NoticePanesFull" xml:space="preserve">
     <value>A tab can show at most {0} terminals. Move one to its own tab first (Terminal › Move Pane to Its Own Tab).</value>
   </data>
   <data name="MenuSplitRight" xml:space="preserve">
-    <value>Split Right</value>
+    <value>Split right</value>
   </data>
   <data name="MenuSplitDown" xml:space="preserve">
-    <value>Split Down</value>
+    <value>Split down</value>
   </data>
   <data name="MenuNextPane" xml:space="preserve">
-    <value>Next Pane</value>
+    <value>Next pane</value>
   </data>
   <data name="MenuPreviousPane" xml:space="preserve">
-    <value>Previous Pane</value>
+    <value>Previous pane</value>
   </data>
   <data name="MenuMovePaneToTab" xml:space="preserve">
-    <value>Move Pane to Its Own Tab</value>
+    <value>Move pane to its own tab</value>
   </data>
   <data name="NoticePaneConnectionGone" xml:space="preserve">
     <value>Couldn't split: the workspace no longer lists the connection {0}.</value>
@@ -877,7 +877,7 @@ Fingerprint: {2}</value>
     <value>The agent wants to change a file</value>
   </data>
   <data name="ApprovalApplyEdit" xml:space="preserve">
-    <value>Apply Change</value>
+    <value>Apply change</value>
   </data>
   <data name="ApprovalRiskEdit" xml:space="preserve">
     <value>Before the change, a copy of the file is saved under ~/.datapoint-terminal/backups on the same machine, so it can be undone. The change is made by a command typed into the terminal, using sudo if the file needs it.</value>
@@ -895,10 +895,10 @@ Fingerprint: {2}</value>
     <value>This tab isn't being recorded: {0}</value>
   </data>
   <data name="MenuRecordSessions" xml:space="preserve">
-    <value>Record Sessions</value>
+    <value>Record sessions</value>
   </data>
   <data name="MenuShowRecordings" xml:space="preserve">
-    <value>Show Recordings…</value>
+    <value>Show recordings…</value>
   </data>
   <data name="RecordingsTitle" xml:space="preserve">
     <value>Recordings</value>
@@ -961,10 +961,10 @@ Fingerprint: {2}</value>
     <value>Port {0} couldn't be forwarded: {1}</value>
   </data>
   <data name="MenuUploadFile" xml:space="preserve">
-    <value>Upload File…</value>
+    <value>Upload file…</value>
   </data>
   <data name="MenuDownloadFile" xml:space="preserve">
-    <value>Download File…</value>
+    <value>Download file…</value>
   </data>
   <data name="PickerUpload" xml:space="preserve">
     <value>Choose a file to upload</value>
@@ -1033,10 +1033,10 @@ Fingerprint: {2}</value>
     <value>Remove</value>
   </data>
   <data name="MenuExplainSelection" xml:space="preserve">
-    <value>Explain Selection</value>
+    <value>Explain selection</value>
   </data>
   <data name="MenuFixFailedCommand" xml:space="preserve">
-    <value>Fix Last Failed Command</value>
+    <value>Fix last failed command</value>
   </data>
   <data name="NoticeSelectFirst" xml:space="preserve">
     <value>Select some text in the terminal first, then choose Explain Selection.</value>
@@ -1081,7 +1081,7 @@ Fingerprint: {2}</value>
     <value>{0}: {1} tokens</value>
   </data>
   <data name="MenuSpendingLimit" xml:space="preserve">
-    <value>Spending Limit…</value>
+    <value>Spending limit…</value>
   </data>
   <data name="SpendingLimitTitle" xml:space="preserve">
     <value>Spending limit</value>
@@ -1249,10 +1249,10 @@ Fingerprint: {2}</value>
     <value>No hosts in this workspace yet.</value>
   </data>
   <data name="MenuHideSidebar" xml:space="preserve">
-    <value>Hide Sidebar</value>
+    <value>Hide sidebar</value>
   </data>
   <data name="MenuShowSidebar" xml:space="preserve">
-    <value>Show Sidebar</value>
+    <value>Show sidebar</value>
   </data>
   <data name="SidebarLabel" xml:space="preserve">
     <value>Workspace hosts and files</value>
@@ -1318,7 +1318,7 @@ Fingerprint: {2}</value>
     <value>Show Markdown</value>
   </data>
   <data name="MenuCloseDocument" xml:space="preserve">
-    <value>Close Document</value>
+    <value>Close document</value>
   </data>
   <data name="MenuCut" xml:space="preserve">
     <value>Cut</value>
@@ -1345,13 +1345,13 @@ Fingerprint: {2}</value>
     <value>Last seen: {0}\nNow: {1}</value>
   </data>
   <data name="WorkspaceHostKeyArchive" xml:space="preserve">
-    <value>Set Documentation Aside</value>
+    <value>Set documentation aside</value>
   </data>
   <data name="WorkspaceHostKeyReview" xml:space="preserve">
-    <value>Review Documentation</value>
+    <value>Review documentation</value>
   </data>
   <data name="WorkspaceHostKeyKeep" xml:space="preserve">
-    <value>Keep Documentation</value>
+    <value>Keep documentation</value>
   </data>
   <data name="NoticeWorkspaceHostKeyChanged" xml:space="preserve">
     <value>{0} has a different host key from the one this workspace last saw. Your known_hosts accepts it, and there's no documentation for {0} to review.</value>
@@ -1363,7 +1363,7 @@ Fingerprint: {2}</value>
     <value>Couldn't move the documentation for {0}: {1}</value>
   </data>
   <data name="MenuSelectWithKeyboard" xml:space="preserve">
-    <value>Select with Keyboard</value>
+    <value>Select with keyboard</value>
   </data>
   <data name="FindPattern" xml:space="preserve">
     <value>Regular expression</value>
@@ -1420,10 +1420,10 @@ Fingerprint: {2}</value>
     <value>Import…</value>
   </data>
   <data name="ThemeEditColors" xml:space="preserve">
-    <value>Edit Colors…</value>
+    <value>Edit colors…</value>
   </data>
   <data name="ThemeRemove" xml:space="preserve">
-    <value>Remove Theme</value>
+    <value>Remove theme</value>
   </data>
   <data name="ThemeImportHint" xml:space="preserve">
     <value>Import reads iTerm2, Windows Terminal, Ghostty and kitty themes. Edit Colors shows the 16 colours, text, background, cursor and selection, with a live preview.</value>
@@ -1441,7 +1441,7 @@ Fingerprint: {2}</value>
     <value>{0} pt</value>
   </data>
   <data name="ThemeImportTitle" xml:space="preserve">
-    <value>Import a Theme</value>
+    <value>Import a theme</value>
   </data>
   <data name="ThemeImportFailed" xml:space="preserve">
     <value>Couldn't import {0}: {1}.</value>
@@ -1450,7 +1450,7 @@ Fingerprint: {2}</value>
     <value>{0} theme</value>
   </data>
   <data name="ThemeEditorTitle" xml:space="preserve">
-    <value>Edit Colors</value>
+    <value>Edit colors</value>
   </data>
   <data name="ThemeEditorName" xml:space="preserve">
     <value>Name</value>
@@ -1459,7 +1459,7 @@ Fingerprint: {2}</value>
     <value>{0} (edited)</value>
   </data>
   <data name="ThemeEditorSave" xml:space="preserve">
-    <value>Save Theme</value>
+    <value>Save theme</value>
   </data>
   <data name="ThemeEditorInvalid" xml:space="preserve">
     <value>Each colour is six hexadecimal digits, such as #1E1E1E.</value>
@@ -1513,7 +1513,7 @@ Fingerprint: {2}</value>
     <value>This deletes the commands the agent ran on {0}, their output, and its saved terminal output. It can't be undone.</value>
   </data>
   <data name="NewHostTitle" xml:space="preserve">
-    <value>Add a Host</value>
+    <value>Add a host</value>
   </data>
   <data name="NewHostCaption" xml:space="preserve">
     <value>Saved in workspace.json, which everyone who shares this workspace sees.</value>
@@ -1561,10 +1561,10 @@ Fingerprint: {2}</value>
     <value>Logs in with your SSH agent and keys, or asks for a password.</value>
   </data>
   <data name="NewHostAdd" xml:space="preserve">
-    <value>Add Host</value>
+    <value>Add host</value>
   </data>
   <data name="NewHostMenu" xml:space="preserve">
-    <value>Add a Host…</value>
+    <value>Add a host…</value>
   </data>
   <data name="NewHostNameProblem" xml:space="preserve">
     <value>Give the host a name of up to 40 letters, digits, spaces, dots, dashes, underscores or @.</value>
@@ -1585,10 +1585,10 @@ Fingerprint: {2}</value>
     <value>This workspace's settings can't be changed here, so hosts can't be added.</value>
   </data>
   <data name="HostFileMenu" xml:space="preserve">
-    <value>Open File on Host…</value>
+    <value>Open file on host…</value>
   </data>
   <data name="HostFileOpenTitle" xml:space="preserve">
-    <value>Open a File on {0}</value>
+    <value>Open a file on {0}</value>
   </data>
   <data name="HostFileOpenHint" xml:space="preserve">
     <value>Starts in the folder the terminal is in. Tab completes, ↑↓ choose.</value>
@@ -1636,7 +1636,7 @@ Fingerprint: {2}</value>
     <value>Revert</value>
   </data>
   <data name="HostFileReviewSave" xml:space="preserve">
-    <value>Review &amp; Save…</value>
+    <value>Review &amp; save…</value>
   </data>
   <data name="HostFileEdited" xml:space="preserve">
     <value>Edited · not saved</value>
@@ -1696,10 +1696,10 @@ Fingerprint: {2}</value>
     <value>Someone or something changed the file since you opened it. Saving now would replace their change.</value>
   </data>
   <data name="HostFileReload" xml:space="preserve">
-    <value>Discard Mine and Reload</value>
+    <value>Discard mine and reload</value>
   </data>
   <data name="HostFileSaveAnyway" xml:space="preserve">
-    <value>Save Mine Anyway</value>
+    <value>Save mine anyway</value>
   </data>
   <data name="HostFileSavedNotice" xml:space="preserve">
     <value>Saved {0} on {1}. Backup: {2}. To undo: {3}</value>
@@ -1714,7 +1714,7 @@ Fingerprint: {2}</value>
     <value>Your changes to {0} on {1} haven't been saved.</value>
   </data>
   <data name="HostFileDiscard" xml:space="preserve">
-    <value>Close Without Saving</value>
+    <value>Close without saving</value>
   </data>
   <data name="HostFileUnsavedReason" xml:space="preserve">
     <value>changes not saved</value>
@@ -1753,13 +1753,13 @@ Fingerprint: {2}</value>
     <value>Settings</value>
   </data>
   <data name="SidebarNewWorkspace" xml:space="preserve">
-    <value>New Workspace…</value>
+    <value>New workspace…</value>
   </data>
   <data name="SidebarOpenWorkspace" xml:space="preserve">
-    <value>Open Workspace Folder…</value>
+    <value>Open workspace folder…</value>
   </data>
   <data name="SidebarReveal" xml:space="preserve">
-    <value>Show {0} in the File Manager</value>
+    <value>Show {0} in the file manager</value>
   </data>
   <data name="SidebarHostCount" xml:space="preserve">
     <value>{0} hosts</value>
@@ -1843,7 +1843,7 @@ Fingerprint: {2}</value>
     <value>This workspace is open in another window, so its memory can only be changed there.</value>
   </data>
   <data name="MenuMemory" xml:space="preserve">
-    <value>Agent Memory…</value>
+    <value>Agent memory…</value>
   </data>
   <data name="SettingsPageMemory" xml:space="preserve">
     <value>Memory</value>
@@ -1852,13 +1852,13 @@ Fingerprint: {2}</value>
     <value>Clear</value>
   </data>
   <data name="MenuRunSkill" xml:space="preserve">
-    <value>Run Skill</value>
+    <value>Run skill</value>
   </data>
   <data name="MenuSaveSkill" xml:space="preserve">
-    <value>Save Last Task as Skill…</value>
+    <value>Save last task as skill…</value>
   </data>
   <data name="MenuNoSkills" xml:space="preserve">
-    <value>No Skills Yet</value>
+    <value>No skills yet</value>
   </data>
   <data name="SkillRunDraft" xml:space="preserve">
     <value>Run the skill "{0}".</value>
@@ -1870,10 +1870,10 @@ Fingerprint: {2}</value>
     <value>Skill</value>
   </data>
   <data name="SkillRunOn" xml:space="preserve">
-    <value>Run on {0} Hosts…</value>
+    <value>Run on {0} hosts…</value>
   </data>
   <data name="SkillRunOnOne" xml:space="preserve">
-    <value>Run on 1 Host…</value>
+    <value>Run on 1 host…</value>
   </data>
   <data name="SkillRunOnNone" xml:space="preserve">
     <value>Run…</value>
@@ -1981,7 +1981,7 @@ Fingerprint: {2}</value>
     <value>The agent proposes this rollout</value>
   </data>
   <data name="ApprovalStartRollout" xml:space="preserve">
-    <value>Start Rollout</value>
+    <value>Start rollout</value>
   </data>
   <data name="ApprovalRiskRollout" xml:space="preserve">
     <value>The agent works only on the hosts whose turn it is; the application checks each one before going on.</value>
@@ -2113,16 +2113,16 @@ Fingerprint: {2}</value>
     <value>This change makes the rollout less careful: more hosts at once or more hosts in all, a shorter or missing health check, or carrying on after a failure.</value>
   </data>
   <data name="ReviewKeepMine" xml:space="preserve">
-    <value>Keep My Version</value>
+    <value>Keep my version</value>
   </data>
   <data name="ReviewAcceptChange" xml:space="preserve">
-    <value>Accept Change</value>
+    <value>Accept change</value>
   </data>
   <data name="ReviewLeaveOut" xml:space="preserve">
-    <value>Leave It Out</value>
+    <value>Leave it out</value>
   </data>
   <data name="ReviewAcceptSkill" xml:space="preserve">
-    <value>Accept Skill</value>
+    <value>Accept skill</value>
   </data>
   <data name="NoticeKeptForAgent" xml:space="preserve">
     <value>Kept your version of {0} for the agent. The file still has the change, since your version has masked secrets and can't be written back.</value>
@@ -2152,13 +2152,13 @@ Fingerprint: {2}</value>
     <value>Keep {0}</value>
   </data>
   <data name="ConflictKeepBoth" xml:space="preserve">
-    <value>Keep Both Changes</value>
+    <value>Keep both changes</value>
   </data>
   <data name="NoticeConflictSettled" xml:space="preserve">
     <value>Settled {0}. The other version is kept in {1}.</value>
   </data>
   <data name="SidebarRemoveHost" xml:space="preserve">
-    <value>Remove from Workspace…</value>
+    <value>Remove from workspace…</value>
   </data>
   <data name="RemoveHostTitle" xml:space="preserve">
     <value>Remove {0} from this workspace?</value>
@@ -2191,7 +2191,7 @@ Fingerprint: {2}</value>
     <value>Open a terminal on this computer or connect to a host. The agent works in the terminals you open.</value>
   </data>
   <data name="NoTerminalsOpen" xml:space="preserve">
-    <value>Open a Terminal…</value>
+    <value>Open a terminal…</value>
   </data>
   <data name="WebAccessHeading" xml:space="preserve">
     <value>The agent wants to use the web</value>
@@ -2332,10 +2332,10 @@ Fingerprint: {2}</value>
     <value>Ignore permissions</value>
   </data>
   <data name="MenuNextArea" xml:space="preserve">
-    <value>Next Area</value>
+    <value>Next area</value>
   </data>
   <data name="MenuPreviousArea" xml:space="preserve">
-    <value>Previous Area</value>
+    <value>Previous area</value>
   </data>
   <data name="CountNoneOpen" xml:space="preserve">
     <value>None open</value>
@@ -2365,19 +2365,19 @@ Fingerprint: {2}</value>
     <value>Below {0}</value>
   </data>
   <data name="MenuWindowLeft" xml:space="preserve">
-    <value>Left Side of the Window</value>
+    <value>Left side of the window</value>
   </data>
   <data name="MenuWindowRight" xml:space="preserve">
-    <value>Right Side of the Window</value>
+    <value>Right side of the window</value>
   </data>
   <data name="MenuWindowTop" xml:space="preserve">
-    <value>Top of the Window</value>
+    <value>Top of the window</value>
   </data>
   <data name="MenuWindowBottom" xml:space="preserve">
-    <value>Bottom of the Window</value>
+    <value>Bottom of the window</value>
   </data>
   <data name="MenuResetLayout" xml:space="preserve">
-    <value>Reset Layout</value>
+    <value>Reset layout</value>
   </data>
   <data name="NoticeAreaDoesNotFit" xml:space="preserve">
     <value>{0} can't go there: the window is too small for every area to keep a usable size. Make the window larger, or hide an area first.</value>
@@ -2833,7 +2833,7 @@ Fingerprint: {2}</value>
     <value>{0:0.0}M</value>
   </data>
   <data name="EditHostTitle" xml:space="preserve">
-    <value>Edit Host</value>
+    <value>Edit host</value>
   </data>
   <data name="EditHostHeading" xml:space="preserve">
     <value>Edit {0}</value>
@@ -2851,10 +2851,10 @@ Fingerprint: {2}</value>
     <value>The host's document, maintenance log and the agent's notes stay with this host. If the new address is a different machine, update them.</value>
   </data>
   <data name="SidebarEditHost" xml:space="preserve">
-    <value>Edit Host…</value>
+    <value>Edit host…</value>
   </data>
   <data name="DocumentEditHost" xml:space="preserve">
-    <value>Edit Host…</value>
+    <value>Edit host…</value>
   </data>
   <data name="NoticeHostEdited" xml:space="preserve">
     <value>Saved the changes to {0}.</value>
@@ -2914,7 +2914,7 @@ Fingerprint: {2}</value>
     <value>This conversation: {0} tokens</value>
   </data>
   <data name="MarkdownQuote" xml:space="preserve">
-    <value>Quote in Message</value>
+    <value>Quote in message</value>
   </data>
   <data name="MenuAbout" xml:space="preserve">
     <value>About Datapoint Terminal</value>
@@ -3106,7 +3106,7 @@ Fingerprint: {2}</value>
     <value>Skip tips</value>
   </data>
   <data name="MenuShowTips" xml:space="preserve">
-    <value>Show Tips Again</value>
+    <value>Show tips again</value>
   </data>
   <data name="AppearanceLanguageHeading" xml:space="preserve">
     <value>Language</value>

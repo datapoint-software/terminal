@@ -109,7 +109,7 @@ public sealed class RolloutCardTests
 
         Assert.Equal("The agent proposes this rollout", chat.Approval!.Heading);
         Assert.Equal("On web-1, web-2 (production)", chat.Approval.TerminalText);
-        Assert.Equal("Start Rollout", chat.Approval.RunLabel);
+        Assert.Equal("Start rollout", chat.Approval.RunLabel);
         Assert.True(chat.Approval.IsCommandReadOnly);
     }
 }

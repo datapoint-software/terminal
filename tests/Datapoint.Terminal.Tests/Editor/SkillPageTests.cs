@@ -93,7 +93,7 @@ public sealed class SkillPageTests : IDisposable
 
         Assert.Equal(["web-1", "web-2", "web-3"], skill.MatchingHosts);
         Assert.Equal("Runs on web-1, web-2 and web-3: the hosts with every label listed.", skill.MatchText);
-        Assert.Equal("Run on 3 Hosts…", skill.RunText);
+        Assert.Equal("Run on 3 hosts…", skill.RunText);
     }
 
     [Fact]
@@ -153,7 +153,7 @@ public sealed class SkillPageTests : IDisposable
         frame?.Save("rendered/skill-page.png", new PngBitmapEncoderOptions());
 
         var texts = window.GetVisualDescendants().OfType<TextBlock>().Where(text => text.IsEffectivelyVisible).Select(text => text.Text).ToList();
-        Assert.Contains("Run on 3 Hosts…", texts, StringComparer.Ordinal);
+        Assert.Contains("Run on 3 hosts…", texts, StringComparer.Ordinal);
         Assert.DoesNotContain(texts, text => text?.Contains("terminal.labels", StringComparison.Ordinal) == true);
         window.Close();
     }
