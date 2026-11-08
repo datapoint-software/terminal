@@ -3121,7 +3121,7 @@ Fingerprint: {2}</value>
     <value>System: {0}</value>
   </data>
   <data name="AppearanceLanguageHint" xml:space="preserve">
-    <value>Changes the application's text at once. The agent uses the new language from the next conversation; one under way keeps its language. Commands, files and host documentation stay in the language they're written in.</value>
+    <value>Changes the application's text at once. The agent uses the new language from the next conversation; one under way keeps its language. Files the agent edits keep their language, and new ones follow your other files or, without any, this language. A rule in TERMINAL.md overrides both.</value>
   </data>
   <data name="LanguageEnglish" xml:space="preserve">
     <value>English</value>
@@ -3143,5 +3143,14 @@ Fingerprint: {2}</value>
   </data>
   <data name="ThemeDefaultLight" xml:space="preserve">
     <value>Default light</value>
+  </data>
+  <data name="FileTypeConfiguration" xml:space="preserve">
+    <value>Configuration</value>
+  </data>
+  <data name="FileTypeEnvironment" xml:space="preserve">
+    <value>Environment</value>
+  </data>
+  <data name="FileTypeProperties" xml:space="preserve">
+    <value>Properties</value>
   </data>
 </root>

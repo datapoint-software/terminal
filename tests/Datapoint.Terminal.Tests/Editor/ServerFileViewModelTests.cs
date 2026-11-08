@@ -70,6 +70,15 @@ public sealed class ServerFileViewModelTests
     public void Knows_common_configuration_files(string path, string? language) =>
         Assert.Equal(language, FileLanguage.Of(path)?.Name);
 
+    [Theory]
+    [InlineData("/srv/app/.env", "Environment")]
+    [InlineData("/srv/app/app.conf", "Configuration")]
+    [InlineData("/srv/app/app.properties", "Properties")]
+    [InlineData("/srv/app/settings.json", "JSON")]
+    [InlineData("/etc/hosts", "Plain text")]
+    public void Names_the_file_type_in_the_status_bar(string path, string label) =>
+        Assert.Equal(label, Open("a\n", path).LanguageLabel);
+
     [Fact]
     public void Colours_nginx_directives_across_the_whole_file()
     {

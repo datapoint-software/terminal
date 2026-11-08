@@ -1,3 +1,5 @@
+using Datapoint.Terminal.Resources;
+
 namespace Datapoint.Terminal.Markdown;
 
 // The language a file is written in, from its name and folder, for colouring it in the editor. Configuration files often have
@@ -26,10 +28,10 @@ internal static class FileLanguage
         [".toml"] = ("toml", "TOML"),
         [".ini"] = ("ini", "INI"),
         [".cfg"] = ("ini", "INI"),
-        [".conf"] = ("conf", "Configuration"),
+        [".conf"] = ("conf", nameof(Strings.FileTypeConfiguration)),
         [".cnf"] = ("ini", "INI"),
-        [".env"] = ("env", "Environment"),
-        [".properties"] = ("properties", "Properties"),
+        [".env"] = ("env", nameof(Strings.FileTypeEnvironment)),
+        [".properties"] = ("properties", nameof(Strings.FileTypeProperties)),
         [".service"] = ("ini", "systemd"),
         [".socket"] = ("ini", "systemd"),
         [".timer"] = ("ini", "systemd"),
@@ -59,9 +61,19 @@ internal static class FileLanguage
         [".profile"] = ("sh", "Shell"),
         [".zshrc"] = ("sh", "Shell"),
         [".zprofile"] = ("sh", "Shell"),
-        [".env"] = ("env", "Environment"),
+        [".env"] = ("env", nameof(Strings.FileTypeEnvironment)),
         ["docker-compose.yml"] = ("yaml", "YAML"),
     };
+
+    // Labels are proper names shown as they are, except the few generic words, which are resource names to translate.
+    private static readonly HashSet<string> s_translated = new(StringComparer.Ordinal)
+    {
+        nameof(Strings.FileTypeConfiguration),
+        nameof(Strings.FileTypeEnvironment),
+        nameof(Strings.FileTypeProperties),
+    };
+
+    public static string Display(string label) => s_translated.Contains(label) ? Strings.Get(label) : label;
 
     // The name SyntaxHighlighter takes, and what to call the language on screen; null for plain text.
     public static (string Name, string Label)? Of(string path)

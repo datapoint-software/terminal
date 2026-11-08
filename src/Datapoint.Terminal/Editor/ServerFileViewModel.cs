@@ -63,7 +63,7 @@ public sealed partial class ServerFileViewModel : LocalizedObject, IOpenDocument
 
     public (string Name, string Label)? Language { get; }
 
-    public string LanguageLabel => Language?.Label ?? Strings.HostFilePlainText;
+    public string LanguageLabel => Language is { } language ? FileLanguage.Display(language.Label) : Strings.HostFilePlainText;
 
     public string LineEnding => Saved.Contains("\r\n", StringComparison.Ordinal) ? "CRLF" : "LF";
 

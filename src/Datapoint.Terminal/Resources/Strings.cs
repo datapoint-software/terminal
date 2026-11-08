@@ -2095,6 +2095,12 @@ public static class Strings
 
     public static string ThemeDefaultLight => Get(nameof(ThemeDefaultLight));
 
+    public static string FileTypeConfiguration => Get(nameof(FileTypeConfiguration));
+
+    public static string FileTypeEnvironment => Get(nameof(FileTypeEnvironment));
+
+    public static string FileTypeProperties => Get(nameof(FileTypeProperties));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     // Whether a name we gave something, such as the local tab's, is that resource in any language we have: one given

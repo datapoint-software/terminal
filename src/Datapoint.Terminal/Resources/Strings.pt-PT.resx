@@ -3121,7 +3121,7 @@ Impressão digital: {2}</value>
     <value>Sistema: {0}</value>
   </data>
   <data name="AppearanceLanguageHint" xml:space="preserve">
-    <value>Altera de imediato o texto da aplicação. O agente utiliza o novo idioma a partir da próxima conversa; uma conversa em curso mantém o seu idioma. Os comandos, os ficheiros e a documentação dos hosts mantêm o idioma em que foram escritos.</value>
+    <value>Altera de imediato o texto da aplicação. O agente utiliza o novo idioma a partir da próxima conversa; uma conversa em curso mantém o seu idioma. Os ficheiros que o agente edita mantêm o seu idioma, e os novos seguem os seus outros ficheiros ou, sem nenhum, este idioma. Uma regra no TERMINAL.md sobrepõe-se a ambos.</value>
   </data>
   <data name="SettingsUnreadable" xml:space="preserve">
     <value>Não foi possível ler o ficheiro de definições ({0}). Foi mantido como {1} e são utilizadas as predefinições.</value>
@@ -3137,5 +3137,14 @@ Impressão digital: {2}</value>
   </data>
   <data name="ThemeDefaultLight" xml:space="preserve">
     <value>Claro predefinido</value>
+  </data>
+  <data name="FileTypeConfiguration" xml:space="preserve">
+    <value>Configuração</value>
+  </data>
+  <data name="FileTypeEnvironment" xml:space="preserve">
+    <value>Ambiente</value>
+  </data>
+  <data name="FileTypeProperties" xml:space="preserve">
+    <value>Propriedades</value>
   </data>
 </root>
