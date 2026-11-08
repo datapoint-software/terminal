@@ -58,8 +58,10 @@ public sealed partial class RolloutProgressViewModel : LocalizedObject
 
     public bool IsPaused => _progress.IsPaused;
 
-    // Pausing lets the batch on now finish, so the button names where it will stop.
-    public string PauseText => _progress.IsPaused ? Strings.RolloutResume : Strings.Format(Strings.RolloutPauseAfter, CurrentNames);
+    // Pausing lets the batch on now finish; the card shows which hosts that is, so the button doesn't list them.
+    public string PauseText => _progress.IsPaused ? Strings.RolloutResume
+        : _progress.Rollout.Width(_progress.Hosts.Count) == 1 ? Strings.RolloutPauseAfterHost
+        : Strings.RolloutPauseAfterBatch;
 
     public string StatusText => _progress.IsPaused
         ? Strings.Format(Strings.RolloutPausedAfter, CurrentNames)

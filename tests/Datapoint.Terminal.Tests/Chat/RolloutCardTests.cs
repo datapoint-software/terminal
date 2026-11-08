@@ -51,8 +51,17 @@ public sealed class RolloutCardTests
         Assert.Equal("Done · 6 min|Checking health|Next", string.Join("|", card.Hosts.Select(host => host.StateText)));
         Assert.Equal("Healthy for 1:20 of 2:00", card.Hosts[1].Detail);
         Assert.Equal("Healthy for 2m", card.Hosts[0].Detail);
-        Assert.Equal("Pause After web-2", card.PauseText);
+        Assert.Equal("Pause After This Host", card.PauseText);
         Assert.False(card.IsInConversation);
+    }
+
+    [Fact]
+    public void Names_what_a_pause_waits_for()
+    {
+        var batches = Progress(s_checking) with { Rollout = s_rollout with { Order = RolloutOrder.Batches, BatchSize = 2 } };
+
+        Assert.Equal("Pause After This Host", new RolloutProgressViewModel(Progress(s_checking), _ => { }, () => { }).PauseText);
+        Assert.Equal("Pause After This Batch", new RolloutProgressViewModel(batches, _ => { }, () => { }).PauseText);
     }
 
     [AvaloniaFact]

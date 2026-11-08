@@ -2019,9 +2019,6 @@ Fingerprint: {2}</value>
   <data name="RolloutNoHealthCheck" xml:space="preserve">
     <value>No health check: each batch starts when the agent reports the last one done.</value>
   </data>
-  <data name="RolloutPauseAfter" xml:space="preserve">
-    <value>Pause After {0}</value>
-  </data>
   <data name="RolloutResume" xml:space="preserve">
     <value>Resume</value>
   </data>
@@ -3152,5 +3149,11 @@ Fingerprint: {2}</value>
   </data>
   <data name="FileTypeProperties" xml:space="preserve">
     <value>Properties</value>
+  </data>
+  <data name="RolloutPauseAfterHost" xml:space="preserve">
+    <value>Pause After This Host</value>
+  </data>
+  <data name="RolloutPauseAfterBatch" xml:space="preserve">
+    <value>Pause After This Batch</value>
   </data>
 </root>

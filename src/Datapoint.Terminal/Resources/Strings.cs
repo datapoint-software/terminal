@@ -1345,7 +1345,6 @@ public static class Strings
 
     public static string RolloutNoHealthCheck => Get(nameof(RolloutNoHealthCheck));
 
-    public static string RolloutPauseAfter => Get(nameof(RolloutPauseAfter));
 
     public static string RolloutResume => Get(nameof(RolloutResume));
 
@@ -2100,6 +2099,10 @@ public static class Strings
     public static string FileTypeEnvironment => Get(nameof(FileTypeEnvironment));
 
     public static string FileTypeProperties => Get(nameof(FileTypeProperties));
+
+    public static string RolloutPauseAfterHost => Get(nameof(RolloutPauseAfterHost));
+
+    public static string RolloutPauseAfterBatch => Get(nameof(RolloutPauseAfterBatch));
 
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 

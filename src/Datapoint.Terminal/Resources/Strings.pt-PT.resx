@@ -2019,8 +2019,11 @@ Impressão digital: {2}</value>
   <data name="RolloutNoHealthCheck" xml:space="preserve">
     <value>Sem verificação de estado: cada lote começa quando o agente indica que o anterior terminou.</value>
   </data>
-  <data name="RolloutPauseAfter" xml:space="preserve">
-    <value>Pausar após {0}</value>
+  <data name="RolloutPauseAfterHost" xml:space="preserve">
+    <value>Pausar após este host</value>
+  </data>
+  <data name="RolloutPauseAfterBatch" xml:space="preserve">
+    <value>Pausar após este lote</value>
   </data>
   <data name="RolloutResume" xml:space="preserve">
     <value>Retomar</value>
