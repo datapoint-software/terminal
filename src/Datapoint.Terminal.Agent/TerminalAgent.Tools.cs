@@ -400,7 +400,8 @@ public sealed partial class TerminalAgent
         if (redacted.Length > limit)
         {
             var half = limit / 2;
-            redacted = redacted[..half] + $"\n[... {redacted.Length - limit} characters left out ...]\n" + redacted[^half..];
+            redacted = redacted[..half] + $"\n[... {redacted.Length - limit} characters left out. To see them, search with grep -n or "
+                + "read a range of lines (read_file with start_line, or sed -n), rather than reading it all again ...]\n" + redacted[^half..];
         }
 
         return "<terminal_output>\n" + redacted.Replace("</terminal_output>", "</terminal_output_>", StringComparison.OrdinalIgnoreCase) + "\n</terminal_output>";

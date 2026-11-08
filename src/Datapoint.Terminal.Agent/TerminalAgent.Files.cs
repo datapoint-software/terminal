@@ -12,6 +12,9 @@ public sealed partial class TerminalAgent
 {
     public const int MaxFileBytes = 512 * 1024;
 
+    // Reading part of a file returns only that part, so it can look further into a long log than reading it whole.
+    public const int MaxPartBytes = 16 * 1024 * 1024;
+
     private static readonly UTF8Encoding s_strictUtf8 = new(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
 
     private List<AITool> FileTools() =>
@@ -19,11 +22,15 @@ public sealed partial class TerminalAgent
         new ToolFunction(
             "read_file",
             "Returns a text file's exact contents from the machine a terminal is on, read beside the terminal rather than printed "
-            + "in it. Use it before edit_file, and instead of cat for files you'll change.",
+            + "in it. Use it before edit_file, and instead of cat for files you'll change. For a long file or log, read only what "
+            + "you need: a range of lines, or the lines containing some text, each numbered.",
             """
             {"type":"object","properties":{
               "terminal":{"type":"string","description":"The name of the terminal whose machine has the file, as listed in the user's message."},
-              "path":{"type":"string","description":"An absolute path, or one starting with ~/."}},
+              "path":{"type":"string","description":"An absolute path, or one starting with ~/."},
+              "start_line":{"type":"integer","description":"The first line to return, from 1. Use with line_count to read part of the file."},
+              "line_count":{"type":"integer","description":"How many lines to return from start_line: 200 if left out, at most 2000."},
+              "search":{"type":"string","description":"Return only the lines containing this text, ignoring case, at most 200."}},
              "required":["path"]}
             """,
             ReadFileAsync),
@@ -54,7 +61,9 @@ public sealed partial class TerminalAgent
             return "Not read: " + refusal;
         }
 
-        var (file, problem) = await TryReadFileAsync(terminal!, path!, cancellationToken).ConfigureAwait(false);
+        var part = PartOf(arguments);
+        var limit = part is null ? MaxFileBytes : MaxPartBytes;
+        var (file, problem) = await TryReadFileAsync(terminal!, path!, cancellationToken, limit).ConfigureAwait(false);
         if (file is null)
         {
             return "Not read: " + problem;
@@ -65,18 +74,32 @@ public sealed partial class TerminalAgent
             return $"There's no file at {path}.";
         }
 
-        return Decode(file.Content) is { } text
-            ? (file.IsTruncated ? $"[Only the first {MaxFileBytes / 1024} KB.]\n" : string.Empty) + Untrusted(text)
+        return Decode(file.IsTruncated ? WholeLines(file.Content) : file.Content) is { } text
+            ? (file.IsTruncated ? $"[Only the first {limit / 1024:N0} KB.]\n" : string.Empty) + Untrusted(part is null ? text : FilePart.Describe(text, part))
             : "Not shown: the file isn't text (it isn't UTF-8, or it has NUL bytes).";
     }
 
+    private static FilePart? PartOf(AIFunctionArguments arguments)
+    {
+        var start = Number(arguments, "start_line");
+        var count = Number(arguments, "line_count");
+        var search = ToolArguments.GetString(arguments, "search");
+        return start is null && count is null && string.IsNullOrEmpty(search) ? null : new FilePart(start, count, search);
+    }
+
+    private static int? Number(AIFunctionArguments arguments, string name) =>
+        ToolArguments.GetString(arguments, name) is { } value && int.TryParse(value, System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out var number) ? number : null;
+
+    // A read cut at a byte limit may end inside a character; the last whole line is where it can be decoded.
+    private static byte[] WholeLines(byte[] content) => Array.LastIndexOf(content, (byte)'\n') is var end and >= 0 ? content[..(end + 1)] : content;
+
     // Reads beside the terminal and says so in the chat.
-    private async Task<(HostFile? File, string? Problem)> TryReadFileAsync(AgentTerminal terminal, string path, CancellationToken cancellationToken)
+    private async Task<(HostFile? File, string? Problem)> TryReadFileAsync(AgentTerminal terminal, string path, CancellationToken cancellationToken, int maxBytes = MaxFileBytes)
     {
         Raise(new AgentEventArgs(AgentEventKind.Notice, $"Read {path} on {terminal.Name}'s machine, beside the terminal.") { Terminal = terminal.Name });
         try
         {
-            return (await terminal.Files!.ReadAsync(path, MaxFileBytes, cancellationToken).ConfigureAwait(false), null);
+            return (await terminal.Files!.ReadAsync(path, maxBytes, cancellationToken).ConfigureAwait(false), null);
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or InvalidOperationException
             or Sessions.Ssh.Channels.SshChannelException or Sessions.Ssh.SshDisconnectedException)

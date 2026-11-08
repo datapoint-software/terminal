@@ -62,6 +62,21 @@ public sealed class TerminalAgentFilesTests
         Assert.Empty(_terminal.Typed);
     }
 
+    [Fact]
+    public async Task Reads_only_a_range_of_lines_or_the_lines_that_match_numbered()
+    {
+        _files.Files["/var/log/app.log"] = string.Join('\n', Enumerable.Range(1, 5000).Select(number => number % 1000 == 0 ? $"ERROR at {number}" : $"ok {number}")) + "\n";
+
+        await RunAsync(ApprovalMode.Ask,
+            Tool("read_file", """{"terminal":"web1","path":"/var/log/app.log","start_line":4999,"line_count":10}"""),
+            Tool("read_file", """{"terminal":"web1","path":"/var/log/app.log","search":"error"}"""),
+            Tool("read_file", """{"terminal":"web1","path":"/var/log/app.log","start_line":6000}"""));
+
+        Assert.Equal("<terminal_output>\nLines 4,999 to 5,000 of 5,000.\n4999:ok 4999\n5000:ERROR at 5000\n\n</terminal_output>", _results[0]);
+        Assert.StartsWith("<terminal_output>\n5 of 5,000 lines contain \"error\".\n1000:ERROR at 1000\n2000:", _results[1], StringComparison.Ordinal);
+        Assert.Contains("there's no line 6,000", _results[2], StringComparison.Ordinal);
+    }
+
     // ssh run in a local tab: file access would reach this computer, while typed commands reach the server.
     [Fact]
     public async Task Refuses_file_access_inside_a_session_opened_in_the_terminal()

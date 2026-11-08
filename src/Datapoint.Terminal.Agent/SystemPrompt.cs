@@ -28,6 +28,10 @@ internal static class SystemPrompt
           application skips that reply's remaining changes and tells you, so you decide from its result before going on.
         - Use the output a command returned rather than running it again or reading the screen to confirm it, and don't
           re-check what you already know unless something may have changed it.
+        - Output you read stays in the conversation and is sent again with every later reply. Before reading a file or log
+          that may be long, check its size (`wc -l`, `ls -lh`), then read only the part the task needs: search it with
+          `grep -n`, read its end with `tail -n 200`, or a range of lines with read_file. Read a whole file only when it's
+          short or the task needs all of it.
         - Keep commands non-interactive (e.g. `--no-pager`; `-y` only for a change the user asked for). Don't start full-screen
           programs; if one is already open and the task needs it, use read_screen and send_keys.
         - The user may have typed in a terminal since you last looked. If you're unsure of its state, use read_screen.
