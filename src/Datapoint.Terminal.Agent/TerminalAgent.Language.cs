@@ -1,4 +1,7 @@
 using System.Globalization;
+using Datapoint.Terminal.Agent.Files;
+using Datapoint.Terminal.Agent.Hosts;
+using Datapoint.Terminal.Agent.Languages;
 using Datapoint.Terminal.Agent.Resources;
 
 namespace Datapoint.Terminal.Agent;
@@ -14,17 +17,21 @@ public sealed partial class TerminalAgent
 
     private void StartLanguage() => Language = LanguageSource?.Invoke() ?? Language;
 
+    private const int MostHostsSurveyed = 300;
+
     // Written in English, which models follow most reliably, whatever language it asks for.
-    private string LanguageBlock()
+    private string LanguageBlock(LanguageSurvey survey)
     {
         if (LanguageSource is null)
         {
             return string.Empty;
         }
 
-        var language = string.Equals(Language.TwoLetterISOLanguageName, "pt", StringComparison.Ordinal)
+        var isPortuguese = string.Equals(Language.TwoLetterISOLanguageName, "pt", StringComparison.Ordinal);
+        var language = isPortuguese
             ? "European Portuguese, as written in Portugal (e.g. ficheiro, ecrã, utilizador, palavra-passe; never Brazilian forms)"
             : "English";
+        var interfaceLanguage = LanguageName(isPortuguese ? TextLanguage.Portuguese : TextLanguage.English);
         return $"""
 
 
@@ -35,13 +42,54 @@ public sealed partial class TerminalAgent
             of these that applies:
             1. the user's instruction files, if they set one;
             2. the language the file is already written in;
-            3. for a new or empty file, the language of the files the user keeps: host documentation, skills, memory notes
-               and instruction files, preferring those closest to it (the same host, workspace or folder). Go by what you've
-               already seen; don't read files only to find out their language. Files that came with the system, packages
-               or other people's projects don't count;
-            4. otherwise, {language}, the user's interface language.
+            3. for a new or empty file, the language of the user's other files in the count below, from the closest: the
+               same host's documentation, then the kind of file you're writing, then all of them. If the closest files that
+               have one disagree, or the count leaves it unclear, ask the user with ask_user (offering {interfaceLanguage}
+               and the other language) before writing, and keep to the answer for the rest of the conversation;
+            4. when the count says none yet, {interfaceLanguage}, the user's interface language.
             Never translate commands, configuration keys, identifiers or file names.
+            The language of the user's files, counted by the application from their common words (their text isn't sent):
+            {survey.Describe(LanguageName).TrimEnd()}
             """;
+    }
+
+    private static string LanguageName(string language) =>
+        string.Equals(language, TextLanguage.Portuguese, StringComparison.Ordinal) ? "European Portuguese" : "English";
+
+    // Product decision 151: the files the user keeps, as the agent would use them; an unreadable file is left out.
+    private LanguageSurvey SurveyLanguages(AgentInstructions instructions)
+    {
+        var survey = new LanguageSurvey();
+        if (HostDocs is { } hosts)
+        {
+            foreach (var host in hosts.Documented().Take(MostHostsSurveyed))
+            {
+                try
+                {
+                    survey.AddHost(host, TextFiles.Read(System.IO.Path.Combine(hosts.Path, host, HostDocsFolder.DocumentName)));
+                }
+                catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+                {
+                }
+            }
+        }
+
+        foreach (var skill in Skills?.List() ?? [])
+        {
+            survey.Add("skills", skill.Description + "\n" + skill.Body);
+        }
+
+        foreach (var file in instructions.Memory.Where(file => file.Text.Length > 0))
+        {
+            survey.Add("memory notes", file.Text);
+        }
+
+        foreach (var file in instructions.Instructions.Where(file => file.Text.Length > 0))
+        {
+            survey.Add("instruction files", file.Text);
+        }
+
+        return survey;
     }
 
     private string Say(string name, params object?[] arguments) => AgentStrings.Format(Language, name, arguments);

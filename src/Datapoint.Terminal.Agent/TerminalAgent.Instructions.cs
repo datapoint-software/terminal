@@ -21,12 +21,12 @@ public sealed partial class TerminalAgent
         StartLanguage();
         if (InstructionsSource is not { } source)
         {
-            _history[0] = new ChatMessage(ChatRole.System, SystemPrompt.Text + LanguageBlock());
+            _history[0] = new ChatMessage(ChatRole.System, SystemPrompt.Text + LanguageBlock(LanguageSource is null ? new() : SurveyLanguages(AgentInstructions.None)));
             return message;
         }
 
         var instructions = await source(cancellationToken).ConfigureAwait(false);
-        _history[0] = new ChatMessage(ChatRole.System, SystemPrompt.Text + LanguageBlock() + MemoryBlock(instructions.Memory) + InstructionsBlock(instructions.Instructions));
+        _history[0] = new ChatMessage(ChatRole.System, SystemPrompt.Text + LanguageBlock(LanguageSource is null ? new() : SurveyLanguages(instructions)) + MemoryBlock(instructions.Memory) + InstructionsBlock(instructions.Instructions));
         _preface = IgnoredBlock(instructions.Ignored) + DataBlock(instructions.Data);
         return _preface + message;
     }

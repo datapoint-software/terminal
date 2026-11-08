@@ -1,4 +1,5 @@
 using System.Globalization;
+using Datapoint.Terminal.Agent.Hosts;
 using Datapoint.Terminal.Agent.Safety;
 using Datapoint.Terminal.Agent.Tests.Fakes;
 using static Datapoint.Terminal.Agent.Tests.Fakes.ScriptedChatClient;
@@ -13,7 +14,7 @@ public sealed class AgentLanguageTests
         "1. the user's instruction files",
         "2. the language the file is already written in",
         "3. for a new or empty file",
-        "4. otherwise, European Portuguese",
+        "4. when the count says none yet, European Portuguese",
     ];
 
     [Fact]
@@ -59,8 +60,37 @@ public sealed class AgentLanguageTests
         var rules = s_rules.Select(rule => prompt.IndexOf(rule, StringComparison.Ordinal)).ToList();
         Assert.DoesNotContain(-1, rules);
         Assert.Equal(rules.Order().ToList(), rules);
-        Assert.Contains("don't read files only to find out their language", prompt, StringComparison.Ordinal);
+        Assert.Contains("ask the user with ask_user", prompt, StringComparison.Ordinal);
         Assert.Contains("instruction files say otherwise", prompt, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task Counts_the_language_of_host_documentation_without_sending_it()
+    {
+        var folder = Directory.CreateTempSubdirectory("language-").FullName;
+        try
+        {
+            Directory.CreateDirectory(Path.Combine(folder, "web1"));
+            await File.WriteAllTextAsync(Path.Combine(folder, "web1", "README.md"), "Servidor web da loja. Reinicie com cuidado, porque demora um minuto a aquecer e não deve ser feito de dia.", TestContext.Current.CancellationToken);
+            var client = new ScriptedChatClient(_ => Text("Done."));
+            using var agent = new TerminalAgent(client, new FakeUser(), new SecretRedactor())
+            {
+                LanguageSource = () => CultureInfo.GetCultureInfo("en"),
+                HostDocs = new HostDocsFolder(folder, _ => false, CanWrite: true),
+            };
+
+            await agent.SendAsync("Hello", CancellationToken.None);
+
+            var prompt = client.Requests[^1][0].Text;
+            Assert.Contains("- host documentation: European Portuguese 1", prompt, StringComparison.Ordinal);
+            Assert.Contains("  - European Portuguese: web1", prompt, StringComparison.Ordinal);
+            Assert.Contains("4. when the count says none yet, English", prompt, StringComparison.Ordinal);
+            Assert.DoesNotContain("Reinicie com cuidado", string.Concat(client.Requests[^1].Select(message => message.Text)), StringComparison.Ordinal);
+        }
+        finally
+        {
+            Directory.Delete(folder, recursive: true);
+        }
     }
 
     [Fact]
