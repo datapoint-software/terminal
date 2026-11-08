@@ -364,6 +364,7 @@ public sealed partial class TerminalAgent
 
     private string Finish(AgentTerminal terminal, string? command, string output, int? exitCode, bool isFinished, string? note = null)
     {
+        _commandSucceeded = isFinished && exitCode is null or 0;
         var step = terminal.RunningPlanStep;
         if (isFinished)
         {

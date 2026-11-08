@@ -431,6 +431,31 @@ public sealed class TerminalAgentTests
         Assert.Equal(["call-1", "call-2"], seen![^1].Contents.OfType<FunctionResultContent>().Select(result => result.CallId), StringComparer.Ordinal);
     }
 
+    // Approved steps sent together stop at the first failure, as they would one at a time; checks after it still run.
+    [Fact]
+    public async Task Skips_a_replys_remaining_changes_once_one_of_its_commands_fails()
+    {
+        IReadOnlyList<ChatMessage>? seen = null;
+        _terminal.Run = command => (command, command.StartsWith("logrotate", StringComparison.Ordinal) ? 1 : 0);
+        var client = new ScriptedChatClient(
+            _ => new ChatResponse(new ChatMessage(ChatRole.Assistant,
+            [
+                new FunctionCallContent("call-1", "run_command", Arguments(("terminal", "Local"), ("command", "journalctl --vacuum-size=200M"), ("purpose", "step 1"))),
+                new FunctionCallContent("call-2", "run_command", Arguments(("terminal", "Local"), ("command", "logrotate /etc/logrotate.conf"), ("purpose", "step 2"))),
+                new FunctionCallContent("call-3", "run_command", Arguments(("terminal", "Local"), ("command", "docker image prune -a -f"), ("purpose", "step 3"))),
+                new FunctionCallContent("call-4", "run_command", Arguments(("terminal", "Local"), ("command", "df -h /"), ("purpose", "to check"))),
+            ])),
+            messages => { seen = messages; return Text("Stopped."); });
+        using var agent = Create(client, ApprovalMode.IgnorePermissions);
+
+        await agent.SendAsync("Free some space", Token);
+
+        Assert.Equal(["journalctl --vacuum-size=200M", "logrotate /etc/logrotate.conf", "df -h /"], _terminal.Typed, StringComparer.Ordinal);
+        var results = seen![^1].Contents.OfType<FunctionResultContent>().ToList();
+        Assert.Equal(4, results.Count);
+        Assert.StartsWith("Not run: `logrotate /etc/logrotate.conf` earlier in this reply failed", results[2].Result?.ToString(), StringComparison.Ordinal);
+    }
+
     [Fact]
     public async Task Ignoring_permissions_ends_with_the_conversation()
     {

@@ -253,12 +253,7 @@ public sealed partial class TerminalAgent : IDisposable
             // interruption can complete it.
             var results = new ChatMessage(ChatRole.Tool, []);
             _history.Add(results);
-            foreach (var call in calls)
-            {
-                var result = IsRedirected ? SkippedForNewMessage : await InvokeToolAsync(call, cancellationToken).ConfigureAwait(false);
-                NoteSeen(call, result);
-                results.Contents.Add(new FunctionResultContent(call.CallId, result));
-            }
+            await RunCallsAsync(calls, results, cancellationToken).ConfigureAwait(false);
 
             ClearRedirect();
         }
