@@ -1,4 +1,5 @@
 using System.Text;
+using Datapoint.Terminal.Emulator;
 using Datapoint.Terminal.Emulator.ShellIntegration;
 using Datapoint.Terminal.Sessions.Local;
 using Datapoint.Terminal.Sessions.ShellIntegration;
@@ -39,7 +40,7 @@ public sealed class LocalShellTests : IDisposable
                 },
             },
             Token);
-        var terminal = new EmulatorTerminal(120, 30) { ShellIntegrationNonce = session.ShellIntegrationNonce };
+        var terminal = new EmulatorTerminal(120, 30, new ReplyingHost(session)) { ShellIntegrationNonce = session.ShellIntegrationNonce };
         var pump = Task.Run(
             async () =>
             {
@@ -52,6 +53,29 @@ public sealed class LocalShellTests : IDisposable
             },
             Token);
         return (session, terminal, pump);
+    }
+
+    // Sends the terminal's replies back to the shell, as the application does. PowerShell asks the terminal where the cursor
+    // is as it starts, and without an answer it reads what's typed next as one.
+    private sealed class ReplyingHost(LocalSession session) : ITerminalHost
+    {
+        public void Reply(ReadOnlySpan<byte> data) => _ = session.WriteAsync(data.ToArray(), CancellationToken.None);
+
+        public void Bell()
+        {
+        }
+
+        public void TitleChanged(string title)
+        {
+        }
+
+        public void WorkingDirectoryChanged(string path)
+        {
+        }
+
+        public void ClipboardWriteRequested(string text)
+        {
+        }
     }
 
     private static async Task WaitForAsync(EmulatorTerminal terminal, Func<bool> condition, string what)
