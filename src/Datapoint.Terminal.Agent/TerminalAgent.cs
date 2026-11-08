@@ -157,6 +157,7 @@ public sealed partial class TerminalAgent : IDisposable
             }
 
             _history.RemoveRange(1, _history.Count - 1);
+            ForgetScreens();
             Usage.ForgetContext();
             ForgetCarried();
             ForgetWebGuard();

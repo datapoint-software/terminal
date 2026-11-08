@@ -187,7 +187,8 @@ public sealed partial class TerminalAgent
             .Append(state.IsInputHidden ? "; a program is waiting for hidden input, such as a password" : string.Empty)
             .Append(state.WorkingDirectory is null ? string.Empty : "; working folder: " + state.WorkingDirectory)
             .Append(".\n");
-        text.Append(Untrusted(terminal.Terminal.GetVisibleText()));
+        var screen = terminal.Terminal.GetVisibleText();
+        text.Append(UnchangedScreen(terminal, text + screen) ?? Untrusted(screen));
         return Task.FromResult(text.ToString());
     }
 

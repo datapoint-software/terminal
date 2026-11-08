@@ -37,7 +37,9 @@ internal sealed class FakeTerminal : IAgentTerminal
 
     public CommandResult? GetCommand(long outputLine) => _commands.GetValueOrDefault(outputLine);
 
-    public string GetVisibleText() => "$ ";
+    public string Screen { get; set; } = "$ ";
+
+    public string GetVisibleText() => Screen;
 
     public void TypeCommand(string text)
     {

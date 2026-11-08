@@ -82,6 +82,7 @@ public sealed partial class TerminalAgent
         lock (_sync)
         {
             _history.RemoveRange(1, _history.Count - 1);
+            ForgetScreens();
             _history.Add(new ChatMessage(ChatRole.User, DescribeTerminals() + message));
         }
 
