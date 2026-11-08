@@ -42,6 +42,24 @@ public sealed class ChatViewTests
     }
 
     [AvaloniaFact]
+    public void Offers_to_treat_an_approved_command_as_read_only()
+    {
+        using var chat = new ChatViewModel(new ImmediateUiThread());
+        chat.Items.Add(new ChatItemViewModel(ChatItemKind.User, "Which node leads the Postgres cluster?"));
+        _ = chat.RequestApprovalAsync(new CommandProposal("patronictl list --format pretty", "List the cluster's members and its leader", CommandRisk.Changes, "db-1", "production"), CancellationToken.None);
+        var window = new Window { Width = 420, Height = 520, Content = new ChatView { DataContext = chat } };
+        window.Show();
+
+        Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+        using var frame = window.CaptureRenderedFrame();
+        Directory.CreateDirectory("rendered");
+        frame?.Save("rendered/chat-approval-read-only.png", new PngBitmapEncoderOptions());
+
+        var offer = window.GetVisualDescendants().OfType<CheckBox>().Single(box => box.IsEffectivelyVisible);
+        Assert.Equal(Datapoint.Terminal.Resources.Strings.Format(Datapoint.Terminal.Resources.Strings.ApprovalTreatAsReadOnly, "patronictl list"), Avalonia.Automation.AutomationProperties.GetName(offer));
+    }
+
+    [AvaloniaFact]
     public void Renders_the_composer_in_dark_mode()
     {
         using var chat = new ChatViewModel(new ImmediateUiThread());

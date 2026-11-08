@@ -120,6 +120,18 @@ public sealed partial class MainWindow : Window, ITerminalOpener
         _chat.ModelChosen = choice => _ = ChooseModelAsync(choice);
         _chat.ConfirmIgnorePermissions = ConfirmIgnorePermissionsAsync;
         _chat.WebAlwaysAllowed += (_, _) => _settings.SetAlwaysAllowWeb(true);
+        _chat.ReadOnlyApproved = OnReadOnlyApproved;
+    }
+
+    private void OnReadOnlyApproved(string command, bool taught)
+    {
+        if (taught)
+        {
+            _settings.AddReadOnlyCommand(command);
+            return;
+        }
+
+        _settings.NoteApproved(command);
     }
 
     private void OnSettingsChanged(object? sender, EventArgs e) => ApplySettings();

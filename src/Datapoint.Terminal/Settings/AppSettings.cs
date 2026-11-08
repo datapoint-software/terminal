@@ -32,6 +32,10 @@ public sealed record AppSettings
     // SHA-256 fingerprints of values the user marked as not secret, never the values themselves.
     public IReadOnlyList<string> NotSecrets { get; init => field = value ?? []; } = [];
 
+    // Commands the user taught the agent to treat as read-only (product decision 112), e.g. "patronictl list". Kept here, with
+    // the user's own settings, so no workspace file can add to them.
+    public IReadOnlyList<string> ReadOnlyCommands { get; init => field = value ?? []; } = [];
+
     // Where the terminals docked beside the chat before areas could be moved; read only to start areaLayout from it.
     public Shell.TerminalSide TerminalSide { get; set; } = Shell.TerminalSide.Right;
 

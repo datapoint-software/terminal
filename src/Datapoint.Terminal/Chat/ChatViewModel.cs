@@ -214,9 +214,16 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
 
     public void OnUserTyped(AgentTerminal terminal) => _agent?.NotifyUserTyped(terminal);
 
+    // Set by the window: what the user approved that the check counted as a change, and whether they taught it as read-only.
+    public Action<string, bool>? ReadOnlyApproved { get; set; }
+
     public Task<CommandApproval> RequestApprovalAsync(CommandProposal proposal, CancellationToken cancellationToken)
     {
-        var approval = new ApprovalViewModel(proposal) { ReviewRequested = plan => PlanShown?.Invoke(plan, true) };
+        var approval = new ApprovalViewModel(proposal)
+        {
+            ReviewRequested = plan => PlanShown?.Invoke(plan, true),
+            ReadOnlyApproved = (command, taught) => ReadOnlyApproved?.Invoke(command, taught),
+        };
         if (proposal.Look is { } look)
         {
             approval.Allowed = () => StartLook(look);

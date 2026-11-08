@@ -1,0 +1,63 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:res="clr-namespace:Datapoint.Terminal.Resources"
+             xmlns:settings="clr-namespace:Datapoint.Terminal.Settings"
+             x:Class="Datapoint.Terminal.Settings.CommandsPage"
+             x:DataType="settings:CommandsViewModel">
+  <StackPanel Classes="form">
+    <TextBlock Classes="heading" Text="{x:Static res:Strings.CommandsLearnedHeading}" />
+    <Border Classes="group">
+      <StackPanel>
+        <ItemsControl ItemsSource="{Binding Learned}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="settings:CommandEntryViewModel">
+              <StackPanel>
+                <Rectangle Classes="hairline" IsVisible="{Binding !IsFirst}" />
+                <Grid Classes="row" ColumnDefinitions="*,Auto">
+                  <SelectableTextBlock Classes="mono" Text="{Binding Text}" TextWrapping="Wrap" />
+                  <Button Grid.Column="1" Margin="8,0,0,0" Content="{x:Static res:Strings.CommandsRemove}" Command="{Binding ActCommand}"
+                          AutomationProperties.Name="{Binding RemoveName}" />
+                </Grid>
+              </StackPanel>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <Grid Classes="row" IsVisible="{Binding !HasLearned}">
+          <TextBlock Classes="secondary" Text="{x:Static res:Strings.CommandsNone}" TextWrapping="Wrap" />
+        </Grid>
+        <Rectangle Classes="hairline" />
+        <Grid Classes="row" ColumnDefinitions="*,Auto">
+          <TextBox Classes="code" Text="{Binding Draft}" PlaceholderText="{x:Static res:Strings.CommandsPlaceholder}"
+                   AutomationProperties.Name="{x:Static res:Strings.CommandsAddName}">
+            <TextBox.KeyBindings>
+              <KeyBinding Gesture="Enter" Command="{Binding AddCommand}" />
+            </TextBox.KeyBindings>
+          </TextBox>
+          <Button Grid.Column="1" Margin="8,0,0,0" Content="{x:Static res:Strings.CommandsAdd}" Command="{Binding AddCommand}" />
+        </Grid>
+      </StackPanel>
+    </Border>
+    <TextBlock Classes="secondary note" Text="{x:Static res:Strings.CommandsHint}" />
+    <TextBlock Classes="secondary note" Text="{Binding Status}" IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+               AutomationProperties.LiveSetting="Polite" />
+
+    <TextBlock Classes="heading" Text="{x:Static res:Strings.CommandsRecentHeading}" IsVisible="{Binding HasRecent}" />
+    <Border Classes="group" IsVisible="{Binding HasRecent}">
+      <ItemsControl ItemsSource="{Binding Recent}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="settings:CommandEntryViewModel">
+            <StackPanel>
+              <Rectangle Classes="hairline" IsVisible="{Binding !IsFirst}" />
+              <Grid Classes="row" ColumnDefinitions="*,Auto">
+                <SelectableTextBlock Classes="mono" Text="{Binding Text}" TextWrapping="Wrap" />
+                <Button Grid.Column="1" Margin="8,0,0,0" Content="{x:Static res:Strings.CommandsTeach}" Command="{Binding ActCommand}"
+                        AutomationProperties.Name="{Binding TeachName}" />
+              </Grid>
+            </StackPanel>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </Border>
+    <TextBlock Classes="secondary note" Text="{x:Static res:Strings.CommandsRecentHint}" IsVisible="{Binding HasRecent}" />
+  </StackPanel>
+</UserControl>

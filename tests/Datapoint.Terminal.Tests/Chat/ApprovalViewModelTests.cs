@@ -18,6 +18,42 @@ public sealed class ApprovalViewModelTests
         Assert.Equal(Strings.Format(Strings.ApprovalInTerminalEnvironment, "web1", "production"), approval.TerminalText);
     }
 
+    [Theory]
+    [InlineData("patronictl list --format json", "patronictl list")]
+    [InlineData("rm -rf build", null)]
+    [InlineData("sudo patronictl list", null)]
+    public void Offers_to_treat_a_command_counted_as_a_change_as_read_only(string command, string? expected)
+    {
+        var approval = new ApprovalViewModel(new CommandProposal(command, "Check the cluster", CommandRisk.Changes, "db1"));
+
+        Assert.Equal(expected, approval.ReadOnlySuggestion);
+        Assert.Equal(expected is not null, approval.HasReadOnlySuggestion);
+    }
+
+    [Fact]
+    public void Offers_nothing_for_plans_keys_or_commands_the_check_counted_as_reading()
+    {
+        Assert.Null(new ApprovalViewModel(new CommandProposal("patronictl list", "x", CommandRisk.Changes, "db1") { Kind = ProposalKind.SendKeys }).ReadOnlySuggestion);
+        Assert.Null(new ApprovalViewModel(new CommandProposal("ls", "x", CommandRisk.ReadOnly, "db1")).ReadOnlySuggestion);
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void Tells_what_was_approved_and_whether_it_was_taught(bool taught)
+    {
+        var approval = new ApprovalViewModel(new CommandProposal("patronictl list", "Check the cluster", CommandRisk.Changes, "db1"));
+        (string Command, bool Taught)? approved = null;
+        approval.ReadOnlyApproved = (command, isTaught) => approved = (command, isTaught);
+
+        approval.Command = "vault status";
+        approval.TreatAsReadOnly = taught;
+        approval.RunCommand.Execute(null);
+
+        Assert.Equal(("vault status", taught), approved);
+        Assert.Equal(Strings.Format(Strings.ApprovalTreatAsReadOnly, "vault status"), approval.ReadOnlyOfferText);
+    }
+
     [Fact]
     public void Opening_a_terminal_names_the_connection_and_cannot_be_edited()
     {

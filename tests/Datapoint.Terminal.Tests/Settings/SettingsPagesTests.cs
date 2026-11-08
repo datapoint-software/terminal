@@ -97,7 +97,7 @@ public sealed class SettingsPagesTests : IDisposable
     public void Chooses_the_search_service_and_keeps_its_key_in_the_credential_store()
     {
         var settings = Create();
-        var window = Show(settings, page: SettingsWindow.MemoryPageIndex + 1);
+        var window = Show(settings, page: SettingsWindow.WebPageIndex);
         var model = (WebViewModel)window.FindControl<WebPage>("WebPage")!.DataContext!;
 
         model.SelectedService = 1;
@@ -114,6 +114,36 @@ public sealed class SettingsPagesTests : IDisposable
         Assert.DoesNotContain("brave-key", File.ReadAllText(Path.Combine(_folder, "settings.json")), StringComparison.Ordinal);
         Assert.True(model.HasSavedKey);
     }
+
+    [AvaloniaFact]
+    public void Teaches_removes_and_refuses_read_only_commands_in_the_users_own_settings()
+    {
+        var settings = Create();
+        settings.NoteApproved("vault status");
+        settings.NoteApproved("docker swarm ca");
+        var window = Show(settings, page: SettingsWindow.CommandsPageIndex);
+        var model = (CommandsViewModel)window.FindControl<CommandsPage>("CommandsPage")!.DataContext!;
+
+        model.Draft = "  patronictl   list ";
+        model.AddCommand.Execute(null);
+        model.Recent[1].ActCommand.Execute(null);
+        Dispatcher.UIThread.RunJobs();
+        window.CaptureRenderedFrame()?.Save("rendered/settings-commands.png", new PngBitmapEncoderOptions());
+
+        Assert.Equal(["patronictl list", "vault status"], model.Learned.Select(entry => entry.Text), StringComparer.Ordinal);
+        Assert.Equal(["docker swarm ca"], model.Recent.Select(entry => entry.Text), StringComparer.Ordinal);
+        Assert.Equal(["patronictl list", "vault status"], new SettingsStore(Path.Combine(_folder, "settings.json")).Load().ReadOnlyCommands, StringComparer.Ordinal);
+        Assert.Equal(Datapoint.Terminal.Agent.Safety.CommandRisk.ReadOnly, CommandRiskOf("vault status -format=json", settings));
+
+        model.Draft = "bash -c ls";
+        model.AddCommand.Execute(null);
+        Assert.Equal(Datapoint.Terminal.Resources.Strings.Format(Datapoint.Terminal.Resources.Strings.CommandsCantTeach, "bash -c ls"), model.Status);
+        model.Learned[0].ActCommand.Execute(null);
+        Assert.Equal(["vault status"], settings.LearnedCommands.Commands, StringComparer.Ordinal);
+    }
+
+    private static Datapoint.Terminal.Agent.Safety.CommandRisk CommandRiskOf(string command, SettingsViewModel settings) =>
+        Datapoint.Terminal.Agent.Safety.CommandClassifier.Classify(command, settings.LearnedCommands);
 
     [AvaloniaFact]
     public void Refuses_a_searxng_server_that_is_not_a_web_address()

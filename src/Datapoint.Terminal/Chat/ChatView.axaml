@@ -425,6 +425,11 @@
           <TextBlock Text="{Binding PlanText}" IsVisible="{Binding HasPlanText}" FontWeight="SemiBold" TextWrapping="Wrap" />
           <TextBlock Classes="secondary" Text="{Binding RiskText}" TextWrapping="Wrap" IsVisible="{Binding !UsesOwnActions}" />
           <TextBlock Classes="secondary" Text="{Binding AlsoApprovesText}" IsVisible="{Binding HasAlsoApproves}" TextWrapping="Wrap" />
+          <!-- Teaching a command as read-only lets it run without asking from now on, so it's a choice made with this approval. -->
+          <CheckBox IsChecked="{Binding TreatAsReadOnly}" IsVisible="{Binding HasReadOnlySuggestion}"
+                    AutomationProperties.Name="{Binding ReadOnlyOfferText}" ToolTip.Tip="{x:Static res:Strings.ApprovalTreatAsReadOnlyHint}">
+            <TextBlock Text="{Binding ReadOnlyOfferText}" TextWrapping="Wrap" />
+          </CheckBox>
           <TextBox x:Name="ApprovalFeedback" Text="{Binding Feedback}" PlaceholderText="{x:Static res:Strings.ApprovalFeedbackPlaceholder}" TextWrapping="Wrap"
                    AutomationProperties.Name="{x:Static res:Strings.ApprovalFeedbackPlaceholder}" IsVisible="{Binding ShowsFeedback}" />
           <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" IsVisible="{Binding !UsesOwnActions}">

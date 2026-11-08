@@ -13,6 +13,7 @@ public sealed partial class SettingsWindow : Window
         {
             var settings = DataContext as SettingsViewModel;
             AppearancePage.DataContext = settings is null ? null : new AppearanceViewModel(settings);
+            CommandsPage.DataContext = settings is null ? null : new CommandsViewModel(settings);
             WebPage.DataContext = settings is null ? null : new WebViewModel(settings);
         };
     }
@@ -25,6 +26,10 @@ public sealed partial class SettingsWindow : Window
     }
 
     public const int MemoryPageIndex = 3;
+
+    public const int CommandsPageIndex = 4;
+
+    public const int WebPageIndex = 5;
 
     // The memory the Memory page shows: the user's own and that of the workspace Settings was opened from.
     public MemoryPlaces? Memory
@@ -42,7 +47,8 @@ public sealed partial class SettingsWindow : Window
         AppearanceScroller.IsVisible = Pages.SelectedIndex == 1;
         HistoryScroller.IsVisible = Pages.SelectedIndex == 2;
         MemoryScroller.IsVisible = Pages.SelectedIndex == MemoryPageIndex;
-        WebScroller.IsVisible = Pages.SelectedIndex == MemoryPageIndex + 1;
+        CommandsScroller.IsVisible = Pages.SelectedIndex == CommandsPageIndex;
+        WebScroller.IsVisible = Pages.SelectedIndex == WebPageIndex;
         if (!MemoryScroller.IsVisible)
         {
             return;

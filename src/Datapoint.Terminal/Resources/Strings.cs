@@ -1736,6 +1736,42 @@ public static class Strings
 
     public static string PlanCommentSentMany => Get(nameof(PlanCommentSentMany));
 
+    public static string ApprovalTreatAsReadOnly => Get(nameof(ApprovalTreatAsReadOnly));
+
+    public static string ApprovalTreatAsReadOnlyHint => Get(nameof(ApprovalTreatAsReadOnlyHint));
+
+    public static string SettingsPageCommands => Get(nameof(SettingsPageCommands));
+
+    public static string CommandsLearnedHeading => Get(nameof(CommandsLearnedHeading));
+
+    public static string CommandsNone => Get(nameof(CommandsNone));
+
+    public static string CommandsPlaceholder => Get(nameof(CommandsPlaceholder));
+
+    public static string CommandsAddName => Get(nameof(CommandsAddName));
+
+    public static string CommandsAdd => Get(nameof(CommandsAdd));
+
+    public static string CommandsRemove => Get(nameof(CommandsRemove));
+
+    public static string CommandsRemoveName => Get(nameof(CommandsRemoveName));
+
+    public static string CommandsTeach => Get(nameof(CommandsTeach));
+
+    public static string CommandsTeachName => Get(nameof(CommandsTeachName));
+
+    public static string CommandsHint => Get(nameof(CommandsHint));
+
+    public static string CommandsRecentHeading => Get(nameof(CommandsRecentHeading));
+
+    public static string CommandsRecentHint => Get(nameof(CommandsRecentHint));
+
+    public static string CommandsCantTeach => Get(nameof(CommandsCantTeach));
+
+    public static string CommandsTaught => Get(nameof(CommandsTaught));
+
+    public static string CommandsRemoved => Get(nameof(CommandsRemoved));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

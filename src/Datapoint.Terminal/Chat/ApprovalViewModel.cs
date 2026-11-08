@@ -171,7 +171,22 @@ public sealed partial class ApprovalViewModel : ObservableObject
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(RunCommand))]
+    [NotifyPropertyChangedFor(nameof(ReadOnlySuggestion), nameof(HasReadOnlySuggestion), nameof(ReadOnlyOfferText))]
     public partial string Command { get; set; }
+
+    // What the user can teach the agent to treat as read-only (product decision 112), from the command as it stands, since
+    // the user may edit it; null when there's nothing safe to offer.
+    public string? ReadOnlySuggestion => Kind == ProposalKind.RunCommand && Risk == CommandRisk.Changes ? LearnedCommands.Suggest(Command) : null;
+
+    public bool HasReadOnlySuggestion => ReadOnlySuggestion is not null;
+
+    public string? ReadOnlyOfferText => ReadOnlySuggestion is { } suggestion ? Strings.Format(Strings.ApprovalTreatAsReadOnly, suggestion) : null;
+
+    [ObservableProperty]
+    public partial bool TreatAsReadOnly { get; set; }
+
+    // Called as the user allows a command the check counted as a change: with what could be taught, and whether they taught it.
+    public Action<string, bool>? ReadOnlyApproved { get; set; }
 
     [ObservableProperty]
     public partial string Feedback { get; set; } = string.Empty;
@@ -190,6 +205,10 @@ public sealed partial class ApprovalViewModel : ObservableObject
         if (!_decision.Task.IsCompleted)
         {
             Allowed?.Invoke();
+            if (ReadOnlySuggestion is { } suggestion)
+            {
+                ReadOnlyApproved?.Invoke(suggestion, TreatAsReadOnly);
+            }
         }
 
         _decision.TrySetResult(CommandApproval.Approve(Command));

@@ -2607,4 +2607,58 @@ Fingerprint: {2}</value>
   <data name="PlanCommentSentMany" xml:space="preserve">
     <value>Sent · steps {0} changed</value>
   </data>
+  <data name="ApprovalTreatAsReadOnly" xml:space="preserve">
+    <value>Always treat “{0}” as read-only</value>
+  </data>
+  <data name="ApprovalTreatAsReadOnlyHint" xml:space="preserve">
+    <value>From now on it runs without asking where only changes need approval, whatever follows it, unless it writes to a file or uses an option known to write. You can remove it in Settings › Commands.</value>
+  </data>
+  <data name="SettingsPageCommands" xml:space="preserve">
+    <value>Commands</value>
+  </data>
+  <data name="CommandsLearnedHeading" xml:space="preserve">
+    <value>Commands you treat as read-only</value>
+  </data>
+  <data name="CommandsNone" xml:space="preserve">
+    <value>None yet. When you approve a command the agent counted as a change, you can tell it to treat that command as read-only from then on.</value>
+  </data>
+  <data name="CommandsPlaceholder" xml:space="preserve">
+    <value>e.g. patronictl list</value>
+  </data>
+  <data name="CommandsAddName" xml:space="preserve">
+    <value>Command to treat as read-only</value>
+  </data>
+  <data name="CommandsAdd" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="CommandsRemove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="CommandsRemoveName" xml:space="preserve">
+    <value>Remove {0}</value>
+  </data>
+  <data name="CommandsTeach" xml:space="preserve">
+    <value>Treat as read-only</value>
+  </data>
+  <data name="CommandsTeachName" xml:space="preserve">
+    <value>Treat {0} as read-only</value>
+  </data>
+  <data name="CommandsHint" xml:space="preserve">
+    <value>These run without asking in Ask for risky mode, in Plan mode before a plan, and while the agent looks, whatever follows them, unless they write to a file or use an option known to write. A command is the program and up to two subcommands. Shells, interpreters and commands that run others can't be added. Kept in your own settings, never in a workspace.</value>
+  </data>
+  <data name="CommandsRecentHeading" xml:space="preserve">
+    <value>Approved in this session</value>
+  </data>
+  <data name="CommandsRecentHint" xml:space="preserve">
+    <value>Commands you approved that the agent counted as changes. Kept only until you quit.</value>
+  </data>
+  <data name="CommandsCantTeach" xml:space="preserve">
+    <value>“{0}” can't be treated as read-only: it runs other commands, changes things, reaches other machines, or isn't a plain command of up to three words.</value>
+  </data>
+  <data name="CommandsTaught" xml:space="preserve">
+    <value>“{0}” is now treated as read-only.</value>
+  </data>
+  <data name="CommandsRemoved" xml:space="preserve">
+    <value>“{0}” asks again.</value>
+  </data>
 </root>

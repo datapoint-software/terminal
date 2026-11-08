@@ -11,7 +11,7 @@ public sealed partial class MainWindow
     private IWebSearch? _webSearch;
     private string? _webSearchSignature;
 
-    // The agent's web permission and search follow the settings, which the user can change from any window.
+    // The agent's web permission and search, and the commands it's been taught are read-only, follow the settings, which the user can change from any window.
     private void ApplyWebSettings()
     {
         _chat.IsModelLocal = _provider?.IsLocal == true;
@@ -21,6 +21,7 @@ public sealed partial class MainWindow
         }
 
         agent.IsWebAlwaysAllowed = _settings.AlwaysAllowWeb;
+        agent.LearnedCommands = _settings.LearnedCommands;
         var service = _settings.WebSearch;
         var key = service is WebSearchService.Brave or WebSearchService.Tavily ? ReadSearchKey(service) : null;
         var signature = string.Join('|', service, _settings.SearxngServer, key?.GetHashCode(StringComparison.Ordinal), _provider?.Id, _client?.GetHashCode());

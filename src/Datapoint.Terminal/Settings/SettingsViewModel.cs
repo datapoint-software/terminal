@@ -38,6 +38,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         TrustedWorkspaces = settings.TrustedWorkspaces;
         ConfirmedConnections = settings.ConfirmedConnections;
         NotSecrets = settings.NotSecrets;
+        LearnedCommands = LearnedCommands.From(settings.ReadOnlyCommands);
         HistoryDays = settings.HistoryDays;
         TerminalSide = settings.TerminalSide;
         AreaLayout = settings.AreaLayout;
@@ -160,6 +161,52 @@ public sealed partial class SettingsViewModel : ObservableObject
         Save();
     }
 
+    // Replaced whole when it changes, and every window's agent follows it.
+    public LearnedCommands LearnedCommands { get; private set; }
+
+    // Commands the check counted as changes that the user approved in this session, most recent first, as they could be
+    // taught. Never saved: the list is only a shortcut for teaching them.
+    public IReadOnlyList<string> RecentlyApproved { get; private set; } = [];
+
+    public const int MaxRecentlyApproved = 20;
+
+    // False when the command can't be taught, e.g. because it runs other commands.
+    public bool AddReadOnlyCommand(string command)
+    {
+        if (LearnedCommands.Normalize(command) is not { } normalized)
+        {
+            return false;
+        }
+
+        if (LearnedCommands.Commands.Contains(normalized, StringComparer.Ordinal))
+        {
+            return true;
+        }
+
+        LearnedCommands = LearnedCommands.From([.. LearnedCommands.Commands, normalized]);
+        Save();
+        return true;
+    }
+
+    public void RemoveReadOnlyCommand(string command)
+    {
+        if (!LearnedCommands.Commands.Contains(command, StringComparer.Ordinal))
+        {
+            return;
+        }
+
+        LearnedCommands = LearnedCommands.From(LearnedCommands.Commands.Where(item => !string.Equals(item, command, StringComparison.Ordinal)));
+        Save();
+    }
+
+    public void NoteApproved(string command)
+    {
+        RecentlyApproved = [.. RecentlyApproved.Where(item => !string.Equals(item, command, StringComparison.Ordinal)).Prepend(command).Take(MaxRecentlyApproved)];
+        RecentlyApprovedChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    public event EventHandler? RecentlyApprovedChanged;
+
     // Every window's agent follows it, so allowing or taking it back applies everywhere at once.
     public void SetAlwaysAllowWeb(bool allow)
     {
@@ -257,6 +304,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         TrustedWorkspaces = TrustedWorkspaces,
         ConfirmedConnections = ConfirmedConnections,
         NotSecrets = NotSecrets,
+        ReadOnlyCommands = LearnedCommands.Commands,
         HistoryDays = HistoryDays,
         TerminalSide = TerminalSide,
         AreaLayout = AreaLayout,
