@@ -1945,6 +1945,26 @@ public static class Strings
 
     public static string MarkdownQuote => Get(nameof(MarkdownQuote));
 
+    public static string MenuAbout => Get(nameof(MenuAbout));
+
+    public static string MenuHelp => Get(nameof(MenuHelp));
+
+    public static string AboutVersion => Get(nameof(AboutVersion));
+
+    public static string AboutVersionWithCommit => Get(nameof(AboutVersionWithCommit));
+
+    public static string AboutNotice => Get(nameof(AboutNotice));
+
+    public static string AboutLicense => Get(nameof(AboutLicense));
+
+    public static string AboutThirdPartyNotices => Get(nameof(AboutThirdPartyNotices));
+
+    public static string AboutSourceCode => Get(nameof(AboutSourceCode));
+
+    public static string AboutWebsite => Get(nameof(AboutWebsite));
+
+    public static string AboutAttributionLink => Get(nameof(AboutAttributionLink));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

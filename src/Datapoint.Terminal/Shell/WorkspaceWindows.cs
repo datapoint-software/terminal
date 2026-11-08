@@ -14,6 +14,7 @@ public sealed class WorkspaceWindows
     private readonly IClassicDesktopStyleApplicationLifetime _desktop;
     private readonly List<MainWindow> _windows = [];
     private SettingsWindow? _settingsWindow;
+    private About.AboutWindow? _aboutWindow;
     private bool _isQuitting;
 
     public WorkspaceWindows(IClassicDesktopStyleApplicationLifetime desktop, SettingsViewModel settings)
@@ -98,6 +99,27 @@ public sealed class WorkspaceWindows
     public void ClearRecent() => Settings.SetWorkspaces([], OpenFolders());
 
     public void OpenSettings() => OpenSettings(page: null);
+
+    // One About window for the application, brought to the front if it's already open.
+    public void OpenAbout()
+    {
+        if (_aboutWindow is not null)
+        {
+            _aboutWindow.Activate();
+            return;
+        }
+
+        _aboutWindow = new About.AboutWindow();
+        _aboutWindow.Closed += (_, _) => _aboutWindow = null;
+        if (Active is { } owner)
+        {
+            _aboutWindow.Show(owner);
+        }
+        else
+        {
+            _aboutWindow.Show();
+        }
+    }
 
     public void OpenSettings(int? page)
     {

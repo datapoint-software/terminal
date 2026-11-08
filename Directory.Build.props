@@ -14,6 +14,8 @@
     <NuGetAuditMode>all</NuGetAuditMode>
     <Company>Datapoint - Sistemas de Informação, Lda.</Company>
     <Product>Datapoint Terminal</Product>
+    <!-- 0.y.z while in initial development (CLAUDE.md, Versions). -->
+    <Version>0.1.0</Version>
     <Copyright>Copyright © 2026 Datapoint - Sistemas de Informação, Lda.</Copyright>
     <IsTestProject Condition="$(MSBuildProjectName.EndsWith('.Tests'))">true</IsTestProject>
   </PropertyGroup>

@@ -42,4 +42,6 @@ public sealed partial class App : Application
     }
 
     private void OnSettingsClicked(object? sender, EventArgs e) => _windows?.OpenSettings();
+
+    private void OnAboutClicked(object? sender, EventArgs e) => _windows?.OpenAbout();
 }

@@ -1,0 +1,29 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:res="clr-namespace:Datapoint.Terminal.Resources"
+        xmlns:about="clr-namespace:Datapoint.Terminal.About"
+        x:Class="Datapoint.Terminal.About.AboutWindow"
+        Title="{x:Static res:Strings.MenuAbout}"
+        Width="480" SizeToContent="Height" CanResize="False" WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource GroupedBackgroundBrush}">
+  <StackPanel Margin="24" Spacing="14">
+    <StackPanel Spacing="2" HorizontalAlignment="Center">
+      <TextBlock Classes="dialogTitle" Text="Datapoint Terminal" HorizontalAlignment="Center" />
+      <SelectableTextBlock x:Name="VersionText" Classes="secondary" HorizontalAlignment="Center" />
+    </StackPanel>
+    <!-- NOTICE, term 1: the attribution, with the logo beside it and a link to Datapoint's site, in every build. -->
+    <Border Background="{DynamicResource CardBrush}" CornerRadius="8" Padding="14">
+      <StackPanel Spacing="10" HorizontalAlignment="Center">
+        <about:DatapointLogo x:Name="Logo" Height="30" HorizontalAlignment="Center" Foreground="{DynamicResource LabelBrush}" />
+        <HyperlinkButton x:Name="Attribution" HorizontalAlignment="Center" Padding="0" />
+      </StackPanel>
+    </Border>
+    <SelectableTextBlock Classes="secondary" Text="{x:Static res:Strings.AboutNotice}" TextWrapping="Wrap" />
+    <WrapPanel HorizontalAlignment="Center" ItemSpacing="8" LineSpacing="8">
+      <Button x:Name="LicenseButton" Content="{x:Static res:Strings.AboutLicense}" />
+      <Button x:Name="NoticesButton" Content="{x:Static res:Strings.AboutThirdPartyNotices}" />
+      <Button x:Name="SourceButton" Content="{x:Static res:Strings.AboutSourceCode}" />
+      <Button x:Name="WebsiteButton" Content="{x:Static res:Strings.AboutWebsite}" />
+    </WrapPanel>
+  </StackPanel>
+</Window>

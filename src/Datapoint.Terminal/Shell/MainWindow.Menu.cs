@@ -54,7 +54,15 @@ public sealed partial class MainWindow
         file.Add(Item(Strings.MenuCloseWindow, IsMac ? Shortcut(Key.W, shift: true) : null, Close));
 
         var terminal = BuildTerminalMenu();
-        return [new NativeMenuItem(Strings.MenuFile) { Menu = file }, new NativeMenuItem(Strings.MenuView) { Menu = BuildViewMenu() }, new NativeMenuItem(Strings.MenuFormat) { Menu = BuildFormatMenu() }, new NativeMenuItem(Strings.MenuTerminal) { Menu = terminal }];
+        NativeMenu menu = [new NativeMenuItem(Strings.MenuFile) { Menu = file }, new NativeMenuItem(Strings.MenuView) { Menu = BuildViewMenu() }, new NativeMenuItem(Strings.MenuFormat) { Menu = BuildFormatMenu() }, new NativeMenuItem(Strings.MenuTerminal) { Menu = terminal }];
+
+        // On macOS, About is in the application menu (App.axaml); elsewhere it's in a Help menu, last, as on those systems.
+        if (!IsMac)
+        {
+            menu.Add(new NativeMenuItem(Strings.MenuHelp) { Menu = [Item(Strings.MenuAbout, null, _windows.OpenAbout)] });
+        }
+
+        return menu;
     }
 
     private NativeMenu BuildTerminalMenu()

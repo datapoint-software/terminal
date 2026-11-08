@@ -2919,4 +2919,34 @@ Fingerprint: {2}</value>
   <data name="MarkdownQuote" xml:space="preserve">
     <value>Quote in Message</value>
   </data>
+  <data name="MenuAbout" xml:space="preserve">
+    <value>About Datapoint Terminal</value>
+  </data>
+  <data name="MenuHelp" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="AboutVersion" xml:space="preserve">
+    <value>Version {0}</value>
+  </data>
+  <data name="AboutVersionWithCommit" xml:space="preserve">
+    <value>Version {0} ({1})</value>
+  </data>
+  <data name="AboutNotice" xml:space="preserve">
+    <value>Copyright © 2026 Datapoint - Sistemas de Informação, Lda. This program is free software: you can share and change it under the GNU Affero General Public License, version 3, with the additional terms in its NOTICE. It comes with absolutely no warranty.</value>
+  </data>
+  <data name="AboutLicense" xml:space="preserve">
+    <value>License</value>
+  </data>
+  <data name="AboutThirdPartyNotices" xml:space="preserve">
+    <value>Third-party notices</value>
+  </data>
+  <data name="AboutSourceCode" xml:space="preserve">
+    <value>Source code</value>
+  </data>
+  <data name="AboutWebsite" xml:space="preserve">
+    <value>Website</value>
+  </data>
+  <data name="AboutAttributionLink" xml:space="preserve">
+    <value>Open datapoint.software</value>
+  </data>
 </root>

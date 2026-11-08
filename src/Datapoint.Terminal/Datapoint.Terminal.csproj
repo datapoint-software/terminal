@@ -18,6 +18,12 @@
     <PackageReference Include="Markdig" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
   </ItemGroup>
+  <!-- Shown in the About window (AboutInfo); the AGPL asks the application to show its license. -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\LICENSE" LogicalName="Datapoint.Terminal.Legal.LICENSE" />
+    <EmbeddedResource Include="..\..\NOTICE" LogicalName="Datapoint.Terminal.Legal.NOTICE" />
+    <EmbeddedResource Include="..\..\THIRD-PARTY-NOTICES.txt" LogicalName="Datapoint.Terminal.Legal.THIRD-PARTY-NOTICES.txt" />
+  </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Datapoint.Terminal.Tests" />
   </ItemGroup>
