@@ -375,6 +375,19 @@
         </StackPanel>
       </Border>
 
+      <!-- The agent waiting for the user to type in a terminal (product decision 115). The button takes them there, expanding
+           the terminals if they're collapsed; the card never takes the focus itself. -->
+      <Border Classes="card" IsVisible="{Binding HasInputTerminal}"
+              AutomationProperties.LiveSetting="Assertive" AutomationProperties.Name="{Binding InputTerminalTitle}">
+        <StackPanel Spacing="8">
+          <StackPanel Spacing="2">
+            <TextBlock Classes="title" Text="{Binding InputTerminalTitle}" TextWrapping="Wrap" />
+            <TextBlock Text="{x:Static res:Strings.ChatTerminalInputText}" TextWrapping="Wrap" />
+          </StackPanel>
+          <Button Classes="primary" HorizontalAlignment="Right" Content="{Binding InputTerminalShow}" Command="{Binding ShowInputTerminalCommand}" />
+        </StackPanel>
+      </Border>
+
       <!-- A command waiting for approval. It never takes focus from the terminal; Run needs a click, or Tab and Space. -->
       <Border Classes="card" IsVisible="{Binding Approval, Converter={x:Static ObjectConverters.IsNotNull}}"
               AutomationProperties.LiveSetting="Assertive"

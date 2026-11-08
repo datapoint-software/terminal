@@ -774,11 +774,11 @@ Fingerprint: {2}</value>
   <data name="MenuView" xml:space="preserve">
     <value>View</value>
   </data>
-  <data name="MenuHideTerminals" xml:space="preserve">
-    <value>Hide Terminals</value>
+  <data name="MenuCollapseTerminals" xml:space="preserve">
+    <value>Collapse Terminals</value>
   </data>
-  <data name="MenuShowTerminals" xml:space="preserve">
-    <value>Show Terminals</value>
+  <data name="MenuExpandTerminals" xml:space="preserve">
+    <value>Expand Terminals</value>
   </data>
   <data name="FindPlaceholder" xml:space="preserve">
     <value>Find in terminal</value>
@@ -2738,5 +2738,23 @@ Fingerprint: {2}</value>
   </data>
   <data name="ApprovalPlanModeHosts" xml:space="preserve">
     <value>Changes {0}</value>
+  </data>
+  <data name="RailCollapse" xml:space="preserve">
+    <value>Collapse terminals</value>
+  </data>
+  <data name="RailExpand" xml:space="preserve">
+    <value>Expand terminals</value>
+  </data>
+  <data name="ChatTerminalInputTitle" xml:space="preserve">
+    <value>{0} is waiting for you</value>
+  </data>
+  <data name="ChatTerminalInputText" xml:space="preserve">
+    <value>The agent is waiting for you to type in this terminal, for example a password. It goes on once the command finishes.</value>
+  </data>
+  <data name="ChatTerminalInputShow" xml:space="preserve">
+    <value>Go to {0}</value>
+  </data>
+  <data name="NotifyTerminalInput" xml:space="preserve">
+    <value>{0} is waiting for you to type in it.</value>
   </data>
 </root>

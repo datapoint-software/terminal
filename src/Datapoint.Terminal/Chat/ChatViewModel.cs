@@ -94,6 +94,24 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
 
     public Action? Cleared { get; set; }
 
+    // Product decision 115: the terminal the agent waits for the user to type in, e.g. at a password prompt, named in a card
+    // that takes the user there, since the terminals may be collapsed or another one in front.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasInputTerminal), nameof(InputTerminalTitle), nameof(InputTerminalShow))]
+    [NotifyCanExecuteChangedFor(nameof(ShowInputTerminalCommand))]
+    public partial string? InputTerminal { get; private set; }
+
+    public bool HasInputTerminal => InputTerminal is not null;
+
+    public string InputTerminalTitle => Strings.Format(Strings.ChatTerminalInputTitle, InputTerminal ?? string.Empty);
+
+    public string InputTerminalShow => Strings.Format(Strings.ChatTerminalInputShow, InputTerminal ?? string.Empty);
+
+    public Action<string>? TerminalShown { get; set; }
+
+    [RelayCommand(CanExecute = nameof(HasInputTerminal))]
+    private void ShowInputTerminal() => TerminalShown?.Invoke(InputTerminal!);
+
     public bool IsWorking => Status is AgentStatus.Thinking or AgentStatus.RunningCommand;
 
     public bool NeedsUser => Status is AgentStatus.WaitingForApproval or AgentStatus.WaitingForUser;
@@ -475,7 +493,7 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
                 Items.Add(new ChatItemViewModel(ChatItemKind.Notice, e.Text));
                 break;
             case AgentEventKind.StatusChanged:
-                SetStatus(e.Status);
+                ChangeStatus(e);
                 break;
             case AgentEventKind.UsageChanged:
                 RefreshUsage();
@@ -643,6 +661,13 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
     {
         _look?.End();
         _look = null;
+    }
+
+    // The terminal is known before the status changes, so whatever reacts to the agent now needing the user can name it.
+    private void ChangeStatus(AgentEventArgs e)
+    {
+        InputTerminal = e.Status == AgentStatus.WaitingForUser ? e.Terminal : null;
+        SetStatus(e.Status);
     }
 
     private void SetStatus(AgentStatus status)

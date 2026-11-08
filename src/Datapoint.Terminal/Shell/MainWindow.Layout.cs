@@ -6,24 +6,23 @@ using Datapoint.Terminal.Shell.Areas;
 namespace Datapoint.Terminal.Shell;
 
 // Product decisions 104 and 109: the agent, the terminals and the documents sit where the user dragged them, the same in every
-// window. A shortcut hides and shows the terminals, and they come back whenever the agent is about to act in them. Documents
-// take space only while one is open.
+// window. Documents take space only while one is open. Product decision 115: a shortcut collapses the terminals to a strip
+// that names each one and shows what the agent is doing there, and only the user expands them again.
 public sealed partial class MainWindow
 {
     private AreaNode _layout = AreaLayout.Default();
     private AreaView? _areaView;
-    private bool _areTerminalsHidden;
+    private bool _areTerminalsCollapsed;
 
     private bool IsShown(AreaKind kind) => kind switch
     {
-        AreaKind.Terminals => !_areTerminalsHidden,
         AreaKind.Documents => _documents.Count > 0,
         _ => true,
     };
 
     private Control AreaControl(AreaKind kind) => kind switch
     {
-        AreaKind.Terminals => TerminalArea,
+        AreaKind.Terminals => TerminalPane,
         AreaKind.Documents => DocumentArea,
         _ => Chat,
     };
@@ -85,33 +84,45 @@ public sealed partial class MainWindow
 
     private void ToggleTerminals()
     {
-        _areTerminalsHidden = !_areTerminalsHidden;
-        LayOutPanes();
-        if (_areTerminalsHidden)
+        if (_areTerminalsCollapsed)
         {
-            Chat.FocusInput();
+            ShowTerminal(SelectedTab);
             return;
+        }
+
+        _areTerminalsCollapsed = true;
+        LayOutPanes();
+        Chat.FocusInput();
+    }
+
+    private void OnCollapseTerminalsClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => ToggleTerminals();
+
+    private void OnExpandTerminalsClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => ShowTerminal(SelectedTab);
+
+    private void OnRailTabClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => ShowTerminal((sender as Control)?.DataContext as TerminalTab);
+
+    // From the strip, or the chat's card when the agent waits for the user to type in a terminal: the terminals expanded, with
+    // that one in front and the keyboard in it.
+    private void ShowTerminal(TerminalTab? tab)
+    {
+        _areTerminalsCollapsed = false;
+        LayOutPanes();
+        if (tab is not null && _tabs.Contains(tab))
+        {
+            Tabs.SelectedItem = tab;
         }
 
         SelectedTab?.View.Focus();
     }
 
-    // The user sees everything the agent types, so hidden terminals come back when it asks to run a command or runs one.
-    // Focus stays where it is.
-    private void ShowTerminalsForAgent()
-    {
-        if (!_areTerminalsHidden)
-        {
-            return;
-        }
-
-        _areTerminalsHidden = false;
-        LayOutPanes();
-    }
+    private void ShowTerminal(string name) => ShowTerminal(_tabs.FirstOrDefault(tab => string.Equals(tab.Name, name, StringComparison.OrdinalIgnoreCase)));
 
     private void LayOutPanes()
     {
-        _areaView?.Show(_layout, IsShown);
+        TerminalArea.IsVisible = !_areTerminalsCollapsed;
+        TerminalRail.IsVisible = _areTerminalsCollapsed;
+        _areaView?.Show(_layout, IsShown, _areTerminalsCollapsed ? AreaKind.Terminals : null);
+        TerminalRail.Classes.Set("across", _areaView is { IsCollapsedBeside: false });
         UpdateLayoutMenu();
     }
 
@@ -142,7 +153,7 @@ public sealed partial class MainWindow
     private NativeMenu BuildViewMenu()
     {
         var view = new NativeMenu();
-        _toggleTerminalsItem = Item(Strings.MenuHideTerminals, Shortcut(Key.J), ToggleTerminals);
+        _toggleTerminalsItem = Item(Strings.MenuCollapseTerminals, Shortcut(Key.J), ToggleTerminals);
         view.Add(_toggleTerminalsItem);
         view.Add(SidebarMenuItem());
         view.Add(Item(Strings.MenuNextArea, new KeyGesture(Key.F6), () => MoveAreaFocus(1)));
@@ -181,16 +192,21 @@ public sealed partial class MainWindow
         return new NativeMenuItem(Strings.Format(Strings.MenuMoveArea, AreaName(moved))) { Menu = menu };
     }
 
-    private void UpdateLayoutMenu() => _toggleTerminalsItem?.Header = _areTerminalsHidden ? Strings.MenuShowTerminals : Strings.MenuHideTerminals;
+    private void UpdateLayoutMenu() => _toggleTerminalsItem?.Header = _areTerminalsCollapsed ? Strings.MenuExpandTerminals : Strings.MenuCollapseTerminals;
 
     // F6 moves the keyboard between the window's areas, as in most desktop applications: the chat, the terminals and the
-    // documents, skipping any that are hidden.
+    // documents, skipping any that are hidden. Collapsed terminals are reached at the strip's first button.
     private void MoveAreaFocus(int step)
     {
         var areas = new List<(Control Area, Action Focus)> { (Chat, Chat.FocusInput) };
         if (TerminalArea.IsEffectivelyVisible && SelectedTab is { } tab)
         {
             areas.Add((TerminalArea, () => tab.View.Focus()));
+        }
+
+        if (TerminalRail.IsEffectivelyVisible)
+        {
+            areas.Add((TerminalRail, () => ExpandTerminalsButton.Focus()));
         }
 
         if (DocumentArea.IsEffectivelyVisible)

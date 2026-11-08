@@ -30,7 +30,9 @@ public sealed partial class MainWindow
         }
 
         WindowAttention.Request(this);
-        Notify(_chat.Status == AgentStatus.WaitingForApproval ? Strings.NotifyApproval : Strings.NotifyQuestion);
+        Notify(_chat.Status == AgentStatus.WaitingForApproval ? Strings.NotifyApproval
+            : _chat.InputTerminal is { } terminal ? Strings.Format(Strings.NotifyTerminalInput, terminal)
+            : Strings.NotifyQuestion);
     }
 
     private bool _wasWorking;

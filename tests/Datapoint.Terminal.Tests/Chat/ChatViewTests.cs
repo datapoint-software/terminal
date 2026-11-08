@@ -60,6 +60,39 @@ public sealed class ChatViewTests
     }
 
     [AvaloniaFact]
+    public void Takes_the_user_to_the_terminal_the_agent_waits_for()
+    {
+        using var chat = new ChatViewModel(new ImmediateUiThread());
+        string? shown = null;
+        chat.TerminalShown = name => shown = name;
+        chat.Items.Add(new ChatItemViewModel(ChatItemKind.User, "Upgrade nginx on web-02"));
+        chat.Show(new AgentEventArgs(AgentEventKind.StatusChanged, string.Empty) { Status = AgentStatus.WaitingForUser, Terminal = "web-02" });
+        var window = new Window { Width = 420, Height = 520, Content = new ChatView { DataContext = chat } };
+        window.Show();
+
+        Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+        using var frame = window.CaptureRenderedFrame();
+        Directory.CreateDirectory("rendered");
+        frame?.Save("rendered/chat-terminal-input.png", new PngBitmapEncoderOptions());
+
+        var go = window.GetVisualDescendants().OfType<Button>().Single(button => button.IsEffectivelyVisible && Equals(button.Content, "Go to web-02"));
+        go.Command!.Execute(null);
+        Assert.Equal("web-02", shown);
+        chat.Show(new AgentEventArgs(AgentEventKind.StatusChanged, string.Empty) { Status = AgentStatus.Thinking });
+        Assert.False(chat.HasInputTerminal);
+    }
+
+    [AvaloniaFact]
+    public void Shows_no_terminal_card_for_a_question_in_the_chat()
+    {
+        using var chat = new ChatViewModel(new ImmediateUiThread());
+
+        chat.Show(new AgentEventArgs(AgentEventKind.StatusChanged, string.Empty) { Status = AgentStatus.WaitingForUser });
+
+        Assert.False(chat.HasInputTerminal);
+    }
+
+    [AvaloniaFact]
     public void Offers_to_plan_a_change_first()
     {
         using var chat = new ChatViewModel(new ImmediateUiThread());

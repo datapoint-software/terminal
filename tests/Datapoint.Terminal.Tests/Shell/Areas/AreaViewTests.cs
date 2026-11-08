@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using Datapoint.Terminal.Shell.Areas;
 
 namespace Datapoint.Terminal.Tests.Shell.Areas;
@@ -15,11 +16,11 @@ public sealed class AreaViewTests
         [AreaKind.Documents] = new Border(),
     };
 
-    private (Window Window, AreaView View) Show(AreaNode layout, Func<AreaKind, bool> isShown)
+    private (Window Window, AreaView View) Show(AreaNode layout, Func<AreaKind, bool> isShown, AreaKind? collapsed = null)
     {
         var host = new Panel();
         var view = new AreaView(host, _areas);
-        view.Show(layout, isShown);
+        view.Show(layout, isShown, collapsed);
         var window = new Window { Width = 1000, Height = 700, Content = host };
         window.Show();
         Dispatcher.UIThread.RunJobs();
@@ -56,6 +57,32 @@ public sealed class AreaViewTests
         Dispatcher.UIThread.RunJobs();
 
         Assert.Equal(641, _areas[AreaKind.Agent].TranslatePoint(default, window)?.X);
+        window.Close();
+    }
+
+    [AvaloniaFact]
+    public void Gives_a_collapsed_area_only_the_size_it_asks_for_beside_the_agent()
+    {
+        _areas[AreaKind.Terminals] = new Border { Width = 40 };
+        var (window, view) = Show(AreaLayout.Default(), kind => kind != AreaKind.Documents, AreaKind.Terminals);
+
+        Assert.True(view.IsCollapsedBeside);
+        Assert.Equal(959, _areas[AreaKind.Agent].Bounds.Width);
+        Assert.Equal(960, _areas[AreaKind.Terminals].TranslatePoint(default, window)?.X);
+        Assert.Empty(window.GetVisualDescendants().OfType<GridSplitter>());
+        window.Close();
+    }
+
+    [AvaloniaFact]
+    public void Lays_a_collapsed_area_across_the_one_below_it()
+    {
+        _areas[AreaKind.Terminals] = new Border { Height = 36 };
+        var (window, view) = Show(AreaLayout.Default(), _ => true, AreaKind.Terminals);
+
+        Assert.False(view.IsCollapsedBeside);
+        Assert.Equal(36, _areas[AreaKind.Terminals].Bounds.Height);
+        Assert.Equal(663, _areas[AreaKind.Documents].Bounds.Height);
+        Assert.Equal(359, _areas[AreaKind.Agent].Bounds.Width);
         window.Close();
     }
 }

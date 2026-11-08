@@ -13,6 +13,8 @@
   <Window.Resources>
     <StreamGeometry x:Key="PlusGlyph">M7.25,2 L8.75,2 L8.75,7.25 L14,7.25 L14,8.75 L8.75,8.75 L8.75,14 L7.25,14 L7.25,8.75 L2,8.75 L2,7.25 L7.25,7.25 Z</StreamGeometry>
     <StreamGeometry x:Key="DocumentTabGlyph">M3.75,1.75 L9.5,1.75 L12.25,4.5 L12.25,14.25 L3.75,14.25 Z M9.5,1.75 L9.5,4.5 L12.25,4.5</StreamGeometry>
+    <!-- A window with a side panel: shows or collapses the terminals. -->
+    <StreamGeometry x:Key="PanelGlyph">F0 M2,3 L14,3 L14,13 L2,13 Z M3.5,4.5 L3.5,11.5 L12.5,11.5 L12.5,4.5 Z M6,4.5 L7.5,4.5 L7.5,11.5 L6,11.5 Z</StreamGeometry>
     <StreamGeometry x:Key="CloseGlyph">M4.1,3 L8,6.9 L11.9,3 L13,4.1 L9.1,8 L13,11.9 L11.9,13 L8,9.1 L4.1,13 L3,11.9 L6.9,8 L3,4.1 Z</StreamGeometry>
   </Window.Resources>
   <Window.Styles>
@@ -76,6 +78,26 @@
       <Setter Property="Width" Value="10" />
       <Setter Property="Height" Value="10" />
     </Style>
+    <!-- The collapsed terminals: a column of names read from bottom to top, as most editors label their side panels, or a row. -->
+    <Style Selector="Border.rail StackPanel.railpanel">
+      <Setter Property="Orientation" Value="Vertical" />
+    </Style>
+    <Style Selector="Border.rail.across StackPanel.railpanel">
+      <Setter Property="Orientation" Value="Horizontal" />
+    </Style>
+    <Style Selector="Border.rail:not(.across) LayoutTransformControl.railname">
+      <Setter Property="LayoutTransform">
+        <RotateTransform Angle="-90" />
+      </Setter>
+    </Style>
+    <Style Selector="Button.railtab">
+      <Setter Property="Padding" Value="6,8" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Border.rail.across Button.railtab">
+      <Setter Property="Padding" Value="8,4" />
+    </Style>
     <Style Selector="controls|TerminalView">
       <Setter Property="AgentMarkBrush" Value="{DynamicResource AccentBrush}" />
       <Setter Property="UserMarkBrush" Value="{DynamicResource SecondaryLabelBrush}" />
@@ -91,6 +113,7 @@
     <!-- The agent, the terminals and the documents, arranged in code (MainWindow.Layout.cs) where the user put them by
          dragging their headers (product decision 109). -->
     <Panel x:Name="Body" Grid.Column="2">
+    <Panel x:Name="TerminalPane">
     <DockPanel x:Name="TerminalArea" AutomationProperties.Name="{x:Static res:Strings.TabsName}">
       <!-- A header like the chat's, at the same height, so the two line up side by side. -->
       <Border x:Name="TerminalsHeader" DockPanel.Dock="Top" Height="{StaticResource PaneHeaderHeight}" Padding="16,0,10,0" Background="Transparent" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
@@ -99,10 +122,16 @@
             <TextBlock Classes="title" Text="{x:Static res:Strings.TabsName}" />
             <TextBlock x:Name="TerminalsSummary" Classes="secondary" TextTrimming="CharacterEllipsis" />
           </StackPanel>
-          <Button x:Name="NewTabButton" Grid.Column="1" Classes="icon" VerticalAlignment="Center" Click="OnNewTabClicked"
-                  ToolTip.Tip="{x:Static res:Strings.TabNew}" AutomationProperties.Name="{x:Static res:Strings.TabNew}">
-            <PathIcon Data="{StaticResource PlusGlyph}" />
-          </Button>
+          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="2" VerticalAlignment="Center">
+            <Button x:Name="NewTabButton" Classes="icon" Click="OnNewTabClicked"
+                    ToolTip.Tip="{x:Static res:Strings.TabNew}" AutomationProperties.Name="{x:Static res:Strings.TabNew}">
+              <PathIcon Data="{StaticResource PlusGlyph}" />
+            </Button>
+            <Button x:Name="CollapseTerminalsButton" Classes="icon" Click="OnCollapseTerminalsClicked"
+                    ToolTip.Tip="{x:Static res:Strings.RailCollapse}" AutomationProperties.Name="{x:Static res:Strings.RailCollapse}">
+              <PathIcon Data="{StaticResource PanelGlyph}" />
+            </Button>
+          </StackPanel>
         </Grid>
       </Border>
       <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
@@ -159,6 +188,42 @@
         </StackPanel>
       </Panel>
     </DockPanel>
+    <!-- The terminals collapsed (product decision 115): a strip with one button per terminal, its name and what the agent is
+         doing there, beside the area it meets. Across the window when the terminals are above or below another area. -->
+    <Border x:Name="TerminalRail" Classes="rail" IsVisible="False" Background="{DynamicResource PaneBrush}"
+            AutomationProperties.Name="{x:Static res:Strings.TabsName}">
+      <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden">
+        <StackPanel Classes="railpanel" Spacing="4" Margin="6">
+          <Button x:Name="ExpandTerminalsButton" Classes="icon" Click="OnExpandTerminalsClicked" HorizontalAlignment="Center"
+                  ToolTip.Tip="{x:Static res:Strings.RailExpand}" AutomationProperties.Name="{x:Static res:Strings.RailExpand}">
+            <PathIcon Data="{StaticResource PanelGlyph}" />
+          </Button>
+          <ItemsControl ItemsSource="{Binding TabList}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Classes="railpanel" Spacing="4" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="shell:TerminalTab">
+                <Button Classes="railtab" Click="OnRailTabClicked" ToolTip.Tip="{Binding Label}" AutomationProperties.Name="{Binding AccessibleName}">
+                  <LayoutTransformControl Classes="railname">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                      <Panel Width="7" Height="7" VerticalAlignment="Center">
+                        <Ellipse Fill="{DynamicResource AccentBrush}" IsVisible="{Binding IsAgentActing}" />
+                        <Ellipse Fill="{DynamicResource WaitingBrush}" IsVisible="{Binding AgentNeedsUser}" />
+                      </Panel>
+                      <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                    </StackPanel>
+                  </LayoutTransformControl>
+                </Button>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </ScrollViewer>
+    </Border>
+    </Panel>
     <DockPanel x:Name="DocumentArea" AutomationProperties.Name="{x:Static res:Strings.DocumentTabsName}">
       <!-- Named after the sidebar section the document in front comes from, e.g. Hosts or Skills. -->
       <Border x:Name="DocumentsHeader" DockPanel.Dock="Top" Background="Transparent" Height="{StaticResource PaneHeaderHeight}" Padding="16,0,10,0" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">

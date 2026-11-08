@@ -121,6 +121,7 @@ public sealed partial class MainWindow : Window, ITerminalOpener
         _chat.ConfirmIgnorePermissions = ConfirmIgnorePermissionsAsync;
         _chat.WebAlwaysAllowed += (_, _) => _settings.SetAlwaysAllowWeb(true);
         _chat.ReadOnlyApproved = OnReadOnlyApproved;
+        _chat.TerminalShown = ShowTerminal;
     }
 
     private void OnReadOnlyApproved(string command, bool taught)

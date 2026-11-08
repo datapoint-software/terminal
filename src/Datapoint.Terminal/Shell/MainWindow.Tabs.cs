@@ -244,11 +244,6 @@ public sealed partial class MainWindow
         };
         Dispatcher.UIThread.Post(() =>
         {
-            if (e.Status is AgentStatus.RunningCommand or AgentStatus.WaitingForApproval)
-            {
-                ShowTerminalsForAgent();
-            }
-
             foreach (var tab in _tabs)
             {
                 tab.Activity = string.Equals(tab.Name, e.Terminal, StringComparison.OrdinalIgnoreCase) ? activity : TabActivity.None;

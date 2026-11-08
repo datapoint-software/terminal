@@ -514,9 +514,9 @@ public static class Strings
 
     public static string MenuView => Get(nameof(MenuView));
 
-    public static string MenuHideTerminals => Get(nameof(MenuHideTerminals));
+    public static string MenuCollapseTerminals => Get(nameof(MenuCollapseTerminals));
 
-    public static string MenuShowTerminals => Get(nameof(MenuShowTerminals));
+    public static string MenuExpandTerminals => Get(nameof(MenuExpandTerminals));
 
     public static string FindPlaceholder => Get(nameof(FindPlaceholder));
 
@@ -1823,6 +1823,18 @@ public static class Strings
     public static string ApprovalPlanModeAnyHost => Get(nameof(ApprovalPlanModeAnyHost));
 
     public static string ApprovalPlanModeHosts => Get(nameof(ApprovalPlanModeHosts));
+
+    public static string RailCollapse => Get(nameof(RailCollapse));
+
+    public static string RailExpand => Get(nameof(RailExpand));
+
+    public static string ChatTerminalInputTitle => Get(nameof(ChatTerminalInputTitle));
+
+    public static string ChatTerminalInputText => Get(nameof(ChatTerminalInputText));
+
+    public static string ChatTerminalInputShow => Get(nameof(ChatTerminalInputShow));
+
+    public static string NotifyTerminalInput => Get(nameof(NotifyTerminalInput));
 
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
