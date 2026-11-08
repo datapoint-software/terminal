@@ -41,6 +41,7 @@ docker build -t datapoint-terminal-sshd:test tests/ssh-server
 - [Engineering](docs/engineering.md): the technical stack, the terminal emulator's design and the repository conventions, with the decisions taken so far and the questions still open.
 - [Autopilot notes](docs/autopilot.md): implementation decisions taken during development, kept for review.
 - [Contributing](CONTRIBUTING.md): how to set up, make a change and open a pull request.
+- [Code of conduct](CODE_OF_CONDUCT.md): how we treat each other, and where to report problems.
 - [How we work](CLAUDE.md): the full rules for branch names, commit messages, pull requests and versions, followed by people and AI coding assistants alike.
 - [Security policy](SECURITY.md): how to report a vulnerability privately.
 

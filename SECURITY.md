@@ -10,7 +10,8 @@ Datapoint Terminal hasn't been released yet. Until it is, security fixes go into
 
 **Please don't report security problems in public issues, pull requests or discussions.**
 
-Report them privately through GitHub: on this repository's **Security** tab, choose **Report a vulnerability**. Only you and the maintainers can see the report. GitHub explains how this works in [Privately reporting a security vulnerability](https://docs.github.com/code-security/security-advisories/guidance-on-reporting-and-writing-information-about-vulnerabilities/privately-reporting-a-security-vulnerability).
+- **Preferred:** report it through GitHub's [private vulnerability reporting](https://github.com/datapoint-software/terminal/security/advisories/new), on this repository's **Security** tab. Only you and the maintainers can see the report, and we can work on the fix and the advisory with you there. GitHub explains how this works in [Privately reporting a security vulnerability](https://docs.github.com/code-security/security-advisories/guidance-on-reporting-and-writing-information-about-vulnerabilities/privately-reporting-a-security-vulnerability).
+- **Without a GitHub account:** email `hello@datapoint.software` with "Security" in the subject.
 
 A useful report says:
 

@@ -75,4 +75,4 @@ Before your first contribution is merged, sign the [Contributor License Agreemen
 
 ## Code of conduct
 
-Be respectful and constructive with everyone in issues, pull requests and reviews. Datapoint's maintainers may remove comments, or block people, that harass others or derail the work.
+Everyone taking part follows the [code of conduct](CODE_OF_CONDUCT.md), the Contributor Covenant 2.1. Report behavior that breaks it to `hello@datapoint.software`.
