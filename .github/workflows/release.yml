@@ -1,0 +1,144 @@
+name: Release
+
+# A release starts from a tag named as the bare version (CLAUDE.md,
+# Versions), e.g. 1.0.0-alpha.1, pushed by someone allowed to release. It
+# builds the installers for every platform and puts them in a draft GitHub
+# release, which a person reviews and publishes.
+on:
+  push:
+    tags: ["[0-9]*.[0-9]*.[0-9]*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  DOTNET_NOLOGO: "1"
+
+jobs:
+  # The tag must be the version in Directory.Build.props, so the
+  # application never reports a different version from its release.
+  version:
+    name: Check the version
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+        with:
+          global-json-file: global.json
+      - id: version
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          version=$(dotnet msbuild src/Datapoint.Terminal/Datapoint.Terminal.csproj -getProperty:Version)
+          if [ "$version" != "$TAG" ]; then
+            echo "::error::The tag $TAG doesn't match the version in Directory.Build.props, $version."
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+  # One package per operating system and processor architecture, each on
+  # its own update channel, named after the runtime, so an update never
+  # brings another architecture's build.
+  #
+  # Not signed yet: macOS builds are only ad-hoc signed and Windows builds
+  # not at all, so Gatekeeper and SmartScreen warn about them. See
+  # docs/engineering.md, Packaging, signing and updates.
+  package:
+    name: Package (${{ matrix.rid }})
+    needs: version
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - rid: linux-x64
+            os: ubuntu-24.04
+            icon: branding/terminal-icon.png
+          - rid: linux-arm64
+            os: ubuntu-24.04-arm
+            icon: branding/terminal-icon.png
+          - rid: osx-arm64
+            os: macos-15
+            icon: branding/terminal-icon.icns
+          - rid: osx-x64
+            os: macos-15
+            icon: branding/terminal-icon.icns
+          - rid: win-x64
+            os: windows-2025
+            icon: branding/terminal-icon.ico
+          - rid: win-arm64
+            os: windows-2025
+            icon: branding/terminal-icon.ico
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+        with:
+          global-json-file: global.json
+      - run: dotnet tool restore
+      - name: Publish
+        shell: bash
+        env:
+          RID: ${{ matrix.rid }}
+        run: |
+          dotnet publish src/Datapoint.Terminal/Datapoint.Terminal.csproj -c Release -r "$RID" --self-contained \
+            -p:PublishReadyToRun=true -p:ContinuousIntegrationBuild=true -o publish
+      - name: Package
+        shell: bash
+        env:
+          RID: ${{ matrix.rid }}
+          ICON: ${{ matrix.icon }}
+          VERSION: ${{ needs.version.outputs.version }}
+        run: |
+          # vpk's options depend on the operating system it packages for.
+          exe=Datapoint.Terminal
+          extra=()
+          case "$RID" in
+            win-*) exe=Datapoint.Terminal.exe ;;
+            osx-*) extra=(--bundleId software.datapoint.terminal) ;;
+          esac
+          dotnet vpk pack --packId DatapointTerminal --packVersion "$VERSION" --packDir publish --mainExe "$exe" \
+            --packTitle "Datapoint Terminal" --packAuthors "Datapoint - Sistemas de Informação, Lda." \
+            --icon "$ICON" --runtime "$RID" --channel "$RID" --outputDir releases "${extra[@]}"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-${{ matrix.rid }}
+          path: releases/*
+          if-no-files-found: error
+
+  # A draft, so nothing reaches users until a person has looked at it and
+  # published it. Pre-release versions are marked as such.
+  release:
+    name: Draft the release
+    needs: [version, package]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          path: releases
+          pattern: release-*
+          merge-multiple: true
+      - name: Create the draft
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.version.outputs.version }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          prerelease=()
+          case "$VERSION" in *-*) prerelease=(--prerelease) ;; esac
+          gh release create "$VERSION" releases/* --repo "$REPOSITORY" --draft "${prerelease[@]}" \
+            --title "Datapoint Terminal $VERSION" --verify-tag --notes "Unsigned test build. See the README for how to install it."
