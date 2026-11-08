@@ -18,8 +18,9 @@ public sealed partial class TerminalAgent
             "offer_plan_mode",
             "Asks the user whether to plan a task before doing it, when they've asked for something that will change one or "
             + "more servers and the approval mode isn't Plan. Call it before looking or changing anything, at most once per "
-            + "task. If they accept, the mode switches to Plan: look with ask_to_look if the plan depends on the hosts' state, "
-            + "then propose_plan. If they decline, go on in the current mode and don't offer again for this task.",
+            + "task, and not for a one-off change the user spelled out. If they accept, the mode switches to Plan: look with "
+            + "ask_to_look if the plan depends on the hosts' state, then propose_plan. If they decline, go on in the current mode "
+            + "and don't offer again for this task.",
             """
             {"type":"object","properties":{
               "title":{"type":"string","description":"The task in a few words, e.g. \"Upgrade nginx on the web servers\"."},
