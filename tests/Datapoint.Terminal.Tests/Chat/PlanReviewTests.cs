@@ -233,7 +233,12 @@ public sealed class PlanReviewTests
 
         review.RejectCommand.Execute(null);
         var decision = await approval.Decision;
-        await Task.Yield();
+
+        // The page learns of the decision in its own continuation, which may run on another thread here.
+        for (var attempt = 0; attempt < 100 && review.RejectCommand.CanExecute(null); attempt++)
+        {
+            await Task.Delay(10, TestContext.Current.CancellationToken);
+        }
 
         Assert.False(decision.Approved);
         Assert.Equal(Strings.PlanRejectFeedback + "\n" + Strings.PlanRejectComments + "\n- On the plan: The kernel can wait until next month.", decision.Feedback);
