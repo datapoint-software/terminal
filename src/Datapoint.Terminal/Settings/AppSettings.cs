@@ -85,6 +85,13 @@ public sealed record AppSettings
     // The SearXNG server's address, when that's the search service.
     public string? SearxngServer { get; init; }
 
+    // First-run setup has been shown, finished or set aside; it isn't offered again (product decision 146). Absent in
+    // settings from before it existed, so an installation that already has a provider is never asked.
+    public bool SetupShown { get; init; }
+
+    // The sidebar tips wait to be shown: set when setup closes, cleared when they're seen or skipped (product decision 147).
+    public bool TipsPending { get; init; }
+
     // How long conversation history is kept, in days; null keeps it forever (product decision 52).
     public int? HistoryDays { get; init; }
 

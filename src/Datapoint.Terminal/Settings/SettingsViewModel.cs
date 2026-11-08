@@ -42,6 +42,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         LearnedCommands = LearnedCommands.From(settings.ReadOnlyCommands);
         SavedLogins = settings.SavedLogins;
         HistoryDays = settings.HistoryDays;
+        (SetupShown, TipsPending) = (settings.SetupShown, settings.TipsPending);
         TerminalSide = settings.TerminalSide;
         AreaLayout = settings.AreaLayout;
         Notifications = settings.Notifications;
@@ -90,6 +91,38 @@ public sealed partial class SettingsViewModel : ObservableObject
     public int? HistoryDays { get; private set; }
 
     public Shell.TerminalSide TerminalSide { get; private set; }
+
+    public bool SetupShown { get; private set; }
+
+    public bool TipsPending { get; private set; }
+
+    // Setup is offered once, to an installation with no provider.
+    public bool NeedsSetup => !SetupShown && Providers.Count == 0;
+
+    public void MarkSetupShown()
+    {
+        SetupShown = true;
+        TipsPending = true;
+        SaveWorkspaceData();
+    }
+
+    public void SetTipsPending(bool pending)
+    {
+        TipsPending = pending;
+        SaveWorkspaceData();
+    }
+
+    // Adds the provider and uses it, as setup does once the user has chosen one.
+    public ProviderViewModel AddProvider(ProviderAccount account)
+    {
+        ArgumentNullException.ThrowIfNull(account);
+        var provider = new ProviderViewModel(this, account);
+        Providers.Add(provider);
+        Selected = provider;
+        OnPropertyChanged(nameof(IsEmpty));
+        Activate(provider);
+        return provider;
+    }
 
     public string? AreaLayout { get; private set; }
 
@@ -359,6 +392,8 @@ public sealed partial class SettingsViewModel : ObservableObject
         AlwaysAllowWeb = AlwaysAllowWeb,
         WebSearch = WebSearch,
         SearxngServer = SearxngServer,
+        SetupShown = SetupShown,
+        TipsPending = TipsPending,
     };
 
     public IReadOnlyList<WorkspaceConnection>? ConfirmedFor(string folder) =>

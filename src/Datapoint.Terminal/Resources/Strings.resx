@@ -2949,4 +2949,166 @@ Fingerprint: {2}</value>
   <data name="AboutAttributionLink" xml:space="preserve">
     <value>Open datapoint.software</value>
   </data>
+  <data name="SetupTitle" xml:space="preserve">
+    <value>Set up Datapoint Terminal</value>
+  </data>
+  <data name="SetupStep" xml:space="preserve">
+    <value>Step {0} of {1}</value>
+  </data>
+  <data name="SetupLater" xml:space="preserve">
+    <value>Set up later</value>
+  </data>
+  <data name="SetupBack" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="SetupContinue" xml:space="preserve">
+    <value>Continue</value>
+  </data>
+  <data name="SetupGetStarted" xml:space="preserve">
+    <value>Get started</value>
+  </data>
+  <data name="SetupOpen" xml:space="preserve">
+    <value>Open Datapoint Terminal</value>
+  </data>
+  <data name="SetupWelcomeTitle" xml:space="preserve">
+    <value>Welcome to Datapoint Terminal</value>
+  </data>
+  <data name="SetupWelcomeText" xml:space="preserve">
+    <value>A terminal with an AI agent beside it. You describe what you want in the chat, and the agent works in the same terminal you see: every command it types shows as it happens, and you can type over it at any time.</value>
+  </data>
+  <data name="SetupWelcomeProvider" xml:space="preserve">
+    <value>Connect an AI provider</value>
+  </data>
+  <data name="SetupWelcomeAppearance" xml:space="preserve">
+    <value>Choose how it looks</value>
+  </data>
+  <data name="SetupWelcomeLater" xml:space="preserve">
+    <value>It takes about a minute. You can change all of it later in Settings.</value>
+  </data>
+  <data name="SetupProviderTitle" xml:space="preserve">
+    <value>Connect an AI provider</value>
+  </data>
+  <data name="SetupProviderText" xml:space="preserve">
+    <value>The agent uses your own account. Without one, the app still works as a terminal.</value>
+  </data>
+  <data name="SetupAnthropicDetail" xml:space="preserve">
+    <value>Claude models, with your Anthropic API key.</value>
+  </data>
+  <data name="SetupOpenAIDetail" xml:space="preserve">
+    <value>GPT models, with your OpenAI API key.</value>
+  </data>
+  <data name="SetupOpenWeightTitle" xml:space="preserve">
+    <value>Open-weight model</value>
+  </data>
+  <data name="SetupOpenWeightDetail" xml:space="preserve">
+    <value>A model you run yourself or reach through a host, over an OpenAI-compatible API.</value>
+  </data>
+  <data name="SetupApiKey" xml:space="preserve">
+    <value>API key</value>
+  </data>
+  <data name="SetupTest" xml:space="preserve">
+    <value>Test</value>
+  </data>
+  <data name="SetupKeySaved" xml:space="preserve">
+    <value>Saved in {0}, never in a file.</value>
+  </data>
+  <data name="SetupKeyFromEnvironment" xml:space="preserve">
+    <value>Using {0} from the environment. Enter a key to keep it in {1} instead.</value>
+  </data>
+  <data name="SetupModel" xml:space="preserve">
+    <value>Model</value>
+  </data>
+  <data name="SetupModelHint" xml:space="preserve">
+    <value>The model's name, as the server lists it</value>
+  </data>
+  <data name="SetupNeedsKey" xml:space="preserve">
+    <value>Enter an API key, or choose Set up later.</value>
+  </data>
+  <data name="SetupNeedsServer" xml:space="preserve">
+    <value>Enter the server's address, starting with http:// or https://, and a model.</value>
+  </data>
+  <data name="SetupMasked" xml:space="preserve">
+    <value>Secrets it recognizes are masked before anything is sent.</value>
+  </data>
+  <data name="SetupAppearanceTitle" xml:space="preserve">
+    <value>Choose how it looks</value>
+  </data>
+  <data name="SetupWindow" xml:space="preserve">
+    <value>Window</value>
+  </data>
+  <data name="SetupTerminal" xml:space="preserve">
+    <value>Terminal</value>
+  </data>
+  <data name="SetupThemeSystem" xml:space="preserve">
+    <value>Match system</value>
+  </data>
+  <data name="SetupMotionNote" xml:space="preserve">
+    <value>Reduced motion and text size follow your system's settings.</value>
+  </data>
+  <data name="SetupReadyTitle" xml:space="preserve">
+    <value>You're ready</value>
+  </data>
+  <data name="SetupReadyAgent" xml:space="preserve">
+    <value>Agent: {0}</value>
+  </data>
+  <data name="SetupReadyNoAgent" xml:space="preserve">
+    <value>Agent: not set up yet. Add a provider in Settings when you're ready.</value>
+  </data>
+  <data name="SetupReadyWindow" xml:space="preserve">
+    <value>Window: {0}</value>
+  </data>
+  <data name="SetupReadyTerminal" xml:space="preserve">
+    <value>Terminal: {0}</value>
+  </data>
+  <data name="SetupReadyMatchesSystem" xml:space="preserve">
+    <value>matches your system</value>
+  </data>
+  <data name="SetupReadyMatchesTerminal" xml:space="preserve">
+    <value>matches the terminal</value>
+  </data>
+  <data name="SetupReadyLight" xml:space="preserve">
+    <value>light</value>
+  </data>
+  <data name="SetupReadyDark" xml:space="preserve">
+    <value>dark</value>
+  </data>
+  <data name="SetupReadyText" xml:space="preserve">
+    <value>A local terminal is open in your default workspace. Try asking the agent something like "how much disk space is free?"</value>
+  </data>
+  <data name="SetupPreviewName" xml:space="preserve">
+    <value>Preview of the terminal's colors</value>
+  </data>
+  <data name="TipHostsTitle" xml:space="preserve">
+    <value>Hosts</value>
+  </data>
+  <data name="TipHostsText" xml:space="preserve">
+    <value>The machines you work on in this workspace. Open one to read its documentation, or use its menu to open a terminal on it. Add one with +.</value>
+  </data>
+  <data name="TipSkillsTitle" xml:space="preserve">
+    <value>Skills</value>
+  </data>
+  <data name="TipSkillsText" xml:space="preserve">
+    <value>Procedures the agent saved after a task, such as patching a server. Open one to read or edit it; the agent can follow it again when you ask.</value>
+  </data>
+  <data name="TipWorkspaceTitle" xml:space="preserve">
+    <value>Workspace</value>
+  </data>
+  <data name="TipWorkspaceText" xml:space="preserve">
+    <value>Where this window's hosts, skills and instructions for the agent live: a folder, which you can share. Switch to another workspace, or start a new one, here.</value>
+  </data>
+  <data name="TipCount" xml:space="preserve">
+    <value>{0} of {1}</value>
+  </data>
+  <data name="TipNext" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="TipDone" xml:space="preserve">
+    <value>Got it</value>
+  </data>
+  <data name="TipSkip" xml:space="preserve">
+    <value>Skip tips</value>
+  </data>
+  <data name="MenuShowTips" xml:space="preserve">
+    <value>Show Tips Again</value>
+  </data>
 </root>

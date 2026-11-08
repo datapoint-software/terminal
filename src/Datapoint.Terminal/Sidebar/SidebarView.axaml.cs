@@ -25,6 +25,35 @@ public sealed partial class SidebarView : UserControl
 
     private SidebarViewModel? Model => DataContext as SidebarViewModel;
 
+    private SidebarTips? _tips;
+
+    // The tip being shown, if any; for tests.
+    internal string? CurrentTip => _tips?.CurrentTitle;
+
+    internal void NextTip() => _tips?.Next();
+
+    internal void EndTips() => _tips?.End();
+
+    // Product decision 147: the sidebar's parts, in the order they're read.
+    public void ShowTips(Action done)
+    {
+        _tips?.End();
+        var tips = new SidebarTips(
+            [
+                (HostsHeader, Strings.TipHostsTitle, Strings.TipHostsText),
+                (SkillsHeader, Strings.TipSkillsTitle, Strings.TipSkillsText),
+                (SwitcherButton, Strings.TipWorkspaceTitle, Strings.TipWorkspaceText),
+            ],
+            TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement(),
+            () =>
+            {
+                _tips = null;
+                done();
+            });
+        _tips = tips;
+        tips.Start();
+    }
+
     // Built when it opens, so it lists the workspaces as they are then.
     public MenuFlyout? BuildSwitcherMenu()
     {

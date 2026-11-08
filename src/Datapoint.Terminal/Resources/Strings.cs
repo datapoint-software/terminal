@@ -1965,6 +1965,114 @@ public static class Strings
 
     public static string AboutAttributionLink => Get(nameof(AboutAttributionLink));
 
+    public static string SetupTitle => Get(nameof(SetupTitle));
+
+    public static string SetupStep => Get(nameof(SetupStep));
+
+    public static string SetupLater => Get(nameof(SetupLater));
+
+    public static string SetupBack => Get(nameof(SetupBack));
+
+    public static string SetupContinue => Get(nameof(SetupContinue));
+
+    public static string SetupGetStarted => Get(nameof(SetupGetStarted));
+
+    public static string SetupOpen => Get(nameof(SetupOpen));
+
+    public static string SetupWelcomeTitle => Get(nameof(SetupWelcomeTitle));
+
+    public static string SetupWelcomeText => Get(nameof(SetupWelcomeText));
+
+    public static string SetupWelcomeProvider => Get(nameof(SetupWelcomeProvider));
+
+    public static string SetupWelcomeAppearance => Get(nameof(SetupWelcomeAppearance));
+
+    public static string SetupWelcomeLater => Get(nameof(SetupWelcomeLater));
+
+    public static string SetupProviderTitle => Get(nameof(SetupProviderTitle));
+
+    public static string SetupProviderText => Get(nameof(SetupProviderText));
+
+    public static string SetupAnthropicDetail => Get(nameof(SetupAnthropicDetail));
+
+    public static string SetupOpenAIDetail => Get(nameof(SetupOpenAIDetail));
+
+    public static string SetupOpenWeightTitle => Get(nameof(SetupOpenWeightTitle));
+
+    public static string SetupOpenWeightDetail => Get(nameof(SetupOpenWeightDetail));
+
+    public static string SetupApiKey => Get(nameof(SetupApiKey));
+
+    public static string SetupTest => Get(nameof(SetupTest));
+
+    public static string SetupKeySaved => Get(nameof(SetupKeySaved));
+
+    public static string SetupKeyFromEnvironment => Get(nameof(SetupKeyFromEnvironment));
+
+    public static string SetupModel => Get(nameof(SetupModel));
+
+    public static string SetupModelHint => Get(nameof(SetupModelHint));
+
+    public static string SetupNeedsKey => Get(nameof(SetupNeedsKey));
+
+    public static string SetupNeedsServer => Get(nameof(SetupNeedsServer));
+
+    public static string SetupMasked => Get(nameof(SetupMasked));
+
+    public static string SetupAppearanceTitle => Get(nameof(SetupAppearanceTitle));
+
+    public static string SetupWindow => Get(nameof(SetupWindow));
+
+    public static string SetupTerminal => Get(nameof(SetupTerminal));
+
+    public static string SetupThemeSystem => Get(nameof(SetupThemeSystem));
+
+    public static string SetupMotionNote => Get(nameof(SetupMotionNote));
+
+    public static string SetupReadyTitle => Get(nameof(SetupReadyTitle));
+
+    public static string SetupReadyAgent => Get(nameof(SetupReadyAgent));
+
+    public static string SetupReadyNoAgent => Get(nameof(SetupReadyNoAgent));
+
+    public static string SetupReadyWindow => Get(nameof(SetupReadyWindow));
+
+    public static string SetupReadyTerminal => Get(nameof(SetupReadyTerminal));
+
+    public static string SetupReadyMatchesSystem => Get(nameof(SetupReadyMatchesSystem));
+
+    public static string SetupReadyMatchesTerminal => Get(nameof(SetupReadyMatchesTerminal));
+
+    public static string SetupReadyLight => Get(nameof(SetupReadyLight));
+
+    public static string SetupReadyDark => Get(nameof(SetupReadyDark));
+
+    public static string SetupReadyText => Get(nameof(SetupReadyText));
+
+    public static string SetupPreviewName => Get(nameof(SetupPreviewName));
+
+    public static string TipHostsTitle => Get(nameof(TipHostsTitle));
+
+    public static string TipHostsText => Get(nameof(TipHostsText));
+
+    public static string TipSkillsTitle => Get(nameof(TipSkillsTitle));
+
+    public static string TipSkillsText => Get(nameof(TipSkillsText));
+
+    public static string TipWorkspaceTitle => Get(nameof(TipWorkspaceTitle));
+
+    public static string TipWorkspaceText => Get(nameof(TipWorkspaceText));
+
+    public static string TipCount => Get(nameof(TipCount));
+
+    public static string TipNext => Get(nameof(TipNext));
+
+    public static string TipDone => Get(nameof(TipDone));
+
+    public static string TipSkip => Get(nameof(TipSkip));
+
+    public static string MenuShowTips => Get(nameof(MenuShowTips));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

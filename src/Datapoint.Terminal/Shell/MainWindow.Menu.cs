@@ -56,11 +56,15 @@ public sealed partial class MainWindow
         var terminal = BuildTerminalMenu();
         NativeMenu menu = [new NativeMenuItem(Strings.MenuFile) { Menu = file }, new NativeMenuItem(Strings.MenuView) { Menu = BuildViewMenu() }, new NativeMenuItem(Strings.MenuFormat) { Menu = BuildFormatMenu() }, new NativeMenuItem(Strings.MenuTerminal) { Menu = terminal }];
 
-        // On macOS, About is in the application menu (App.axaml); elsewhere it's in a Help menu, last, as on those systems.
+        // A Help menu, last, as on every system. On macOS, About is in the application menu (App.axaml) instead.
+        var help = new NativeMenu { Item(Strings.MenuShowTips, null, _windows.ShowTipsAgain) };
         if (!IsMac)
         {
-            menu.Add(new NativeMenuItem(Strings.MenuHelp) { Menu = [Item(Strings.MenuAbout, null, _windows.OpenAbout)] });
+            help.Add(new NativeMenuItemSeparator());
+            help.Add(Item(Strings.MenuAbout, null, _windows.OpenAbout));
         }
+
+        menu.Add(new NativeMenuItem(Strings.MenuHelp) { Menu = help });
 
         return menu;
     }

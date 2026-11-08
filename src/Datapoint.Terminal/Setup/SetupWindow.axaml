@@ -1,0 +1,151 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:res="clr-namespace:Datapoint.Terminal.Resources"
+        xmlns:setup="clr-namespace:Datapoint.Terminal.Setup"
+        x:Class="Datapoint.Terminal.Setup.SetupWindow"
+        x:DataType="setup:SetupViewModel"
+        Title="{x:Static res:Strings.SetupTitle}"
+        Width="520" SizeToContent="Height" CanResize="False" WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource GroupedBackgroundBrush}">
+  <Window.Styles>
+    <!-- The provider choices: one card each, the chosen one outlined in the accent color. -->
+    <Style Selector="ListBox.choices">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="0" />
+    </Style>
+    <Style Selector="ListBox.choices ListBoxItem">
+      <Setter Property="Padding" Value="12,8" />
+      <Setter Property="Margin" Value="0,0,0,6" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
+      <Setter Property="Background" Value="{DynamicResource CardBrush}" />
+    </Style>
+    <Style Selector="ListBox.choices ListBoxItem /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource CardBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource LabelBrush}" />
+    </Style>
+    <Style Selector="ListBox.choices ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter, ListBox.choices ListBoxItem:selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource CardBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="BorderThickness" Value="2" />
+    </Style>
+    <Style Selector="ListBox.choices ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource CardBrush}" />
+    </Style>
+    <Style Selector="Border.progress">
+      <Setter Property="Height" Value="3" />
+      <Setter Property="CornerRadius" Value="2" />
+      <Setter Property="Background" Value="{DynamicResource SeparatorBrush}" />
+    </Style>
+    <Style Selector="Border.progress.done">
+      <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+    </Style>
+  </Window.Styles>
+
+  <DockPanel>
+    <!-- Where the user is: the step, as text for screen readers and as a bar. -->
+    <StackPanel DockPanel.Dock="Top" Margin="24,20,24,0" Spacing="8">
+      <Grid ColumnDefinitions="*,Auto">
+        <TextBlock Classes="secondary" Text="{x:Static res:Strings.SetupTitle}" />
+        <TextBlock x:Name="StepText" Grid.Column="1" Classes="secondary" Text="{Binding StepText}" AutomationProperties.LiveSetting="Polite" />
+      </Grid>
+      <UniformGrid x:Name="Progress" Rows="1" ColumnSpacing="4" />
+    </StackPanel>
+
+    <!-- Set up later on the left, away from Continue; Back and Continue on the right. -->
+    <Grid DockPanel.Dock="Bottom" ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="8" Margin="24,0,24,20">
+      <Button x:Name="LaterButton" Classes="plain" Content="{x:Static res:Strings.SetupLater}" Command="{Binding LaterCommand}" IsVisible="{Binding CanSetUpLater}" />
+      <Button Grid.Column="2" Content="{x:Static res:Strings.SetupBack}" Command="{Binding BackCommand}" IsVisible="{Binding CanGoBack}" />
+      <Button x:Name="NextButton" Grid.Column="3" Classes="primary" Content="{Binding NextText}" Command="{Binding NextCommand}" IsDefault="True" />
+    </Grid>
+
+    <Panel Margin="24,18,24,20" MinHeight="300">
+      <!-- 1. Welcome. -->
+      <StackPanel Spacing="14" IsVisible="{Binding IsWelcome}">
+        <TextBlock Classes="dialogTitle" Text="{x:Static res:Strings.SetupWelcomeTitle}" />
+        <TextBlock Text="{x:Static res:Strings.SetupWelcomeText}" TextWrapping="Wrap" LineHeight="20" />
+        <StackPanel Spacing="6">
+          <TextBlock Text="{x:Static res:Strings.SetupWelcomeProvider}" />
+          <TextBlock Text="{x:Static res:Strings.SetupWelcomeAppearance}" />
+        </StackPanel>
+        <TextBlock Classes="secondary" Text="{x:Static res:Strings.SetupWelcomeLater}" TextWrapping="Wrap" />
+      </StackPanel>
+
+      <!-- 2. The AI provider. -->
+      <StackPanel Spacing="10" IsVisible="{Binding IsProvider}">
+        <TextBlock Classes="dialogTitle" Text="{x:Static res:Strings.SetupProviderTitle}" />
+        <TextBlock Classes="secondary" Text="{x:Static res:Strings.SetupProviderText}" TextWrapping="Wrap" />
+        <ListBox x:Name="Choices" Classes="choices" ItemsSource="{Binding Choices}" SelectedItem="{Binding Choice}" SelectionMode="Single,AlwaysSelected"
+                 AutomationProperties.Name="{x:Static res:Strings.SetupProviderTitle}">
+          <ListBox.ItemTemplate>
+            <DataTemplate x:DataType="setup:ProviderChoice">
+              <StackPanel Spacing="2" AutomationProperties.Name="{Binding Title}" AutomationProperties.HelpText="{Binding Detail}">
+                <TextBlock Text="{Binding Title}" FontWeight="SemiBold" />
+                <TextBlock Classes="secondary" Text="{Binding Detail}" TextWrapping="Wrap" />
+              </StackPanel>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+
+        <StackPanel Spacing="6" IsVisible="{Binding NeedsKey}">
+          <TextBlock Classes="secondary" Text="{x:Static res:Strings.SetupApiKey}" />
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+            <TextBox x:Name="KeyBox" Text="{Binding Key}" PasswordChar="•" Watermark="{Binding KeyPlaceholder}"
+                     AutomationProperties.Name="{x:Static res:Strings.SetupApiKey}" />
+            <Button Grid.Column="1" Content="{x:Static res:Strings.SetupTest}" Command="{Binding TestCommand}" />
+          </Grid>
+          <TextBlock Classes="secondary" Text="{Binding KeyNote}" TextWrapping="Wrap" />
+        </StackPanel>
+
+        <StackPanel Spacing="6" IsVisible="{Binding IsCompatible}">
+          <TextBlock Classes="secondary" Text="{x:Static res:Strings.ProviderEndpoint}" />
+          <TextBox x:Name="EndpointBox" Text="{Binding Endpoint}" Watermark="{x:Static res:Strings.ProviderEndpointHint}"
+                   AutomationProperties.Name="{x:Static res:Strings.ProviderEndpoint}" />
+          <TextBlock Classes="secondary" Text="{x:Static res:Strings.SetupModel}" />
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+            <TextBox x:Name="ModelBox" Text="{Binding Model}" Watermark="{x:Static res:Strings.SetupModelHint}"
+                     AutomationProperties.Name="{x:Static res:Strings.SetupModel}" />
+            <Button Grid.Column="1" Content="{x:Static res:Strings.SetupTest}" Command="{Binding TestCommand}" />
+          </Grid>
+          <CheckBox Content="{x:Static res:Strings.ProviderIsLocal}" IsChecked="{Binding IsLocal}" />
+        </StackPanel>
+
+        <TextBlock x:Name="ProblemText" Classes="danger" Text="{Binding Problem}" TextWrapping="Wrap"
+                   IsVisible="{Binding Problem, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" AutomationProperties.LiveSetting="Assertive" />
+        <TextBlock Classes="secondary" Text="{Binding TestResult}" TextWrapping="Wrap" Classes.danger="{Binding TestFailed}"
+                   IsVisible="{Binding TestResult, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" AutomationProperties.LiveSetting="Polite" />
+        <TextBlock Classes="secondary" Text="{Binding Privacy}" TextWrapping="Wrap" />
+      </StackPanel>
+
+      <!-- 3. Appearance, applied as it's chosen. -->
+      <StackPanel Spacing="10" IsVisible="{Binding IsAppearance}">
+        <TextBlock Classes="dialogTitle" Text="{x:Static res:Strings.SetupAppearanceTitle}" />
+        <TextBlock Classes="secondary" Text="{x:Static res:Strings.SetupWindow}" />
+        <ListBox x:Name="WindowThemes" Classes="segmented" HorizontalAlignment="Left" ItemsSource="{Binding WindowThemes}" SelectedIndex="{Binding SelectedWindowTheme}"
+                 AutomationProperties.Name="{x:Static res:Strings.SetupWindow}" />
+        <TextBlock Classes="secondary" Text="{x:Static res:Strings.SetupTerminal}" Margin="0,6,0,0" />
+        <ListBox x:Name="TerminalThemes" Classes="segmented" HorizontalAlignment="Left" ItemsSource="{Binding TerminalThemes}" SelectedIndex="{Binding SelectedTerminalTheme}"
+                 AutomationProperties.Name="{x:Static res:Strings.SetupTerminal}" />
+        <!-- Made-up output, in the terminal's own colors. -->
+        <Border Background="{Binding PreviewBackground}" CornerRadius="8" Padding="12,10" Margin="0,6,0,0"
+                BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="1" AutomationProperties.Name="{x:Static res:Strings.SetupPreviewName}">
+          <TextBlock Classes="mono" Foreground="{Binding PreviewForeground}" LineHeight="20"
+                     Text="you@laptop ~ % df -h /&#10;Filesystem  Size  Used  Avail  Use%&#10;/dev/disk3  460G  212G   248G   47%" />
+        </Border>
+        <TextBlock Classes="secondary" Text="{x:Static res:Strings.SetupMotionNote}" TextWrapping="Wrap" />
+      </StackPanel>
+
+      <!-- 4. Ready: what was chosen. -->
+      <StackPanel Spacing="10" IsVisible="{Binding IsReady}">
+        <TextBlock Classes="dialogTitle" Text="{x:Static res:Strings.SetupReadyTitle}" />
+        <TextBlock Text="{Binding AgentSummary}" TextWrapping="Wrap" />
+        <TextBlock Text="{Binding WindowSummary}" TextWrapping="Wrap" />
+        <TextBlock Text="{Binding TerminalSummary}" TextWrapping="Wrap" />
+        <TextBlock Classes="secondary" Text="{x:Static res:Strings.SetupReadyText}" TextWrapping="Wrap" Margin="0,6,0,0" />
+      </StackPanel>
+    </Panel>
+  </DockPanel>
+</Window>

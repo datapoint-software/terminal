@@ -57,11 +57,29 @@ public sealed class WorkspaceWindows
             Open(folder, isNew: false, problems);
         }
 
-        if (_windows.Count > 0)
+        if (_windows.Count == 0)
+        {
+            OpenDefault(problems);
+        }
+
+        // Product decisions 146 and 147: setup once, over the first window, then the sidebar tips.
+        var window = _windows[^1];
+        if (Settings.NeedsSetup)
+        {
+            _ = SetUpAsync(window);
+            return;
+        }
+
+        if (!Settings.TipsPending)
         {
             return;
         }
 
+        window.ShowTips();
+    }
+
+    private void OpenDefault(List<string> problems)
+    {
         try
         {
             Show(Workspace.OpenDefault(), problems);
@@ -72,6 +90,21 @@ public sealed class WorkspaceWindows
             throw new InvalidOperationException(string.Join(Environment.NewLine, problems), exception);
         }
     }
+
+    private async Task SetUpAsync(MainWindow owner)
+    {
+        var setup = new Setup.SetupWindow { DataContext = new Setup.SetupViewModel(Settings) };
+        await setup.ShowDialog(owner).ConfigureAwait(true);
+        if (!Settings.TipsPending)
+        {
+            return;
+        }
+
+        owner.ShowTips();
+    }
+
+    // Help > Show Tips Again, in whichever window is in front.
+    public void ShowTipsAgain() => Active?.ShowTips();
 
     public void Open(string folder) => Open(folder, isNew: false, []);
 

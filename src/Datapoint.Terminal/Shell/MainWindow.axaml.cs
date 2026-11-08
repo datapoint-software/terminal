@@ -94,18 +94,13 @@ public sealed partial class MainWindow : Window, ITerminalOpener
     public static AppSettings FirstRun(AppSettings settings)
     {
         ArgumentNullException.ThrowIfNull(settings);
-        if (settings.Providers.Count > 0 || string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ANTHROPIC_API_KEY")))
+        // Setup offers the key from the environment itself, and adds it if the user sets setup aside.
+        if (settings.Providers.Count > 0 || !settings.SetupShown || string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ANTHROPIC_API_KEY")))
         {
             return settings;
         }
 
-        var provider = new ProviderAccount
-        {
-            Id = ProviderAccount.NewId(),
-            Kind = ProviderKind.Anthropic,
-            Name = ProviderCatalog.DefaultName(ProviderKind.Anthropic),
-            Model = ProviderCatalog.DefaultModel(ProviderKind.Anthropic),
-        };
+        var provider = Setup.SetupViewModel.NewAccount(ProviderKind.Anthropic);
         return settings with { Providers = [provider], SelectedProviderId = provider.Id };
     }
 

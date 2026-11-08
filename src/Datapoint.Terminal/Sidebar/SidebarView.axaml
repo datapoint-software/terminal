@@ -58,7 +58,7 @@
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
       <StackPanel Margin="10,12,10,16">
         <!-- Hosts: the workspace's connections, then a quiet line for the user's other SSH hosts. -->
-        <Grid ColumnDefinitions="*,Auto" Margin="8,0,0,4" Height="24">
+        <Grid x:Name="HostsHeader" ColumnDefinitions="*,Auto" Margin="8,0,0,4" Height="24">
           <TextBlock Classes="section" Text="{x:Static res:Strings.SidebarHosts}" />
           <Button Grid.Column="1" Classes="icon small" Command="{Binding NewHostCommand}"
                   ToolTip.Tip="{x:Static res:Strings.NewHostTitle}" AutomationProperties.Name="{x:Static res:Strings.NewHostTitle}">
@@ -122,7 +122,7 @@
         </ItemsControl>
 
         <!-- Skills: saved by the agent, opened here. -->
-        <TextBlock Classes="section" Margin="8,18,0,4" Height="24" Text="{x:Static res:Strings.SidebarSkills}" />
+        <TextBlock x:Name="SkillsHeader" Classes="section" Margin="8,18,0,4" Height="24" Text="{x:Static res:Strings.SidebarSkills}" />
         <TextBlock Classes="secondary" Text="{x:Static res:Strings.SidebarNoSkills}" IsVisible="{Binding !HasSkills}" Margin="8,2,8,4" />
         <ListBox x:Name="SkillList" Classes="source" ItemsSource="{Binding Skills}" SelectedItem="{Binding SelectedSkill}" SelectionMode="Single"
                  AutomationProperties.Name="{x:Static res:Strings.SidebarSkills}">
