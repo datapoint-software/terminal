@@ -55,7 +55,8 @@ public sealed class KnownHostsFileTests : IDisposable
     public async Task Matches_names_hashed_by_ssh_keygen()
     {
         var file = Write(Line("web.example.com", _key));
-        await OpenSshServer.RunToolAsync("ssh-keygen", "-H", "-f", FilePath);
+        var (hashed, output) = await OpenSshServer.RunToolAsync("ssh-keygen", "-H", "-f", FilePath);
+        Assert.SkipUnless(hashed, "ssh-keygen isn't available: " + output);
 
         Assert.DoesNotContain("web.example.com", await File.ReadAllTextAsync(FilePath, TestContext.Current.CancellationToken), StringComparison.Ordinal);
 
