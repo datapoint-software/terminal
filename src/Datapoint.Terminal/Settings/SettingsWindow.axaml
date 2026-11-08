@@ -4,7 +4,7 @@
         xmlns:res="clr-namespace:Datapoint.Terminal.Resources"
         x:Class="Datapoint.Terminal.Settings.SettingsWindow"
         x:DataType="settings:SettingsViewModel"
-        Title="{x:Static res:Strings.SettingsTitle}"
+        Title="{res:Tr SettingsTitle}"
         Width="780" Height="620" MinWidth="620" MinHeight="460"
         WindowStartupLocation="CenterOwner"
         Background="{DynamicResource GroupedBackgroundBrush}">
@@ -56,47 +56,47 @@
 
   <DockPanel>
   <Border DockPanel.Dock="Top" Background="{DynamicResource PaneBrush}" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1" Padding="0,8">
-    <ListBox x:Name="Pages" Classes="toolbar" SelectedIndex="0" AutomationProperties.Name="{x:Static res:Strings.SettingsTitle}">
-      <ListBoxItem AutomationProperties.Name="{x:Static res:Strings.SettingsPageProviders}">
+    <ListBox x:Name="Pages" Classes="toolbar" SelectedIndex="0" AutomationProperties.Name="{res:Tr SettingsTitle}">
+      <ListBoxItem AutomationProperties.Name="{res:Tr SettingsPageProviders}">
         <StackPanel Spacing="3">
           <PathIcon Data="{StaticResource ProvidersGlyph}" Width="20" Height="20" />
-          <TextBlock Text="{x:Static res:Strings.SettingsPageProviders}" FontSize="{StaticResource CaptionSize}" HorizontalAlignment="Center" />
+          <TextBlock Text="{res:Tr SettingsPageProviders}" FontSize="{StaticResource CaptionSize}" HorizontalAlignment="Center" />
         </StackPanel>
       </ListBoxItem>
-      <ListBoxItem AutomationProperties.Name="{x:Static res:Strings.SettingsPageAppearance}">
+      <ListBoxItem AutomationProperties.Name="{res:Tr SettingsPageAppearance}">
         <StackPanel Spacing="3">
           <PathIcon Data="{StaticResource AppearanceGlyph}" Width="20" Height="20" />
-          <TextBlock Text="{x:Static res:Strings.SettingsPageAppearance}" FontSize="{StaticResource CaptionSize}" HorizontalAlignment="Center" />
+          <TextBlock Text="{res:Tr SettingsPageAppearance}" FontSize="{StaticResource CaptionSize}" HorizontalAlignment="Center" />
         </StackPanel>
       </ListBoxItem>
-      <ListBoxItem AutomationProperties.Name="{x:Static res:Strings.SettingsPageHistory}">
+      <ListBoxItem AutomationProperties.Name="{res:Tr SettingsPageHistory}">
         <StackPanel Spacing="3">
           <PathIcon Data="{StaticResource HistoryGlyph}" Width="20" Height="20" />
-          <TextBlock Text="{x:Static res:Strings.SettingsPageHistory}" FontSize="{StaticResource CaptionSize}" HorizontalAlignment="Center" />
+          <TextBlock Text="{res:Tr SettingsPageHistory}" FontSize="{StaticResource CaptionSize}" HorizontalAlignment="Center" />
         </StackPanel>
       </ListBoxItem>
-      <ListBoxItem AutomationProperties.Name="{x:Static res:Strings.SettingsPageMemory}">
+      <ListBoxItem AutomationProperties.Name="{res:Tr SettingsPageMemory}">
         <StackPanel Spacing="3">
           <PathIcon Data="{StaticResource MemoryGlyph}" Width="20" Height="20" />
-          <TextBlock Text="{x:Static res:Strings.SettingsPageMemory}" FontSize="{StaticResource CaptionSize}" HorizontalAlignment="Center" />
+          <TextBlock Text="{res:Tr SettingsPageMemory}" FontSize="{StaticResource CaptionSize}" HorizontalAlignment="Center" />
         </StackPanel>
       </ListBoxItem>
-      <ListBoxItem AutomationProperties.Name="{x:Static res:Strings.SettingsPageCommands}">
+      <ListBoxItem AutomationProperties.Name="{res:Tr SettingsPageCommands}">
         <StackPanel Spacing="3">
           <PathIcon Data="{StaticResource CommandsGlyph}" Width="20" Height="20" />
-          <TextBlock Text="{x:Static res:Strings.SettingsPageCommands}" FontSize="{StaticResource CaptionSize}" HorizontalAlignment="Center" />
+          <TextBlock Text="{res:Tr SettingsPageCommands}" FontSize="{StaticResource CaptionSize}" HorizontalAlignment="Center" />
         </StackPanel>
       </ListBoxItem>
-      <ListBoxItem AutomationProperties.Name="{x:Static res:Strings.SettingsPagePasswords}">
+      <ListBoxItem AutomationProperties.Name="{res:Tr SettingsPagePasswords}">
         <StackPanel Spacing="3">
           <PathIcon Data="{StaticResource PasswordsGlyph}" Width="20" Height="20" />
-          <TextBlock Text="{x:Static res:Strings.SettingsPagePasswords}" FontSize="{StaticResource CaptionSize}" HorizontalAlignment="Center" />
+          <TextBlock Text="{res:Tr SettingsPagePasswords}" FontSize="{StaticResource CaptionSize}" HorizontalAlignment="Center" />
         </StackPanel>
       </ListBoxItem>
-      <ListBoxItem AutomationProperties.Name="{x:Static res:Strings.SettingsPageWeb}">
+      <ListBoxItem AutomationProperties.Name="{res:Tr SettingsPageWeb}">
         <StackPanel Spacing="3">
           <PathIcon Data="{StaticResource WebGlyph}" Width="20" Height="20" />
-          <TextBlock Text="{x:Static res:Strings.SettingsPageWeb}" FontSize="{StaticResource CaptionSize}" HorizontalAlignment="Center" />
+          <TextBlock Text="{res:Tr SettingsPageWeb}" FontSize="{StaticResource CaptionSize}" HorizontalAlignment="Center" />
         </StackPanel>
       </ListBoxItem>
     </ListBox>
@@ -123,19 +123,19 @@
   <Grid x:Name="ProvidersPage" ColumnDefinitions="230,1,*">
     <!-- Sidebar: the providers, with add and remove at the bottom. -->
     <DockPanel Background="{DynamicResource PaneBrush}">
-      <TextBlock DockPanel.Dock="Top" Classes="section" Margin="18,16,0,8" Text="{x:Static res:Strings.SettingsProviders}" />
+      <TextBlock DockPanel.Dock="Top" Classes="section" Margin="18,16,0,8" Text="{res:Tr SettingsProviders}" />
       <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="2" Margin="10,8">
-        <Button Classes="icon" Command="{Binding AddCommand}" ToolTip.Tip="{x:Static res:Strings.SettingsAdd}"
-                AutomationProperties.Name="{x:Static res:Strings.SettingsAdd}">
+        <Button Classes="icon" Command="{Binding AddCommand}" ToolTip.Tip="{res:Tr SettingsAdd}"
+                AutomationProperties.Name="{res:Tr SettingsAdd}">
           <PathIcon Data="{StaticResource PlusGlyph}" />
         </Button>
-        <Button Classes="icon" Command="{Binding RemoveCommand}" ToolTip.Tip="{x:Static res:Strings.SettingsRemove}"
-                AutomationProperties.Name="{x:Static res:Strings.SettingsRemove}">
+        <Button Classes="icon" Command="{Binding RemoveCommand}" ToolTip.Tip="{res:Tr SettingsRemove}"
+                AutomationProperties.Name="{res:Tr SettingsRemove}">
           <PathIcon Data="{StaticResource MinusGlyph}" />
         </Button>
       </StackPanel>
       <ListBox Classes="source" Margin="8,0" ItemsSource="{Binding Providers}" SelectedItem="{Binding Selected}"
-               AutomationProperties.Name="{x:Static res:Strings.SettingsProviders}">
+               AutomationProperties.Name="{res:Tr SettingsProviders}">
         <ListBox.ItemTemplate>
           <DataTemplate x:DataType="settings:ProviderViewModel">
             <Grid ColumnDefinitions="*,Auto" Margin="2,6">
@@ -145,7 +145,7 @@
               </StackPanel>
               <PathIcon Grid.Column="1" Data="{StaticResource CheckGlyph}" Width="13" Height="13" Margin="6,0,0,0"
                         Foreground="{DynamicResource AccentBrush}" IsVisible="{Binding IsActive}"
-                        AutomationProperties.Name="{x:Static res:Strings.ProviderInUse}" />
+                        AutomationProperties.Name="{res:Tr ProviderInUse}" />
             </Grid>
           </DataTemplate>
         </ListBox.ItemTemplate>
@@ -155,8 +155,8 @@
 
     <!-- Nothing yet: say what a provider is for. -->
     <StackPanel Grid.Column="2" IsVisible="{Binding IsEmpty}" VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="340" Spacing="14">
-      <TextBlock Text="{x:Static res:Strings.SettingsEmpty}" TextWrapping="Wrap" TextAlignment="Center" />
-      <Button Classes="primary" HorizontalAlignment="Center" Content="{x:Static res:Strings.SettingsAdd}" Command="{Binding AddCommand}" />
+      <TextBlock Text="{res:Tr SettingsEmpty}" TextWrapping="Wrap" TextAlignment="Center" />
+      <Button Classes="primary" HorizontalAlignment="Center" Content="{res:Tr SettingsAdd}" Command="{Binding AddCommand}" />
     </StackPanel>
 
     <ScrollViewer Grid.Column="2" IsVisible="{Binding HasSelection}">
@@ -165,9 +165,9 @@
         <Border Classes="group">
           <StackPanel>
             <Grid Classes="row" ColumnDefinitions="150,*">
-              <TextBlock Text="{x:Static res:Strings.ProviderKind}" />
+              <TextBlock Text="{res:Tr ProviderKind}" />
               <ListBox Grid.Column="1" Classes="segmented" ItemsSource="{Binding $parent[Window].((settings:SettingsViewModel)DataContext).Kinds}"
-                       SelectedItem="{Binding Kind}" AutomationProperties.Name="{x:Static res:Strings.ProviderKind}">
+                       SelectedItem="{Binding Kind}" AutomationProperties.Name="{res:Tr ProviderKind}">
                 <ListBox.ItemTemplate>
                   <DataTemplate x:DataType="settings:KindOption">
                     <TextBlock Text="{Binding Label}" />
@@ -177,64 +177,64 @@
             </Grid>
             <Rectangle Classes="hairline" />
             <Grid Classes="row" ColumnDefinitions="150,*">
-              <TextBlock Text="{x:Static res:Strings.ProviderName}" />
-              <TextBox Grid.Column="1" Text="{Binding Name}" AutomationProperties.Name="{x:Static res:Strings.ProviderName}" />
+              <TextBlock Text="{res:Tr ProviderName}" />
+              <TextBox Grid.Column="1" Text="{Binding Name}" AutomationProperties.Name="{res:Tr ProviderName}" />
             </Grid>
             <Rectangle Classes="hairline" />
             <!-- Product decision 126: a model the app knows brings its context window and prices; Other… takes them as typed. -->
             <Grid Classes="row" ColumnDefinitions="150,*">
-              <TextBlock Text="{x:Static res:Strings.ProviderModel}" />
+              <TextBlock Text="{res:Tr ProviderModel}" />
               <ComboBox Grid.Column="1" ItemsSource="{Binding ModelChoices}" SelectedItem="{Binding SelectedModelChoice}" IsVisible="{Binding !IsCompatible}"
-                        HorizontalAlignment="Stretch" AutomationProperties.Name="{x:Static res:Strings.ProviderModel}">
+                        HorizontalAlignment="Stretch" AutomationProperties.Name="{res:Tr ProviderModel}">
                 <ComboBox.ItemTemplate>
                   <DataTemplate x:DataType="settings:ModelOption">
                     <TextBlock Text="{Binding Label}" />
                   </DataTemplate>
                 </ComboBox.ItemTemplate>
               </ComboBox>
-              <TextBox Grid.Column="1" Text="{Binding Model}" IsVisible="{Binding IsCompatible}" PlaceholderText="{x:Static res:Strings.ProviderModelNameHint}"
-                       AutomationProperties.Name="{x:Static res:Strings.ProviderModel}" />
+              <TextBox Grid.Column="1" Text="{Binding Model}" IsVisible="{Binding IsCompatible}" PlaceholderText="{res:Tr ProviderModelNameHint}"
+                       AutomationProperties.Name="{res:Tr ProviderModel}" />
             </Grid>
             <StackPanel IsVisible="{Binding IsOtherModel}">
               <Rectangle Classes="hairline" />
               <Grid Classes="row" ColumnDefinitions="150,*">
-                <TextBlock Text="{x:Static res:Strings.ProviderModelName}" />
-                <TextBox x:Name="ModelNameBox" Grid.Column="1" Text="{Binding Model}" PlaceholderText="{x:Static res:Strings.ProviderModelNameHint}"
-                         AutomationProperties.Name="{x:Static res:Strings.ProviderModelName}" />
+                <TextBlock Text="{res:Tr ProviderModelName}" />
+                <TextBox x:Name="ModelNameBox" Grid.Column="1" Text="{Binding Model}" PlaceholderText="{res:Tr ProviderModelNameHint}"
+                         AutomationProperties.Name="{res:Tr ProviderModelName}" />
               </Grid>
             </StackPanel>
             <Rectangle Classes="hairline" />
             <Grid Classes="row" ColumnDefinitions="150,*">
-              <TextBlock Text="{x:Static res:Strings.ProviderContextWindow}" />
-              <TextBox Grid.Column="1" Text="{Binding ContextWindow}" PlaceholderText="{x:Static res:Strings.ProviderContextWindowHint}" IsVisible="{Binding HasOwnValues}"
-                       AutomationProperties.Name="{x:Static res:Strings.ProviderContextWindow}" />
+              <TextBlock Text="{res:Tr ProviderContextWindow}" />
+              <TextBox Grid.Column="1" Text="{Binding ContextWindow}" PlaceholderText="{res:Tr ProviderContextWindowHint}" IsVisible="{Binding HasOwnValues}"
+                       AutomationProperties.Name="{res:Tr ProviderContextWindow}" />
               <SelectableTextBlock Grid.Column="1" VerticalAlignment="Center" TextWrapping="Wrap" Text="{Binding KnownContextWindow}" IsVisible="{Binding IsKnownModel}"
-                                   AutomationProperties.Name="{x:Static res:Strings.ProviderContextWindow}" />
+                                   AutomationProperties.Name="{res:Tr ProviderContextWindow}" />
             </Grid>
             <Rectangle Classes="hairline" />
             <Grid Classes="row" ColumnDefinitions="150,*">
-              <TextBlock Text="{x:Static res:Strings.ProviderInputPrice}" TextWrapping="Wrap" />
-              <TextBox Grid.Column="1" Text="{Binding InputPrice}" PlaceholderText="{x:Static res:Strings.ProviderPriceHint}" IsVisible="{Binding HasOwnValues}"
-                       AutomationProperties.Name="{x:Static res:Strings.ProviderInputPrice}" />
+              <TextBlock Text="{res:Tr ProviderInputPrice}" TextWrapping="Wrap" />
+              <TextBox Grid.Column="1" Text="{Binding InputPrice}" PlaceholderText="{res:Tr ProviderPriceHint}" IsVisible="{Binding HasOwnValues}"
+                       AutomationProperties.Name="{res:Tr ProviderInputPrice}" />
               <SelectableTextBlock Grid.Column="1" VerticalAlignment="Center" TextWrapping="Wrap" Text="{Binding KnownInputPrice}" IsVisible="{Binding IsKnownModel}"
-                                   AutomationProperties.Name="{x:Static res:Strings.ProviderInputPrice}" />
+                                   AutomationProperties.Name="{res:Tr ProviderInputPrice}" />
             </Grid>
             <Rectangle Classes="hairline" />
             <Grid Classes="row" ColumnDefinitions="150,*">
-              <TextBlock Text="{x:Static res:Strings.ProviderOutputPrice}" TextWrapping="Wrap" />
-              <TextBox Grid.Column="1" Text="{Binding OutputPrice}" PlaceholderText="{x:Static res:Strings.ProviderPriceHint}" IsVisible="{Binding HasOwnValues}"
-                       AutomationProperties.Name="{x:Static res:Strings.ProviderOutputPrice}" />
+              <TextBlock Text="{res:Tr ProviderOutputPrice}" TextWrapping="Wrap" />
+              <TextBox Grid.Column="1" Text="{Binding OutputPrice}" PlaceholderText="{res:Tr ProviderPriceHint}" IsVisible="{Binding HasOwnValues}"
+                       AutomationProperties.Name="{res:Tr ProviderOutputPrice}" />
               <SelectableTextBlock Grid.Column="1" VerticalAlignment="Center" TextWrapping="Wrap" Text="{Binding KnownOutputPrice}" IsVisible="{Binding IsKnownModel}"
-                                   AutomationProperties.Name="{x:Static res:Strings.ProviderOutputPrice}" />
+                                   AutomationProperties.Name="{res:Tr ProviderOutputPrice}" />
             </Grid>
             <Rectangle Classes="hairline" />
             <Grid Classes="row" ColumnDefinitions="150,*">
-              <TextBlock Text="{x:Static res:Strings.ProviderCachedInputPrice}" TextWrapping="Wrap" />
-              <TextBox Grid.Column="1" Text="{Binding CachedInputPrice}" PlaceholderText="{x:Static res:Strings.ProviderCachedPriceHint}" IsVisible="{Binding HasOwnValues}"
-                       AutomationProperties.Name="{x:Static res:Strings.ProviderCachedInputPrice}"
-                       AutomationProperties.HelpText="{x:Static res:Strings.ProviderCachedPriceHint}" />
+              <TextBlock Text="{res:Tr ProviderCachedInputPrice}" TextWrapping="Wrap" />
+              <TextBox Grid.Column="1" Text="{Binding CachedInputPrice}" PlaceholderText="{res:Tr ProviderCachedPriceHint}" IsVisible="{Binding HasOwnValues}"
+                       AutomationProperties.Name="{res:Tr ProviderCachedInputPrice}"
+                       AutomationProperties.HelpText="{res:Tr ProviderCachedPriceHint}" />
               <SelectableTextBlock Grid.Column="1" VerticalAlignment="Center" TextWrapping="Wrap" Text="{Binding KnownCachedInputPrice}" IsVisible="{Binding IsKnownModel}"
-                                   AutomationProperties.Name="{x:Static res:Strings.ProviderCachedInputPrice}" />
+                                   AutomationProperties.Name="{res:Tr ProviderCachedInputPrice}" />
             </Grid>
             <StackPanel IsVisible="{Binding IsKnownModel}">
               <Rectangle Classes="hairline" />
@@ -243,13 +243,13 @@
             <StackPanel IsVisible="{Binding IsCompatible}">
               <Rectangle Classes="hairline" />
               <Grid Classes="row" ColumnDefinitions="150,*">
-                <TextBlock Text="{x:Static res:Strings.ProviderEndpoint}" />
-                <TextBox Grid.Column="1" Text="{Binding Endpoint}" PlaceholderText="{x:Static res:Strings.ProviderEndpointHint}"
-                         AutomationProperties.Name="{x:Static res:Strings.ProviderEndpoint}" />
+                <TextBlock Text="{res:Tr ProviderEndpoint}" />
+                <TextBox Grid.Column="1" Text="{Binding Endpoint}" PlaceholderText="{res:Tr ProviderEndpointHint}"
+                         AutomationProperties.Name="{res:Tr ProviderEndpoint}" />
               </Grid>
               <Rectangle Classes="hairline" />
               <Grid Classes="row" ColumnDefinitions="150,*">
-                <CheckBox Grid.Column="1" IsChecked="{Binding IsLocal}" Content="{x:Static res:Strings.ProviderIsLocal}" />
+                <CheckBox Grid.Column="1" IsChecked="{Binding IsLocal}" Content="{res:Tr ProviderIsLocal}" />
               </Grid>
             </StackPanel>
           </StackPanel>
@@ -260,15 +260,15 @@
         <Border Classes="group">
           <StackPanel>
             <Grid Classes="row" ColumnDefinitions="150,*">
-              <TextBlock Text="{x:Static res:Strings.ProviderOutputLimit}" TextWrapping="Wrap" />
+              <TextBlock Text="{res:Tr ProviderOutputLimit}" TextWrapping="Wrap" />
               <TextBox Grid.Column="1" Text="{Binding OutputLimit}" PlaceholderText="{Binding OutputLimitHint}"
-                       AutomationProperties.Name="{x:Static res:Strings.ProviderOutputLimit}" AutomationProperties.HelpText="{Binding OutputLimitHint}" />
+                       AutomationProperties.Name="{res:Tr ProviderOutputLimit}" AutomationProperties.HelpText="{Binding OutputLimitHint}" />
             </Grid>
             <Rectangle Classes="hairline" />
             <Grid Classes="row" ColumnDefinitions="150,*">
-              <TextBlock Text="{x:Static res:Strings.ProviderCompactAt}" TextWrapping="Wrap" />
+              <TextBlock Text="{res:Tr ProviderCompactAt}" TextWrapping="Wrap" />
               <TextBox Grid.Column="1" Text="{Binding CompactAt}" PlaceholderText="{Binding CompactAtHint}"
-                       AutomationProperties.Name="{x:Static res:Strings.ProviderCompactAt}" AutomationProperties.HelpText="{Binding CompactAtHint}" />
+                       AutomationProperties.Name="{res:Tr ProviderCompactAt}" AutomationProperties.HelpText="{Binding CompactAtHint}" />
             </Grid>
           </StackPanel>
         </Border>
@@ -277,21 +277,21 @@
         <Border Classes="group">
           <StackPanel>
             <Grid Classes="row" ColumnDefinitions="150,*">
-              <TextBlock Text="{x:Static res:Strings.ProviderApiKey}" />
+              <TextBlock Text="{res:Tr ProviderApiKey}" />
               <Grid Grid.Column="1" ColumnDefinitions="*,Auto" IsVisible="{Binding ShowKeyEntry}">
-                <TextBox Text="{Binding KeyDraft}" PasswordChar="•" PlaceholderText="{x:Static res:Strings.ProviderKeyPlaceholder}"
-                         AutomationProperties.Name="{x:Static res:Strings.ProviderApiKey}">
+                <TextBox Text="{Binding KeyDraft}" PasswordChar="•" PlaceholderText="{res:Tr ProviderKeyPlaceholder}"
+                         AutomationProperties.Name="{res:Tr ProviderApiKey}">
                   <TextBox.KeyBindings>
                     <KeyBinding Gesture="Enter" Command="{Binding SaveKeyCommand}" />
                   </TextBox.KeyBindings>
                 </TextBox>
-                <Button Grid.Column="1" Margin="8,0,0,0" Content="{x:Static res:Strings.ProviderKeySave}" Command="{Binding SaveKeyCommand}" />
+                <Button Grid.Column="1" Margin="8,0,0,0" Content="{res:Tr ProviderKeySave}" Command="{Binding SaveKeyCommand}" />
               </Grid>
               <Grid Grid.Column="1" ColumnDefinitions="*,Auto,Auto" IsVisible="{Binding !ShowKeyEntry}">
                 <TextBlock Classes="quiet" Text="••••••••••••••••" VerticalAlignment="Center" IsVisible="{Binding HasSavedKey}" />
-                <Button Grid.Column="1" Margin="8,0,0,0" Content="{x:Static res:Strings.ProviderKeyReplace}" Command="{Binding ReplaceKeyCommand}"
+                <Button Grid.Column="1" Margin="8,0,0,0" Content="{res:Tr ProviderKeyReplace}" Command="{Binding ReplaceKeyCommand}"
                         IsVisible="{Binding HasSavedKey}" />
-                <Button Grid.Column="2" Margin="8,0,0,0" Content="{x:Static res:Strings.ProviderKeyRemove}" Command="{Binding RemoveKeyCommand}"
+                <Button Grid.Column="2" Margin="8,0,0,0" Content="{res:Tr ProviderKeyRemove}" Command="{Binding RemoveKeyCommand}"
                         IsVisible="{Binding HasSavedKey}" />
               </Grid>
             </Grid>
@@ -302,11 +302,11 @@
         <!-- Where the conversation goes, and whether it works. -->
         <TextBlock Classes="secondary" Text="{Binding Privacy}" Margin="4,0,0,12" />
         <StackPanel Orientation="Horizontal" Spacing="8">
-          <Button Content="{x:Static res:Strings.ProviderTest}" Command="{Binding TestCommand}" />
-          <Button Classes="primary" Content="{x:Static res:Strings.ProviderUse}" Command="{Binding UseCommand}" IsVisible="{Binding !IsActive}" />
+          <Button Content="{res:Tr ProviderTest}" Command="{Binding TestCommand}" />
+          <Button Classes="primary" Content="{res:Tr ProviderUse}" Command="{Binding UseCommand}" IsVisible="{Binding !IsActive}" />
           <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" IsVisible="{Binding IsActive}">
             <PathIcon Data="{StaticResource CheckGlyph}" Width="13" Height="13" Foreground="{DynamicResource AccentBrush}" />
-            <TextBlock Text="{x:Static res:Strings.ProviderInUse}" VerticalAlignment="Center" />
+            <TextBlock Text="{res:Tr ProviderInUse}" VerticalAlignment="Center" />
           </StackPanel>
         </StackPanel>
         <TextBlock Classes="secondary" Classes.danger="{Binding TestFailed}" Text="{Binding TestResult}" Margin="4,10,0,0"

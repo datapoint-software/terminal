@@ -2073,7 +2073,20 @@ public static class Strings
 
     public static string MenuShowTips => Get(nameof(MenuShowTips));
 
+    public static string AppearanceLanguageHeading => Get(nameof(AppearanceLanguageHeading));
+
+    public static string AppearanceLanguage => Get(nameof(AppearanceLanguage));
+
+    public static string AppearanceLanguageSystem => Get(nameof(AppearanceLanguageSystem));
+
+    public static string AppearanceLanguageHint => Get(nameof(AppearanceLanguageHint));
+
+    public static string LanguageEnglish => Get(nameof(LanguageEnglish));
+
+    public static string LanguagePortuguese => Get(nameof(LanguagePortuguese));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
-    private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;
+    // The text for a resource key in the interface's language.
+    public static string Get(string name) => s_resources.GetString(name, Localizer.Instance.Culture) ?? name;
 }

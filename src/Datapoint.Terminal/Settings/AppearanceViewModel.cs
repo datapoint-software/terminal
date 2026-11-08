@@ -17,26 +17,39 @@ public sealed partial class AppearanceViewModel : ObservableObject
     {
         ArgumentNullException.ThrowIfNull(settings);
         _settings = settings;
-        Fonts = [Strings.AppearanceFontDefault, .. MonospaceFonts.Installed()];
-        Sizes = [.. Enumerable.Range(9, 16).Select(size => Strings.Format(Strings.AppearanceTextSizeValue, size))];
+        Fonts = [new TextChoice(() => Strings.AppearanceFontDefault), .. MonospaceFonts.Installed().Select(font => new TextChoice(() => font))];
         settings.AppearanceChanged += (_, _) => Load();
         Load();
     }
 
     public ObservableCollection<ThemeCard> Themes { get; } = [];
 
-    public IReadOnlyList<string> Fonts { get; }
+    // The first is the default font, named in the interface's language.
+    public IReadOnlyList<TextChoice> Fonts { get; }
 
-    public IReadOnlyList<string> Sizes { get; }
+    public IReadOnlyList<TextChoice> Sizes { get; } =
+        [.. Enumerable.Range(9, 16).Select(size => new TextChoice(() => Strings.Format(Strings.AppearanceTextSizeValue, size)))];
 
     // In the order of WindowTheme's values.
-    public IReadOnlyList<string> WindowThemes { get; } = [Strings.WindowThemeSystem, Strings.WindowThemeLight, Strings.WindowThemeDark, Strings.WindowThemeTerminal];
+    public IReadOnlyList<TextChoice> WindowThemes { get; } =
+        [new(() => Strings.WindowThemeSystem), new(() => Strings.WindowThemeLight), new(() => Strings.WindowThemeDark), new(() => Strings.WindowThemeTerminal)];
+
+    // In the order of AppLanguage's values. Each language is named in itself, so it can be found whatever is shown now.
+    public IReadOnlyList<TextChoice> Languages { get; } =
+    [
+        new(() => Strings.Format(Strings.AppearanceLanguageSystem, LanguageName(Localizer.Resolve(AppLanguage.System, Localizer.Instance.SystemCulture)))),
+        new(() => Strings.LanguageEnglish),
+        new(() => Strings.LanguagePortuguese),
+    ];
+
+    [ObservableProperty]
+    public partial int SelectedLanguage { get; set; }
 
     [ObservableProperty]
     public partial ThemeCard? SelectedTheme { get; set; }
 
     [ObservableProperty]
-    public partial string? SelectedFont { get; set; }
+    public partial int SelectedFont { get; set; }
 
     [ObservableProperty]
     public partial int SelectedSize { get; set; }
@@ -79,14 +92,14 @@ public sealed partial class AppearanceViewModel : ObservableObject
         _settings.UseCustomTheme(value.Theme.Id);
     }
 
-    partial void OnSelectedFontChanged(string? value)
+    partial void OnSelectedFontChanged(int value)
     {
-        if (_isLoading || value is null)
+        if (_isLoading || value < 0 || value >= Fonts.Count)
         {
             return;
         }
 
-        var font = string.Equals(value, Strings.AppearanceFontDefault, StringComparison.Ordinal) ? null : value;
+        var font = value == 0 ? null : Fonts[value].Text;
         _settings.SetAppearance(_settings.TerminalTheme, font, _settings.TerminalFontSize);
     }
 
@@ -109,6 +122,32 @@ public sealed partial class AppearanceViewModel : ObservableObject
 
         _settings.SetWindowTheme((WindowTheme)value);
     }
+
+    partial void OnSelectedLanguageChanged(int value)
+    {
+        if (_isLoading || !Enum.IsDefined((AppLanguage)value) || (AppLanguage)value == _settings.Language)
+        {
+            return;
+        }
+
+        _settings.SetLanguage((AppLanguage)value);
+    }
+
+    private int IndexOfFont(string font)
+    {
+        for (var index = 1; index < Fonts.Count; index++)
+        {
+            if (string.Equals(Fonts[index].Text, font, StringComparison.OrdinalIgnoreCase))
+            {
+                return index;
+            }
+        }
+
+        return -1;
+    }
+
+    private static string LanguageName(System.Globalization.CultureInfo culture) =>
+        string.Equals(culture.TwoLetterISOLanguageName, "pt", StringComparison.Ordinal) ? Strings.LanguagePortuguese : Strings.LanguageEnglish;
 
     partial void OnReduceMotionChanged(bool value)
     {
@@ -142,10 +181,11 @@ public sealed partial class AppearanceViewModel : ObservableObject
         }
 
         SelectedTheme = chosen;
-        SelectedFont = _settings.TerminalFont is { } font && Fonts.Contains(font, StringComparer.OrdinalIgnoreCase) ? font : Strings.AppearanceFontDefault;
+        SelectedFont = _settings.TerminalFont is { } font ? Math.Max(0, IndexOfFont(font)) : 0;
         SelectedSize = Math.Clamp((int)Math.Round(_settings.TerminalFontSize, MidpointRounding.AwayFromZero) - 9, 0, Sizes.Count - 1);
         SelectedWindowTheme = (int)_settings.WindowTheme;
         ReduceMotion = _settings.ReduceMotion;
+        SelectedLanguage = (int)_settings.Language;
         _isLoading = false;
     }
 

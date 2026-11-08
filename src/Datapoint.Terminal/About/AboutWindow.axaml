@@ -3,7 +3,7 @@
         xmlns:res="clr-namespace:Datapoint.Terminal.Resources"
         xmlns:about="clr-namespace:Datapoint.Terminal.About"
         x:Class="Datapoint.Terminal.About.AboutWindow"
-        Title="{x:Static res:Strings.MenuAbout}"
+        Title="{res:Tr MenuAbout}"
         Width="480" SizeToContent="Height" CanResize="False" WindowStartupLocation="CenterOwner"
         Background="{DynamicResource GroupedBackgroundBrush}">
   <Window.Styles>
@@ -34,12 +34,12 @@
         <HyperlinkButton x:Name="CompanyLink" Classes="text" Content="Datapoint - Sistemas de Informação, Lda." />
       </WrapPanel>
     </StackPanel>
-    <SelectableTextBlock Classes="secondary" Text="{x:Static res:Strings.AboutNotice}" TextWrapping="Wrap" />
+    <SelectableTextBlock Classes="secondary" Text="{res:Tr AboutNotice}" TextWrapping="Wrap" />
     <WrapPanel HorizontalAlignment="Center" ItemSpacing="8" LineSpacing="8">
-      <Button x:Name="LicenseButton" Content="{x:Static res:Strings.AboutLicense}" />
-      <Button x:Name="NoticesButton" Content="{x:Static res:Strings.AboutThirdPartyNotices}" />
-      <Button x:Name="SourceButton" Content="{x:Static res:Strings.AboutSourceCode}" />
-      <Button x:Name="WebsiteButton" Content="{x:Static res:Strings.AboutWebsite}" />
+      <Button x:Name="LicenseButton" Content="{res:Tr AboutLicense}" />
+      <Button x:Name="NoticesButton" Content="{res:Tr AboutThirdPartyNotices}" />
+      <Button x:Name="SourceButton" Content="{res:Tr AboutSourceCode}" />
+      <Button x:Name="WebsiteButton" Content="{res:Tr AboutWebsite}" />
     </WrapPanel>
   </StackPanel>
 </Window>

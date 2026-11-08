@@ -260,6 +260,9 @@ dotnet_naming_rule.constants.severity = warning
 dotnet_naming_symbols.constants.applicable_kinds = field
 dotnet_naming_symbols.constants.required_modifiers = const
 dotnet_naming_style.pascal.capitalization = pascal_case
+# CA1822 only for members views can't bind to: a view model's text property reads only Strings, yet must be an instance
+# property for its view to bind it and to be read again when the language changes (product decision 150).
+dotnet_code_quality.CA1822.api_surface = private, internal
 # MA0008 asks for StructLayout on every struct; ours aren't passed to native code, so the runtime's choice of layout is the right one.
 dotnet_diagnostic.MA0008.severity = none
 

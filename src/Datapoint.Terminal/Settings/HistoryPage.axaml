@@ -5,16 +5,16 @@
   <StackPanel Classes="form">
     <Border Classes="group">
       <Grid Classes="row" ColumnDefinitions="*,Auto">
-        <TextBlock Text="{x:Static res:Strings.HistoryKeepFor}" />
-        <ComboBox x:Name="RetentionBox" Grid.Column="1" MinWidth="150" AutomationProperties.Name="{x:Static res:Strings.HistoryKeepFor}" />
+        <TextBlock Text="{res:Tr HistoryKeepFor}" />
+        <ComboBox x:Name="RetentionBox" Grid.Column="1" MinWidth="150" AutomationProperties.Name="{res:Tr HistoryKeepFor}" />
       </Grid>
     </Border>
-    <TextBlock Classes="secondary note" Text="{x:Static res:Strings.HistoryKeepHint}" />
+    <TextBlock Classes="secondary note" Text="{res:Tr HistoryKeepHint}" />
     <TextBlock x:Name="WorkspaceHeading" Classes="heading" />
     <Border x:Name="ConnectionsGroup" Classes="group">
       <StackPanel x:Name="Connections" />
     </Border>
-    <TextBlock x:Name="ClearHint" Classes="secondary note" Text="{x:Static res:Strings.HistoryClearHint}" />
+    <TextBlock x:Name="ClearHint" Classes="secondary note" Text="{res:Tr HistoryClearHint}" />
     <TextBlock x:Name="Status" Classes="secondary" Margin="4,0" AutomationProperties.LiveSetting="Polite" />
   </StackPanel>
 </UserControl>

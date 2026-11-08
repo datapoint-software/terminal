@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:res="clr-namespace:Datapoint.Terminal.Resources"
         x:Class="Datapoint.Terminal.Shell.NewHostWindow"
-        Title="{x:Static res:Strings.NewHostTitle}"
+        Title="{res:Tr NewHostTitle}"
         Width="560" SizeToContent="Height" CanResize="False"
         WindowStartupLocation="CenterOwner" ShowInTaskbar="False"
         Background="{DynamicResource GroupedBackgroundBrush}">
@@ -20,64 +20,64 @@
   </Window.Styles>
 
   <StackPanel Margin="24,20">
-    <TextBlock x:Name="TitleText" Classes="dialogTitle" Text="{x:Static res:Strings.NewHostTitle}" />
-    <TextBlock Classes="secondary" Margin="0,2,0,14" Text="{x:Static res:Strings.NewHostCaption}" />
+    <TextBlock x:Name="TitleText" Classes="dialogTitle" Text="{res:Tr NewHostTitle}" />
+    <TextBlock Classes="secondary" Margin="0,2,0,14" Text="{res:Tr NewHostCaption}" />
     <Border Classes="group">
       <StackPanel>
         <Grid Classes="row" ColumnDefinitions="104,*">
-          <TextBlock x:Name="NameLabel" Text="{x:Static res:Strings.NewHostName}" />
-          <TextBox x:Name="NameBox" Grid.Column="1" MaxLength="40" AutomationProperties.Name="{x:Static res:Strings.NewHostName}" />
+          <TextBlock x:Name="NameLabel" Text="{res:Tr NewHostName}" />
+          <TextBox x:Name="NameBox" Grid.Column="1" MaxLength="40" AutomationProperties.Name="{res:Tr NewHostName}" />
         </Grid>
         <Rectangle Classes="hairline" />
         <Grid Classes="row" ColumnDefinitions="104,*">
-          <TextBlock Text="{x:Static res:Strings.NewHostAddress}" />
-          <TextBox x:Name="AddressBox" Grid.Column="1" MaxLength="253" PlaceholderText="{x:Static res:Strings.NewHostAddressHint}"
-                   AutomationProperties.Name="{x:Static res:Strings.NewHostAddress}" />
+          <TextBlock Text="{res:Tr NewHostAddress}" />
+          <TextBox x:Name="AddressBox" Grid.Column="1" MaxLength="253" PlaceholderText="{res:Tr NewHostAddressHint}"
+                   AutomationProperties.Name="{res:Tr NewHostAddress}" />
         </Grid>
         <Rectangle Classes="hairline" />
         <Grid Classes="row" ColumnDefinitions="104,*">
-          <TextBlock Text="{x:Static res:Strings.NewHostUser}" />
+          <TextBlock Text="{res:Tr NewHostUser}" />
           <Grid Grid.Column="1" ColumnDefinitions="*,Auto,72">
-            <TextBox x:Name="UserBox" MaxLength="64" AutomationProperties.Name="{x:Static res:Strings.NewHostUser}" />
+            <TextBox x:Name="UserBox" MaxLength="64" AutomationProperties.Name="{res:Tr NewHostUser}" />
             <TextBlock Grid.Column="1" Classes="quiet" Margin="12,0,8,0" VerticalAlignment="Center"
-                       Text="{x:Static res:Strings.NewHostPort}" />
+                       Text="{res:Tr NewHostPort}" />
             <TextBox x:Name="PortBox" Grid.Column="2" MaxLength="5" PlaceholderText="22" FontFamily="{StaticResource MonoFont}"
-                     AutomationProperties.Name="{x:Static res:Strings.NewHostPort}" />
+                     AutomationProperties.Name="{res:Tr NewHostPort}" />
           </Grid>
         </Grid>
         <Rectangle Classes="hairline" />
         <Grid Classes="row" ColumnDefinitions="104,*">
-          <TextBlock Text="{x:Static res:Strings.NewHostEnvironment}" />
+          <TextBlock Text="{res:Tr NewHostEnvironment}" />
           <ListBox x:Name="EnvironmentList" Grid.Column="1" Classes="segmented" SelectedIndex="0"
-                   AutomationProperties.Name="{x:Static res:Strings.NewHostEnvironment}" />
+                   AutomationProperties.Name="{res:Tr NewHostEnvironment}" />
         </Grid>
         <Rectangle Classes="hairline" />
         <Grid Classes="row" ColumnDefinitions="104,*">
-          <TextBlock Text="{x:Static res:Strings.NewHostLabels}" />
-          <TextBox x:Name="LabelsBox" Grid.Column="1" MaxLength="400" PlaceholderText="{x:Static res:Strings.NewHostLabelsHint}"
-                   AutomationProperties.Name="{x:Static res:Strings.NewHostLabels}" />
+          <TextBlock Text="{res:Tr NewHostLabels}" />
+          <TextBox x:Name="LabelsBox" Grid.Column="1" MaxLength="400" PlaceholderText="{res:Tr NewHostLabelsHint}"
+                   AutomationProperties.Name="{res:Tr NewHostLabels}" />
         </Grid>
       </StackPanel>
     </Border>
     <TextBlock x:Name="ProductionNote" Classes="secondary" Margin="4,6,4,0" IsVisible="False"
-               Text="{x:Static res:Strings.NewHostProductionNote}" />
+               Text="{res:Tr NewHostProductionNote}" />
     <TextBlock x:Name="LeavingProductionNote" Classes="secondary" Margin="4,6,4,0" IsVisible="False" TextWrapping="Wrap"
-               Text="{x:Static res:Strings.EditHostLeavingProduction}" />
+               Text="{res:Tr EditHostLeavingProduction}" />
     <TextBlock x:Name="MovingNote" Classes="secondary" Margin="4,6,4,0" IsVisible="False" TextWrapping="Wrap"
-               Text="{x:Static res:Strings.EditHostMoving}" />
+               Text="{res:Tr EditHostMoving}" />
     <WrapPanel x:Name="LabelPanel" Margin="4,10,0,0" ItemSpacing="6" LineSpacing="6" IsVisible="False">
-      <TextBlock Classes="secondary" Margin="0,0,4,0" VerticalAlignment="Center" Text="{x:Static res:Strings.NewHostLabelsUsed}" />
+      <TextBlock Classes="secondary" Margin="0,0,4,0" VerticalAlignment="Center" Text="{res:Tr NewHostLabelsUsed}" />
     </WrapPanel>
     <WrapPanel x:Name="AliasPanel" Margin="4,10,0,0" ItemSpacing="6" LineSpacing="6" IsVisible="False">
-      <TextBlock Classes="secondary" Margin="0,0,4,0" VerticalAlignment="Center" Text="{x:Static res:Strings.NewHostFromConfig}" />
+      <TextBlock Classes="secondary" Margin="0,0,4,0" VerticalAlignment="Center" Text="{res:Tr NewHostFromConfig}" />
     </WrapPanel>
     <TextBlock x:Name="Problem" Classes="secondary danger" Margin="4,10,4,0" IsVisible="False" />
     <DockPanel Margin="4,20,0,0">
       <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="8">
-        <Button x:Name="CancelButton" Content="{x:Static res:Strings.Cancel}" />
-        <Button x:Name="AddButton" Classes="primary" IsDefault="True" Content="{x:Static res:Strings.NewHostAdd}" />
+        <Button x:Name="CancelButton" Content="{res:Tr Cancel}" />
+        <Button x:Name="AddButton" Classes="primary" IsDefault="True" Content="{res:Tr NewHostAdd}" />
       </StackPanel>
-      <TextBlock Classes="secondary" VerticalAlignment="Center" Margin="0,0,12,0" Text="{x:Static res:Strings.NewHostLogin}" />
+      <TextBlock Classes="secondary" VerticalAlignment="Center" Margin="0,0,12,0" Text="{res:Tr NewHostLogin}" />
     </DockPanel>
   </StackPanel>
 </Window>

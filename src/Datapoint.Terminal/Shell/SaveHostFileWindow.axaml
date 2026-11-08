@@ -27,7 +27,7 @@
     </Border>
     <DockPanel Margin="0,18,0,0">
       <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="8">
-        <Button x:Name="CancelButton" Content="{x:Static res:Strings.Cancel}" />
+        <Button x:Name="CancelButton" Content="{res:Tr Cancel}" />
         <Button x:Name="SaveButton" Classes="primary" IsDefault="True" />
       </StackPanel>
       <TextBlock x:Name="BackupNote" Classes="secondary" VerticalAlignment="Center" Margin="0,0,12,0" />

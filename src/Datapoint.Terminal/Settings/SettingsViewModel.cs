@@ -55,7 +55,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         WindowTheme = settings.WindowTheme is { } windowTheme && Enum.IsDefined(windowTheme) ? windowTheme
             : settings.MatchWindowToTheme ? Datapoint.Terminal.Themes.WindowTheme.Terminal
             : Datapoint.Terminal.Themes.WindowTheme.System;
-        ReduceMotion = settings.ReduceMotion;
+        (ReduceMotion, Language) = (settings.ReduceMotion, Enum.IsDefined(settings.Language) ? settings.Language : Resources.AppLanguage.System);
         AlwaysAllowWeb = settings.AlwaysAllowWeb;
         WebSearch = settings.WebSearch;
         SearxngServer = settings.SearxngServer;
@@ -180,6 +180,8 @@ public sealed partial class SettingsViewModel : ObservableObject
     public Datapoint.Terminal.Themes.WindowTheme WindowTheme { get; private set; }
 
     public bool ReduceMotion { get; private set; }
+
+    public Resources.AppLanguage Language { get; private set; }
 
     public bool AlwaysAllowWeb { get; private set; }
 
@@ -331,6 +333,15 @@ public sealed partial class SettingsViewModel : ObservableObject
         SetAppearance(TerminalTheme, TerminalFont, TerminalFontSize);
     }
 
+    // Takes effect at once, in every window and in the agent's next reply (product decision 150).
+    public void SetLanguage(Resources.AppLanguage language)
+    {
+        Language = language;
+        Resources.Localizer.Instance.Use(language);
+        SaveWorkspaceData();
+        AppearanceChanged?.Invoke(this, EventArgs.Empty);
+    }
+
     public void SetReduceMotion(bool reduce)
     {
         ReduceMotion = reduce;
@@ -389,6 +400,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         WindowTheme = WindowTheme,
         MatchWindowToTheme = WindowTheme == Datapoint.Terminal.Themes.WindowTheme.Terminal,
         ReduceMotion = ReduceMotion,
+        Language = Language,
         AlwaysAllowWeb = AlwaysAllowWeb,
         WebSearch = WebSearch,
         SearxngServer = SearxngServer,

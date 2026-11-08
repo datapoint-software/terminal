@@ -114,21 +114,21 @@
          dragging their headers (product decision 109). -->
     <Panel x:Name="Body" Grid.Column="2">
     <Panel x:Name="TerminalPane">
-    <DockPanel x:Name="TerminalArea" AutomationProperties.Name="{x:Static res:Strings.TabsName}">
+    <DockPanel x:Name="TerminalArea" AutomationProperties.Name="{res:Tr TabsName}">
       <!-- A header like the chat's, at the same height, so the two line up side by side. -->
       <Border x:Name="TerminalsHeader" DockPanel.Dock="Top" Height="{StaticResource PaneHeaderHeight}" Padding="16,0,10,0" Background="Transparent" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
         <Grid ColumnDefinitions="*,Auto">
           <StackPanel Spacing="2" VerticalAlignment="Center">
-            <TextBlock Classes="title" Text="{x:Static res:Strings.TabsName}" />
+            <TextBlock Classes="title" Text="{res:Tr TabsName}" />
             <TextBlock x:Name="TerminalsSummary" Classes="secondary" TextTrimming="CharacterEllipsis" />
           </StackPanel>
           <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="2" VerticalAlignment="Center">
             <Button x:Name="NewTabButton" Classes="icon" Click="OnNewTabClicked"
-                    ToolTip.Tip="{x:Static res:Strings.TabNew}" AutomationProperties.Name="{x:Static res:Strings.TabNew}">
+                    ToolTip.Tip="{res:Tr TabNew}" AutomationProperties.Name="{res:Tr TabNew}">
               <PathIcon Data="{StaticResource PlusGlyph}" />
             </Button>
             <Button x:Name="CollapseTerminalsButton" Classes="icon" Click="OnCollapseTerminalsClicked"
-                    ToolTip.Tip="{x:Static res:Strings.RailCollapse}" AutomationProperties.Name="{x:Static res:Strings.RailCollapse}">
+                    ToolTip.Tip="{res:Tr RailCollapse}" AutomationProperties.Name="{res:Tr RailCollapse}">
               <PathIcon Data="{StaticResource PanelGlyph}" />
             </Button>
           </StackPanel>
@@ -142,7 +142,7 @@
           <StackPanel Orientation="Horizontal">
           <ListBox x:Name="Tabs" Classes="tabs" ItemsSource="{Binding TabList}" SelectionMode="Single,AlwaysSelected"
                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                   AutomationProperties.Name="{x:Static res:Strings.TabsName}">
+                   AutomationProperties.Name="{res:Tr TabsName}">
             <ListBox.ItemTemplate>
               <DataTemplate x:DataType="shell:TerminalTab">
                 <StackPanel Orientation="Horizontal" Spacing="6">
@@ -167,24 +167,24 @@
       <Border x:Name="FindBar" DockPanel.Dock="Top" IsVisible="False" Padding="8,6" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
         <DockPanel>
           <Button x:Name="FindClose" DockPanel.Dock="Right" Classes="icon" Margin="4,0,0,0"
-                  ToolTip.Tip="{x:Static res:Strings.FindClose}" AutomationProperties.Name="{x:Static res:Strings.FindClose}">
+                  ToolTip.Tip="{res:Tr FindClose}" AutomationProperties.Name="{res:Tr FindClose}">
             <PathIcon Data="{StaticResource CloseGlyph}" Width="10" Height="10" />
           </Button>
-          <Button x:Name="FindNewer" DockPanel.Dock="Right" Content="{x:Static res:Strings.FindNewer}" Margin="4,0,0,0" />
-          <Button x:Name="FindOlder" DockPanel.Dock="Right" Content="{x:Static res:Strings.FindOlder}" Margin="4,0,0,0" />
+          <Button x:Name="FindNewer" DockPanel.Dock="Right" Content="{res:Tr FindNewer}" Margin="4,0,0,0" />
+          <Button x:Name="FindOlder" DockPanel.Dock="Right" Content="{res:Tr FindOlder}" Margin="4,0,0,0" />
           <ToggleButton x:Name="FindPattern" DockPanel.Dock="Right" Content=".*" FontFamily="{DynamicResource MonoFont}" Margin="4,0,0,0"
-                        ToolTip.Tip="{x:Static res:Strings.FindPattern}" AutomationProperties.Name="{x:Static res:Strings.FindPattern}" />
+                        ToolTip.Tip="{res:Tr FindPattern}" AutomationProperties.Name="{res:Tr FindPattern}" />
           <TextBlock x:Name="FindStatus" DockPanel.Dock="Right" Classes="quiet" VerticalAlignment="Center" Margin="8,0" />
-          <TextBox x:Name="FindBox" PlaceholderText="{x:Static res:Strings.FindPlaceholder}" AutomationProperties.Name="{x:Static res:Strings.FindPlaceholder}" />
+          <TextBox x:Name="FindBox" PlaceholderText="{res:Tr FindPlaceholder}" AutomationProperties.Name="{res:Tr FindPlaceholder}" />
         </DockPanel>
       </Border>
       <Panel>
         <Grid x:Name="TerminalHost" />
         <!-- With every terminal closed, the window stays: its sidebar, documents and chat are the workspace's. -->
         <StackPanel x:Name="NoTerminals" IsVisible="False" Spacing="6" MaxWidth="320" HorizontalAlignment="Center" VerticalAlignment="Center">
-          <TextBlock Classes="title" Text="{x:Static res:Strings.NoTerminalsTitle}" HorizontalAlignment="Center" />
-          <TextBlock Classes="secondary" Text="{x:Static res:Strings.NoTerminalsMessage}" TextWrapping="Wrap" TextAlignment="Center" />
-          <Button x:Name="OpenTerminalButton" Classes="primary" Content="{x:Static res:Strings.NoTerminalsOpen}" HorizontalAlignment="Center"
+          <TextBlock Classes="title" Text="{res:Tr NoTerminalsTitle}" HorizontalAlignment="Center" />
+          <TextBlock Classes="secondary" Text="{res:Tr NoTerminalsMessage}" TextWrapping="Wrap" TextAlignment="Center" />
+          <Button x:Name="OpenTerminalButton" Classes="primary" Content="{res:Tr NoTerminalsOpen}" HorizontalAlignment="Center"
                   Margin="0,8,0,0" Click="OnOpenTerminalClicked" />
         </StackPanel>
       </Panel>
@@ -192,11 +192,11 @@
     <!-- The terminals collapsed (product decision 115): a strip with one button per terminal, its name and what the agent is
          doing there, beside the area it meets. Across the window when the terminals are above or below another area. -->
     <Border x:Name="TerminalRail" Classes="rail" IsVisible="False" Background="{DynamicResource PaneBrush}"
-            AutomationProperties.Name="{x:Static res:Strings.TabsName}">
+            AutomationProperties.Name="{res:Tr TabsName}">
       <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden">
         <StackPanel Classes="railpanel" Spacing="4" Margin="6">
           <Button x:Name="ExpandTerminalsButton" Classes="icon" Click="OnExpandTerminalsClicked" HorizontalAlignment="Center"
-                  ToolTip.Tip="{x:Static res:Strings.RailExpand}" AutomationProperties.Name="{x:Static res:Strings.RailExpand}">
+                  ToolTip.Tip="{res:Tr RailExpand}" AutomationProperties.Name="{res:Tr RailExpand}">
             <PathIcon Data="{StaticResource PanelGlyph}" />
           </Button>
           <ItemsControl ItemsSource="{Binding TabList}">
@@ -228,11 +228,11 @@
     <!-- The plan under review, in an area of its own beside the documents (product decision 119). One plan at a time, so the
          header names the area and closes it, with no tab. -->
     <Panel x:Name="PlanPane">
-    <DockPanel x:Name="PlanArea" AutomationProperties.Name="{x:Static res:Strings.PlanAreaName}">
+    <DockPanel x:Name="PlanArea" AutomationProperties.Name="{res:Tr PlanAreaName}">
       <Border x:Name="PlanHeader" DockPanel.Dock="Top" Background="Transparent" Height="{StaticResource PaneHeaderHeight}" Padding="16,0,10,0" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
         <Grid ColumnDefinitions="*,Auto">
           <StackPanel Spacing="2" VerticalAlignment="Center">
-            <TextBlock Classes="title" Text="{x:Static res:Strings.PlanAreaName}" />
+            <TextBlock Classes="title" Text="{res:Tr PlanAreaName}" />
             <TextBlock x:Name="PlanSummary" Classes="secondary" TextTrimming="CharacterEllipsis" />
           </StackPanel>
           <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="2" VerticalAlignment="Center">
@@ -249,7 +249,7 @@
     </DockPanel>
     <!-- Collapsed (product decision 121): a strip naming the plan and where its review stands. -->
     <Border x:Name="PlanRail" Classes="rail" IsVisible="False" Background="{DynamicResource PaneBrush}"
-            AutomationProperties.Name="{x:Static res:Strings.PlanAreaName}">
+            AutomationProperties.Name="{res:Tr PlanAreaName}">
       <StackPanel Classes="railpanel" Spacing="4" Margin="6">
         <Button x:Name="ExpandPlanButton" Classes="icon" Click="OnExpandPlanClicked" HorizontalAlignment="Center">
           <PathIcon Data="{StaticResource PanelGlyph}" />
@@ -258,7 +258,7 @@
           <LayoutTransformControl Classes="railname">
             <StackPanel Orientation="Horizontal" Spacing="6">
               <Ellipse Width="7" Height="7" Fill="{DynamicResource WaitingBrush}" x:Name="PlanRailWaiting" VerticalAlignment="Center" />
-              <TextBlock Text="{x:Static res:Strings.PlanAreaName}" VerticalAlignment="Center" />
+              <TextBlock Text="{res:Tr PlanAreaName}" VerticalAlignment="Center" />
             </StackPanel>
           </LayoutTransformControl>
         </Button>

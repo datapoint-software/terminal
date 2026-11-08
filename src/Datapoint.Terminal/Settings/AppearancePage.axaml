@@ -29,31 +29,41 @@
 
   <!-- The window first, then the terminal: each setting sits under what it changes. -->
   <StackPanel Classes="form">
-    <TextBlock Classes="heading" Text="{x:Static res:Strings.AppearanceWindowHeading}" />
+    <TextBlock Classes="heading" Text="{res:Tr AppearanceLanguageHeading}" />
+    <Border Classes="group">
+      <Grid Classes="row" ColumnDefinitions="*,Auto">
+        <TextBlock Text="{res:Tr AppearanceLanguage}" />
+        <ComboBox x:Name="LanguageChoice" Grid.Column="1" MinWidth="200" ItemsSource="{Binding Languages}" SelectedIndex="{Binding SelectedLanguage}"
+                  AutomationProperties.Name="{res:Tr AppearanceLanguage}" />
+      </Grid>
+    </Border>
+    <TextBlock Classes="secondary note" TextWrapping="Wrap" Text="{res:Tr AppearanceLanguageHint}" />
+
+    <TextBlock Classes="heading" Text="{res:Tr AppearanceWindowHeading}" />
     <Border Classes="group">
       <StackPanel>
         <Grid Classes="row" ColumnDefinitions="*,Auto">
-          <TextBlock Text="{x:Static res:Strings.AppearanceWindowTheme}" />
+          <TextBlock Text="{res:Tr AppearanceWindowTheme}" />
           <ListBox Grid.Column="1" Classes="segmented" ItemsSource="{Binding WindowThemes}" SelectedIndex="{Binding SelectedWindowTheme}"
-                   AutomationProperties.Name="{x:Static res:Strings.AppearanceWindowThemeName}" />
+                   AutomationProperties.Name="{res:Tr AppearanceWindowThemeName}" />
         </Grid>
         <Rectangle Classes="hairline" />
         <Grid Classes="row" ColumnDefinitions="*,Auto">
-          <TextBlock Text="{x:Static res:Strings.AppearanceReduceMotion}" TextWrapping="Wrap" />
+          <TextBlock Text="{res:Tr AppearanceReduceMotion}" TextWrapping="Wrap" />
           <ToggleSwitch Grid.Column="1" IsChecked="{Binding ReduceMotion}" OnContent="{x:Null}" OffContent="{x:Null}"
-                        AutomationProperties.Name="{x:Static res:Strings.AppearanceReduceMotion}" />
+                        AutomationProperties.Name="{res:Tr AppearanceReduceMotion}" />
         </Grid>
       </StackPanel>
     </Border>
     <TextBlock Classes="secondary note" TextWrapping="Wrap">
-      <Run Text="{x:Static res:Strings.AppearanceWindowThemeHint}" />
-      <Run Text="{x:Static res:Strings.AppearanceReduceMotionHint}" />
+      <Run Text="{res:Tr AppearanceWindowThemeHint}" />
+      <Run Text="{res:Tr AppearanceReduceMotionHint}" />
     </TextBlock>
 
-    <TextBlock Classes="heading" Text="{x:Static res:Strings.AppearanceTerminalHeading}" />
+    <TextBlock Classes="heading" Text="{res:Tr AppearanceTerminalHeading}" />
     <!-- No padding, so the cards line up with the buttons and the group below; three to a row, sharing the width. -->
     <ListBox x:Name="ThemeList" Classes="themes" Background="Transparent" Padding="0" ItemsSource="{Binding Themes}" SelectedItem="{Binding SelectedTheme}"
-             AutomationProperties.Name="{x:Static res:Strings.AppearanceThemeHeading}">
+             AutomationProperties.Name="{res:Tr AppearanceThemeHeading}">
       <ListBox.ItemsPanel>
         <ItemsPanelTemplate>
           <UniformGrid Columns="3" ColumnSpacing="10" RowSpacing="10" />
@@ -65,7 +75,7 @@
                   AutomationProperties.Name="{Binding AccessibleName}">
             <Border.ContextMenu>
               <ContextMenu IsVisible="{Binding IsCustom}">
-                <MenuItem Header="{x:Static res:Strings.ThemeRemove}" Click="OnRemoveClicked" />
+                <MenuItem Header="{res:Tr ThemeRemove}" Click="OnRemoveClicked" />
               </ContextMenu>
             </Border.ContextMenu>
             <StackPanel>
@@ -93,24 +103,24 @@
       </ListBox.ItemTemplate>
     </ListBox>
     <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,10,0,0">
-      <Button x:Name="ImportButton" Content="{x:Static res:Strings.ThemeImport}" />
-      <Button x:Name="EditButton" Content="{x:Static res:Strings.ThemeEditColors}" />
+      <Button x:Name="ImportButton" Content="{res:Tr ThemeImport}" />
+      <Button x:Name="EditButton" Content="{res:Tr ThemeEditColors}" />
     </StackPanel>
-    <TextBlock Classes="secondary" Text="{x:Static res:Strings.ThemeImportHint}" TextWrapping="Wrap" Margin="4,6,4,0" />
+    <TextBlock Classes="secondary" Text="{res:Tr ThemeImportHint}" TextWrapping="Wrap" Margin="4,6,4,0" />
     <TextBlock x:Name="ImportStatus" Classes="secondary danger" Margin="4,4,4,0" IsVisible="False" AutomationProperties.LiveSetting="Polite" />
 
     <Border Classes="group" Margin="0,14,0,0">
       <StackPanel>
         <Grid Classes="row" ColumnDefinitions="*,Auto">
-          <TextBlock Text="{x:Static res:Strings.AppearanceFont}" />
-          <ComboBox Grid.Column="1" MinWidth="180" ItemsSource="{Binding Fonts}" SelectedItem="{Binding SelectedFont}"
-                    AutomationProperties.Name="{x:Static res:Strings.AppearanceFont}" />
+          <TextBlock Text="{res:Tr AppearanceFont}" />
+          <ComboBox x:Name="FontChoice" Grid.Column="1" MinWidth="180" ItemsSource="{Binding Fonts}" SelectedIndex="{Binding SelectedFont}"
+                    AutomationProperties.Name="{res:Tr AppearanceFont}" />
         </Grid>
         <Rectangle Classes="hairline" />
         <Grid Classes="row" ColumnDefinitions="*,Auto">
-          <TextBlock Text="{x:Static res:Strings.AppearanceTextSize}" />
+          <TextBlock Text="{res:Tr AppearanceTextSize}" />
           <ComboBox Grid.Column="1" MinWidth="180" ItemsSource="{Binding Sizes}" SelectedIndex="{Binding SelectedSize}"
-                    AutomationProperties.Name="{x:Static res:Strings.AppearanceTextSize}" />
+                    AutomationProperties.Name="{res:Tr AppearanceTextSize}" />
         </Grid>
       </StackPanel>
     </Border>

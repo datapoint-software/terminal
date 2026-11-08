@@ -3,7 +3,7 @@
         xmlns:res="clr-namespace:Datapoint.Terminal.Resources"
         xmlns:controls="clr-namespace:Datapoint.Terminal.Controls;assembly=Datapoint.Terminal.Controls"
         x:Class="Datapoint.Terminal.Settings.ThemeEditorWindow"
-        Title="{x:Static res:Strings.ThemeEditorTitle}"
+        Title="{res:Tr ThemeEditorTitle}"
         Width="760" Height="600" MinWidth="640" MinHeight="480"
         WindowStartupLocation="CenterOwner"
         Background="{DynamicResource GroupedBackgroundBrush}">
@@ -11,12 +11,12 @@
     <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" Margin="0,16,0,0">
       <TextBlock x:Name="Problem" Classes="secondary danger" VerticalAlignment="Center"
                  AutomationProperties.LiveSetting="Polite" />
-      <Button x:Name="CancelButton" Content="{x:Static res:Strings.Cancel}" IsCancel="True" />
-      <Button x:Name="SaveButton" Classes="primary" Content="{x:Static res:Strings.ThemeEditorSave}" IsDefault="True" />
+      <Button x:Name="CancelButton" Content="{res:Tr Cancel}" IsCancel="True" />
+      <Button x:Name="SaveButton" Classes="primary" Content="{res:Tr ThemeEditorSave}" IsDefault="True" />
     </StackPanel>
     <Grid DockPanel.Dock="Top" ColumnDefinitions="Auto,*" Margin="0,0,0,12">
-      <TextBlock Text="{x:Static res:Strings.ThemeEditorName}" VerticalAlignment="Center" Margin="0,0,12,0" />
-      <TextBox x:Name="NameBox" Grid.Column="1" AutomationProperties.Name="{x:Static res:Strings.ThemeEditorName}" />
+      <TextBlock Text="{res:Tr ThemeEditorName}" VerticalAlignment="Center" Margin="0,0,12,0" />
+      <TextBox x:Name="NameBox" Grid.Column="1" AutomationProperties.Name="{res:Tr ThemeEditorName}" />
     </Grid>
     <Grid ColumnDefinitions="300,16,*">
       <ScrollViewer>

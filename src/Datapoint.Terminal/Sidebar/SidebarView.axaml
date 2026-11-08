@@ -5,7 +5,7 @@
              xmlns:c="clr-namespace:Datapoint.Terminal.Components"
              x:Class="Datapoint.Terminal.Sidebar.SidebarView"
              x:DataType="side:SidebarViewModel"
-             AutomationProperties.Name="{x:Static res:Strings.SidebarLabel}">
+             AutomationProperties.Name="{res:Tr SidebarLabel}">
   <UserControl.Resources>
     <!-- Our own outline glyphs, 16 by 16, drawn with a stroke. -->
     <StreamGeometry x:Key="ServerGlyph">M3,2.5 L13,2.5 L13,7 L3,7 Z M3,9 L13,9 L13,13.5 L3,13.5 Z M5,4.75 L6,4.75 M5,11.25 L6,11.25</StreamGeometry>
@@ -47,10 +47,10 @@
 
     <StackPanel DockPanel.Dock="Bottom">
       <Rectangle Height="1" Fill="{DynamicResource SeparatorBrush}" />
-      <Button Classes="row" Margin="10,6" Command="{Binding OpenSettingsCommand}" AutomationProperties.Name="{x:Static res:Strings.SidebarSettings}">
+      <Button Classes="row" Margin="10,6" Command="{Binding OpenSettingsCommand}" AutomationProperties.Name="{res:Tr SidebarSettings}">
         <StackPanel Orientation="Horizontal" Spacing="8">
           <Path Classes="glyph" Data="{StaticResource SlidersGlyph}" />
-          <TextBlock Text="{x:Static res:Strings.SidebarSettings}" VerticalAlignment="Center" />
+          <TextBlock Text="{res:Tr SidebarSettings}" VerticalAlignment="Center" />
         </StackPanel>
       </Button>
     </StackPanel>
@@ -59,29 +59,29 @@
       <StackPanel Margin="10,12,10,16">
         <!-- Hosts: the workspace's connections, then a quiet line for the user's other SSH hosts. -->
         <Grid x:Name="HostsHeader" ColumnDefinitions="*,Auto" Margin="8,0,0,4" Height="24">
-          <TextBlock Classes="section" Text="{x:Static res:Strings.SidebarHosts}" />
+          <TextBlock Classes="section" Text="{res:Tr SidebarHosts}" />
           <Button Grid.Column="1" Classes="icon small" Command="{Binding NewHostCommand}"
-                  ToolTip.Tip="{x:Static res:Strings.NewHostTitle}" AutomationProperties.Name="{x:Static res:Strings.NewHostTitle}">
+                  ToolTip.Tip="{res:Tr NewHostTitle}" AutomationProperties.Name="{res:Tr NewHostTitle}">
             <Path Classes="glyph" Data="{StaticResource AddGlyph}" />
           </Button>
         </Grid>
-        <TextBlock Classes="secondary" Text="{x:Static res:Strings.SidebarNoHosts}" IsVisible="{Binding !HasHosts}" Margin="8,2,8,4" />
+        <TextBlock Classes="secondary" Text="{res:Tr SidebarNoHosts}" IsVisible="{Binding !HasHosts}" Margin="8,2,8,4" />
         <ListBox x:Name="HostList" Classes="source" ItemsSource="{Binding Hosts}" SelectedItem="{Binding SelectedHost}" SelectionMode="Single"
-                 AutomationProperties.Name="{x:Static res:Strings.SidebarHosts}">
+                 AutomationProperties.Name="{res:Tr SidebarHosts}">
           <ListBox.ItemTemplate>
             <DataTemplate x:DataType="side:HostItemViewModel">
               <Grid ColumnDefinitions="16,*,Auto" ColumnSpacing="8" Background="Transparent"
                     AutomationProperties.Name="{Binding AccessibleName}" ToolTip.Tip="{Binding Environment}">
                 <Grid.ContextFlyout>
                   <MenuFlyout>
-                    <MenuItem Header="{x:Static res:Strings.SidebarOpenDocumentation}"
+                    <MenuItem Header="{res:Tr SidebarOpenDocumentation}"
                               Command="{Binding $parent[side:SidebarView].((side:SidebarViewModel)DataContext).ChooseHostCommand}" CommandParameter="{Binding}" />
-                    <MenuItem Header="{x:Static res:Strings.SidebarOpenTerminal}"
+                    <MenuItem Header="{res:Tr SidebarOpenTerminal}"
                               Command="{Binding $parent[side:SidebarView].((side:SidebarViewModel)DataContext).OpenTerminalCommand}" CommandParameter="{Binding}" />
                     <Separator />
-                    <MenuItem Header="{x:Static res:Strings.SidebarEditHost}"
+                    <MenuItem Header="{res:Tr SidebarEditHost}"
                               Command="{Binding $parent[side:SidebarView].((side:SidebarViewModel)DataContext).EditHostCommand}" CommandParameter="{Binding}" />
-                    <MenuItem Header="{x:Static res:Strings.SidebarRemoveHost}"
+                    <MenuItem Header="{res:Tr SidebarRemoveHost}"
                               Command="{Binding $parent[side:SidebarView].((side:SidebarViewModel)DataContext).RemoveHostCommand}" CommandParameter="{Binding}" />
                   </MenuFlyout>
                 </Grid.ContextFlyout>
@@ -114,18 +114,18 @@
               <Grid ColumnDefinitions="16,*,Auto" ColumnSpacing="8" Height="{StaticResource RowHeight}" Margin="8,0,0,0">
                 <Path Classes="glyph" Data="{StaticResource ServerGlyph}" Opacity="0.6" />
                 <TextBlock Grid.Column="1" Classes="quiet" Text="{Binding Alias}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
-                <Button Grid.Column="2" Classes="plain" Content="{x:Static res:Strings.SidebarAdd}" Command="{Binding AddCommand}"
-                        AutomationProperties.Name="{Binding Alias, StringFormat={x:Static res:Strings.SidebarAddHost}}" />
+                <Button Grid.Column="2" Classes="plain" Content="{res:Tr SidebarAdd}" Command="{Binding AddCommand}"
+                        AutomationProperties.Name="{res:Tr SidebarAddHost, Argument={Binding Alias}}" />
               </Grid>
             </DataTemplate>
           </ItemsControl.ItemTemplate>
         </ItemsControl>
 
         <!-- Skills: saved by the agent, opened here. -->
-        <TextBlock x:Name="SkillsHeader" Classes="section" Margin="8,18,0,4" Height="24" Text="{x:Static res:Strings.SidebarSkills}" />
-        <TextBlock Classes="secondary" Text="{x:Static res:Strings.SidebarNoSkills}" IsVisible="{Binding !HasSkills}" Margin="8,2,8,4" />
+        <TextBlock x:Name="SkillsHeader" Classes="section" Margin="8,18,0,4" Height="24" Text="{res:Tr SidebarSkills}" />
+        <TextBlock Classes="secondary" Text="{res:Tr SidebarNoSkills}" IsVisible="{Binding !HasSkills}" Margin="8,2,8,4" />
         <ListBox x:Name="SkillList" Classes="source" ItemsSource="{Binding Skills}" SelectedItem="{Binding SelectedSkill}" SelectionMode="Single"
-                 AutomationProperties.Name="{x:Static res:Strings.SidebarSkills}">
+                 AutomationProperties.Name="{res:Tr SidebarSkills}">
           <ListBox.ItemTemplate>
             <DataTemplate x:DataType="side:SkillItemViewModel">
               <Grid ColumnDefinitions="16,*" ColumnSpacing="8" Background="Transparent" AutomationProperties.Name="{Binding Name}">
@@ -137,11 +137,11 @@
         </ListBox>
 
         <!-- The workspace's own instructions for the agent. -->
-        <TextBlock Classes="section" Margin="8,18,0,4" Height="24" Text="{x:Static res:Strings.SidebarWorkspaceSection}" />
-        <Button Classes="row" Command="{Binding OpenInstructionsCommand}" AutomationProperties.Name="{x:Static res:Strings.SidebarInstructions}">
+        <TextBlock Classes="section" Margin="8,18,0,4" Height="24" Text="{res:Tr SidebarWorkspaceSection}" />
+        <Button Classes="row" Command="{Binding OpenInstructionsCommand}" AutomationProperties.Name="{res:Tr SidebarInstructions}">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <Path Classes="glyph" Data="{StaticResource DocumentGlyph}" />
-            <TextBlock Text="{x:Static res:Strings.SidebarInstructions}" VerticalAlignment="Center" />
+            <TextBlock Text="{res:Tr SidebarInstructions}" VerticalAlignment="Center" />
           </StackPanel>
         </Button>
       </StackPanel>

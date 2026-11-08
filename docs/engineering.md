@@ -213,8 +213,15 @@ The emulator parses everything a shell prints, and output can arrive at hundreds
 ### Translations
 
 - **Text comes from `.resx` resources,** never written in a view or view model.
-- **Switching language without restarting** goes through a small `Localizer` service that bindings read from and that notifies them when the language changes. Avalonia's documented `x:Static` pattern doesn't update at run time.
-- **English only, for now** (product decision 70). Adding a language means adding its catalog.
+- **Switching language without restarting** goes through `Resources/Localizer`, which holds the language and tells whatever shows text when it changes (product decision 150). Avalonia's documented `x:Static` pattern doesn't update at run time, so:
+  - **Views use `{res:Tr Key}`,** never `x:Static` for text. `Upper=True` sets a heading in capitals; `Argument={Binding …}` fills a format's `{0}`.
+  - **View models that build text derive from `LocalizedObject`,** whose properties are read again when the language changes, and compute text in getters rather than storing it.
+  - **Lists of choices hold `TextChoice` items,** which keep their identity when the language changes, so a list keeps what's chosen.
+  - **Code that builds controls** (menus, dialogs) implements `ILocalizable` and rebuilds their text.
+  - **Text already shown as a record** (chat messages, notices) keeps the language it was written in.
+- **Languages:** English (`Strings.resx`) and European Portuguese (`Strings.pt-PT.resx`). Adding a language means adding its catalog and its row in `AppLanguage`. Portuguese follows Portugal's spelling and vocabulary (*ficheiro*, *ecrã*, *utilizador*) and the glossary in [docs/glossary-pt-PT.md](glossary-pt-PT.md).
+- **Interface language only:** dates and numbers keep the system's regional format (`CurrentCulture`); only `CurrentUICulture` follows the setting.
+- **Tests run in English** whatever the machine's language; tests that change the language run alone, in the `LanguageSwitching` collection.
 
 ## Terminal emulator
 

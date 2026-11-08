@@ -77,6 +77,9 @@ public sealed record AppSettings
     // Overlays and cards appear without animating; the system's own reduce motion setting does the same.
     public bool ReduceMotion { get; init; }
 
+    // The interface's language and the agent's (product decision 150); the system's by default.
+    public Resources.AppLanguage Language { get; init; }
+
     // The agent searches the web and reads pages without asking each time (product decision 105).
     public bool AlwaysAllowWeb { get; init; }
 

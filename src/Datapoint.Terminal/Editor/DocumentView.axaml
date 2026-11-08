@@ -51,10 +51,10 @@
     <Border DockPanel.Dock="Top" Classes="bar warning" IsVisible="{Binding HasConflict}">
       <DockPanel>
         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="8">
-          <Button Content="{x:Static res:Strings.DocumentTakeTheirs}" Command="{Binding TakeTheirsCommand}" />
-          <Button Classes="primary" Content="{x:Static res:Strings.DocumentKeepMine}" Command="{Binding KeepMineCommand}" />
+          <Button Content="{res:Tr DocumentTakeTheirs}" Command="{Binding TakeTheirsCommand}" />
+          <Button Classes="primary" Content="{res:Tr DocumentKeepMine}" Command="{Binding KeepMineCommand}" />
         </StackPanel>
-        <TextBlock Text="{x:Static res:Strings.DocumentConflict}" Foreground="{DynamicResource WarningTextBrush}" VerticalAlignment="Center" TextWrapping="Wrap" />
+        <TextBlock Text="{res:Tr DocumentConflict}" Foreground="{DynamicResource WarningTextBrush}" VerticalAlignment="Center" TextWrapping="Wrap" />
       </DockPanel>
     </Border>
     <Border DockPanel.Dock="Top" Classes="bar warning" IsVisible="{Binding HasProblem}">
@@ -65,8 +65,8 @@
         <StackPanel x:Name="Page" MaxWidth="680" Margin="40,32,40,0">
           <!-- A host's documentation starts with the host: where it is and whether a terminal is open on it. -->
           <DockPanel IsVisible="{Binding HasHost}" Margin="0,0,0,20">
-            <Button DockPanel.Dock="Right" Classes="primary" Content="{x:Static res:Strings.DocumentOpenTerminal}" Command="{Binding Host.OpenTerminalCommand, FallbackValue={x:Null}}" VerticalAlignment="Center" />
-            <Button DockPanel.Dock="Right" Margin="0,0,8,0" Content="{x:Static res:Strings.DocumentEditHost}" Command="{Binding Host.EditCommand, FallbackValue={x:Null}}"
+            <Button DockPanel.Dock="Right" Classes="primary" Content="{res:Tr DocumentOpenTerminal}" Command="{Binding Host.OpenTerminalCommand, FallbackValue={x:Null}}" VerticalAlignment="Center" />
+            <Button DockPanel.Dock="Right" Margin="0,0,8,0" Content="{res:Tr DocumentEditHost}" Command="{Binding Host.EditCommand, FallbackValue={x:Null}}"
                     IsVisible="{Binding Host.CanEdit, FallbackValue=False}" VerticalAlignment="Center" />
             <WrapPanel ItemSpacing="8" LineSpacing="6" VerticalAlignment="Center">
               <c:Badge Text="{Binding Host.Environment, FallbackValue={x:Null}}" IsVisible="{Binding Host.HasEnvironment, FallbackValue=False}"
@@ -95,20 +95,20 @@
                   <DockPanel>
                     <Button DockPanel.Dock="Right" Classes="primary" Content="{Binding RunText}" Command="{Binding RunCommand}" VerticalAlignment="Center" />
                     <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                      <c:Badge Text="{x:Static res:Strings.SkillBadge}" />
+                      <c:Badge Text="{res:Tr SkillBadge}" />
                       <TextBlock Classes="secondary" Text="{Binding Location}" VerticalAlignment="Center" />
                     </StackPanel>
                   </DockPanel>
                   <StackPanel Spacing="4">
-                    <TextBlock Classes="heading" Margin="0" Text="{x:Static res:Strings.SkillDescription}" />
+                    <TextBlock Classes="heading" Margin="0" Text="{res:Tr SkillDescription}" />
                     <TextBox Classes="skillField" Text="{Binding Description}" TextWrapping="Wrap" AcceptsReturn="False" MaxLength="1024" IsEnabled="{Binding CanWrite}"
-                             PlaceholderText="{x:Static res:Strings.SkillDescriptionHint}" AutomationProperties.Name="{x:Static res:Strings.SkillDescription}" />
+                             PlaceholderText="{res:Tr SkillDescriptionHint}" AutomationProperties.Name="{res:Tr SkillDescription}" />
                   </StackPanel>
-                  <TextBlock Classes="heading" Margin="0" Text="{x:Static res:Strings.SkillHowItRollsOut}" />
+                  <TextBlock Classes="heading" Margin="0" Text="{res:Tr SkillHowItRollsOut}" />
                   <Border Classes="group" IsEnabled="{Binding CanWrite}">
                     <StackPanel>
                       <Grid Classes="row" ColumnDefinitions="140,*">
-                        <TextBlock Text="{x:Static res:Strings.SkillRunsOn}" />
+                        <TextBlock Text="{res:Tr SkillRunsOn}" />
                         <StackPanel Grid.Column="1" Spacing="4">
                           <WrapPanel ItemSpacing="6" LineSpacing="6">
                             <ItemsControl ItemsSource="{Binding Labels}">
@@ -124,65 +124,65 @@
                                       <TextBlock Text="{Binding}" FontSize="{StaticResource SmallSize}" VerticalAlignment="Center" />
                                       <Button Classes="chipRemove" Content="×" CommandParameter="{Binding}"
                                               Command="{Binding $parent[ContentControl].((ed:SkillHeaderViewModel)DataContext).RemoveLabelCommand}"
-                                              AutomationProperties.Name="{Binding StringFormat={x:Static res:Strings.SkillRemoveLabel}}" />
+                                              AutomationProperties.Name="{res:Tr SkillRemoveLabel, Argument={Binding}}" />
                                     </StackPanel>
                                   </Border>
                                 </DataTemplate>
                               </ItemsControl.ItemTemplate>
                             </ItemsControl>
                             <TextBox x:Name="NewLabelBox" Classes="label" Text="{Binding NewLabel}" Width="120" MaxLength="40"
-                                     PlaceholderText="{x:Static res:Strings.SkillAddLabel}" AutomationProperties.Name="{x:Static res:Strings.SkillAddLabel}" />
+                                     PlaceholderText="{res:Tr SkillAddLabel}" AutomationProperties.Name="{res:Tr SkillAddLabel}" />
                           </WrapPanel>
                           <TextBlock Classes="secondary" Text="{Binding MatchText}" />
                         </StackPanel>
                       </Grid>
                       <Rectangle Classes="hairline" />
                       <Grid Classes="row" ColumnDefinitions="140,*">
-                        <TextBlock Text="{x:Static res:Strings.SkillOrder}" />
+                        <TextBlock Text="{res:Tr SkillOrder}" />
                         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
                           <ListBox Classes="segmented" ItemsSource="{Binding OrderChoices}" SelectedIndex="{Binding OrderIndex}"
-                                   AutomationProperties.Name="{x:Static res:Strings.SkillOrder}" />
+                                   AutomationProperties.Name="{res:Tr SkillOrder}" />
                           <StackPanel Orientation="Horizontal" Spacing="6" IsVisible="{Binding IsBatches}">
-                            <TextBox Classes="skillField number" Text="{Binding BatchSize}" AutomationProperties.Name="{x:Static res:Strings.SkillBatchSize}" />
-                            <TextBlock Classes="secondary" Text="{x:Static res:Strings.SkillBatchSize}" VerticalAlignment="Center" />
+                            <TextBox Classes="skillField number" Text="{Binding BatchSize}" AutomationProperties.Name="{res:Tr SkillBatchSize}" />
+                            <TextBlock Classes="secondary" Text="{res:Tr SkillBatchSize}" VerticalAlignment="Center" />
                           </StackPanel>
                           <StackPanel Orientation="Horizontal" Spacing="6" IsVisible="{Binding IsAllAtOnce}">
-                            <TextBox Classes="skillField number" Text="{Binding MaxHosts}" AutomationProperties.Name="{x:Static res:Strings.SkillMaxHosts}" />
-                            <TextBlock Classes="secondary" Text="{x:Static res:Strings.SkillMaxHosts}" VerticalAlignment="Center" />
+                            <TextBox Classes="skillField number" Text="{Binding MaxHosts}" AutomationProperties.Name="{res:Tr SkillMaxHosts}" />
+                            <TextBlock Classes="secondary" Text="{res:Tr SkillMaxHosts}" VerticalAlignment="Center" />
                           </StackPanel>
                         </StackPanel>
                       </Grid>
                       <Rectangle Classes="hairline" />
                       <Grid Classes="row" ColumnDefinitions="140,*">
-                        <TextBlock Text="{x:Static res:Strings.SkillHealthCheck}" />
+                        <TextBlock Text="{res:Tr SkillHealthCheck}" />
                         <StackPanel Grid.Column="1" Spacing="4">
                           <TextBox Classes="skillField" Text="{Binding HealthCheck}" FontFamily="{StaticResource MonoFont}" MaxLength="500"
-                                   AutomationProperties.Name="{x:Static res:Strings.SkillHealthCheck}" />
-                          <TextBlock Classes="secondary" Text="{x:Static res:Strings.SkillHealthCheckHint}" />
+                                   AutomationProperties.Name="{res:Tr SkillHealthCheck}" />
+                          <TextBlock Classes="secondary" Text="{res:Tr SkillHealthCheckHint}" />
                         </StackPanel>
                       </Grid>
                       <Rectangle Classes="hairline" IsVisible="{Binding HasHealthCheck}" />
                       <Grid Classes="row" ColumnDefinitions="140,*" IsVisible="{Binding HasHealthCheck}">
-                        <TextBlock Text="{x:Static res:Strings.SkillHealthyFor}" />
+                        <TextBlock Text="{res:Tr SkillHealthyFor}" />
                         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
-                          <TextBox Classes="skillField number" Text="{Binding HealthyFor}" AutomationProperties.Name="{x:Static res:Strings.SkillHealthyFor}" />
-                          <TextBlock Classes="secondary" Text="{x:Static res:Strings.SkillHealthyForUnit}" VerticalAlignment="Center" />
+                          <TextBox Classes="skillField number" Text="{Binding HealthyFor}" AutomationProperties.Name="{res:Tr SkillHealthyFor}" />
+                          <TextBlock Classes="secondary" Text="{res:Tr SkillHealthyForUnit}" VerticalAlignment="Center" />
                         </StackPanel>
                       </Grid>
                       <Rectangle Classes="hairline" />
                       <Grid Classes="row" ColumnDefinitions="140,*">
-                        <TextBlock Text="{x:Static res:Strings.SkillGiveUpAfter}" />
+                        <TextBlock Text="{res:Tr SkillGiveUpAfter}" />
                         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
-                          <TextBox Classes="skillField number" Text="{Binding Timeout}" AutomationProperties.Name="{x:Static res:Strings.SkillGiveUpAfter}" />
-                          <TextBlock Classes="secondary" Text="{x:Static res:Strings.SkillGiveUpAfterUnit}" VerticalAlignment="Center" />
+                          <TextBox Classes="skillField number" Text="{Binding Timeout}" AutomationProperties.Name="{res:Tr SkillGiveUpAfter}" />
+                          <TextBlock Classes="secondary" Text="{res:Tr SkillGiveUpAfterUnit}" VerticalAlignment="Center" />
                         </StackPanel>
                       </Grid>
                       <Rectangle Classes="hairline" />
                       <Grid Classes="row" ColumnDefinitions="140,*">
-                        <TextBlock Text="{x:Static res:Strings.SkillOnFailure}" />
+                        <TextBlock Text="{res:Tr SkillOnFailure}" />
                         <StackPanel Grid.Column="1" Spacing="4">
                           <ComboBox ItemsSource="{Binding FailureChoices}" SelectedIndex="{Binding FailureIndex}" MinWidth="240"
-                                    AutomationProperties.Name="{x:Static res:Strings.SkillOnFailure}" />
+                                    AutomationProperties.Name="{res:Tr SkillOnFailure}" />
                           <TextBlock Classes="secondary" Text="{Binding FailureHint}" />
                         </StackPanel>
                       </Grid>
@@ -203,14 +203,14 @@
                            FontSize="{Binding FontSize}" FontWeight="{Binding FontWeight}">
                     <TextBox.ContextFlyout>
                       <MenuFlyout>
-                        <MenuItem Header="{x:Static res:Strings.MenuBold}" Click="OnBoldClicked" />
-                        <MenuItem Header="{x:Static res:Strings.MenuItalic}" Click="OnItalicClicked" />
-                        <MenuItem Header="{x:Static res:Strings.MenuInlineCode}" Click="OnCodeClicked" />
-                        <MenuItem Header="{x:Static res:Strings.MenuLink}" Click="OnLinkClicked" />
+                        <MenuItem Header="{res:Tr MenuBold}" Click="OnBoldClicked" />
+                        <MenuItem Header="{res:Tr MenuItalic}" Click="OnItalicClicked" />
+                        <MenuItem Header="{res:Tr MenuInlineCode}" Click="OnCodeClicked" />
+                        <MenuItem Header="{res:Tr MenuLink}" Click="OnLinkClicked" />
                         <Separator />
-                        <MenuItem Header="{x:Static res:Strings.MenuCut}" Command="{Binding $parent[TextBox].Cut}" />
-                        <MenuItem Header="{x:Static res:Strings.MenuCopy}" Command="{Binding $parent[TextBox].Copy}" />
-                        <MenuItem Header="{x:Static res:Strings.MenuPaste}" Command="{Binding $parent[TextBox].Paste}" />
+                        <MenuItem Header="{res:Tr MenuCut}" Command="{Binding $parent[TextBox].Cut}" />
+                        <MenuItem Header="{res:Tr MenuCopy}" Command="{Binding $parent[TextBox].Copy}" />
+                        <MenuItem Header="{res:Tr MenuPaste}" Command="{Binding $parent[TextBox].Paste}" />
                       </MenuFlyout>
                     </TextBox.ContextFlyout>
                   </TextBox>
@@ -220,7 +220,7 @@
           </ItemsControl>
           <!-- Below the last block: a click starts a new paragraph at the end. -->
           <Panel x:Name="EndArea" Background="Transparent" MinHeight="{Binding EndAreaHeight}" Cursor="Ibeam">
-            <TextBlock Classes="quiet" Text="{x:Static res:Strings.DocumentPlaceholder}" IsVisible="{Binding IsEmpty}" FontSize="{StaticResource ReadingSize}"
+            <TextBlock Classes="quiet" Text="{res:Tr DocumentPlaceholder}" IsVisible="{Binding IsEmpty}" FontSize="{StaticResource ReadingSize}"
                        VerticalAlignment="Top" IsHitTestVisible="False" />
           </Panel>
           <!-- The host's maintenance log: one file per entry in log/, shown here rather than as part of the document. -->
@@ -228,9 +228,9 @@
             <DockPanel Margin="0,0,0,10">
               <Button DockPanel.Dock="Right" Classes="plain" Content="{Binding Host.ShowAllText, FallbackValue={x:Null}}"
                       IsVisible="{Binding Host.CanShowAll, FallbackValue=False}" Command="{Binding Host.ToggleLogCommand, FallbackValue={x:Null}}" />
-              <TextBlock Classes="pageHeading" Text="{x:Static res:Strings.DocumentLogHeading}" VerticalAlignment="Center" />
+              <TextBlock Classes="pageHeading" Text="{res:Tr DocumentLogHeading}" VerticalAlignment="Center" />
             </DockPanel>
-            <TextBlock Classes="quiet" Text="{x:Static res:Strings.DocumentLogNone}" IsVisible="{Binding !Host.HasLog, FallbackValue=False}" TextWrapping="Wrap" />
+            <TextBlock Classes="quiet" Text="{res:Tr DocumentLogNone}" IsVisible="{Binding !Host.HasLog, FallbackValue=False}" TextWrapping="Wrap" />
             <Border Classes="list" IsVisible="{Binding Host.HasLog, FallbackValue=False}">
               <ItemsControl ItemsSource="{Binding Host.LogEntries, FallbackValue={x:Null}}" AutomationProperties.Name="{Binding Host.LogHeading, FallbackValue={x:Null}}">
                 <ItemsControl.ItemTemplate>

@@ -98,9 +98,9 @@
       <Panel Margin="16,10">
         <DockPanel IsVisible="{Binding !IsConfirmingApprove}">
           <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="8" IsVisible="{Binding IsWaiting}">
-            <Button Content="{x:Static res:Strings.PlanReject}" Command="{Binding RejectCommand}" />
-            <Button Content="{x:Static res:Strings.PlanSendComments}" Command="{Binding SendCommentsCommand}" />
-            <Button Classes="primary" Content="{x:Static res:Strings.PlanApprove}" Command="{Binding ApproveCommand}" />
+            <Button Content="{res:Tr PlanReject}" Command="{Binding RejectCommand}" />
+            <Button Content="{res:Tr PlanSendComments}" Command="{Binding SendCommentsCommand}" />
+            <Button Classes="primary" Content="{res:Tr PlanApprove}" Command="{Binding ApproveCommand}" />
           </StackPanel>
           <TextBlock Classes="secondary" FontSize="{StaticResource SmallSize}" VerticalAlignment="Center" TextWrapping="Wrap"
                      Text="{Binding PendingText}" IsVisible="{Binding IsWaiting}" />
@@ -111,9 +111,9 @@
                 IsVisible="{Binding IsConfirmingApprove}">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" FontSize="{StaticResource SmallSize}" Foreground="{DynamicResource WarningTextBrush}"
-                       Text="{x:Static res:Strings.PlanApproveUnsent}" AutomationProperties.LiveSetting="Assertive" />
-            <Button Content="{x:Static res:Strings.PlanKeepReviewing}" Command="{Binding KeepReviewingCommand}" />
-            <Button Classes="primary" Content="{x:Static res:Strings.PlanApproveAnyway}" Command="{Binding ApproveAnywayCommand}" />
+                       Text="{res:Tr PlanApproveUnsent}" AutomationProperties.LiveSetting="Assertive" />
+            <Button Content="{res:Tr PlanKeepReviewing}" Command="{Binding KeepReviewingCommand}" />
+            <Button Classes="primary" Content="{res:Tr PlanApproveAnyway}" Command="{Binding ApproveAnywayCommand}" />
           </StackPanel>
         </Border>
       </Panel>
@@ -123,7 +123,7 @@
     <Border x:Name="CommentsPane" DockPanel.Dock="Right" Width="260" Background="{DynamicResource PaneBrush}" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="1,0,0,0">
       <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Spacing="10" Margin="14,16">
-          <TextBlock Classes="secondary" FontSize="{StaticResource SmallSize}" FontWeight="SemiBold" LetterSpacing="0.7" Text="{Binding Source={x:Static res:Strings.PlanCommentsTitle}, Converter={x:Static c:TextCase.Upper}}" />
+          <TextBlock Classes="secondary" FontSize="{StaticResource SmallSize}" FontWeight="SemiBold" LetterSpacing="0.7" Text="{res:Tr PlanCommentsTitle, Upper=True}" />
           <ItemsControl x:Name="CommentList" ItemsSource="{Binding Comments}" IsVisible="{Binding HasComments}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
@@ -138,20 +138,20 @@
                       <TextBlock Classes="secondary" Text="{Binding DisplayQuote}" TextWrapping="Wrap" MaxLines="4" TextTrimming="CharacterEllipsis" />
                     </Border>
                     <StackPanel Spacing="6" IsVisible="{Binding IsEditing}">
-                      <TextBlock Classes="secondary" Text="{x:Static res:Strings.PlanCommentLabel}" />
+                      <TextBlock Classes="secondary" Text="{res:Tr PlanCommentLabel}" />
                       <TextBox Text="{Binding Text}" TextWrapping="Wrap" AcceptsReturn="True" MinHeight="54"
-                               PlaceholderText="{x:Static res:Strings.PlanCommentPlaceholder}"
-                               AutomationProperties.Name="{x:Static res:Strings.PlanCommentLabel}" />
+                               PlaceholderText="{res:Tr PlanCommentPlaceholder}"
+                               AutomationProperties.Name="{res:Tr PlanCommentLabel}" />
                       <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
-                        <Button Content="{x:Static res:Strings.Cancel}" Command="{Binding CancelCommand}" />
-                        <Button Classes="primary" Content="{x:Static res:Strings.PlanCommentSave}" Command="{Binding SaveCommand}" />
+                        <Button Content="{res:Tr Cancel}" Command="{Binding CancelCommand}" />
+                        <Button Classes="primary" Content="{res:Tr PlanCommentSave}" Command="{Binding SaveCommand}" />
                       </StackPanel>
                     </StackPanel>
                     <StackPanel Spacing="4" IsVisible="{Binding IsShown}">
                       <SelectableTextBlock Text="{Binding Text}" TextWrapping="Wrap" />
                       <StackPanel Orientation="Horizontal" Spacing="2" HorizontalAlignment="Right" IsVisible="{Binding CanChange}">
-                        <Button Classes="plain" Content="{x:Static res:Strings.PlanCommentEdit}" Command="{Binding EditCommand}" />
-                        <Button Classes="plain" Content="{x:Static res:Strings.PlanCommentDelete}" Command="{Binding DeleteCommand}" />
+                        <Button Classes="plain" Content="{res:Tr PlanCommentEdit}" Command="{Binding EditCommand}" />
+                        <Button Classes="plain" Content="{res:Tr PlanCommentDelete}" Command="{Binding DeleteCommand}" />
                       </StackPanel>
                       <TextBlock Classes="secondary" Text="{Binding SentText}" IsVisible="{Binding IsSent}" />
                     </StackPanel>
@@ -161,7 +161,7 @@
             </ItemsControl.ItemTemplate>
           </ItemsControl>
           <TextBlock Classes="secondary" FontSize="{StaticResource SmallSize}" TextWrapping="Wrap"
-                     Text="{x:Static res:Strings.PlanCommentsHint}" IsVisible="{Binding !HasComments}" />
+                     Text="{res:Tr PlanCommentsHint}" IsVisible="{Binding !HasComments}" />
         </StackPanel>
       </ScrollViewer>
     </Border>
@@ -187,16 +187,16 @@
                      Text="{Binding $parent[UserControl].((chat:PlanReviewViewModel)DataContext).RevisionText}"
                      IsVisible="{Binding $parent[UserControl].((chat:PlanReviewViewModel)DataContext).HasRevisionText}" />
           <DockPanel Margin="0,8,0,0" IsVisible="{Binding HasPlanHosts}">
-            <TextBlock DockPanel.Dock="Left" Classes="secondary" FontSize="{StaticResource SmallSize}" Text="{x:Static res:Strings.PlanStepOn}" VerticalAlignment="Top" Margin="0,3,6,0" />
+            <TextBlock DockPanel.Dock="Left" Classes="secondary" FontSize="{StaticResource SmallSize}" Text="{res:Tr PlanStepOn}" VerticalAlignment="Top" Margin="0,3,6,0" />
             <ItemsControl ItemsSource="{Binding PlanHosts}" ItemTemplate="{StaticResource HostChip}" ItemsPanel="{StaticResource ChipsPanel}" />
           </DockPanel>
 
           <StackPanel IsVisible="{Binding HasFindings}">
-            <TextBlock Classes="part" Margin="0,22,0,6" Text="{Binding Source={x:Static res:Strings.PlanFindingsTitle}, Converter={x:Static c:TextCase.Upper}}" />
+            <TextBlock Classes="part" Margin="0,22,0,6" Text="{res:Tr PlanFindingsTitle, Upper=True}" />
             <md:MarkdownView Text="{Binding Findings}" />
           </StackPanel>
 
-          <TextBlock Classes="part" Text="{Binding Source={x:Static res:Strings.PlanStepsTitle}, Converter={x:Static c:TextCase.Upper}}" />
+          <TextBlock Classes="part" Text="{res:Tr PlanStepsTitle, Upper=True}" />
           <ItemsControl ItemsSource="{Binding PlanSteps}">
             <ItemsControl.ItemTemplate>
               <DataTemplate x:DataType="chat:PlanStepViewModel">
@@ -216,7 +216,7 @@
                         </Border>
                       </WrapPanel>
                       <DockPanel IsVisible="{Binding HasHosts}">
-                        <TextBlock DockPanel.Dock="Left" Classes="secondary" FontSize="{StaticResource SmallSize}" Text="{x:Static res:Strings.PlanStepOn}" VerticalAlignment="Top" Margin="0,3,6,0" />
+                        <TextBlock DockPanel.Dock="Left" Classes="secondary" FontSize="{StaticResource SmallSize}" Text="{res:Tr PlanStepOn}" VerticalAlignment="Top" Margin="0,3,6,0" />
                         <ItemsControl ItemsSource="{Binding Hosts}" ItemTemplate="{StaticResource HostChip}" ItemsPanel="{StaticResource ChipsPanel}" Margin="0,0,0,-4" />
                       </DockPanel>
                       <SelectableTextBlock Text="{Binding Purpose}" TextWrapping="Wrap" IsVisible="{Binding HasWhy}" />
@@ -255,7 +255,7 @@
           </ItemsControl>
 
           <StackPanel IsVisible="{Binding HasRollback}">
-            <TextBlock Classes="part" Text="{Binding Source={x:Static res:Strings.PlanRollbackTitle}, Converter={x:Static c:TextCase.Upper}}" />
+            <TextBlock Classes="part" Text="{res:Tr PlanRollbackTitle, Upper=True}" />
             <Border Background="{DynamicResource PaneBrush}" CornerRadius="{StaticResource CardRadius}" Padding="14,12">
               <md:MarkdownView Text="{Binding Rollback}" />
             </Border>
@@ -263,8 +263,8 @@
         </StackPanel>
       </ScrollViewer>
       <Canvas x:Name="SelectionLayer">
-        <Button x:Name="CommentSelectionButton" Classes="float" IsVisible="False" Focusable="False" Content="{x:Static res:Strings.PlanComment}"
-                Click="OnCommentOnSelection" ToolTip.Tip="{x:Static res:Strings.PlanCommentSelectionTip}" />
+        <Button x:Name="CommentSelectionButton" Classes="float" IsVisible="False" Focusable="False" Content="{res:Tr PlanComment}"
+                Click="OnCommentOnSelection" ToolTip.Tip="{res:Tr PlanCommentSelectionTip}" />
       </Canvas>
     </Panel>
   </DockPanel>

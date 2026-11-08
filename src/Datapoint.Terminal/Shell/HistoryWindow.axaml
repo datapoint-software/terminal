@@ -2,25 +2,25 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:res="clr-namespace:Datapoint.Terminal.Resources"
         x:Class="Datapoint.Terminal.Shell.HistoryWindow"
-        Title="{x:Static res:Strings.HistoryTitle}"
+        Title="{res:Tr HistoryTitle}"
         Width="900" Height="600" MinWidth="560" MinHeight="360"
         WindowStartupLocation="CenterOwner"
         Background="{DynamicResource GroupedBackgroundBrush}">
   <DockPanel Margin="16">
     <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,12">
-      <TextBox x:Name="SearchBox" PlaceholderText="{x:Static res:Strings.HistorySearch}"
-               AutomationProperties.Name="{x:Static res:Strings.HistorySearch}" />
-      <TextBlock Grid.Column="1" Text="{x:Static res:Strings.HistoryKeep}" VerticalAlignment="Center" Margin="16,0,8,0" />
-      <ComboBox Grid.Column="2" x:Name="RetentionBox" MinWidth="130" AutomationProperties.Name="{x:Static res:Strings.HistoryKeep}" />
+      <TextBox x:Name="SearchBox" PlaceholderText="{res:Tr HistorySearch}"
+               AutomationProperties.Name="{res:Tr HistorySearch}" />
+      <TextBlock Grid.Column="1" Text="{res:Tr HistoryKeep}" VerticalAlignment="Center" Margin="16,0,8,0" />
+      <ComboBox Grid.Column="2" x:Name="RetentionBox" MinWidth="130" AutomationProperties.Name="{res:Tr HistoryKeep}" />
     </Grid>
     <Grid DockPanel.Dock="Bottom" ColumnDefinitions="Auto,*,Auto" Margin="0,12,0,0">
-      <Button x:Name="ClearButton" Content="{x:Static res:Strings.HistoryClear}" />
+      <Button x:Name="ClearButton" Content="{res:Tr HistoryClear}" />
       <TextBlock Grid.Column="1" x:Name="Status" Classes="secondary" VerticalAlignment="Center" Margin="12,0" />
-      <Button Grid.Column="2" x:Name="CloseButton" Content="{x:Static res:Strings.Close}" />
+      <Button Grid.Column="2" x:Name="CloseButton" Content="{res:Tr Close}" />
     </Grid>
     <Grid ColumnDefinitions="300,12,*">
       <Border Classes="group">
-        <ListBox x:Name="List" Classes="source" Margin="6" AutomationProperties.Name="{x:Static res:Strings.HistoryList}" />
+        <ListBox x:Name="List" Classes="source" Margin="6" AutomationProperties.Name="{res:Tr HistoryList}" />
       </Border>
       <Border Grid.Column="2" Classes="group">
         <ScrollViewer>

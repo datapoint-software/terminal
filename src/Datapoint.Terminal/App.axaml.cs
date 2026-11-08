@@ -25,7 +25,11 @@ public sealed partial class App : Application
 
             var store = new SettingsStore(SettingsStore.DefaultPath);
             var keys = new ProviderKeys(CredentialStores.ForThisSystem(), Environment.GetEnvironmentVariable);
-            var settings = new SettingsViewModel(store, MainWindow.FirstRun(store.Load()), keys, MainWindow.CreateClient);
+            var stored = MainWindow.FirstRun(store.Load());
+
+            // Before anything builds text (product decision 150).
+            Datapoint.Terminal.Resources.Localizer.Instance.Use(stored.Language);
+            var settings = new SettingsViewModel(store, stored, keys, MainWindow.CreateClient);
             MotionPreference.Apply(settings.ReduceMotion);
             settings.AppearanceChanged += (_, _) => MotionPreference.Apply(settings.ReduceMotion);
             ApplyWindowTheme(settings);

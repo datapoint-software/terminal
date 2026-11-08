@@ -3111,4 +3111,22 @@ Fingerprint: {2}</value>
   <data name="MenuShowTips" xml:space="preserve">
     <value>Show Tips Again</value>
   </data>
+  <data name="AppearanceLanguageHeading" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="AppearanceLanguage" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="AppearanceLanguageSystem" xml:space="preserve">
+    <value>System ({0})</value>
+  </data>
+  <data name="AppearanceLanguageHint" xml:space="preserve">
+    <value>Changes the application's text at once, and the language the agent replies in from its next message. Commands, files and host documentation stay in the language they're written in.</value>
+  </data>
+  <data name="LanguageEnglish" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="LanguagePortuguese" xml:space="preserve">
+    <value>Português (Portugal)</value>
+  </data>
 </root>

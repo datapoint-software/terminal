@@ -10,15 +10,15 @@
     <TextBlock x:Name="Message" TextWrapping="Wrap" />
     <Border x:Name="ServerBox" Classes="code" IsVisible="False">
       <StackPanel Spacing="4">
-        <TextBlock Classes="secondary" Text="{x:Static res:Strings.PromptFromServer}" />
+        <TextBlock Classes="secondary" Text="{res:Tr PromptFromServer}" />
         <SelectableTextBlock x:Name="ServerText" TextWrapping="Wrap" />
       </StackPanel>
     </Border>
     <StackPanel x:Name="Fields" Spacing="8" />
     <CheckBox x:Name="RememberBox" IsVisible="False" />
     <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" Margin="0,8,0,0">
-      <Button x:Name="CancelButton" Content="{x:Static res:Strings.Cancel}" />
-      <Button x:Name="OkButton" Classes="primary" IsDefault="True" Content="{x:Static res:Strings.PromptLogIn}" />
+      <Button x:Name="CancelButton" Content="{res:Tr Cancel}" />
+      <Button x:Name="OkButton" Classes="primary" IsDefault="True" Content="{res:Tr PromptLogIn}" />
     </StackPanel>
   </StackPanel>
 </Window>

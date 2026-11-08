@@ -13,6 +13,12 @@
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>
+  <!-- Choices whose text follows the interface's language (product decision 150). -->
+  <Application.DataTemplates>
+    <DataTemplate DataType="res:TextChoice" x:DataType="res:TextChoice">
+      <TextBlock Text="{Binding Text}" />
+    </DataTemplate>
+  </Application.DataTemplates>
   <Application.Styles>
     <FluentTheme />
     <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
@@ -24,7 +30,7 @@
   <!-- macOS application menu: About first, then Settings… with Cmd+, as every Mac app has. -->
   <NativeMenu.Menu>
     <NativeMenu>
-      <NativeMenuItem Header="{x:Static res:Strings.MenuAbout}" Click="OnAboutClicked" />
+      <NativeMenuItem Header="{res:Tr MenuAbout}" Click="OnAboutClicked" />
       <NativeMenuItemSeparator />
       <NativeMenuItem Header="Settings…" Gesture="Meta+OemComma" Click="OnSettingsClicked" />
     </NativeMenu>

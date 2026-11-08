@@ -91,7 +91,7 @@
                   AutomationProperties.Name="{Binding HeaderText}" AutomationProperties.HelpText="{Binding ToggleHelp}">
             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
               <StackPanel Spacing="1">
-                <TextBlock Classes="secondary" FontWeight="SemiBold" Text="{x:Static res:Strings.RolloutCaption}" IsVisible="{Binding IsExpanded}" />
+                <TextBlock Classes="secondary" FontWeight="SemiBold" Text="{res:Tr RolloutCaption}" IsVisible="{Binding IsExpanded}" />
                 <TextBlock Text="{Binding HeaderText}" FontWeight="SemiBold" TextWrapping="Wrap" />
               </StackPanel>
               <Path Grid.Column="1" Data="{StaticResource ChevronGlyph}" Stroke="{DynamicResource SecondaryLabelBrush}" StrokeThickness="1.5"
@@ -134,16 +134,16 @@
                 </ItemsControl>
               </Border>
               <StackPanel Spacing="4" IsVisible="{Binding HasHealthCheck}">
-                <TextBlock Classes="secondary" FontWeight="SemiBold" Text="{x:Static res:Strings.RolloutHealthCheck}" />
+                <TextBlock Classes="secondary" FontWeight="SemiBold" Text="{res:Tr RolloutHealthCheck}" />
                 <Border Classes="code">
                   <SelectableTextBlock Classes="mono" Text="{Binding HealthCheck}" TextWrapping="Wrap" />
                 </Border>
               </StackPanel>
-              <TextBlock Classes="secondary" Text="{x:Static res:Strings.RolloutNoHealthCheck}" TextWrapping="Wrap" IsVisible="{Binding HasNoHealthCheck}" />
+              <TextBlock Classes="secondary" Text="{res:Tr RolloutNoHealthCheck}" TextWrapping="Wrap" IsVisible="{Binding HasNoHealthCheck}" />
               <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding IsRunning}">
                 <Button Content="{Binding PauseText}" Command="{Binding PauseCommand}" />
-                <Button Classes="plain danger" Content="{x:Static res:Strings.RolloutStop}" Command="{Binding StopCommand}"
-                        AutomationProperties.HelpText="{x:Static res:Strings.RolloutStopHelp}" ToolTip.Tip="{x:Static res:Strings.RolloutStopHelp}" />
+                <Button Classes="plain danger" Content="{res:Tr RolloutStop}" Command="{Binding StopCommand}"
+                        AutomationProperties.HelpText="{res:Tr RolloutStopHelp}" ToolTip.Tip="{res:Tr RolloutStopHelp}" />
                 <TextBlock Classes="secondary" Text="{Binding StatusText}" VerticalAlignment="Center" />
               </StackPanel>
             </StackPanel>
@@ -334,26 +334,26 @@
     <Border x:Name="Header" DockPanel.Dock="Top" Height="{StaticResource PaneHeaderHeight}" Padding="16,0,10,0" Background="Transparent" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
       <Grid ColumnDefinitions="*,Auto">
         <StackPanel Spacing="2" VerticalAlignment="Center">
-          <TextBlock Classes="title" Text="{x:Static res:Strings.ChatTitle}" />
+          <TextBlock Classes="title" Text="{res:Tr ChatTitle}" />
           <!-- One line, so the header keeps the sidebar's height. -->
           <TextBlock x:Name="ModelName" Classes="secondary" Text="{Binding ModelName}" IsVisible="{Binding HasModelName}"
                      TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding ModelName}" />
         </StackPanel>
         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="2" VerticalAlignment="Center">
           <Button Classes="icon" Command="{Binding StopCommand}" IsVisible="{Binding CanStop}"
-                  ToolTip.Tip="{x:Static res:Strings.ChatStop}" AutomationProperties.Name="{x:Static res:Strings.ChatStop}">
+                  ToolTip.Tip="{res:Tr ChatStop}" AutomationProperties.Name="{res:Tr ChatStop}">
             <PathIcon Data="{StaticResource StopGlyph}" />
           </Button>
           <Button Classes="icon" Command="{Binding ContinueCommand}" IsVisible="{Binding IsInterrupted}"
-                  ToolTip.Tip="{x:Static res:Strings.ChatContinue}" AutomationProperties.Name="{x:Static res:Strings.ChatContinue}">
+                  ToolTip.Tip="{res:Tr ChatContinue}" AutomationProperties.Name="{res:Tr ChatContinue}">
             <PathIcon Data="{StaticResource ContinueGlyph}" />
           </Button>
           <Button Classes="icon" Command="{Binding ClearCommand}"
-                  ToolTip.Tip="{x:Static res:Strings.ChatClear}" AutomationProperties.Name="{x:Static res:Strings.ChatClear}">
+                  ToolTip.Tip="{res:Tr ChatClear}" AutomationProperties.Name="{res:Tr ChatClear}">
             <PathIcon Data="{StaticResource ComposeGlyph}" />
           </Button>
           <Button Classes="icon" Command="{Binding OpenSettingsCommand}"
-                  ToolTip.Tip="{x:Static res:Strings.ChatSettings}" AutomationProperties.Name="{x:Static res:Strings.ChatSettings}">
+                  ToolTip.Tip="{res:Tr ChatSettings}" AutomationProperties.Name="{res:Tr ChatSettings}">
             <PathIcon Data="{StaticResource GearGlyph}" />
           </Button>
         </StackPanel>
@@ -365,9 +365,9 @@
       <!-- No provider yet: offer to connect one. -->
       <Border Classes="card" IsVisible="{Binding NeedsProvider}">
         <StackPanel Spacing="10">
-          <TextBlock Classes="title" Text="{x:Static res:Strings.ChatConnect}" />
-          <TextBlock Text="{x:Static res:Strings.ChatConnectText}" TextWrapping="Wrap" />
-          <Button Classes="primary" HorizontalAlignment="Right" Content="{x:Static res:Strings.SettingsAdd}" Command="{Binding OpenSettingsCommand}" />
+          <TextBlock Classes="title" Text="{res:Tr ChatConnect}" />
+          <TextBlock Text="{res:Tr ChatConnectText}" TextWrapping="Wrap" />
+          <Button Classes="primary" HorizontalAlignment="Right" Content="{res:Tr SettingsAdd}" Command="{Binding OpenSettingsCommand}" />
         </StackPanel>
       </Border>
 
@@ -378,7 +378,7 @@
         <StackPanel Spacing="8">
           <StackPanel Spacing="2">
             <TextBlock Classes="title" Text="{Binding InputTerminalTitle}" TextWrapping="Wrap" />
-            <TextBlock Text="{x:Static res:Strings.ChatTerminalInputText}" TextWrapping="Wrap" />
+            <TextBlock Text="{res:Tr ChatTerminalInputText}" TextWrapping="Wrap" />
           </StackPanel>
           <Button Classes="primary" HorizontalAlignment="Right" Content="{Binding InputTerminalShow}" Command="{Binding ShowInputTerminalCommand}" />
         </StackPanel>
@@ -387,7 +387,7 @@
       <!-- A command waiting for approval. It never takes focus from the terminal; Run needs a click, or Tab and Space. -->
       <Border Classes="card" IsVisible="{Binding Approval, Converter={x:Static ObjectConverters.IsNotNull}}"
               AutomationProperties.LiveSetting="Assertive"
-              AutomationProperties.Name="{x:Static res:Strings.StatusWaitingForApproval}">
+              AutomationProperties.Name="{res:Tr StatusWaitingForApproval}">
         <StackPanel Spacing="8" DataContext="{Binding Approval}" x:DataType="chat:ApprovalViewModel">
           <StackPanel Spacing="2">
             <TextBlock Classes="secondary" FontWeight="SemiBold" Text="{Binding TerminalText}" TextWrapping="Wrap" IsVisible="{Binding !UsesOwnActions}" />
@@ -407,7 +407,7 @@
                   <StackPanel Spacing="2">
                     <StackPanel Orientation="Horizontal" Spacing="2">
                       <ContentControl Content="{Binding Chip}" ContentTemplate="{StaticResource HostChip}" />
-                      <TextBlock Classes="secondary" Text="{x:Static res:Strings.ApprovalLookOpens}" IsVisible="{Binding OpensConnection}"
+                      <TextBlock Classes="secondary" Text="{res:Tr ApprovalLookOpens}" IsVisible="{Binding OpensConnection}"
                                  VerticalAlignment="Top" Margin="0,3,0,0" />
                     </StackPanel>
                     <SelectableTextBlock Text="{Binding Reason}" TextWrapping="Wrap" />
@@ -425,17 +425,17 @@
           <!-- Capped, so a long diff scrolls inside the box and Run and Decline stay in view. -->
           <TextBox x:Name="ApprovalCommand" Classes="code" Text="{Binding Command}" IsReadOnly="{Binding IsCommandReadOnly}" TextWrapping="Wrap" Background="{DynamicResource CodeBrush}"
                    MaxHeight="280" ScrollViewer.VerticalScrollBarVisibility="Auto" IsVisible="{Binding ShowsCommand}"
-                   AutomationProperties.Name="{x:Static res:Strings.ApprovalCommandLabel}" />
+                   AutomationProperties.Name="{res:Tr ApprovalCommandLabel}" />
           <TextBlock Text="{Binding PlanText}" IsVisible="{Binding HasPlanText}" FontWeight="SemiBold" TextWrapping="Wrap" />
           <TextBlock Classes="secondary" Text="{Binding RiskText}" TextWrapping="Wrap" IsVisible="{Binding !UsesOwnActions}" />
           <TextBlock Classes="secondary" Text="{Binding AlsoApprovesText}" IsVisible="{Binding HasAlsoApproves}" TextWrapping="Wrap" />
           <!-- Teaching a command as read-only lets it run without asking from now on, so it's a choice made with this approval. -->
           <CheckBox IsChecked="{Binding TreatAsReadOnly}" IsVisible="{Binding HasReadOnlySuggestion}"
-                    AutomationProperties.Name="{Binding ReadOnlyOfferText}" ToolTip.Tip="{x:Static res:Strings.ApprovalTreatAsReadOnlyHint}">
+                    AutomationProperties.Name="{Binding ReadOnlyOfferText}" ToolTip.Tip="{res:Tr ApprovalTreatAsReadOnlyHint}">
             <TextBlock Text="{Binding ReadOnlyOfferText}" TextWrapping="Wrap" />
           </CheckBox>
-          <TextBox x:Name="ApprovalFeedback" Text="{Binding Feedback}" PlaceholderText="{x:Static res:Strings.ApprovalFeedbackPlaceholder}" TextWrapping="Wrap"
-                   AutomationProperties.Name="{x:Static res:Strings.ApprovalFeedbackPlaceholder}" IsVisible="{Binding ShowsFeedback}" />
+          <TextBox x:Name="ApprovalFeedback" Text="{Binding Feedback}" PlaceholderText="{res:Tr ApprovalFeedbackPlaceholder}" TextWrapping="Wrap"
+                   AutomationProperties.Name="{res:Tr ApprovalFeedbackPlaceholder}" IsVisible="{Binding ShowsFeedback}" />
           <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" IsVisible="{Binding !UsesOwnActions}">
             <Button Content="{Binding DeclineLabel}" Command="{Binding DeclineCommand}" />
             <Button Classes="primary" Content="{Binding RunLabel}" Command="{Binding RunCommand}" />
@@ -444,11 +444,11 @@
           <WrapPanel IsVisible="{Binding IsLook}">
             <Button Classes="primary" Margin="0,0,8,0" Content="{Binding RunLabel}" Command="{Binding RunCommand}" />
             <Button Margin="0,0,8,0" Content="{Binding DeclineLabel}" Command="{Binding DeclineCommand}" IsVisible="{Binding !IsReplying}" />
-            <Button Margin="0,0,8,0" Content="{x:Static res:Strings.ApprovalSendReply}" Command="{Binding DeclineCommand}" IsVisible="{Binding IsReplying}" />
-            <Button Classes="plain" Content="{x:Static res:Strings.ApprovalReply}" Command="{Binding ReplyCommand}" IsVisible="{Binding !IsReplying}" />
+            <Button Margin="0,0,8,0" Content="{res:Tr ApprovalSendReply}" Command="{Binding DeclineCommand}" IsVisible="{Binding IsReplying}" />
+            <Button Classes="plain" Content="{res:Tr ApprovalReply}" Command="{Binding ReplyCommand}" IsVisible="{Binding !IsReplying}" />
           </WrapPanel>
           <WrapPanel IsVisible="{Binding IsPlan}">
-            <Button Content="{x:Static res:Strings.PlanShow}" Command="{Binding ReviewCommand}" />
+            <Button Content="{res:Tr PlanShow}" Command="{Binding ReviewCommand}" />
           </WrapPanel>
         </StackPanel>
       </Border>
@@ -456,7 +456,7 @@
       <!-- A question from the agent: one list to click, or pick from by number while the card has focus. Like an approval,
            it never takes focus from the terminal. -->
       <Border x:Name="QuestionCard" Classes="card" IsVisible="{Binding Question, Converter={x:Static ObjectConverters.IsNotNull}}"
-              AutomationProperties.LiveSetting="Assertive" AutomationProperties.Name="{x:Static res:Strings.StatusWaitingForUser}">
+              AutomationProperties.LiveSetting="Assertive" AutomationProperties.Name="{res:Tr StatusWaitingForUser}">
         <StackPanel Spacing="8" DataContext="{Binding Question}" x:DataType="chat:QuestionViewModel">
           <!-- Capped, so long background scrolls and the choices stay in view. Only the question itself is bold. -->
           <ScrollViewer MaxHeight="240" VerticalScrollBarVisibility="Auto">
@@ -482,7 +482,7 @@
                       <StackPanel Grid.Column="1" Spacing="1">
                         <Grid ColumnDefinitions="*,Auto">
                           <TextBlock Classes="label" Text="{Binding Label}" TextWrapping="Wrap" VerticalAlignment="Center" />
-                          <c:Badge Grid.Column="1" Classes="accent" Text="{x:Static res:Strings.QuestionRecommended}" IsVisible="{Binding IsRecommended}"
+                          <c:Badge Grid.Column="1" Classes="accent" Text="{res:Tr QuestionRecommended}" IsVisible="{Binding IsRecommended}"
                                    Margin="8,0,0,0" VerticalAlignment="Top" />
                         </Grid>
                         <TextBlock Classes="secondary" Text="{Binding Description}" TextWrapping="Wrap" IsVisible="{Binding HasDescription}" />
@@ -495,22 +495,22 @@
           </Border>
           <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsChoosing}">
             <TextBlock Classes="secondary" Text="{Binding KeysText}" VerticalAlignment="Center" />
-            <Button Grid.Column="1" Classes="plain" Content="{x:Static res:Strings.QuestionSkip}" Command="{Binding SkipCommand}" />
+            <Button Grid.Column="1" Classes="plain" Content="{res:Tr QuestionSkip}" Command="{Binding SkipCommand}" />
           </Grid>
           <!-- An answer in the user's own words: in place of the list after "Something else…", or straight away when there are no
                choices. -->
           <StackPanel x:Name="QuestionWriting" Spacing="8" IsVisible="{Binding IsWriting}">
-            <TextBox x:Name="QuestionAnswerBox" Text="{Binding Draft}" PlaceholderText="{x:Static res:Strings.QuestionPlaceholder}" TextWrapping="Wrap"
-                     AutomationProperties.Name="{x:Static res:Strings.QuestionPlaceholder}">
+            <TextBox x:Name="QuestionAnswerBox" Text="{Binding Draft}" PlaceholderText="{res:Tr QuestionPlaceholder}" TextWrapping="Wrap"
+                     AutomationProperties.Name="{res:Tr QuestionPlaceholder}">
               <TextBox.KeyBindings>
                 <KeyBinding Gesture="Enter" Command="{Binding SubmitCommand}" />
                 <KeyBinding Gesture="Escape" Command="{Binding BackCommand}" />
               </TextBox.KeyBindings>
             </TextBox>
             <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
-              <Button Content="{x:Static res:Strings.QuestionBack}" Command="{Binding BackCommand}" IsVisible="{Binding CanGoBack}" />
-              <Button Content="{x:Static res:Strings.QuestionSkip}" Command="{Binding SkipCommand}" IsVisible="{Binding !CanGoBack}" />
-              <Button Classes="primary" Content="{x:Static res:Strings.QuestionSend}" Command="{Binding SubmitCommand}" />
+              <Button Content="{res:Tr QuestionBack}" Command="{Binding BackCommand}" IsVisible="{Binding CanGoBack}" />
+              <Button Content="{res:Tr QuestionSkip}" Command="{Binding SkipCommand}" IsVisible="{Binding !CanGoBack}" />
+              <Button Classes="primary" Content="{res:Tr QuestionSend}" Command="{Binding SubmitCommand}" />
             </StackPanel>
           </StackPanel>
         </StackPanel>
@@ -521,8 +521,8 @@
 
       <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding HasExcerpt}" Margin="4,0,0,6">
         <TextBlock Classes="secondary" Text="{Binding ExcerptText}" TextWrapping="Wrap" VerticalAlignment="Center" />
-        <Button Grid.Column="1" Classes="plain" Content="{x:Static res:Strings.ExcerptRemove}" Command="{Binding RemoveExcerptCommand}"
-                AutomationProperties.Name="{x:Static res:Strings.ExcerptRemove}" />
+        <Button Grid.Column="1" Classes="plain" Content="{res:Tr ExcerptRemove}" Command="{Binding RemoveExcerptCommand}"
+                AutomationProperties.Name="{res:Tr ExcerptRemove}" />
       </Grid>
 
       <!-- What the agent is doing, right above where the user writes to it: a spinner while it works, a dot while it waits,
@@ -542,14 +542,14 @@
         <Grid ColumnDefinitions="*,Auto">
           <TextBox x:Name="DraftBox" Classes="bare" Padding="12,10,6,10" MinHeight="38" Text="{Binding Draft}" PlaceholderText="{Binding DraftPlaceholder}"
                    TextWrapping="Wrap" AcceptsReturn="True" MaxHeight="160" VerticalContentAlignment="Center" IsEnabled="{Binding HasAgent}"
-                   AutomationProperties.Name="{x:Static res:Strings.ChatInputPlaceholder}">
+                   AutomationProperties.Name="{res:Tr ChatInputPlaceholder}">
             <TextBox.KeyBindings>
               <KeyBinding Gesture="Enter" Command="{Binding SendCommand}" />
             </TextBox.KeyBindings>
           </TextBox>
           <Button Grid.Column="1" Classes="primary" Command="{Binding SendCommand}" Width="26" Height="26" MinHeight="0" Padding="6"
                   CornerRadius="13" VerticalAlignment="Bottom" Margin="0,0,6,6"
-                  ToolTip.Tip="{x:Static res:Strings.ChatSend}" AutomationProperties.Name="{x:Static res:Strings.ChatSend}">
+                  ToolTip.Tip="{res:Tr ChatSend}" AutomationProperties.Name="{res:Tr ChatSend}">
             <PathIcon Data="{StaticResource SendGlyph}" Width="12" Height="12" />
           </Button>
         </Grid>
@@ -560,8 +560,8 @@
            opens from it (product decisions 49 and 126). -->
       <Button x:Name="ContextUse" Classes="plain" Margin="0,0,8,0" Padding="4,2"
               VerticalAlignment="Center" HorizontalAlignment="Left" IsVisible="{Binding HasContext}"
-              ToolTip.Tip="{x:Static res:Strings.ContextUseHelp}" AutomationProperties.Name="{Binding ContextDetail}"
-              AutomationProperties.HelpText="{x:Static res:Strings.ContextUseHelp}">
+              ToolTip.Tip="{res:Tr ContextUseHelp}" AutomationProperties.Name="{Binding ContextDetail}"
+              AutomationProperties.HelpText="{res:Tr ContextUseHelp}">
         <StackPanel Orientation="Horizontal" Spacing="5">
           <c:Spinner IsVisible="{Binding IsSummarizing}" VerticalAlignment="Center" />
           <Panel Width="12" Height="12" VerticalAlignment="Center" IsVisible="{Binding IsContextKnown}">
@@ -583,7 +583,7 @@
       </Button>
       <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="2">
         <ComboBox Classes="menu" ItemsSource="{Binding Modes}" SelectedItem="{Binding SelectedMode}"
-                  ToolTip.Tip="{Binding SelectedMode.Help}" AutomationProperties.Name="{x:Static res:Strings.ChatMode}">
+                  ToolTip.Tip="{Binding SelectedMode.Help}" AutomationProperties.Name="{res:Tr ChatMode}">
           <ComboBox.SelectionBoxItemTemplate>
             <DataTemplate x:DataType="chat:ModeOption">
               <TextBlock Text="{Binding Label}" />
