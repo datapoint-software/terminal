@@ -103,7 +103,7 @@ public sealed partial class MainWindow
         var ignored = paths.Where(path => TerminalIgnore.IsIgnored(path, Workspace.Folder, WorkspaceFolders.Home)).ToList();
         var trust = _trust;
         var read = InstructionFiles.Read([.. paths.Except(ignored, WorkspaceFolders.Comparer)]);
-        var isOwn = (InstructionFile file) => WorkspaceFolders.AreSame(file.Path, global ?? string.Empty);
+        var isOwn = (InstructionFile file) => global is not null && WorkspaceFolders.AreSame(file.Path, global);
         var changes = _windows.InstructionSnapshots.Update(read.Where(isOwn), _redactor);
         var files = WorkspaceInstructionsToUse(read, isOwn, trust);
         var (reviewed, skipped) = await ReviewSecretsAsync(files, cancellationToken).ConfigureAwait(false);
@@ -111,7 +111,7 @@ public sealed partial class MainWindow
         ignored.AddRange(ignoredMemory);
         skipped.AddRange(skippedMemory);
         var isTrusted = (InstructionFile file) => Workspace.IsDefault
-            || WorkspaceFolders.AreSame(file.Path, global ?? string.Empty)
+            || isOwn(file)
             || WorkspaceFolders.AreSame(file.Path, GlobalMemoryPath)
             || (trust is { IsTrusted: true } && trust.Covers(file.Path));
         var instructions = new AgentInstructions(
