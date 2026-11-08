@@ -2889,4 +2889,13 @@ Fingerprint: {2}</value>
   <data name="UsagePartOutput" xml:space="preserve">
     <value>Output: {0} tokens</value>
   </data>
+  <data name="ProviderCompactAt" xml:space="preserve">
+    <value>Summarize the conversation at</value>
+  </data>
+  <data name="ProviderCompactAtHint" xml:space="preserve">
+    <value>Default {0:N0} tokens; 0 for never</value>
+  </data>
+  <data name="NoticeSummaryLabel" xml:space="preserve">
+    <value>Summary</value>
+  </data>
 </root>

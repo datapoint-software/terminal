@@ -147,6 +147,17 @@ public sealed partial class MainWindow : Window, ITerminalOpener
     private void UpdateTitle() =>
         Title = WindowTitles.For(Workspace.Name, (PlanArea.IsKeyboardFocusWithin ? _planReview : FocusedPane?.Selected)?.Name ?? SelectedTab?.ShellTitle, _chat.NeedsUser);
 
+    private void ApplyLimits(ProviderAccount provider)
+    {
+        if (_agent is null)
+        {
+            return;
+        }
+
+        _agent.OutputLimit = OutputLimits.For(provider.EffectiveContextWindow, provider.OutputLimit);
+        _agent.CompactAtTokens = CompactionLimits.For(provider.EffectiveContextWindow, provider.CompactAt);
+    }
+
     private void ApplySettings()
     {
         var current = _settings.Current;
@@ -154,7 +165,7 @@ public sealed partial class MainWindow : Window, ITerminalOpener
         ApplyWebSettings();
         if (provider is not null)
         {
-            _agent?.OutputLimit = OutputLimits.For(provider.EffectiveContextWindow, provider.OutputLimit);
+            ApplyLimits(provider);
         }
 
         var key = ReadKey(provider);
@@ -205,7 +216,7 @@ public sealed partial class MainWindow : Window, ITerminalOpener
                 _agent.Mode = _settings.ModeFor(Workspace.Folder);
                 _agent.ModeChanged += OnAgentModeChanged;
                 _agent.EventRaised += OnMemoryEvent;
-                _agent.OutputLimit = OutputLimits.For(provider.EffectiveContextWindow, provider.OutputLimit);
+                ApplyLimits(provider);
                 _agent.EventRaised += OnAgentEvent;
                 _agent.EventRaised += OnHistoryEvent;
                 _agent.EventRaised += OnRecordingEvent;

@@ -54,4 +54,9 @@ public sealed partial class ChatItemViewModel(ChatItemKind kind, string text) : 
     public ICommand? ActionCommand { get; init; }
 
     public bool HasAction => ActionCommand is not null;
+
+    // Names the Detail of a notice that has one, e.g. the summary a long conversation was replaced by, shown folded.
+    public string? DetailLabel { get; init; }
+
+    public bool HasDetailLabel => DetailLabel is not null;
 }

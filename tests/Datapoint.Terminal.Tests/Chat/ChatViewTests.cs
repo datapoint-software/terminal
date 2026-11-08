@@ -443,6 +443,29 @@ public sealed class ChatViewTests
         Assert.Equal([null, "New", null], review.PlanSteps.Select(step => step.ChangeText), StringComparer.Ordinal);
         Assert.False(review.IsRevision);
     }
+    // Product decision 133: the summary a long conversation was replaced by is in the chat, folded under the notice.
+    [AvaloniaFact]
+    public void Shows_the_summary_a_long_conversation_was_replaced_by()
+    {
+        using var chat = new ChatViewModel(new ImmediateUiThread());
+        chat.Show(new AgentEventArgs(AgentEventKind.Notice, "The conversation reached 104,512 tokens, so I summarized it and carried on from the summary, to keep each reply cheaper. The chat and the history still have everything.")
+        {
+            Output = "- Checked **web1**: `/` is 91% full.\n- Rotated the nginx logs; 4 GB freed.\n- Left to do: web2.",
+        });
+        var view = new ChatView { DataContext = chat };
+        var window = new Window { Width = 420, Height = 720, Content = view };
+        window.Show();
+        Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+        var expander = view.GetVisualDescendants().OfType<Expander>().Single(item => item.IsEffectivelyVisible);
+        Assert.Equal("Summary", expander.Header);
+        expander.IsExpanded = true;
+        Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+        Directory.CreateDirectory("rendered");
+        using var frame = window.CaptureRenderedFrame();
+        frame?.Save("rendered/chat-summary-notice.png", new PngBitmapEncoderOptions());
+        window.Close();
+    }
+
     [AvaloniaFact]
     public async Task Shows_how_much_of_the_context_the_conversation_fills_until_it_starts_over()
     {

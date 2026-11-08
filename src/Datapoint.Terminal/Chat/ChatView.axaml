@@ -678,6 +678,10 @@
                 <SelectableTextBlock Classes="secondary" Text="{Binding Text}" TextWrapping="Wrap" TextAlignment="Center" />
                 <Button Content="{Binding ActionLabel}" Command="{Binding ActionCommand}" IsVisible="{Binding HasAction}"
                         HorizontalAlignment="Center" />
+                <Expander Header="{Binding DetailLabel}" IsVisible="{Binding HasDetailLabel}" HorizontalAlignment="Stretch"
+                          AutomationProperties.Name="{Binding DetailLabel}">
+                  <md:MarkdownView Text="{Binding Detail}" />
+                </Expander>
               </StackPanel>
             </Panel>
           </DataTemplate>

@@ -25,6 +25,9 @@ public sealed record ProviderAccount
     // In characters; null uses the limit worked out from the context window.
     public int? OutputLimit { get; init; }
 
+    // In tokens: how large the conversation grows before the agent summarizes it; 0 for never, null for the default.
+    public int? CompactAt { get; init; }
+
     // In US dollars per million tokens, as the user's provider charges; optional, for the cost estimate.
     public decimal? InputPrice { get; init; }
 

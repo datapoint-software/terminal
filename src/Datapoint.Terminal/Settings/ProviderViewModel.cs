@@ -26,6 +26,7 @@ public sealed partial class ProviderViewModel : ObservableObject
         IsLocal = account.IsLocal;
         ContextWindow = Text(account.ContextWindow);
         OutputLimit = Text(account.OutputLimit);
+        CompactAt = Text(account.CompactAt);
         InputPrice = Text(account.InputPrice);
         OutputPrice = Text(account.OutputPrice);
         CachedInputPrice = Text(account.CachedInputPrice);
@@ -162,6 +163,7 @@ public sealed partial class ProviderViewModel : ObservableObject
         OnPropertyChanged(nameof(KnownCachedInputPrice));
         OnPropertyChanged(nameof(KnownSource));
         OnPropertyChanged(nameof(OutputLimitHint));
+        OnPropertyChanged(nameof(CompactAtHint));
     }
 
     [ObservableProperty]
@@ -178,6 +180,10 @@ public sealed partial class ProviderViewModel : ObservableObject
 
     [ObservableProperty]
     public partial string OutputLimit { get; set; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CompactAtHint))]
+    public partial string CompactAt { get; set; }
 
     [ObservableProperty]
     public partial string InputPrice { get; set; }
@@ -199,6 +205,11 @@ public sealed partial class ProviderViewModel : ObservableObject
             : null;
 
     public string OutputLimitHint => Strings.Format(Strings.ProviderOutputLimitHint, OutputLimits.For(Known?.ContextWindow ?? Number(ContextWindow), null));
+
+    public string CompactAtHint => Strings.Format(Strings.ProviderCompactAtHint, CompactionLimits.For(Known?.ContextWindow ?? Number(ContextWindow), null) ?? CompactionLimits.Default);
+
+    // Like Number, but 0 is a choice: never.
+    private static int? NumberOrZero(string text) => string.Equals(text.Trim(), "0", StringComparison.Ordinal) ? 0 : Number(text);
 
     private static int? Number(string text) =>
         int.TryParse(text.Replace(",", string.Empty, StringComparison.Ordinal).Replace(".", string.Empty, StringComparison.Ordinal).Trim(), System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out var value) && value > 0
@@ -252,6 +263,7 @@ public sealed partial class ProviderViewModel : ObservableObject
         IsLocal = IsCompatible && IsLocal,
         ContextWindow = Number(ContextWindow),
         OutputLimit = Number(OutputLimit),
+        CompactAt = NumberOrZero(CompactAt),
         InputPrice = Price(InputPrice),
         OutputPrice = Price(OutputPrice),
         CachedInputPrice = Price(CachedInputPrice),
@@ -290,6 +302,8 @@ public sealed partial class ProviderViewModel : ObservableObject
     partial void OnContextWindowChanged(string value) => Changed();
 
     partial void OnOutputLimitChanged(string value) => Changed();
+
+    partial void OnCompactAtChanged(string value) => Changed();
 
     partial void OnInputPriceChanged(string value) => Changed();
 

@@ -236,4 +236,20 @@ public sealed class SettingsPagesTests : IDisposable
         Assert.Matches(@"^0[.,]10, or 0[.,]50 for prompts over 100\D?000 tokens$", provider.KnownInputPrice);
         window.Close();
     }
+
+    // Product decision 133: empty is the default, 0 is never, and anything else is the user's own size.
+    [AvaloniaFact]
+    public void Keeps_the_size_a_conversation_is_summarized_at()
+    {
+        var settings = Create();
+        settings.AddCommand.Execute(null);
+        var provider = settings.Selected!;
+
+        Assert.Matches(@"^Default 100\D?000 tokens; 0 for never$", provider.CompactAtHint);
+        Assert.Null(provider.ToAccount().CompactAt);
+        provider.CompactAt = "0";
+        Assert.Equal(0, provider.ToAccount().CompactAt);
+        provider.CompactAt = "150000";
+        Assert.Equal(150_000, provider.ToAccount().CompactAt);
+    }
 }

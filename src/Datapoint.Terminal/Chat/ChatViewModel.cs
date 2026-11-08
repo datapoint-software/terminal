@@ -711,7 +711,9 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
             return;
         }
 
-        Items.Add(new ChatItemViewModel(ChatItemKind.Notice, e.Text));
+        Items.Add(e.Output is { Length: > 0 } detail
+            ? new ChatItemViewModel(ChatItemKind.Notice, e.Text) { Detail = detail, DetailLabel = Strings.NoticeSummaryLabel }
+            : new ChatItemViewModel(ChatItemKind.Notice, e.Text));
     }
 
     private void SetStatus(AgentStatus status, string? terminal = null)

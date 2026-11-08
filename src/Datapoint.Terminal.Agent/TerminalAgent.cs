@@ -235,6 +235,7 @@ public sealed partial class TerminalAgent : IDisposable
                 return;
             }
 
+            await CompactIfLongAsync(cancellationToken).ConfigureAwait(false);
             SetStatus(AgentStatus.Thinking);
             var response = await GetResponseAsync(cancellationToken).ConfigureAwait(false);
             _history.AddMessages(response);
@@ -363,6 +364,7 @@ public sealed partial class TerminalAgent : IDisposable
         _proposedPlan = null;
         _offeredPlanMode = false;
         _nextBatch = null;
+        _summaryFailed = false;
         ForgetApprovals();
         EndRun();
         foreach (var terminal in Terminals)
