@@ -153,6 +153,16 @@ public sealed class MarkdownViewTests
     }
 
     [AvaloniaFact]
+    public void Shows_no_address_after_a_bare_domain()
+    {
+        var (_, view) = Show("Open www.example.com in a browser.");
+
+        Assert.Contains("Open www.example.com in a browser.", Texts(view), StringComparer.Ordinal);
+        Assert.DoesNotContain(Texts(view), text => text.Contains("(http", StringComparison.Ordinal));
+        Assert.Contains(Runs(view), item => string.Equals(item.Link?.Uri.AbsoluteUri, "http://www.example.com/", StringComparison.Ordinal));
+    }
+
+    [AvaloniaFact]
     public void Formats_safe_html_and_shows_the_rest_as_text()
     {
         var (_, view) = Show(Reply);

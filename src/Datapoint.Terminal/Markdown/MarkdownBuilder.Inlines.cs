@@ -138,7 +138,7 @@ internal sealed partial class MarkdownBuilder
     {
         if (!link.IsImage)
         {
-            return Link(link.Url ?? string.Empty, Inlines(link));
+            return Link(link.Url ?? string.Empty, Inlines(link), showAddress: !link.IsAutoLink);
         }
 
         var description = string.Concat(InlineText.Runs(Span(Inlines(link)).Inlines).Select(item => item.Run.Text));
@@ -146,15 +146,16 @@ internal sealed partial class MarkdownBuilder
         return null;
     }
 
-    // The address follows a label that says something else, so a misleading label can't hide where it points.
-    private Span Link(string url, List<Inline> label)
+    // The address follows a label that says something else, so a misleading label can't hide where it points. A bare domain made
+    // into a link (www.example.com) points where it says, with http:// added, so it needs none.
+    private Span Link(string url, List<Inline> label, bool showAddress = true)
     {
         var target = LinkSpan.Openable(url);
         var span = target is null ? new Span() : Brush(new LinkSpan(target), TextElement.ForegroundProperty, "AccentBrush");
         span.TextDecorations = TextDecorations.Underline;
         span.Inlines.AddRange(label);
         var labelText = string.Concat(InlineText.Runs(span.Inlines).Select(item => item.Run.Text));
-        if (url.Length == 0 || string.Equals(labelText, url, StringComparison.Ordinal) || string.Equals("mailto:" + labelText, url, StringComparison.Ordinal))
+        if (!showAddress || url.Length == 0 || string.Equals(labelText, url, StringComparison.Ordinal) || string.Equals("mailto:" + labelText, url, StringComparison.Ordinal))
         {
             return span;
         }
