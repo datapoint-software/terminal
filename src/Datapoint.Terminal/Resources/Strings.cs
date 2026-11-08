@@ -1863,6 +1863,12 @@ public static class Strings
 
     public static string TerminalReconnecting => Get(nameof(TerminalReconnecting));
 
+    public static string PlanStatusStepAdded => Get(nameof(PlanStatusStepAdded));
+
+    public static string PlanStepAddedText => Get(nameof(PlanStepAddedText));
+
+    public static string PlanStepAdded => Get(nameof(PlanStepAdded));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

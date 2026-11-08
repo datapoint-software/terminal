@@ -68,11 +68,11 @@ public sealed partial class PlanReviewViewModel : ObservableObject, IOpenDocumen
         PlanReviewState.SentBack => Strings.PlanStatusSentBack,
         PlanReviewState.Declined => Strings.PlanStatusDeclined,
         PlanReviewState.Withdrawn => Strings.PlanStatusWithdrawn,
-        _ => Plan.IsRevision ? Strings.PlanStatusRevised : Strings.PlanStatusWaiting,
+        _ => Plan.AddedStep is not null ? Strings.PlanStatusStepAdded : Plan.IsRevision ? Strings.PlanStatusRevised : Strings.PlanStatusWaiting,
     };
 
     // On a revision, which steps changed, so the user can go straight to them.
-    public string? RevisionText => RevisionOf(Plan.PlanSteps, sent: false);
+    public string? RevisionText => Plan.AddedStep is { } added ? Strings.Format(Strings.PlanStepAddedText, added) : RevisionOf(Plan.PlanSteps, sent: false);
 
     public bool HasRevisionText => RevisionText is not null;
 

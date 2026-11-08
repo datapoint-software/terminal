@@ -23,7 +23,10 @@ public sealed partial class PlanStepViewModel : ObservableObject
         Title = step.Title is { Length: > 0 } title ? title : HasPurpose ? Purpose : Command;
     }
 
-    public int Number { get; }
+    // Moves down when a step is added before it while the plan runs (product decision 125).
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsFirst), nameof(NumberText), nameof(CommentName), nameof(AccessibleName))]
+    public partial int Number { get; set; }
 
     public bool IsFirst => Number == 1;
 

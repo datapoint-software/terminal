@@ -456,7 +456,7 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
             case AgentEventKind.Reply:
                 FinishReply(e.Text);
                 break;
-            case AgentEventKind.PlanApproved:
+            case AgentEventKind.PlanApproved or AgentEventKind.PlanStepAdded:
                 ShowPlan(e);
                 break;
             case AgentEventKind.RolloutChanged:
@@ -514,8 +514,24 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
     private static string StepTag(AgentEventArgs e, string detail) =>
         e.PlanStep is { } step ? Strings.Format(Strings.CommandInTerminal, Strings.Format(Strings.PlanStepTag, step), detail) : detail;
 
+    private void AddPlanStep(AgentEventArgs e)
+    {
+        if (e.Plan is not { } plan || e.PlanStep is not { } number || number > plan.Steps.Count)
+        {
+            return;
+        }
+
+        ActivePlan?.Insert(number, plan.Steps[number - 1]);
+    }
+
     private void ShowPlan(AgentEventArgs e)
     {
+        if (e.Kind == AgentEventKind.PlanStepAdded)
+        {
+            AddPlanStep(e);
+            return;
+        }
+
         _streaming = null;
         if (e.Plan is not { } plan)
         {

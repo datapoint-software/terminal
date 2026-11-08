@@ -2796,4 +2796,13 @@ Fingerprint: {2}</value>
   <data name="TerminalReconnecting" xml:space="preserve">
     <value>Reconnecting to {0}…</value>
   </data>
+  <data name="PlanStatusStepAdded" xml:space="preserve">
+    <value>New step · waiting for your review</value>
+  </data>
+  <data name="PlanStepAddedText" xml:space="preserve">
+    <value>The agent asks to add step {0} to the approved plan; the steps after it move down by one.</value>
+  </data>
+  <data name="PlanStepAdded" xml:space="preserve">
+    <value>Added</value>
+  </data>
 </root>

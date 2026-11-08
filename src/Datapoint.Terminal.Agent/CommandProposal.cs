@@ -24,6 +24,9 @@ public sealed record CommandProposal(string Command, string Purpose, CommandRisk
     // A file listed in .terminalignore that the command names, which is why it asks in every mode.
     public string? IgnoredFile { get; init; }
 
+    // For a step added to the approved plan, its number in Plan, so the card marks that step alone as new.
+    public int? AddedStep { get; init; }
+
     // The approved plan's step the agent says this carries out, or IsOutsidePlan when there's a plan and this isn't in it.
     public int? PlanStep { get; init; }
 

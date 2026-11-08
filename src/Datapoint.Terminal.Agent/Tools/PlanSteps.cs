@@ -23,6 +23,12 @@ internal static class PlanSteps
         return [.. steps.Where(step => step.Command.Length > 0 || step.Purpose.Length > 0)];
     }
 
+    // One step, given as an object under name; null when it's missing or has no command.
+    public static AgentPlanStep? ParseOne(AIFunctionArguments arguments, string name) =>
+        arguments.TryGetValue(name, out var value) && value is JsonElement { ValueKind: JsonValueKind.Object } element && FromJson(element) is { Command.Length: > 0 } step
+            ? step
+            : null;
+
     private static AgentPlanStep FromJson(JsonElement item) => item.ValueKind switch
     {
         JsonValueKind.String => new AgentPlanStep(item.GetString()!.Trim(), string.Empty),

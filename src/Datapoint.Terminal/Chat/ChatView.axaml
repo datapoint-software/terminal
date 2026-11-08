@@ -69,6 +69,8 @@
                       <StackPanel Grid.Column="1">
                         <TextBlock Classes="step-title" Classes.pending="{Binding IsPending}" Classes.running="{Binding IsRunning}"
                                    Text="{Binding Title}" TextWrapping="Wrap" />
+                        <!-- A step added while the plan ran, after the user approved it (product decision 125). -->
+                        <TextBlock Classes="secondary" Text="{Binding ChangeText}" IsVisible="{Binding HasChange}" />
                         <TextBlock Classes="secondary" Text="{Binding Detail}" IsVisible="{Binding HasDetail}" />
                       </StackPanel>
                     </Grid>

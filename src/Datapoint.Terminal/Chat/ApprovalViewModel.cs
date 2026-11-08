@@ -22,8 +22,9 @@ public sealed partial class ApprovalViewModel : ObservableObject
         PlanSteps = proposal.Plan is { } plan ? PlanStepViewModel.For(plan, proposal.Environments) : [];
         PlanHosts = HostChipViewModel.For(PlanSteps.SelectMany(step => step.Hosts).Select(host => host.Name).Distinct(StringComparer.OrdinalIgnoreCase), proposal.Environments);
         Findings = TextOrNull(proposal.Plan?.Findings);
-        IsRevision = proposal.PreviousPlan is not null;
-        MarkChanges(PlanSteps, proposal.PreviousPlan);
+        AddedStep = proposal.AddedStep;
+        IsRevision = proposal.PreviousPlan is not null && AddedStep is null;
+        MarkChanges(PlanSteps, proposal.PreviousPlan, AddedStep);
         LookHosts = proposal.Look is { } look ? [.. look.Hosts.Select(host => new LookHostViewModel(host))] : [];
         Rollback = TextOrNull(proposal.Plan?.Rollback);
         PlanTitle = proposal.Plan?.Title;
@@ -63,6 +64,9 @@ public sealed partial class ApprovalViewModel : ObservableObject
 
     // A plan proposed again in the same task, after the user's comments or a decline.
     public bool IsRevision { get; }
+
+    // A step the agent asks to add to the approved plan, by its number in the plan shown (product decision 125).
+    public int? AddedStep { get; }
 
     public bool IsLook => Kind == ProposalKind.Look;
 
@@ -261,8 +265,15 @@ public sealed partial class ApprovalViewModel : ObservableObject
 
     // Steps compare by their content, so a step that only moved keeps no mark. A step is changed when one before it had its
     // title, or stood at its number on the same hosts; any other is new.
-    private static void MarkChanges(IReadOnlyList<PlanStepViewModel> steps, AgentPlan? previous)
+    // An added step is the only change; the steps after it only moved down.
+    private static void MarkChanges(IReadOnlyList<PlanStepViewModel> steps, AgentPlan? previous, int? added)
     {
+        if (added is { } number)
+        {
+            steps.ElementAtOrDefault(number - 1)?.ChangeText = Strings.PlanStepNew;
+            return;
+        }
+
         if (previous is null)
         {
             return;

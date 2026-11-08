@@ -22,6 +22,9 @@ public enum AgentEventKind
 
     PlanApproved,
 
+    // The user approved a step added to the plan: Plan is the plan with it, PlanStep its number.
+    PlanStepAdded,
+
     // A skill's rollout started or moved on; Rollout holds where it is.
     RolloutChanged,
 

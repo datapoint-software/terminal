@@ -9,6 +9,8 @@ public sealed class TerminalAgentPlanTests
 {
     private static readonly string[] s_steps = ["sudo apt-get install -y nginx: install it", "sudo systemctl enable --now nginx: start it"];
 
+    private static readonly string[] s_web1 = ["web1"];
+
     private readonly FakeUser _user = new();
     private readonly FakeTerminal _terminal = new();
     private readonly List<string?> _results = [];
@@ -209,6 +211,52 @@ public sealed class TerminalAgentPlanTests
         using var agent = await RunAsync(ApprovalMode.Ask, _ => Call("propose_plan", Arguments(("summary", "Nothing"), ("steps", Array.Empty<string>()), ("rollback", ""))));
 
         Assert.Equal("Not proposed: give a summary and at least one step.", _results[0]);
+        Assert.Empty(_user.Proposals);
+    }
+    private static Func<IReadOnlyList<ChatMessage>, ChatResponse> AddStep(int after) =>
+        _ => Call("add_plan_step", Arguments(("after", after), ("step", System.Text.Json.JsonSerializer.SerializeToElement(new
+        {
+            title = "Open the firewall",
+            terminals = s_web1,
+            command = "sudo ufw allow 80/tcp",
+            purpose = "Lets requests reach nginx",
+        }))));
+
+    [Fact]
+    public async Task Adds_a_step_to_the_approved_plan_once_the_user_approves_it_and_renumbers_the_rest()
+    {
+        using var agent = await RunAsync(ApprovalMode.Plan, Plan(), AddStep(after: 1), Run("sudo ufw allow 80/tcp", step: 2), Run("sudo systemctl enable --now nginx", step: 3));
+
+        var proposal = _user.Proposals[1];
+        Assert.Equal((ProposalKind.Plan, 2, 3), (proposal.Kind, proposal.AddedStep, proposal.Plan!.Steps.Count));
+        Assert.Equal("sudo ufw allow 80/tcp", proposal.Plan.Steps[1].Command);
+        Assert.StartsWith("Added as step 2.", _results[1], StringComparison.Ordinal);
+        Assert.Contains("3. sudo systemctl enable --now nginx", _results[1], StringComparison.Ordinal);
+        var added = Assert.Single(_events, e => e.Kind == AgentEventKind.PlanStepAdded);
+        Assert.Equal(2, added.PlanStep);
+
+        // Both run as approved steps, so Plan mode doesn't ask again.
+        Assert.Equal(2, _user.Proposals.Count);
+        Assert.Equal(["sudo ufw allow 80/tcp", "sudo systemctl enable --now nginx"], _terminal.Typed);
+    }
+
+    [Fact]
+    public async Task Leaves_the_plan_as_it_was_when_the_user_declines_the_added_step()
+    {
+        _user.Decide = proposal => proposal.AddedStep is null ? CommandApproval.Approve(proposal.Command) : CommandApproval.Reject(proposal.Command, "Not on this host.");
+
+        using var agent = await RunAsync(ApprovalMode.Plan, Plan(), AddStep(after: 1));
+
+        Assert.StartsWith("Not added; the plan is as it was. The user said: Not on this host.", _results[1], StringComparison.Ordinal);
+        Assert.DoesNotContain(_events, e => e.Kind == AgentEventKind.PlanStepAdded);
+    }
+
+    [Fact]
+    public async Task Refuses_to_add_a_step_without_an_approved_plan()
+    {
+        using var agent = await RunAsync(ApprovalMode.Ask, AddStep(after: 0));
+
+        Assert.StartsWith("Not proposed: no plan is approved", _results[0], StringComparison.Ordinal);
         Assert.Empty(_user.Proposals);
     }
 }

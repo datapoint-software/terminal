@@ -13,14 +13,16 @@ public sealed partial class PlanProgressViewModel : ObservableObject
     {
         ArgumentNullException.ThrowIfNull(plan);
         Title = plan.Title ?? plan.Summary;
-        Steps = PlanStepViewModel.For(plan);
-        Shown = [.. Steps];
+        _steps = [.. PlanStepViewModel.For(plan)];
+        Shown = [.. _steps];
     }
 
     public string Title { get; }
 
+    private readonly List<PlanStepViewModel> _steps;
+
     // The plan's steps in its own order, as the agent numbers them.
-    public IReadOnlyList<PlanStepViewModel> Steps { get; }
+    public IReadOnlyList<PlanStepViewModel> Steps => _steps;
 
     // The steps as the checklist lists them: those over first, in the order they ended, then the one being worked on, then
     // the rest in the plan's order, so a step the agent skipped moves down below what it did instead (product decision 122).
@@ -179,6 +181,26 @@ public sealed partial class PlanProgressViewModel : ObservableObject
 
             Shown.Move(from, index);
         }
+    }
+
+    // A step the user approved adding goes in at its number; the ones after it move down, as the agent now numbers them.
+    public void Insert(int number, AgentPlanStep step)
+    {
+        if (number < 1 || number > _steps.Count + 1)
+        {
+            return;
+        }
+
+        foreach (var later in _steps.Skip(number - 1))
+        {
+            later.Number++;
+        }
+
+        var added = new PlanStepViewModel(number, step) { ChangeText = Strings.PlanStepAdded };
+        _steps.Insert(number - 1, added);
+        Shown.Add(added);
+        Arrange();
+        OnPropertyChanged(string.Empty);
     }
 
     // The task is over: unpinned and folded to its result, where the plan was approved in the conversation.

@@ -405,4 +405,41 @@ public sealed class ChatViewTests
         Assert.True(progress.Steps[3].IsPending);
         Assert.Equal("Plan stopped · 2 of 4 done, 1 failed", progress.HeaderText);
     }
+    [AvaloniaFact]
+    public void Adds_an_approved_step_to_the_running_plan_in_its_place()
+    {
+        using var chat = new ChatViewModel(new ImmediateUiThread());
+        var plan = new AgentPlan(
+            "Install nginx and start it.",
+            [new AgentPlanStep("sudo apt-get install -y nginx", "Install it") { Title = "Install nginx" }, new AgentPlanStep("sudo systemctl enable --now nginx", "Start it") { Title = "Start nginx" }],
+            "sudo apt-get remove nginx")
+        { Title = "Install nginx on web1" };
+        var firewall = new AgentPlanStep("sudo ufw allow 80/tcp", "Lets requests reach nginx") { Title = "Open the firewall" };
+        var longer = plan with { Steps = [plan.Steps[0], firewall, plan.Steps[1]] };
+
+        chat.Show(new AgentEventArgs(AgentEventKind.PlanApproved, plan.Summary) { Plan = plan, Terminal = "web1" });
+        chat.Show(new AgentEventArgs(AgentEventKind.CommandFinished, "Finished") { PlanStep = 1, StepState = PlanStepState.Succeeded, ExitCode = 0 });
+        chat.Show(new AgentEventArgs(AgentEventKind.PlanStepAdded, firewall.Title) { Plan = longer, PlanStep = 2 });
+        chat.Show(new AgentEventArgs(AgentEventKind.CommandStarted, "Open the firewall") { PlanStep = 2, StepState = PlanStepState.Running, Command = "sudo ufw allow 80/tcp", Terminal = "web1" });
+        var window = new Window { Width = 420, Height = 560, Content = new ChatView { DataContext = chat } };
+        window.Show();
+        Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+        Directory.CreateDirectory("rendered");
+        using (var frame = window.CaptureRenderedFrame())
+        {
+            frame?.Save("rendered/chat-plan-step-added.png", new PngBitmapEncoderOptions());
+        }
+
+        var active = chat.ActivePlan!;
+        Assert.Equal(["Install nginx", "Open the firewall", "Start nginx"], active.Steps.Select(step => step.Title), StringComparer.Ordinal);
+        Assert.Equal([1, 2, 3], active.Steps.Select(step => step.Number));
+        Assert.True(active.Steps[1].IsRunning);
+        Assert.Equal("Added", active.Steps[1].ChangeText);
+        Assert.Equal("Step 2 of 3", active.StatusText);
+
+        // On the review page, the added step is the only one marked, though the ones after it moved.
+        var review = new ApprovalViewModel(new CommandProposal(longer.Text, longer.Summary, CommandRisk.Changes, "web1", null) { Kind = ProposalKind.Plan, Plan = longer, PreviousPlan = plan, AddedStep = 2 });
+        Assert.Equal([null, "New", null], review.PlanSteps.Select(step => step.ChangeText), StringComparer.Ordinal);
+        Assert.False(review.IsRevision);
+    }
 }

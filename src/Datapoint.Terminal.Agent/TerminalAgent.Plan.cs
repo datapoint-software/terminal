@@ -5,7 +5,8 @@ using Microsoft.Extensions.AI;
 namespace Datapoint.Terminal.Agent;
 
 // Product decisions 45 and 82: before changing a system the agent shows its plan, and once the plan is approved, a step it
-// doesn't include stops for the user, even in Plan mode (not when the user ignores permissions). The plan lasts for the task.
+// doesn't include stops for the user, even in Plan mode (not when the user ignores permissions). The plan lasts for the task;
+// a step added to it is approved as the plan was (product decision 125).
 public sealed partial class TerminalAgent
 {
     public const int MaxPlanSteps = 30;
@@ -49,7 +50,81 @@ public sealed partial class TerminalAgent
              "required":["summary","steps","rollback"]}
             """,
             ProposePlanAsync),
+        new ToolFunction(
+            "add_plan_step",
+            "Once a plan is approved, asks the user to approve a step it doesn't include, when you find you need one. The user "
+            + "sees the plan with the new step marked. If approved, it goes in after the step you name, the steps after it move "
+            + "down by one, and the result lists the plan's numbers from then on; give those as plan_step.",
+            """
+            {"type":"object","properties":{
+              "after":{"type":"integer","description":"The number of the step the new one goes after, or 0 to put it first. Usually the step you're on."},
+              "step":{"type":"object","description":"The new step, as in propose_plan.","properties":{
+                "title":{"type":"string","description":"The action in a few words."},
+                "terminals":{"type":"array","items":{"type":"string"},"description":"The hosts the step runs on."},
+                "command":{"type":"string","description":"The command you'll run; several short commands go on separate lines."},
+                "example":{"type":"boolean","description":"True when the command illustrates the step rather than being exactly what you'll run."},
+                "purpose":{"type":"string","description":"Why the step is needed, in a short plain sentence."},
+                "warning":{"type":"string","description":"Only for a step that's risky or hard to undo: what could go wrong, in a few words."}},
+               "required":["title","terminals","command","purpose"]}},
+             "required":["after","step"]}
+            """,
+            AddPlanStepAsync),
     ];
+
+    // Product decision 125: a step the agent finds it needs joins the approved plan only once the user approves it there.
+    private async Task<string> AddPlanStepAsync(AIFunctionArguments arguments, CancellationToken cancellationToken)
+    {
+        if (AddedPlan(arguments, out var number, out var problem) is not { } plan)
+        {
+            return problem;
+        }
+
+        var terminal = Terminals.FirstOrDefault(item => plan.Steps[number - 1].Terminals.Contains(item.Name, StringComparer.OrdinalIgnoreCase));
+        SetStatus(AgentStatus.WaitingForApproval, terminal);
+        var approval = await RequestApprovalAsync(StepProposal(plan, number, terminal), cancellationToken).ConfigureAwait(false);
+        SetStatus(AgentStatus.Thinking);
+        if (!approval.Approved)
+        {
+            return "Not added; the plan is as it was." + (string.IsNullOrWhiteSpace(approval.Feedback) ? " Ask the user what they'd prefer." : " The user said: " + approval.Feedback);
+        }
+
+        _plan = plan;
+        _proposedPlan = plan;
+        Raise(new AgentEventArgs(AgentEventKind.PlanStepAdded, plan.Steps[number - 1].Title ?? plan.Steps[number - 1].Command) { Plan = plan, PlanStep = number, Terminal = terminal?.Name });
+        return $"Added as step {number}. The plan's steps are now:\n"
+            + string.Join('\n', plan.Steps.Select((step, index) => $"{index + 1}. {step.Title ?? step.Command}"));
+    }
+
+    private CommandProposal StepProposal(AgentPlan plan, int number, AgentTerminal? terminal) =>
+        new(plan.Text, plan.Summary, CommandRisk.Changes, terminal?.Name ?? string.Empty, terminal?.Environment)
+        {
+            Kind = ProposalKind.Plan,
+            Plan = plan,
+            Session = terminal?.Terminal.GetState().Session,
+            Environments = EnvironmentsOf(plan),
+            PreviousPlan = _plan,
+            AddedStep = number,
+        };
+
+    private AgentPlan? AddedPlan(AIFunctionArguments arguments, out int number, out string problem)
+    {
+        number = 0;
+        var after = ToolArguments.GetString(arguments, "after") is { } text && int.TryParse(text, System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out var value) ? value : -1;
+        var step = PlanSteps.ParseOne(arguments, "step");
+        problem = _plan is null ? "Not proposed: no plan is approved in this task. Show one with propose_plan."
+            : step is null ? "Not proposed: give the step with its command, or an example of it."
+            : after < 0 || after > _plan.Steps.Count ? $"Not proposed: after must be a step number from 0 to {_plan.Steps.Count}."
+            : _plan.Steps.Count >= MaxPlanSteps ? $"Not proposed: a plan has at most {MaxPlanSteps} steps."
+            : UnknownHost([step]) is { } unknown ? $"Not proposed: \"{unknown}\" is neither an open terminal nor a listed connection."
+            : string.Empty;
+        if (problem.Length > 0)
+        {
+            return null;
+        }
+
+        number = after + 1;
+        return _plan! with { Steps = [.. _plan!.Steps.Take(after), step!, .. _plan.Steps.Skip(after)] };
+    }
 
     private async Task<string> ProposePlanAsync(AIFunctionArguments arguments, CancellationToken cancellationToken)
     {

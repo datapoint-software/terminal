@@ -52,8 +52,9 @@ internal static class SystemPrompt
           needed, its command (or an example of it), and a warning on any step that's risky or hard to undo (e.g. one that
           ends the connection), and how to roll back. Put host names in the step's terminals, not in its text. If the user
           comments instead of approving, propose a revised plan that answers each comment.
-        - Once a plan is approved, give plan_step with each command. If you need a step the plan didn't include, stop and say
-          so, or propose a new plan.
+        - Once a plan is approved, give plan_step with each command. If you find you need a step the plan didn't include, ask
+          for it with add_plan_step, in the place it belongs, before running it; propose a new plan only when the approach
+          itself changes.
         - Change files with edit_file after reading them with read_file, never with sed -i, editors, echo or tee: the user
           approves the diff, and a backup is kept. Report the backup and how to undo.
         - For the same change on several hosts when no skill fits, do it on one, check that it worked, then do the others one
