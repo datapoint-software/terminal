@@ -43,4 +43,8 @@ public sealed class AgentEventArgs(AgentEventKind kind, string text) : EventArgs
 
     // Text on a page or in search results that addresses an AI model, a likely prompt injection.
     public string? Warning { get; init; }
+
+    // Set by whoever records a finished command in the history, while the event is raised: the entry's number, so the agent
+    // can later point the model to it instead of resending its output (product decision 139).
+    public long? HistoryId { get; set; }
 }

@@ -61,13 +61,14 @@ public sealed class HistoryStore : IDisposable
         }
     }
 
-    public void Add(HistoryEntry entry)
+    // The new entry's number, which search_history shows and read_history finds it by.
+    public long Add(HistoryEntry entry)
     {
         ArgumentNullException.ThrowIfNull(entry);
         lock (_lock)
         {
             using var command = Command(
-                "INSERT INTO entries (conversation, time, kind, terminal, text, detail, exit_code, connection) VALUES ($conversation, $time, $kind, $terminal, $text, $detail, $exit, $connection)",
+                "INSERT INTO entries (conversation, time, kind, terminal, text, detail, exit_code, connection) VALUES ($conversation, $time, $kind, $terminal, $text, $detail, $exit, $connection) RETURNING id",
                 ("$conversation", entry.Conversation),
                 ("$time", entry.Time.ToUnixTimeMilliseconds()),
                 ("$kind", entry.Kind.ToString()),
@@ -76,7 +77,7 @@ public sealed class HistoryStore : IDisposable
                 ("$detail", entry.Detail is null ? null : Shorten(_redactor.Redact(entry.Detail))),
                 ("$exit", entry.ExitCode),
                 ("$connection", entry.Connection));
-            command.ExecuteNonQuery();
+            return Convert.ToInt64(command.ExecuteScalar(), System.Globalization.CultureInfo.InvariantCulture);
         }
     }
 

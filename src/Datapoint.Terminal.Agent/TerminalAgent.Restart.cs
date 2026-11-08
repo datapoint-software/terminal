@@ -83,6 +83,7 @@ public sealed partial class TerminalAgent
         {
             _history.RemoveRange(1, _history.Count - 1);
             ForgetScreens();
+            _historyIds.Clear();
             _history.Add(new ChatMessage(ChatRole.User, DescribeTerminals() + message));
         }
 

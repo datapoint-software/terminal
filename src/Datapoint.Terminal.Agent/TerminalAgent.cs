@@ -158,6 +158,7 @@ public sealed partial class TerminalAgent : IDisposable
 
             _history.RemoveRange(1, _history.Count - 1);
             ForgetScreens();
+            _historyIds.Clear();
             Usage.ForgetContext();
             ForgetCarried();
             ForgetWebGuard();
@@ -236,6 +237,7 @@ public sealed partial class TerminalAgent : IDisposable
                 return;
             }
 
+            LeaveOutOldOutput();
             await CompactIfLongAsync(cancellationToken).ConfigureAwait(false);
             SetStatus(AgentStatus.Thinking);
             var response = await GetResponseAsync(cancellationToken).ConfigureAwait(false);

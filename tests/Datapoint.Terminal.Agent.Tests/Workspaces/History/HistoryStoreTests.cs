@@ -82,6 +82,8 @@ public sealed class HistoryStoreTests : IDisposable
         Assert.Empty(store.Search("   ", 10));
 
         var found = store.Search("systemctl", 10).Single();
+        Assert.Equal(found.Id, store.Search("restart", 10)[^1].Id);
+        Assert.Equal(found.Id + 3, store.Add(new HistoryEntry(conversation, s_start, HistoryEntryKind.Agent, "Later.")));
         Assert.Equal("ok", store.Find(found.Id)!.Detail);
         Assert.Null(store.Find(found.Id + 100));
     }

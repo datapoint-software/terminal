@@ -31,6 +31,7 @@ public sealed partial class TerminalAgent
             }
 
             NoteSeen(call, result);
+            NoteHistoryId(call);
             results.Contents.Add(new FunctionResultContent(call.CallId, result));
         }
     }
@@ -38,6 +39,7 @@ public sealed partial class TerminalAgent
     private async Task<string> InvokeCallAsync(FunctionCallContent call, CancellationToken cancellationToken)
     {
         _commandSucceeded = false;
+        _historyId = null;
         return await InvokeToolAsync(call, cancellationToken).ConfigureAwait(false);
     }
 

@@ -21,7 +21,7 @@ public sealed partial class MainWindow : IHistoryAccess
                 Record(HistoryEntryKind.Agent, e.Text);
                 break;
             case AgentEventKind.CommandFinished:
-                Record(HistoryEntryKind.Command, e.Command ?? string.Empty, e.Terminal, e.Output, e.ExitCode, e.Connection);
+                e.HistoryId = Record(HistoryEntryKind.Command, e.Command ?? string.Empty, e.Terminal, e.Output, e.ExitCode, e.Connection);
                 break;
             case AgentEventKind.Notice:
                 Record(HistoryEntryKind.Notice, e.Text);
@@ -34,18 +34,18 @@ public sealed partial class MainWindow : IHistoryAccess
 
     // A read-only window leaves the history to the window that holds the workspace's lock. The store is opened on the first entry,
     // so a workspace that's never used with the agent gets no history file.
-    private void Record(HistoryEntryKind kind, string text, string? terminal = null, string? detail = null, int? exitCode = null, string? connection = null)
+    private long? Record(HistoryEntryKind kind, string text, string? terminal = null, string? detail = null, int? exitCode = null, string? connection = null)
     {
         if (Workspace.IsReadOnly)
         {
-            return;
+            return null;
         }
 
         lock (_historyLock)
         {
             if (_isHistoryUnavailable)
             {
-                return;
+                return null;
             }
 
             try
@@ -53,11 +53,12 @@ public sealed partial class MainWindow : IHistoryAccess
                 var history = OpenHistory();
                 var now = DateTimeOffset.Now;
                 _conversation ??= history.StartConversation(now);
-                history.Add(new HistoryEntry(_conversation.Value, now, kind, text, terminal, detail, exitCode, connection));
+                return history.Add(new HistoryEntry(_conversation.Value, now, kind, text, terminal, detail, exitCode, connection));
             }
             catch (Exception exception) when (exception is SqliteException or HistoryException or IOException or UnauthorizedAccessException)
             {
                 StopHistory(exception.Message);
+                return null;
             }
         }
     }

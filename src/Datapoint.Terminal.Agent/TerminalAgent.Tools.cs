@@ -373,7 +373,7 @@ public sealed partial class TerminalAgent
             terminal.RunningPlanStep = null;
         }
 
-        Raise(new AgentEventArgs(AgentEventKind.CommandFinished, isFinished ? "Finished" : "Still running")
+        var finished = new AgentEventArgs(AgentEventKind.CommandFinished, isFinished ? "Finished" : "Still running")
         {
             Command = command,
             ExitCode = exitCode,
@@ -382,7 +382,9 @@ public sealed partial class TerminalAgent
             Output = output,
             PlanStep = step,
             StepState = StepState(isFinished, exitCode),
-        });
+        };
+        Raise(finished);
+        _historyId = finished.HistoryId;
         SetStatus(AgentStatus.Thinking);
         var status = note ?? (isFinished, exitCode) switch
         {
