@@ -9,7 +9,16 @@ public static class VersionExchange
     public const int MaxLineLength = 255;
     public const int MaxLinesBeforeVersion = 64;
 
-    public static string ClientVersion { get; } = $"SSH-2.0-DatapointTerminal_{ProductVersion()}";
+    public static string ClientVersion { get; } = Identification(ProductVersion());
+
+    // RFC 4253, section 4.2: the software version is printable ASCII with no spaces or hyphens, as servers split the line on
+    // hyphens. A pre-release's hyphen becomes an underscore, e.g. "1.0.0-alpha.1" is sent as "1.0.0_alpha.1".
+    public static string Identification(string version)
+    {
+        ArgumentNullException.ThrowIfNull(version);
+        var software = new string([.. version.Select(character => character is > ' ' and < '\x7f' and not '-' ? character : '_')]);
+        return $"SSH-2.0-DatapointTerminal_{software}";
+    }
 
     public static async Task<string> RunAsync(Stream stream, CancellationToken cancellationToken)
     {
