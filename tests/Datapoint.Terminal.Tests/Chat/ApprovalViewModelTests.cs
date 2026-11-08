@@ -21,7 +21,8 @@ public sealed class ApprovalViewModelTests
     [Theory]
     [InlineData("patronictl list --format json", "patronictl list")]
     [InlineData("rm -rf build", null)]
-    [InlineData("sudo patronictl list", null)]
+    [InlineData("sudo -u postgres patronictl list", "patronictl list")]
+    [InlineData("sudo -i patronictl list", null)]
     public void Offers_to_treat_a_command_counted_as_a_change_as_read_only(string command, string? expected)
     {
         var approval = new ApprovalViewModel(new CommandProposal(command, "Check the cluster", CommandRisk.Changes, "db1"));

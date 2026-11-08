@@ -23,6 +23,10 @@ public static class CommandClassifier
 
     private static readonly FrozenSet<string> s_pagerVariables = FrozenSet.Create(StringComparer.Ordinal, "PAGER", "GIT_PAGER", "SYSTEMD_PAGER", "MANPAGER");
 
+    private static readonly FrozenSet<string> s_elevationFlags = FrozenSet.Create(StringComparer.Ordinal, "-n", "--non-interactive", "-H", "--set-home", "-S", "--stdin");
+
+    private static readonly FrozenSet<string> s_elevationValueOptions = FrozenSet.Create(StringComparer.Ordinal, "-u", "--user", "-g", "--group");
+
     private static readonly FrozenSet<string> s_systemFolders = FrozenSet.Create(
         StringComparer.Ordinal, "/bin", "/sbin", "/usr/bin", "/usr/sbin", "/usr/local/bin", "/usr/local/sbin", "/opt/homebrew/bin");
 
@@ -84,23 +88,69 @@ public static class CommandClassifier
     private static bool IsReadOnlyPart(string part, LearnedCommands? learned)
     {
         var words = part.Split([' ', '\t'], StringSplitOptions.RemoveEmptyEntries);
-        var index = 0;
-        while (index < words.Length && IsAssignment(words[index]))
-        {
-            if (!IsHarmlessAssignment(words[index]))
-            {
-                return false;
-            }
-
-            index++;
-        }
-
-        if (index >= words.Length || ProgramName(words[index]) is not { } program)
+        var index = CommandStart(words);
+        if (index < 0 || ProgramName(words[index]) is not { } program)
         {
             return false;
         }
 
         return FindRule(program, words, index + 1, learned) is { } rule && rule.Permits(part, words[(index + rule.Length)..]);
+    }
+
+    // Where the program starts, after variables and sudo or doas; -1 when one of those could run something else, or there's
+    // no program.
+    internal static int CommandStart(string[] words)
+    {
+        var index = SkipAssignments(words, 0);
+        if (index >= 0 && index < words.Length && ProgramName(words[index]) is "sudo" or "doas")
+        {
+            index = SkipElevation(words, index + 1);
+            index = index < 0 ? index : SkipAssignments(words, index);
+        }
+
+        return index >= 0 && index < words.Length ? index : -1;
+    }
+
+    private static int SkipAssignments(string[] words, int index)
+    {
+        for (; index < words.Length && IsAssignment(words[index]); index++)
+        {
+            if (!IsHarmlessAssignment(words[index]))
+            {
+                return -1;
+            }
+        }
+
+        return index;
+    }
+
+    // A read run as another user still only reads. Only options that choose the user or how to ask for a password are
+    // taken: the others run a shell (-i, -s), an editor (-e), another program (-A) or keep the caller's variables (-E).
+    private static int SkipElevation(string[] words, int index)
+    {
+        while (index < words.Length && words[index].StartsWith('-'))
+        {
+            var option = words[index];
+            if (option is "--")
+            {
+                return index + 1;
+            }
+
+            if (s_elevationValueOptions.Contains(option))
+            {
+                index += 2;
+            }
+            else if (s_elevationFlags.Contains(option) || option.StartsWith("--user=", StringComparison.Ordinal) || option.StartsWith("--group=", StringComparison.Ordinal))
+            {
+                index++;
+            }
+            else
+            {
+                return -1;
+            }
+        }
+
+        return index;
     }
 
     internal static bool IsAssignment(string word) => word.Contains('=', StringComparison.Ordinal) && !word.StartsWith('-');

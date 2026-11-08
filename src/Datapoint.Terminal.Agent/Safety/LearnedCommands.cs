@@ -86,11 +86,15 @@ public sealed partial class LearnedCommands
             return null;
         }
 
-        var words = command.Split([' ', '\t'], StringSplitOptions.RemoveEmptyEntries).SkipWhile(CommandClassifier.IsAssignment).ToArray();
-        if (words.Length == 0)
+        var all = command.Split([' ', '\t'], StringSplitOptions.RemoveEmptyEntries);
+        var start = CommandClassifier.CommandStart(all);
+        if (start < 0)
         {
             return null;
         }
+
+        // What's taught is the command itself, so it reads with sudo or without.
+        var words = all[start..];
 
         var subcommands = words.Skip(1).TakeWhile(word => SubcommandWord().IsMatch(word)).Take(CommandRules.MaxWords - 1).Count();
 

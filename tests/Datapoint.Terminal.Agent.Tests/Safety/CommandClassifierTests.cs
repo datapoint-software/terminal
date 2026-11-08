@@ -43,6 +43,12 @@ public sealed class CommandClassifierTests
     [InlineData("Get-Process | Sort-Object CPU | Select-Object -First 5")]
     [InlineData("ipconfig /all")]
     [InlineData("diskutil list")]
+    [InlineData("sudo docker node ls")]
+    [InlineData("sudo -n -u postgres cat /var/lib/postgresql/data/postgresql.conf")]
+    [InlineData("sudo --user=www-data ls /var/www")]
+    [InlineData("sudo -- journalctl -u nginx")]
+    [InlineData("doas -u root dmesg")]
+    [InlineData("TZ=UTC sudo LC_ALL=C /usr/bin/ls /root")]
     public void Treats_reading_commands_as_read_only(string command) => Assert.Equal(CommandRisk.ReadOnly, CommandClassifier.Classify(command));
 
     [Theory]
@@ -118,6 +124,19 @@ public sealed class CommandClassifierTests
     [InlineData("Select-Object @{n='x';e={Remove-Item y}}")]
     [InlineData("Get-ChildItem | Where-Object { $_.Length -gt 1 }")]
     [InlineData("sysctl -w net.ipv4.ip_forward=1")]
+    [InlineData("sudo rm -rf /var/www")]
+    [InlineData("sudo -i ls")]
+    [InlineData("sudo -s ls")]
+    [InlineData("sudo -E ls")]
+    [InlineData("sudo -e /etc/hosts")]
+    [InlineData("sudo -A ls")]
+    [InlineData("sudo -uroot ls")]
+    [InlineData("sudo LD_PRELOAD=/tmp/x.so ls")]
+    [InlineData("sudo sudo -i")]
+    [InlineData("sudo -u")]
+    [InlineData("sudo")]
+    [InlineData("sudo sort -o /etc/passwd x")]
+    [InlineData("sudo bash -c 'cat /etc/shadow'")]
     [InlineData("awk 'BEGIN { system(\"reboot\") }'")]
     public void Treats_anything_else_as_a_change(string command) => Assert.Equal(CommandRisk.Changes, CommandClassifier.Classify(command));
 
