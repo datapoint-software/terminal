@@ -3151,9 +3151,9 @@ Fingerprint: {2}</value>
     <value>Properties</value>
   </data>
   <data name="RolloutPauseAfterHost" xml:space="preserve">
-    <value>Pause After This Host</value>
+    <value>Pause after this host</value>
   </data>
   <data name="RolloutPauseAfterBatch" xml:space="preserve">
-    <value>Pause After This Batch</value>
+    <value>Pause after this batch</value>
   </data>
 </root>
