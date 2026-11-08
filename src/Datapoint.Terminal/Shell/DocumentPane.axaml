@@ -1,0 +1,36 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ed="clr-namespace:Datapoint.Terminal.Editor"
+             x:Class="Datapoint.Terminal.Shell.DocumentPane">
+  <DockPanel>
+    <!-- Named after the kind of document it holds; dragging it moves the area (product decisions 109 and 120). -->
+    <Border x:Name="Header" DockPanel.Dock="Top" Background="Transparent" Height="{StaticResource PaneHeaderHeight}" Padding="16,0,10,0" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
+      <StackPanel Spacing="2" VerticalAlignment="Center">
+        <TextBlock x:Name="TitleText" Classes="title" />
+        <TextBlock x:Name="Summary" Classes="secondary" TextTrimming="CharacterEllipsis" />
+      </StackPanel>
+    </Border>
+    <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
+      <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
+        <ListBox x:Name="Tabs" Classes="tabs documenttabs" SelectionMode="Single,AlwaysSelected"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+          <ListBox.ItemTemplate>
+            <DataTemplate x:DataType="ed:IOpenDocument">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <Ellipse Width="7" Height="7" Fill="{DynamicResource LabelBrush}" IsVisible="{Binding IsUnsaved}" VerticalAlignment="Center" />
+                <Path Data="{DynamicResource DocumentTabGlyph}" Width="12" Height="12" Stretch="Uniform" VerticalAlignment="Center"
+                      Stroke="{DynamicResource SecondaryLabelBrush}" StrokeThickness="1.25" StrokeJoin="Round" />
+                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                <Button Classes="icon tabclose" Command="{Binding CloseCommand}" VerticalAlignment="Center"
+                        AutomationProperties.Name="{Binding CloseName}" ToolTip.Tip="{Binding CloseName}">
+                  <PathIcon Data="{DynamicResource CloseGlyph}" />
+                </Button>
+              </StackPanel>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </ScrollViewer>
+    </Border>
+    <ContentControl x:Name="Host" />
+  </DockPanel>
+</UserControl>

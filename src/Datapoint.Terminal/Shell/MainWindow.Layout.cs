@@ -1,12 +1,13 @@
 using Avalonia.Controls;
 using Avalonia.Input;
+using Datapoint.Terminal.Editor;
 using Datapoint.Terminal.Resources;
 using Datapoint.Terminal.Shell.Areas;
 
 namespace Datapoint.Terminal.Shell;
 
-// Product decisions 104, 109 and 119: the agent, the terminals, the documents and the plan sit where the user dragged them,
-// the same in every window. Documents and the plan take space only while one is open. Product decision 115: a shortcut collapses the terminals to a strip
+// Product decisions 104, 109, 119 and 120: the agent, the terminals, each kind of document and the plan sit where the user
+// dragged them, the same in every window. A kind of document, and the plan, take space only while one is open. Product decision 115: a shortcut collapses the terminals to a strip
 // that names each one and shows what the agent is doing there, and only the user expands them again.
 public sealed partial class MainWindow
 {
@@ -16,25 +17,25 @@ public sealed partial class MainWindow
 
     private bool IsShown(AreaKind kind) => kind switch
     {
-        AreaKind.Documents => _documents.Count > 0,
         AreaKind.Plan => _plans.Count > 0,
+        _ when _documentPanes.TryGetValue(kind, out var pane) => pane.Documents.Count > 0,
         _ => true,
     };
 
     private Control AreaControl(AreaKind kind) => kind switch
     {
         AreaKind.Terminals => TerminalPane,
-        AreaKind.Documents => DocumentArea,
         AreaKind.Plan => PlanArea,
+        _ when _documentPanes.TryGetValue(kind, out var pane) => pane,
         _ => Chat,
     };
 
     private static string AreaName(AreaKind kind) => kind switch
     {
+        AreaKind.Agent => Strings.ChatTitle,
         AreaKind.Terminals => Strings.TabsName,
-        AreaKind.Documents => Strings.DocumentTabsName,
         AreaKind.Plan => Strings.PlanAreaName,
-        _ => Strings.ChatTitle,
+        _ => DocumentPane.TitleOf(kind),
     };
 
     // The settings of a version without moving areas say only which side the terminals were on.
@@ -224,7 +225,7 @@ public sealed partial class MainWindow
     private void UpdateLayoutMenu() => _toggleTerminalsItem?.Header = _areTerminalsCollapsed ? Strings.MenuExpandTerminals : Strings.MenuCollapseTerminals;
 
     // F6 moves the keyboard between the window's areas, as in most desktop applications: the chat, the terminals, the
-    // documents and the plan, skipping any that are hidden. Collapsed terminals are reached at the strip's first button.
+    // documents of each kind and the plan, skipping any that are hidden. Collapsed terminals are reached at the strip's first button.
     private void MoveAreaFocus(int step)
     {
         var areas = new List<(Control Area, Action Focus)> { (Chat, Chat.FocusInput) };
@@ -238,9 +239,9 @@ public sealed partial class MainWindow
             areas.Add((TerminalRail, () => ExpandTerminalsButton.Focus()));
         }
 
-        if (DocumentArea.IsEffectivelyVisible)
+        foreach (var pane in _documentPanes.Values.Where(pane => pane.IsEffectivelyVisible))
         {
-            areas.Add((DocumentArea, FocusShownDocument));
+            areas.Add((pane, () => FocusShownDocument(pane)));
         }
 
         if (PlanArea.IsEffectivelyVisible)
@@ -253,14 +254,16 @@ public sealed partial class MainWindow
         areas[next].Focus();
     }
 
-    private void FocusShownDocument()
+    private void FocusShownDocument(DocumentPane pane)
     {
-        if (ShownDocument is { } shown)
+        switch (pane.Selected)
         {
-            shown.View.FocusText();
-            return;
+            case DocumentViewModel document when _documentTabs.TryGetValue(document, out var shown):
+                shown.View.FocusText();
+                break;
+            case ServerFileViewModel file when _hostFiles.TryGetValue(file, out var open):
+                open.View.FocusText();
+                break;
         }
-
-        ShownHostFile?.FocusText();
     }
 }

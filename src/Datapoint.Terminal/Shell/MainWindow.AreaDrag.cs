@@ -25,9 +25,8 @@ public sealed partial class MainWindow
         {
             (AreaKind.Agent, Chat.DragHandle),
             (AreaKind.Terminals, (Control)TerminalsHeader),
-            (AreaKind.Documents, DocumentsHeader),
             (AreaKind.Plan, PlanHeader),
-        })
+        }.Concat(_documentPanes.Values.Select(pane => (pane.Kind, pane.HeaderControl))))
         {
             header.PointerPressed += (_, e) => OnHeaderPressed(kind, header, e);
             header.PointerMoved += (_, e) => OnHeaderMoved(e);

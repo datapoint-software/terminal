@@ -163,7 +163,7 @@ public sealed partial class MainWindow
     private void ShowNoTerminals()
     {
         NoTerminals.IsVisible = true;
-        if (DocumentArea.IsKeyboardFocusWithin || PlanArea.IsKeyboardFocusWithin)
+        if (FocusedPane is not null || PlanArea.IsKeyboardFocusWithin)
         {
             return;
         }
@@ -289,7 +289,7 @@ public sealed partial class MainWindow
 
     private void ShowTerminalCount() => TerminalsSummary.Text = OpenCount(_tabs.Count);
 
-    private static string OpenCount(int count) => count switch
+    internal static string OpenCount(int count) => count switch
     {
         0 => Strings.CountNoneOpen,
         1 => Strings.CountOneOpen,

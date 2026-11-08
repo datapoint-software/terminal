@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using System.Globalization;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -9,28 +8,44 @@ using Datapoint.Terminal.Agent.Skills;
 using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Editor;
 using Datapoint.Terminal.Resources;
+using Datapoint.Terminal.Shell.Areas;
 
 namespace Datapoint.Terminal.Shell;
 
-// Product decision 98: Markdown files open in the editor, as tabs in the documents pane (decision 108); other text files open as
-// plain text, and anything else in the system's default application.
+// Product decision 98: Markdown files open in the editor, as tabs (decision 108); other text files open as plain text, and
+// anything else in the system's default application. Product decision 120: each kind of document opens in its own area.
 public sealed partial class MainWindow
 {
     private static readonly string[] s_markdownExtensions = [".md", ".markdown", ".mdown", ".mkd"];
 
-    private readonly ObservableCollection<IOpenDocument> _documents = [];
+    private readonly Dictionary<AreaKind, DocumentPane> _documentPanes = AreaLayout.DocumentKinds.ToDictionary(kind => kind, kind => new DocumentPane(kind));
     private readonly Dictionary<DocumentViewModel, DocumentTab> _documentTabs = [];
     private NativeMenuItem? _showMarkdownItem;
 
-    private DocumentTab? ShownDocument => DocumentTabs.SelectedItem is DocumentViewModel document ? _documentTabs.GetValueOrDefault(document) : null;
+    // The pane last chosen in, for the menus that act on the document in front when the keyboard is elsewhere.
+    private DocumentPane? _activePane;
+
+    private IEnumerable<IOpenDocument> AllDocuments => _documentPanes.Values.SelectMany(pane => pane.Documents);
+
+    private DocumentPane? FocusedPane => _documentPanes.Values.FirstOrDefault(pane => pane.IsKeyboardFocusWithin);
+
+    private DocumentPane? ActivePane => FocusedPane ?? (_activePane is { Documents.Count: > 0 } ? _activePane : null);
+
+    private DocumentTab? ShownDocument => ActivePane?.Selected is DocumentViewModel document ? _documentTabs.GetValueOrDefault(document) : null;
 
     private void SetUpDocuments()
     {
-        DocumentTabs.ItemsSource = _documents;
-        DocumentTabs.SelectionChanged += (_, _) => ShowSelectedDocument();
-        _documents.CollectionChanged += (_, _) => LayOutPanes();
-        _documents.CollectionChanged += (_, _) => ShowDocumentsHeading();
-        DocumentArea.GotFocus += (_, _) => UpdateTitle();
+        foreach (var pane in _documentPanes.Values)
+        {
+            pane.SelectionChanged += (_, _) => ShowSelectedDocument(pane);
+            pane.Documents.CollectionChanged += (_, _) => LayOutPanes();
+            pane.GotFocus += (_, _) =>
+            {
+                _activePane = pane;
+                UpdateTitle();
+            };
+        }
+
         TerminalArea.GotFocus += (_, _) => UpdateTitle();
         _tabs.CollectionChanged += (_, _) => RefreshDocumentHosts();
         _tabs.CollectionChanged += (_, _) => ShowTerminalCount();
@@ -53,9 +68,9 @@ public sealed partial class MainWindow
 
     private void OpenWorkspaceFile(string path)
     {
-        if (_documents.OfType<DocumentViewModel>().FirstOrDefault(document => string.Equals(document.Path, path, StringComparison.Ordinal)) is { } open)
+        if (AllDocuments.OfType<DocumentViewModel>().FirstOrDefault(document => string.Equals(document.Path, path, StringComparison.Ordinal)) is { } open)
         {
-            DocumentTabs.SelectedItem = open;
+            ShowDocument(open);
             return;
         }
 
@@ -82,31 +97,54 @@ public sealed partial class MainWindow
         };
         document.Skill = SkillHeaderFor(document);
         _documentTabs[document] = new DocumentTab(document);
-        _documents.Add(document);
-        DocumentTabs.SelectedItem = document;
+        ShowDocument(document);
     }
 
-    private void ShowSelectedDocument()
+    // A host's page, a skill, a file of the workspace's own, or a file on a server.
+    private DocumentPane PaneFor(IOpenDocument document) => _documentPanes[document switch
     {
-        var shown = ShownDocument;
-        var hostFile = ShownHostFile;
-        DocumentHost.Content = (Control?)shown?.View ?? hostFile;
-        if (hostFile is not null)
+        ServerFileViewModel => AreaKind.ServerFiles,
+        DocumentViewModel { Host: not null } => AreaKind.Hosts,
+        DocumentViewModel skill when IsSkillFile(skill.Path) => AreaKind.Skills,
+        _ => AreaKind.Workspace,
+    }];
+
+    private DocumentPane? PaneHolding(IOpenDocument document) => _documentPanes.Values.FirstOrDefault(pane => pane.Documents.Contains(document));
+
+    // In its pane, added if it isn't there yet, and in front.
+    private void ShowDocument(IOpenDocument document)
+    {
+        var pane = PaneHolding(document) ?? PaneFor(document);
+        if (!pane.Documents.Contains(document))
         {
-            Dispatcher.UIThread.Post(hostFile.FocusText, DispatcherPriority.Background);
+            pane.Documents.Add(document);
         }
 
-        ShowDocumentsHeading();
-        _showMarkdownItem?.IsEnabled = shown is { Document.CanShowMarkdown: true };
-        _showMarkdownItem?.IsChecked = shown?.Document.IsSourceMode == true;
-        UpdateTitle();
-        if (shown is null)
+        _activePane = pane;
+        pane.Select(document);
+    }
+
+    private void ShowSelectedDocument(DocumentPane pane)
+    {
+        pane.Page.Content = ViewOf(pane.Selected);
+        if (pane.Selected is null)
         {
             return;
         }
 
-        Dispatcher.UIThread.Post(shown.View.FocusText, DispatcherPriority.Background);
+        _activePane = pane;
+        _showMarkdownItem?.IsEnabled = ShownDocument is { Document.CanShowMarkdown: true };
+        _showMarkdownItem?.IsChecked = ShownDocument?.Document.IsSourceMode == true;
+        UpdateTitle();
+        Dispatcher.UIThread.Post(() => FocusShownDocument(pane), DispatcherPriority.Background);
     }
+
+    private Control? ViewOf(IOpenDocument? document) => document switch
+    {
+        DocumentViewModel open when _documentTabs.TryGetValue(open, out var tab) => tab.View,
+        ServerFileViewModel file when _hostFiles.TryGetValue(file, out var open) => open.View,
+        _ => null,
+    };
 
     private void CloseDocument(DocumentViewModel document)
     {
@@ -118,7 +156,7 @@ public sealed partial class MainWindow
         if (!tab.SaveNow())
         {
             // Unsaved changes stay open until the user settles the conflict or the problem.
-            DocumentTabs.SelectedItem = document;
+            ShowDocument(document);
             return;
         }
 
@@ -130,17 +168,22 @@ public sealed partial class MainWindow
     // The tab beside a closed one comes to the front; when it was the last, the pane goes and the keyboard returns to the terminal.
     private void RemoveFromStrip(IOpenDocument document)
     {
-        var index = _documents.IndexOf(document);
-        var wasShown = ReferenceEquals(DocumentTabs.SelectedItem, document);
-        _documents.Remove(document);
+        if (PaneHolding(document) is not { } pane)
+        {
+            return;
+        }
+
+        var index = pane.Documents.IndexOf(document);
+        var wasShown = ReferenceEquals(pane.Selected, document);
+        pane.Documents.Remove(document);
         if (!wasShown)
         {
             return;
         }
 
-        if (_documents.Count > 0)
+        if (pane.Documents.Count > 0)
         {
-            DocumentTabs.SelectedItem = _documents[Math.Min(index, _documents.Count - 1)];
+            pane.Select(pane.Documents[Math.Min(index, pane.Documents.Count - 1)]);
             return;
         }
 
@@ -150,7 +193,7 @@ public sealed partial class MainWindow
     // Cmd+W closes the tab in the pane that has the keyboard: the plan's, a document's, or the terminal's.
     private void CloseShownTab()
     {
-        switch (PlanArea.IsKeyboardFocusWithin ? _planReview : DocumentArea.IsKeyboardFocusWithin ? DocumentTabs.SelectedItem : null)
+        switch (PlanArea.IsKeyboardFocusWithin ? _planReview : FocusedPane?.Selected)
         {
             case DocumentViewModel document:
                 CloseDocument(document);
@@ -235,7 +278,7 @@ public sealed partial class MainWindow
     private void RefreshHostLogs()
     {
         var docs = CreateHostDocs();
-        foreach (var host in _documents.OfType<DocumentViewModel>().Select(document => document.Host).OfType<HostHeaderViewModel>())
+        foreach (var host in AllDocuments.OfType<DocumentViewModel>().Select(document => document.Host).OfType<HostHeaderViewModel>())
         {
             host.SetLog(HostLog.Read(docs.LogFor(host.Name)), Environment.UserName);
         }
@@ -243,7 +286,7 @@ public sealed partial class MainWindow
 
     private void RefreshDocumentHosts()
     {
-        foreach (var host in _documents.OfType<DocumentViewModel>().Select(document => document.Host).OfType<HostHeaderViewModel>())
+        foreach (var host in AllDocuments.OfType<DocumentViewModel>().Select(document => document.Host).OfType<HostHeaderViewModel>())
         {
             host.OpenText = OpenTextFor(host.Name);
         }
@@ -318,20 +361,4 @@ public sealed partial class MainWindow
         _showMarkdownItem?.IsChecked = shown.Document.IsSourceMode;
         Dispatcher.UIThread.Post(shown.View.FocusText, DispatcherPriority.Background);
     }
-
-    private void ShowDocumentsHeading()
-    {
-        DocumentsTitle.Text = SectionOf(DocumentTabs.SelectedItem);
-        DocumentsSummary.Text = OpenCount(_documents.Count);
-    }
-
-    // The sidebar section the document comes from, so the heading says what kind of page is in front.
-    private string SectionOf(object? item) => item switch
-    {
-        ServerFileViewModel => Strings.DocumentsServerFiles,
-        DocumentViewModel { Host: not null } => Strings.SidebarHosts,
-        DocumentViewModel document when IsSkillFile(document.Path) => Strings.SidebarSkills,
-        DocumentViewModel document when string.Equals(document.Path, InstructionsPath, StringComparison.Ordinal) => Strings.SidebarWorkspaceSection,
-        _ => Strings.DocumentTabsName,
-    };
 }

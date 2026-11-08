@@ -3,7 +3,8 @@ using System.Text;
 
 namespace Datapoint.Terminal.Shell.Areas;
 
-// Moves areas around a layout and saves it as text, e.g. "row(640;row(420;agent,plan),column(280;terminals,documents))".
+// Moves areas around a layout and saves it as text, e.g. "row(640;row(680;agent,plan),column(280;terminals,hosts))", with
+// every area once.
 public static class AreaLayout
 {
     private const double AgentMinimumWidth = 320;
@@ -15,18 +16,24 @@ public static class AreaLayout
 
     public static AreaNode Default() => FromSide(TerminalSide.Right);
 
+    // The kinds of document, each in its own area (product decision 120). They start together where a single documents area
+    // was, side by side or one above the other, so whichever are open share that place.
+    public static readonly IReadOnlyList<AreaKind> DocumentKinds = [AreaKind.Hosts, AreaKind.Skills, AreaKind.Workspace, AreaKind.ServerFiles];
+
+    private static AreaNode Documents(bool isRow) => DocumentKinds.Reverse().Select(kind => (AreaNode)new AreaLeaf(kind))
+        .Aggregate((rest, first) => new AreaSplit(isRow, first, rest, isRow ? 420 : 280));
+
     // The layout from before areas could be moved: the terminals on one side of the chat, documents below them or, with the
     // terminals at the bottom, to their right. The plan opens to the chat's right, where the conversation about it is.
     public static AreaNode FromSide(TerminalSide side)
     {
         var agent = new AreaLeaf(AreaKind.Agent);
         var terminals = new AreaLeaf(AreaKind.Terminals);
-        var documents = new AreaLeaf(AreaKind.Documents);
         AreaNode layout = side switch
         {
-            TerminalSide.Left => new AreaSplit(isRow: true, new AreaSplit(isRow: false, terminals, documents, 280), agent, 640),
-            TerminalSide.Bottom => new AreaSplit(isRow: false, agent, new AreaSplit(isRow: true, terminals, documents, 420), 300),
-            _ => new AreaSplit(isRow: true, agent, new AreaSplit(isRow: false, terminals, documents, 280), 640),
+            TerminalSide.Left => new AreaSplit(isRow: true, new AreaSplit(isRow: false, terminals, Documents(isRow: true), 280), agent, 640),
+            TerminalSide.Bottom => new AreaSplit(isRow: false, agent, new AreaSplit(isRow: true, terminals, Documents(isRow: false), 420), 300),
+            _ => new AreaSplit(isRow: true, agent, new AreaSplit(isRow: false, terminals, Documents(isRow: true), 280), 640),
         };
         return WithPlan(layout);
     }
@@ -103,7 +110,8 @@ public static class AreaLayout
     };
 
     // Null for text that isn't a layout of every area once, e.g. from a newer version or edited by hand. A layout saved before
-    // the plan had its own area is read with the plan added.
+    // the plan had its own area is read with the plan added, and one saved before each kind of document had its own, with
+    // them where the single documents area was.
     public static AreaNode? Parse(string? text)
     {
         if (string.IsNullOrWhiteSpace(text))
@@ -183,6 +191,11 @@ public static class AreaLayout
             if (string.Equals(name, "row", StringComparison.Ordinal) || string.Equals(name, "column", StringComparison.Ordinal))
             {
                 return Split(string.Equals(name, "row", StringComparison.Ordinal));
+            }
+
+            if (string.Equals(name, "documents", StringComparison.Ordinal))
+            {
+                return Documents(isRow: true);
             }
 
             return Enum.TryParse<AreaKind>(name, ignoreCase: true, out var kind) && Enum.IsDefined(kind) ? new AreaLeaf(kind) : null;

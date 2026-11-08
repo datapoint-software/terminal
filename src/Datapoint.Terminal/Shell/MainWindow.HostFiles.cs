@@ -16,7 +16,6 @@ public sealed partial class MainWindow
 
     private readonly Dictionary<ServerFileViewModel, (ServerFileView View, TerminalTab Tab)> _hostFiles = [];
 
-    private ServerFileView? ShownHostFile => DocumentTabs.SelectedItem is ServerFileViewModel file ? _hostFiles.GetValueOrDefault(file).View : null;
 
     private IEnumerable<ServerFileViewModel> UnsavedHostFiles => _hostFiles.Keys.Where(file => file.IsDirty);
 
@@ -46,7 +45,7 @@ public sealed partial class MainWindow
 
         if (_hostFiles.FirstOrDefault(item => ReferenceEquals(item.Value.Tab, tab) && string.Equals(item.Key.Path, path, StringComparison.Ordinal)).Key is { } open)
         {
-            DocumentTabs.SelectedItem = open;
+            ShowDocument(open);
             return;
         }
 
@@ -61,8 +60,7 @@ public sealed partial class MainWindow
             SaveRequested = saving => _ = SaveHostFileAsync(saving),
         };
         _hostFiles[document] = (new ServerFileView { DataContext = document }, tab);
-        _documents.Add(document);
-        DocumentTabs.SelectedItem = document;
+        ShowDocument(document);
     }
 
     // Null, with the reason in the chat, when the file can't be edited here.
@@ -242,7 +240,7 @@ public sealed partial class MainWindow
     {
         if (file.IsDirty)
         {
-            DocumentTabs.SelectedItem = file;
+            ShowDocument(file);
             var choice = await ChoiceWindow.AskAsync(
                 this,
                 Strings.Format(Strings.HostFileUnsavedTitle, file.FileName),
