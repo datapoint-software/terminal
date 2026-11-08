@@ -3,6 +3,7 @@ using Avalonia.LogicalTree;
 using Avalonia.VisualTree;
 using Avalonia.Controls;
 using Avalonia.Headless;
+using Avalonia.Input.Platform;
 using Avalonia.Headless.XUnit;
 using Avalonia.Media.Imaging;
 using Datapoint.Terminal.Agent;
@@ -622,6 +623,36 @@ public sealed class ChatViewTests
         Assert.True(chat.IsContextEstimated);
         Assert.InRange(chat.ContextUsed, 1_000, 20_000);
         Assert.StartsWith("About ", chat.ContextDetail, StringComparison.Ordinal);
+    }
+
+    // A message pasted with several lines keeps them all; Enter still sends it, and Shift+Enter starts a new line.
+    [AvaloniaFact]
+    public async Task Keeps_every_line_of_a_pasted_message()
+    {
+        using var chat = new ChatViewModel(new ImmediateUiThread());
+        using var agent = new TerminalAgent(new ListChatClient(new ChatResponse(new ChatMessage(ChatRole.Assistant, "Done."))), chat, new SecretRedactor());
+        chat.Attach(agent, "privacy notice");
+        var view = new ChatView { DataContext = chat };
+        var window = new Window { Width = 420, Height = 500, Content = view };
+        window.Show();
+        var box = view.FindControl<TextBox>("DraftBox")!;
+        box.Focus();
+        await TopLevel.GetTopLevel(box)!.Clipboard!.SetTextAsync("Update the skill.\n\nRemove this sentence:\n\"Run commands one at a time.\"");
+        box.Paste();
+        Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+
+        Assert.Equal("Update the skill.\n\nRemove this sentence:\n\"Run commands one at a time.\"", chat.Draft?.ReplaceLineEndings("\n"));
+
+        window.KeyPress(Avalonia.Input.Key.Enter, Avalonia.Input.RawInputModifiers.Shift, Avalonia.Input.PhysicalKey.Enter, null);
+        box.Text += "Thanks.";
+        Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+        Assert.EndsWith("time.\"\nThanks.", chat.Draft?.ReplaceLineEndings("\n"), StringComparison.Ordinal);
+
+        window.KeyPress(Avalonia.Input.Key.Enter, Avalonia.Input.RawInputModifiers.None, Avalonia.Input.PhysicalKey.Enter, null);
+        Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+        Assert.True(string.IsNullOrEmpty(chat.Draft));
+        Assert.Contains(chat.Items, item => item.Kind == ChatItemKind.User && item.Text.EndsWith("Thanks.", StringComparison.Ordinal) && item.Text.Contains("Remove this sentence", StringComparison.Ordinal));
+        window.Close();
     }
 
     // Product decision 142: New Conversation starts the conversation's usage over; the session's, which the limit applies to, goes on.

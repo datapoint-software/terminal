@@ -541,7 +541,7 @@
       <Border Classes="composer">
         <Grid ColumnDefinitions="*,Auto">
           <TextBox x:Name="DraftBox" Classes="bare" Padding="12,10,6,10" MinHeight="38" Text="{Binding Draft}" PlaceholderText="{Binding DraftPlaceholder}"
-                   TextWrapping="Wrap" MaxHeight="160" VerticalContentAlignment="Center" IsEnabled="{Binding HasAgent}"
+                   TextWrapping="Wrap" AcceptsReturn="True" MaxHeight="160" VerticalContentAlignment="Center" IsEnabled="{Binding HasAgent}"
                    AutomationProperties.Name="{x:Static res:Strings.ChatInputPlaceholder}">
             <TextBox.KeyBindings>
               <KeyBinding Gesture="Enter" Command="{Binding SendCommand}" />
