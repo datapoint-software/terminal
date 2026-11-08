@@ -42,7 +42,7 @@ public sealed partial class TerminalAgent
 
         if (check.GoneSince is { } gone)
         {
-            Raise(new AgentEventArgs(AgentEventKind.Notice, $"Reconnected to {check.Host} after {SkillDocument.FormatDuration(DateTimeOffset.UtcNow - gone)}.") { Terminal = terminal.Name });
+            Raise(new AgentEventArgs(AgentEventKind.Notice, Say("NoticeReconnected", check.Host, SkillDocument.FormatDuration(DateTimeOffset.UtcNow - gone))) { Terminal = terminal.Name });
             check.GoneSince = null;
             check.Deadline = DateTimeOffset.UtcNow + rollout.Timeout;
         }

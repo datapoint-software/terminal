@@ -55,7 +55,7 @@ public sealed partial class TerminalAgent
         }
 
         (keys, parts) = (approved, approvedParts);
-        Raise(new AgentEventArgs(AgentEventKind.Notice, $"Pressed {keys} in {terminal.Name}: {purpose}") { Terminal = terminal.Name });
+        Raise(new AgentEventArgs(AgentEventKind.Notice, Say("NoticeKeysPressed", keys, terminal.Name, purpose)) { Terminal = terminal.Name });
         SetStatus(AgentStatus.RunningCommand, terminal);
         using (var signal = new OutputSignal(terminal.Terminal))
         {

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="NoticeReconnected" xml:space="preserve">
+    <value>Reconnected to {0} after {1}.</value>
+  </data>
+  <data name="NoticeOpening" xml:space="preserve">
+    <value>Opening a terminal for {0}: {1}</value>
+  </data>
+  <data name="NoticeHostDocsLogged" xml:space="preserve">
+    <value>Logged a change in the documentation for {0}.</value>
+  </data>
+  <data name="NoticeHostDocsUpdated" xml:space="preserve">
+    <value>Updated "{0}" in the documentation for {1}.</value>
+  </data>
+  <data name="CommandFinished" xml:space="preserve">
+    <value>Finished</value>
+  </data>
+  <data name="CommandStillRunning" xml:space="preserve">
+    <value>Still running</value>
+  </data>
+  <data name="NoticeReadBeside" xml:space="preserve">
+    <value>Read {0} on {1}'s machine, beside the terminal.</value>
+  </data>
+  <data name="NoticeInterrupted" xml:space="preserve">
+    <value>Interrupted. Tell me how to go on, or continue.</value>
+  </data>
+  <data name="NoticeProviderFailed" xml:space="preserve">
+    <value>The request to the AI provider failed: {0}</value>
+  </data>
+  <data name="NoticeSpendingLimit" xml:space="preserve">
+    <value>This session reached its spending limit, so I stopped before asking the AI provider again. Raise or remove the limit to go on.</value>
+  </data>
+  <data name="NoticeStepLimit" xml:space="preserve">
+    <value>Stopped after {0} steps. Tell me whether to go on.</value>
+  </data>
+  <data name="NoticeWatching" xml:space="preserve">
+    <value>Watching {0} for {1}, for up to {2} minutes.</value>
+  </data>
+  <data name="WatchingOr" xml:space="preserve">
+    <value> or </value>
+  </data>
+  <data name="MemoryRememberedEverywhere" xml:space="preserve">
+    <value>Remembered everywhere: {0}</value>
+  </data>
+  <data name="MemoryRememberedWorkspace" xml:space="preserve">
+    <value>Remembered for this workspace: {0}</value>
+  </data>
+  <data name="MemoryForgotEverywhere" xml:space="preserve">
+    <value>Forgot everywhere: {0}</value>
+  </data>
+  <data name="MemoryForgotWorkspace" xml:space="preserve">
+    <value>Forgot for this workspace: {0}</value>
+  </data>
+  <data name="NoticeSkillSaved" xml:space="preserve">
+    <value>Saved the skill "{0}" in skills/{1}.</value>
+  </data>
+  <data name="NoticeKeysPressed" xml:space="preserve">
+    <value>Pressed {0} in {1}: {2}</value>
+  </data>
+  <data name="NoticeRolloutSame" xml:space="preserve">
+    <value>Approved in {0} earlier in this task; running the same command in {1}.</value>
+  </data>
+  <data name="NoticeEditing" xml:space="preserve">
+    <value>Changing {0} on {1}:
+{2}</value>
+  </data>
+  <data name="NoticeEditStaged" xml:space="preserve">
+    <value>Saved the new {0} to {1} on {2}'s machine, beside the terminal.</value>
+  </data>
+  <data name="NoticeSummarized" xml:space="preserve">
+    <value>The conversation reached {0} tokens, so I summarized it and carried on from the summary, to keep each reply cheaper. The chat and the history still have everything.</value>
+  </data>
+</root>

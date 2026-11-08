@@ -373,7 +373,7 @@ public sealed partial class TerminalAgent
             terminal.RunningPlanStep = null;
         }
 
-        var finished = new AgentEventArgs(AgentEventKind.CommandFinished, isFinished ? "Finished" : "Still running")
+        var finished = new AgentEventArgs(AgentEventKind.CommandFinished, Say(isFinished ? "CommandFinished" : "CommandStillRunning"))
         {
             Command = command,
             ExitCode = exitCode,

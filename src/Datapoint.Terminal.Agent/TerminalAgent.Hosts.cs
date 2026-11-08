@@ -101,7 +101,7 @@ public sealed partial class TerminalAgent
             return Task.FromResult("Not changed: add to the maintenance log with log_host_change; earlier entries stay as they are.");
         }
 
-        return Task.FromResult(WriteHostDocs(arguments, body, requireSeen: true, (text, connection) => HostDocument.SetSection(text, connection, section, body), $"Updated \"{section}\" in"));
+        return Task.FromResult(WriteHostDocs(arguments, body, requireSeen: true, (text, connection) => HostDocument.SetSection(text, connection, section, body), section));
     }
 
     private Task<string> LogHostChangeAsync(AIFunctionArguments arguments, CancellationToken cancellationToken)
@@ -141,7 +141,7 @@ public sealed partial class TerminalAgent
             return Task.FromResult("Not logged: the entry couldn't be written.");
         }
 
-        Raise(new AgentEventArgs(AgentEventKind.HostDocsChanged, $"Logged a change in the documentation for {connection}.") { Path = path });
+        Raise(new AgentEventArgs(AgentEventKind.HostDocsChanged, Say("NoticeHostDocsLogged", connection)) { Path = path });
         return Task.FromResult("Done.");
     }
 
@@ -150,7 +150,7 @@ public sealed partial class TerminalAgent
         string written,
         bool requireSeen,
         Func<string, string, (string Text, WriteResult Result)> change,
-        string verb)
+        string section)
     {
         if (HostDocsFile(arguments, out var connection) is not { } path)
         {
@@ -167,10 +167,10 @@ public sealed partial class TerminalAgent
             return "Not changed: the text looks like it holds a secret. Describe where the secret is kept instead, never its value.";
         }
 
-        return Apply(path, connection, requireSeen, change, verb);
+        return Apply(path, connection, requireSeen, change, section);
     }
 
-    private string Apply(string path, string connection, bool requireSeen, Func<string, string, (string Text, WriteResult Result)> change, string verb)
+    private string Apply(string path, string connection, bool requireSeen, Func<string, string, (string Text, WriteResult Result)> change, string section)
     {
         lock (_hostDocsSeen)
         {
@@ -207,7 +207,7 @@ public sealed partial class TerminalAgent
             }
 
             _hostDocsSeen[path] = text;
-            Raise(new AgentEventArgs(AgentEventKind.HostDocsChanged, $"{verb} the documentation for {connection}.") { Path = path });
+            Raise(new AgentEventArgs(AgentEventKind.HostDocsChanged, Say("NoticeHostDocsUpdated", section, connection)) { Path = path });
             return "Done.";
         }
     }

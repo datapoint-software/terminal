@@ -202,6 +202,7 @@ public sealed partial class MainWindow : Window, ITerminalOpener, ILocalizable
                 _agent = new TerminalAgent(client, _chat, _redactor)
                 {
                     InstructionsSource = LoadInstructionsAsync,
+                    LanguageSource = () => Localizer.Instance.Culture,
                     TerminalOpener = this,
                     IgnoredFileCheck = FindIgnoredFile,
                     Memory = CreateMemory(),

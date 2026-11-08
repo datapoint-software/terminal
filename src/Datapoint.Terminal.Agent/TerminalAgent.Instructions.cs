@@ -13,13 +13,20 @@ public sealed partial class TerminalAgent
 
     private async Task<string> StartConversationAsync(string message, CancellationToken cancellationToken)
     {
-        if (_history.Count != 1 || InstructionsSource is not { } source)
+        if (_history.Count != 1)
         {
             return message;
         }
 
+        StartLanguage();
+        if (InstructionsSource is not { } source)
+        {
+            _history[0] = new ChatMessage(ChatRole.System, SystemPrompt.Text + LanguageBlock());
+            return message;
+        }
+
         var instructions = await source(cancellationToken).ConfigureAwait(false);
-        _history[0] = new ChatMessage(ChatRole.System, SystemPrompt.Text + MemoryBlock(instructions.Memory) + InstructionsBlock(instructions.Instructions));
+        _history[0] = new ChatMessage(ChatRole.System, SystemPrompt.Text + LanguageBlock() + MemoryBlock(instructions.Memory) + InstructionsBlock(instructions.Instructions));
         _preface = IgnoredBlock(instructions.Ignored) + DataBlock(instructions.Data);
         return _preface + message;
     }

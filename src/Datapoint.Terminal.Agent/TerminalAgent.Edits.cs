@@ -26,7 +26,7 @@ public sealed partial class TerminalAgent
             return decision;
         }
 
-        Raise(new AgentEventArgs(AgentEventKind.Notice, $"Changing {edit.Path} on {edit.Terminal.Name}:\n{diff}") { Terminal = edit.Terminal.Name });
+        Raise(new AgentEventArgs(AgentEventKind.Notice, Say("NoticeEditing", edit.Path, edit.Terminal.Name, diff)) { Terminal = edit.Terminal.Name });
         var step = CheckPlan(edit.Terminal, CommandRisk.Changes, PlanStep(arguments)).Step;
         return await ApplyEditAsync(edit, purpose, step, cancellationToken).ConfigureAwait(false);
     }
@@ -126,7 +126,7 @@ public sealed partial class TerminalAgent
         string staged;
         try
         {
-            Raise(new AgentEventArgs(AgentEventKind.Notice, $"Saved the new {edit.Path} to {HostFolders.Staging} on {edit.Terminal.Name}'s machine, beside the terminal.") { Terminal = edit.Terminal.Name });
+            Raise(new AgentEventArgs(AgentEventKind.Notice, Say("NoticeEditStaged", edit.Path, HostFolders.Staging, edit.Terminal.Name)) { Terminal = edit.Terminal.Name });
             staged = await edit.Terminal.Files!.StageAsync(Encoding.UTF8.GetBytes(edit.After), cancellationToken).ConfigureAwait(false);
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or InvalidOperationException

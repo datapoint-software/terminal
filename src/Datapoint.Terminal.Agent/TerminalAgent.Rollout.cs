@@ -14,7 +14,7 @@ public sealed partial class TerminalAgent
             return null;
         }
 
-        Raise(new AgentEventArgs(AgentEventKind.Notice, $"Approved in {first} earlier in this task; running the same command in {terminal.Name}.") { Terminal = terminal.Name });
+        Raise(new AgentEventArgs(AgentEventKind.Notice, Say("NoticeRolloutSame", first, terminal.Name)) { Terminal = terminal.Name });
         return CommandApproval.Approve(command);
     }
 

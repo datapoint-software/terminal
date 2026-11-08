@@ -96,7 +96,7 @@ public sealed partial class TerminalAgent
     // Reads beside the terminal and says so in the chat.
     private async Task<(HostFile? File, string? Problem)> TryReadFileAsync(AgentTerminal terminal, string path, CancellationToken cancellationToken, int maxBytes = MaxFileBytes)
     {
-        Raise(new AgentEventArgs(AgentEventKind.Notice, $"Read {path} on {terminal.Name}'s machine, beside the terminal.") { Terminal = terminal.Name });
+        Raise(new AgentEventArgs(AgentEventKind.Notice, Say("NoticeReadBeside", path, terminal.Name)) { Terminal = terminal.Name });
         try
         {
             return (await terminal.Files!.ReadAsync(path, maxBytes, cancellationToken).ConfigureAwait(false), null);

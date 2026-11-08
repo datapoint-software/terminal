@@ -166,7 +166,7 @@ public sealed partial class TerminalAgent
             return Task.FromResult("Not saved: the file couldn't be written.");
         }
 
-        Raise(new AgentEventArgs(AgentEventKind.Notice, $"Saved the skill \"{title}\" in skills/{name}.") { Path = path });
+        Raise(new AgentEventArgs(AgentEventKind.Notice, Say("NoticeSkillSaved", title, name)) { Path = path });
         return Task.FromResult($"Saved as skills/{name}/{SkillDocument.FileName}.");
     }
 

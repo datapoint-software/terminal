@@ -50,7 +50,7 @@ public sealed partial class TerminalAgent
         var result = Change(() => MemoryFile.Add(path, note));
         if (result == WriteResult.Changed)
         {
-            RaiseMemory(scope, path, "Remembered", note);
+            RaiseMemory(scope, path, remembered: true, note);
         }
 
         return Task.FromResult(result switch
@@ -72,7 +72,7 @@ public sealed partial class TerminalAgent
         var result = Change(() => MemoryFile.Remove(path, note));
         if (result == WriteResult.Changed)
         {
-            RaiseMemory(scope, path, "Forgot", note);
+            RaiseMemory(scope, path, remembered: false, note);
             return Task.FromResult("Forgotten.");
         }
 
@@ -122,6 +122,15 @@ public sealed partial class TerminalAgent
         }
     }
 
-    private void RaiseMemory(MemoryScope scope, string path, string verb, string note) =>
-        Raise(new AgentEventArgs(AgentEventKind.MemoryChanged, $"{verb} {(scope == MemoryScope.Global ? "everywhere" : "for this workspace")}: {note}") { Path = path });
+    private void RaiseMemory(MemoryScope scope, string path, bool remembered, string note)
+    {
+        var key = (remembered, scope == MemoryScope.Global) switch
+        {
+            (true, true) => "MemoryRememberedEverywhere",
+            (true, false) => "MemoryRememberedWorkspace",
+            (false, true) => "MemoryForgotEverywhere",
+            _ => "MemoryForgotWorkspace",
+        };
+        Raise(new AgentEventArgs(AgentEventKind.MemoryChanged, Say(key, note)) { Path = path });
+    }
 }

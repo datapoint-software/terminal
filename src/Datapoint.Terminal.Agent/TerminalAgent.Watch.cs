@@ -44,7 +44,7 @@ public sealed partial class TerminalAgent
         }
 
         var minutes = int.TryParse(ToolArguments.GetString(arguments, "minutes"), NumberStyles.Integer, CultureInfo.InvariantCulture, out var given) ? Math.Clamp(given, 1, MaxWatchMinutes) : 30;
-        Raise(new AgentEventArgs(AgentEventKind.Notice, $"Watching {terminal.Name} for {string.Join(" or ", texts.Select(text => $"\"{text}\""))}, for up to {minutes} minutes.") { Terminal = terminal.Name });
+        Raise(new AgentEventArgs(AgentEventKind.Notice, Say("NoticeWatching", terminal.Name, string.Join(Say("WatchingOr"), texts.Select(text => $"\"{text}\"")), minutes)) { Terminal = terminal.Name });
         SetStatus(AgentStatus.RunningCommand, terminal);
         try
         {

@@ -90,7 +90,7 @@ public sealed partial class TerminalAgent
         SetSummarizing(false);
         Raise(new AgentEventArgs(
             AgentEventKind.Notice,
-            $"The conversation reached {tokens.ToString("N0", CultureInfo.CurrentCulture)} tokens, so I summarized it and carried on from the summary, to keep each reply cheaper. The chat and the history still have everything.")
+            Say("NoticeSummarized", tokens.ToString("N0", CultureInfo.CurrentCulture)))
         {
             Output = summary,
         });

@@ -206,13 +206,13 @@ public sealed partial class TerminalAgent : IDisposable
         catch (OperationCanceledException) when (task.IsCancellationRequested)
         {
             CloseUnansweredCalls();
-            Raise(new AgentEventArgs(AgentEventKind.Notice, "Interrupted. Tell me how to go on, or continue."));
+            Raise(new AgentEventArgs(AgentEventKind.Notice, Say("NoticeInterrupted")));
             SetStatus(AgentStatus.Interrupted);
         }
         catch (Exception exception) when (exception is not OutOfMemoryException)
         {
             CloseUnansweredCalls();
-            Raise(new AgentEventArgs(AgentEventKind.Notice, "The request to the AI provider failed: " + exception.Message));
+            Raise(new AgentEventArgs(AgentEventKind.Notice, Say("NoticeProviderFailed", exception.Message)));
             SetStatus(AgentStatus.Idle);
         }
         finally
@@ -235,7 +235,7 @@ public sealed partial class TerminalAgent : IDisposable
         {
             if (Usage.IsOverBudget)
             {
-                Raise(new AgentEventArgs(AgentEventKind.Notice, "This session reached its spending limit, so I stopped before asking the AI provider again. Raise or remove the limit to go on."));
+                Raise(new AgentEventArgs(AgentEventKind.Notice, Say("NoticeSpendingLimit")));
                 return;
             }
 
@@ -267,7 +267,7 @@ public sealed partial class TerminalAgent : IDisposable
             ClearRedirect();
         }
 
-        Raise(new AgentEventArgs(AgentEventKind.Notice, $"Stopped after {_options.MaxStepsPerTask} steps. Tell me whether to go on."));
+        Raise(new AgentEventArgs(AgentEventKind.Notice, Say("NoticeStepLimit", _options.MaxStepsPerTask)));
     }
 
     private async Task<ChatResponse> GetResponseAsync(CancellationToken cancellationToken)
