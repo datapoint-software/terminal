@@ -329,19 +329,16 @@
   </UserControl.Styles>
 
   <DockPanel>
-    <!-- Header: what the agent is doing, announced to screen readers as it changes. -->
+    <!-- Header: the session's token use. -->
     <!-- Dragging the header moves the chat elsewhere in the window (product decision 109). -->
     <Border x:Name="Header" DockPanel.Dock="Top" Height="{StaticResource PaneHeaderHeight}" Padding="16,0,10,0" Background="Transparent" BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,0,1">
       <Grid ColumnDefinitions="*,Auto">
         <StackPanel Spacing="2" VerticalAlignment="Center">
           <TextBlock Classes="title" Text="{x:Static res:Strings.ChatTitle}" />
-          <StackPanel Orientation="Horizontal" Spacing="6">
-            <Ellipse Classes="status" Classes.working="{Binding IsWorking}" Classes.waiting="{Binding NeedsUser}"
-                     Classes.stopped="{Binding IsInterrupted}" VerticalAlignment="Center" />
-            <!-- One line, so the header keeps the sidebar's height; the whole status is in the tooltip. -->
-            <TextBlock Classes="secondary" Text="{Binding StatusText}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding StatusText}"
-                       AutomationProperties.LiveSetting="Polite" />
-          </StackPanel>
+          <!-- One line, so the header keeps the sidebar's height; the details are in the tooltip. -->
+          <TextBlock Classes="secondary" Text="{Binding UsageSummary}" IsVisible="{Binding HasUsage}"
+                     TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding UsageDetail}" Focusable="True"
+                     AutomationProperties.Name="{Binding UsageSummary}" AutomationProperties.HelpText="{Binding UsageDetail}" />
         </StackPanel>
         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="2" VerticalAlignment="Center">
           <Button Classes="icon" Command="{Binding StopCommand}" IsVisible="{Binding CanStop}"
@@ -554,9 +551,13 @@
       </Border>
 
       <Grid ColumnDefinitions="*,Auto" Margin="0,6,-4,0">
-      <TextBlock Classes="secondary" Text="{Binding UsageSummary}" IsVisible="{Binding HasUsage}" VerticalAlignment="Center"
-                 TextTrimming="CharacterEllipsis" Margin="4,0,8,0" ToolTip.Tip="{Binding UsageDetail}" Focusable="True"
-                 AutomationProperties.Name="{Binding UsageSummary}" AutomationProperties.HelpText="{Binding UsageDetail}" />
+      <!-- What the agent is doing, next to where the user writes to it, announced to screen readers as it changes. -->
+      <StackPanel Orientation="Horizontal" Spacing="6" Margin="4,0,8,0" VerticalAlignment="Center">
+        <Ellipse Classes="status" Classes.working="{Binding IsWorking}" Classes.waiting="{Binding NeedsUser}"
+                 Classes.stopped="{Binding IsInterrupted}" VerticalAlignment="Center" />
+        <TextBlock Classes="secondary" Text="{Binding StatusText}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding StatusText}"
+                   VerticalAlignment="Center" AutomationProperties.LiveSetting="Polite" />
+      </StackPanel>
       <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="2">
         <ComboBox Classes="menu" ItemsSource="{Binding ModelChoices}" SelectedItem="{Binding SelectedModel}"
                   IsVisible="{Binding HasModelChoices}" ToolTip.Tip="{x:Static res:Strings.ChatModel}"
