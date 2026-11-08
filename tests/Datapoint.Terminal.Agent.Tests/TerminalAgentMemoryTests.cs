@@ -1,7 +1,7 @@
 using Datapoint.Terminal.Agent.Memory;
-using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Agent.Safety;
 using Datapoint.Terminal.Agent.Tests.Fakes;
+using Datapoint.Terminal.Agent.Workspaces;
 using Microsoft.Extensions.AI;
 using static Datapoint.Terminal.Agent.Tests.Fakes.ScriptedChatClient;
 

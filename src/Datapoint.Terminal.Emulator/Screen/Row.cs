@@ -6,7 +6,7 @@ public sealed class Row
 {
     private const int RowOverhead = 48;
 
-    private static readonly int CellBytes = System.Runtime.CompilerServices.Unsafe.SizeOf<Cell>();
+    private static readonly int s_cellBytes = System.Runtime.CompilerServices.Unsafe.SizeOf<Cell>();
 
     private Cell[] _cells;
 
@@ -82,7 +82,7 @@ public sealed class Row
     }
 
     // What a row costs to keep, roughly: the scrollback is limited by this rather than by its number of lines.
-    public long EstimatedBytes => RowOverhead + ((long)_cells.Length * CellBytes);
+    public long EstimatedBytes => RowOverhead + ((long)_cells.Length * s_cellBytes);
 
     internal ReadOnlySpan<Cell> Cells => _cells;
 

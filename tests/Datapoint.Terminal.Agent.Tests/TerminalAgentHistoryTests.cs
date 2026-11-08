@@ -1,6 +1,6 @@
-using Datapoint.Terminal.Agent.Workspaces.History;
 using Datapoint.Terminal.Agent.Safety;
 using Datapoint.Terminal.Agent.Tests.Fakes;
+using Datapoint.Terminal.Agent.Workspaces.History;
 using Microsoft.Extensions.AI;
 using static Datapoint.Terminal.Agent.Tests.Fakes.ScriptedChatClient;
 

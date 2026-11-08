@@ -1,8 +1,8 @@
 using System.Collections.Concurrent;
 using System.Text;
 using Avalonia.Threading;
-using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Agent.Safety;
+using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Resources;
 
 namespace Datapoint.Terminal.Shell;

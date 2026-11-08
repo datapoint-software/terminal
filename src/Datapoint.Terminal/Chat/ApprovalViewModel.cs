@@ -1,8 +1,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Datapoint.Terminal.Agent;
-using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Agent.Safety;
+using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Resources;
 
 namespace Datapoint.Terminal.Chat;
@@ -172,11 +172,11 @@ public sealed partial class ApprovalViewModel : ObservableObject
         : CarriedText is not null ? Strings.Format(Strings.ApprovalRiskSendsTerminalText, CarriedText)
         : IsAfterWeb ? Strings.ApprovalRiskAfterWeb
         : Risk switch
-    {
-        CommandRisk.ReadOnly => Strings.ApprovalRiskReadOnly,
-        CommandRisk.AlwaysAsk => Strings.ApprovalRiskAlwaysAsk,
-        _ => Strings.ApprovalRiskChanges,
-    };
+        {
+            CommandRisk.ReadOnly => Strings.ApprovalRiskReadOnly,
+            CommandRisk.AlwaysAsk => Strings.ApprovalRiskAlwaysAsk,
+            _ => Strings.ApprovalRiskChanges,
+        };
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(RunCommand))]

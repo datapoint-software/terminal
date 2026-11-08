@@ -1,5 +1,5 @@
-using Datapoint.Terminal.Agent.Workspaces.History;
 using Datapoint.Terminal.Agent.Safety;
+using Datapoint.Terminal.Agent.Workspaces.History;
 
 namespace Datapoint.Terminal.Agent.Tests.Workspaces.History;
 

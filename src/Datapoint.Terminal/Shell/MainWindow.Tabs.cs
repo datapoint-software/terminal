@@ -1,6 +1,6 @@
-using Avalonia.Controls;
 using System.Collections.ObjectModel;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Threading;
 using Datapoint.Terminal.Agent;
 using Datapoint.Terminal.Agent.Files;

@@ -5,7 +5,7 @@ namespace Datapoint.Terminal.Controls;
 // What Find looks for in each line: text, ignoring case, or a regular expression, also ignoring case.
 public sealed class TextSearch
 {
-    private static readonly TimeSpan PatternTimeout = TimeSpan.FromMilliseconds(250);
+    private static readonly TimeSpan s_patternTimeout = TimeSpan.FromMilliseconds(250);
 
     private readonly string _text;
     private readonly Regex? _pattern;
@@ -29,7 +29,7 @@ public sealed class TextSearch
         ArgumentException.ThrowIfNullOrEmpty(pattern);
         try
         {
-            return new TextSearch(pattern, new Regex(pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant, PatternTimeout));
+            return new TextSearch(pattern, new Regex(pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant, s_patternTimeout));
         }
         catch (ArgumentException)
         {

@@ -1,5 +1,5 @@
-using Avalonia.Controls;
 using System.Collections.ObjectModel;
+using Avalonia.Controls;
 using Avalonia.Threading;
 using Datapoint.Terminal.Chat;
 using Datapoint.Terminal.Editor;

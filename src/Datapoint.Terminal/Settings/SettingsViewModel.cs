@@ -2,9 +2,9 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Datapoint.Terminal.Agent;
-using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Agent.Providers;
 using Datapoint.Terminal.Agent.Safety;
+using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Resources;
 using Microsoft.Extensions.AI;
 

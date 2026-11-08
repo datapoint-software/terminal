@@ -11,13 +11,13 @@ namespace Datapoint.Terminal.Tests.Shell;
 
 public sealed class NewHostTests
 {
-    private static readonly WorkspaceConnection[] Existing =
+    private static readonly WorkspaceConnection[] s_existing =
     [
         new() { Name = "web1", Host = "web1.example.com", Labels = ["web", "Debian"] },
         new() { Name = "web2", Host = "web2.example.com", Labels = ["web"] },
     ];
 
-    private static NewHostForm Form() => new(Existing, ["bastion", "nas"]);
+    private static NewHostForm Form() => new(s_existing, ["bastion", "nas"]);
 
     [Fact]
     public void Builds_a_connection_from_an_address()
@@ -169,7 +169,7 @@ public sealed class NewHostTests
     public void Edits_a_host_without_renaming_it_or_losing_what_the_sheet_doesnt_show()
     {
         var host = new WorkspaceConnection { Name = "web1", Host = "web1.example.com", User = "deploy", Port = 2222, Environment = "production", Labels = ["web"], Model = "claude-opus-5-5", Forwards = ["5432 db:5432"] };
-        var form = new NewHostForm(Existing, ["bastion"], host);
+        var form = new NewHostForm(s_existing, ["bastion"], host);
 
         Assert.Equal(("web1.example.com", "deploy", "2222", "web", 3), (form.Address, form.User, form.Port, form.Labels, form.EnvironmentIndex));
         form.Name = "renamed";
@@ -188,7 +188,7 @@ public sealed class NewHostTests
     public void Keeps_an_alias_and_an_environment_written_by_hand_when_they_arent_changed()
     {
         var host = new WorkspaceConnection { Name = "nas", SshHost = "old-alias", Environment = "qa" };
-        var form = new NewHostForm(Existing, ["bastion"], host);
+        var form = new NewHostForm(s_existing, ["bastion"], host);
 
         Assert.Equal("qa", form.Environment);
         Assert.False(form.IsMoving);
@@ -200,7 +200,7 @@ public sealed class NewHostTests
     public void Opens_with_the_hosts_values_and_says_what_a_change_means()
     {
         var host = new WorkspaceConnection { Name = "web1", Host = "web1.example.com", User = "deploy", Environment = "production", Labels = ["web", "Debian"] };
-        var window = new NewHostWindow(new NewHostForm(Existing, ["bastion", "nas"], host), ["bastion", "nas"]);
+        var window = new NewHostWindow(new NewHostForm(s_existing, ["bastion", "nas"], host), ["bastion", "nas"]);
         window.Show();
         Dispatcher.UIThread.RunJobs();
         var name = window.FindControl<TextBox>("NameBox")!;

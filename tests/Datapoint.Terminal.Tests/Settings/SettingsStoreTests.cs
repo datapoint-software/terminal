@@ -1,6 +1,6 @@
-using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Agent;
 using Datapoint.Terminal.Agent.Providers;
+using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Settings;
 
 namespace Datapoint.Terminal.Tests.Settings;

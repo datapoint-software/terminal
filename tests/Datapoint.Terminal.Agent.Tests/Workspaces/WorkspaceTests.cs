@@ -1,5 +1,5 @@
-using Datapoint.Terminal.Agent.Workspaces;
 using Datapoint.Terminal.Agent.Safety;
+using Datapoint.Terminal.Agent.Workspaces;
 
 namespace Datapoint.Terminal.Agent.Tests.Workspaces;
 

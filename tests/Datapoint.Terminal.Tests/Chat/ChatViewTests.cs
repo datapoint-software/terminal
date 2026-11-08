@@ -1,11 +1,11 @@
 using Avalonia;
-using Avalonia.LogicalTree;
-using Avalonia.VisualTree;
 using Avalonia.Controls;
 using Avalonia.Headless;
-using Avalonia.Input.Platform;
 using Avalonia.Headless.XUnit;
+using Avalonia.Input.Platform;
+using Avalonia.LogicalTree;
 using Avalonia.Media.Imaging;
+using Avalonia.VisualTree;
 using Datapoint.Terminal.Agent;
 using Datapoint.Terminal.Agent.Safety;
 using Datapoint.Terminal.Chat;

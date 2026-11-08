@@ -5,7 +5,7 @@ namespace Datapoint.Terminal.Tests.Shell;
 
 public sealed class HostPathCompletionTests
 {
-    private static readonly HostEntry[] Nginx =
+    private static readonly HostEntry[] s_nginx =
     [
         new("nginx.conf", false),
         new("conf.d", true),
@@ -26,9 +26,9 @@ public sealed class HostPathCompletionTests
     [Fact]
     public void Lists_folders_first_and_hides_dot_files_until_a_dot_is_typed()
     {
-        Assert.Equal(["conf.d", "sites-enabled", "mime.types", "nginx.conf"], HostPathCompletion.Matches(Nginx, string.Empty).Select(entry => entry.Name).ToList());
-        Assert.Equal([".hidden"], HostPathCompletion.Matches(Nginx, ".").Select(entry => entry.Name).ToList());
-        Assert.Equal(["nginx.conf"], HostPathCompletion.Matches(Nginx, "NG").Select(entry => entry.Name).ToList());
+        Assert.Equal(["conf.d", "sites-enabled", "mime.types", "nginx.conf"], HostPathCompletion.Matches(s_nginx, string.Empty).Select(entry => entry.Name).ToList());
+        Assert.Equal([".hidden"], HostPathCompletion.Matches(s_nginx, ".").Select(entry => entry.Name).ToList());
+        Assert.Equal(["nginx.conf"], HostPathCompletion.Matches(s_nginx, "NG").Select(entry => entry.Name).ToList());
     }
 
     [Fact]
