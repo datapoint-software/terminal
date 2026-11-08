@@ -2826,4 +2826,13 @@ Fingerprint: {2}</value>
   <data name="ProviderNoPrice" xml:space="preserve">
     <value>Not published</value>
   </data>
+  <data name="ContextUsedDetail" xml:space="preserve">
+    <value>{0:N0} of {1:N0} tokens of context used</value>
+  </data>
+  <data name="TokensThousands" xml:space="preserve">
+    <value>{0:0}k</value>
+  </data>
+  <data name="TokensMillions" xml:space="preserve">
+    <value>{0:0.0}M</value>
+  </data>
 </root>

@@ -16,6 +16,7 @@ public sealed partial class MainWindow
         }
 
         _agent.Usage.Price = provider.Price;
+        _chat.ContextWindow = provider.EffectiveContextWindow;
         _agent.Usage.Budget = _settings.SpendingLimit;
         _chat.RefreshUsage();
     }

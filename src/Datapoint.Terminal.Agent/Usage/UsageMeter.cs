@@ -35,6 +35,42 @@ public sealed class UsageMeter
         }
     }
 
+    // How much of the model's context the conversation fills: the latest request's input and its reply, which the next request
+    // carries. Null until a request reports its counts, and again when the conversation starts over (product decision 126).
+    public long? ContextTokens
+    {
+        get
+        {
+            lock (_lock)
+            {
+                return _contextTokens;
+            }
+        }
+    }
+
+    private long? _contextTokens;
+
+    public void NoteContext(TokenUsage? usage)
+    {
+        if (usage is null)
+        {
+            return;
+        }
+
+        lock (_lock)
+        {
+            _contextTokens = usage.Input + usage.Output;
+        }
+    }
+
+    public void ForgetContext()
+    {
+        lock (_lock)
+        {
+            _contextTokens = null;
+        }
+    }
+
     public bool IsOverBudget => Budget is { } budget && Session.Cost is { } cost && cost >= budget;
 
     // input and output are null when the provider didn't report them; the request still counts.

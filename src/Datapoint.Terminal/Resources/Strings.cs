@@ -168,6 +168,7 @@ public static class Strings
 
     public static string MarkdownImageFailed => Get(nameof(MarkdownImageFailed));
 
+
     public static string MenuFile => Get(nameof(MenuFile));
 
     public static string MenuNewWorkspace => Get(nameof(MenuNewWorkspace));
@@ -1881,6 +1882,12 @@ public static class Strings
     public static string ProviderLongPromptPrice => Get(nameof(ProviderLongPromptPrice));
 
     public static string ProviderNoPrice => Get(nameof(ProviderNoPrice));
+
+    public static string ContextUsedDetail => Get(nameof(ContextUsedDetail));
+
+    public static string TokensThousands => Get(nameof(TokensThousands));
+
+    public static string TokensMillions => Get(nameof(TokensMillions));
 
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 

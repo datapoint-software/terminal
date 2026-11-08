@@ -8,6 +8,7 @@ using Avalonia.Media.Imaging;
 using Datapoint.Terminal.Agent;
 using Datapoint.Terminal.Agent.Safety;
 using Datapoint.Terminal.Chat;
+using Microsoft.Extensions.AI;
 
 namespace Datapoint.Terminal.Tests.Chat;
 
@@ -442,4 +443,39 @@ public sealed class ChatViewTests
         Assert.Equal([null, "New", null], review.PlanSteps.Select(step => step.ChangeText), StringComparer.Ordinal);
         Assert.False(review.IsRevision);
     }
+    [AvaloniaFact]
+    public async Task Shows_how_much_of_the_context_the_conversation_fills_until_it_starts_over()
+    {
+        using var chat = new ChatViewModel(new ImmediateUiThread()) { ModelName = "Claude Opus 5.5" };
+        var reply = new ChatResponse(new ChatMessage(ChatRole.Assistant, "nginx is running.")) { Usage = new UsageDetails { InputTokenCount = 230_000, OutputTokenCount = 20_000 } };
+        using var agent = new TerminalAgent(new ListChatClient(reply), chat, new SecretRedactor());
+        chat.Attach(agent, "privacy notice");
+        chat.ContextWindow = 1_000_000;
+        await agent.SendAsync("Is nginx running?", TestContext.Current.CancellationToken);
+        var view = new ChatView { DataContext = chat };
+        var window = new Window { Width = 420, Height = 300, Content = view };
+        window.Show();
+        Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+        Directory.CreateDirectory("rendered");
+        using (var frame = window.CaptureRenderedFrame())
+        {
+            frame?.Save("rendered/chat-context-ring.png", new PngBitmapEncoderOptions());
+        }
+
+        Assert.True(view.FindControl<StackPanel>("ContextUse")!.IsEffectivelyVisible);
+        Assert.Equal("250k", chat.ContextText);
+        Assert.Equal(90.0, chat.ContextSweep, 3);
+
+        agent.ClearConversation();
+        chat.RefreshUsage();
+
+        Assert.False(chat.HasContext);
+    }
+
+    [Theory]
+    [InlineData(950, "950")]
+    [InlineData(48_400, "48k")]
+    [InlineData(1_050_000, "1.1M")]
+    public void Shortens_token_counts(long tokens, string expected) =>
+        Assert.Equal(expected, ChatViewModel.ShortTokens(tokens).Replace(',', '.'));
 }

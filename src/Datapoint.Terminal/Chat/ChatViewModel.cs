@@ -178,9 +178,43 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
 
     public bool HasUsage => UsageSummary.Length > 0;
 
+    // The model's context window in tokens, when known; the ring beside the usage shows how much of it the conversation fills.
+    public int? ContextWindow
+    {
+        get;
+        set
+        {
+            field = value;
+            RefreshUsage();
+        }
+    }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasContext), nameof(ContextSweep), nameof(ContextText), nameof(ContextDetail))]
+    public partial long ContextUsed { get; private set; }
+
+    public bool HasContext => ContextWindow > 0 && ContextUsed > 0;
+
+    public double ContextSweep => HasContext ? 360.0 * Math.Min(1.0, (double)ContextUsed / ContextWindow!.Value) : 0;
+
+    public string ContextText => ShortTokens(ContextUsed);
+
+    public string ContextDetail => HasContext ? Strings.Format(Strings.ContextUsedDetail, ContextUsed, ContextWindow!.Value) : string.Empty;
+
+    internal static string ShortTokens(long tokens) => tokens switch
+    {
+        < 1_000 => tokens.ToString(System.Globalization.CultureInfo.CurrentCulture),
+        < 999_500 => Strings.Format(Strings.TokensThousands, Math.Round(tokens / 1_000.0)),
+        _ => Strings.Format(Strings.TokensMillions, tokens / 1_000_000.0),
+    };
+
     public void RefreshUsage()
     {
         var usage = _agent?.Usage;
+        ContextUsed = usage?.ContextTokens ?? 0;
+        OnPropertyChanged(nameof(HasContext));
+        OnPropertyChanged(nameof(ContextSweep));
+        OnPropertyChanged(nameof(ContextDetail));
         if (usage is null || usage.Session.Requests == 0)
         {
             UsageSummary = usage?.Budget is { } limit ? UsageText.Summary(UsageTotal.Empty, limit) : string.Empty;

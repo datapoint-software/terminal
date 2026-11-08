@@ -157,6 +157,7 @@ public sealed partial class TerminalAgent : IDisposable
             }
 
             _history.RemoveRange(1, _history.Count - 1);
+            Usage.ForgetContext();
             ForgetWebGuard();
             EndIgnoringPermissions();
             StopRollout();
@@ -294,7 +295,9 @@ public sealed partial class TerminalAgent : IDisposable
         _usageTerminal = calls.Select(call => call.Arguments?.TryGetValue("terminal", out var name) == true ? name?.ToString() : null)
             .FirstOrDefault(name => name is not null && Terminals.Any(terminal => string.Equals(terminal.Name, name, StringComparison.Ordinal)))
             ?? _usageTerminal;
-        Usage.Record(_usageTerminal, Agent.Usage.TokenUsage.From(response.Usage));
+        var usage = Agent.Usage.TokenUsage.From(response.Usage);
+        Usage.Record(_usageTerminal, usage);
+        Usage.NoteContext(usage);
         Raise(new AgentEventArgs(AgentEventKind.UsageChanged, string.Empty));
     }
 
