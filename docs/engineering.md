@@ -44,6 +44,7 @@ tests/
   Datapoint.Terminal.Emulator.Fuzz/        Fuzzing targets for the parser and screen model
   Datapoint.Terminal.Emulator.Benchmarks/  BenchmarkDotNet benchmarks
 tools/                             Repository scripts, such as the third-party notices generator and the icon renderer
+.github/                           CI workflow, Dependabot, issue and pull request templates, code owners
 .githooks/                         Git hooks that stop secrets and real host names or addresses from being committed
 docs/  branding/
 Datapoint.Terminal.slnx  Directory.Build.props  Directory.Packages.props  global.json  .editorconfig
@@ -144,6 +145,7 @@ The emulator parses everything a shell prints, and output can arrive at hundreds
 - [Meziantou.Analyzer](https://github.com/meziantou/Meziantou.Analyzer) (MIT) and [Roslynator](https://github.com/dotnet/roslynator) (Apache-2.0) run in every project, with the rules we adopt at warning severity.
 - **No SonarAnalyzer.** Version 10 is under the SONAR Source-Available License, which isn't open source.
 - `dotnet format --verify-no-changes` runs in CI.
+- **CI** (`.github/workflows/ci.yml`, GitHub Actions) runs on every push to `main` and every pull request, on Linux, macOS and Windows: locked restore, a Release build and all tests with coverage. On Linux it also checks formatting and the third-party notices, and builds the SSH test server's image so the SSH tests run; on macOS and Windows they skip. Actions are pinned by commit SHA, and Dependabot proposes their updates weekly. Not yet in place: the coverage thresholds (see [Tests](#tests)) and the Native AOT job (see [Native AOT and trimming](#native-aot-and-trimming)); coverage reports are uploaded as artifacts until then.
 - `BannedSymbols.txt` fails the build on APIs we don't use: `BinaryFormatter`, `System.Random` for anything security-related, `Type.GetType` and `Activator.CreateInstance` (they break trimming and hide dependencies), and `ReflectionBinding`.
 
 ### Build and packages
