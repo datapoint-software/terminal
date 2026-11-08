@@ -2913,4 +2913,7 @@ Fingerprint: {2}</value>
   <data name="ContextEstimatedUnknownWindow" xml:space="preserve">
     <value>About {0:N0} tokens of context used, estimated until the next reply reports it</value>
   </data>
+  <data name="UsageConversation" xml:space="preserve">
+    <value>This conversation: {0} tokens</value>
+  </data>
 </root>

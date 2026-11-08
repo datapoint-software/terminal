@@ -6,9 +6,14 @@ namespace Datapoint.Terminal.Chat;
 
 public static class UsageText
 {
-    public static string Summary(UsageTotal total, decimal? limit)
+    public static string Summary(UsageTotal total, decimal? limit) => Summary(Strings.UsageSession, total, limit);
+
+    public static string ConversationSummary(UsageTotal total) => Summary(Strings.UsageConversation, total, limit: null);
+
+    private static string Summary(string format, UsageTotal total, decimal? limit)
     {
-        var text = Strings.Format(Strings.UsageSession, Tokens(total.Tokens)) + Cost(total);
+        ArgumentNullException.ThrowIfNull(total);
+        var text = Strings.Format(format, Tokens(total.Tokens)) + Cost(total);
         if (limit is { } budget)
         {
             text += " " + Strings.Format(Strings.UsageLimit, Money(budget));

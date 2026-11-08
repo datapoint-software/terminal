@@ -624,6 +624,45 @@ public sealed class ChatViewTests
         Assert.StartsWith("About ", chat.ContextDetail, StringComparison.Ordinal);
     }
 
+    // Product decision 142: New Conversation starts the conversation's usage over; the session's, which the limit applies to, goes on.
+    [AvaloniaFact]
+    public async Task Shows_the_conversations_usage_apart_from_the_sessions()
+    {
+        using var chat = new ChatViewModel(new ImmediateUiThread()) { ModelName = "Claude Opus 5.5" };
+        static ChatResponse Reply(string text, long input) =>
+            new(new ChatMessage(ChatRole.Assistant, text)) { Usage = new UsageDetails { InputTokenCount = input, OutputTokenCount = 1_000 } };
+        using var agent = new TerminalAgent(new ListChatClient(Reply("Rotated the logs.", 40_000), Reply("Disk is at 32%.", 9_000)), chat, new SecretRedactor());
+        agent.Usage.Price = new Datapoint.Terminal.Agent.Usage.TokenPrice(4m, 20m);
+        agent.Usage.Budget = 5m;
+        chat.Attach(agent, "privacy notice");
+        chat.ContextWindow = 1_000_000;
+        await agent.SendAsync("Rotate the logs on the Swarm nodes", TestContext.Current.CancellationToken);
+
+        chat.ClearCommand.Execute(null);
+        Assert.StartsWith("This conversation: 0 tokens", chat.ConversationUsage, StringComparison.Ordinal);
+        Assert.StartsWith("This session: 41k tokens", chat.UsageSummary, StringComparison.Ordinal);
+
+        await agent.SendAsync("How full is the disk?", TestContext.Current.CancellationToken);
+        chat.RefreshUsage();
+        var view = new ChatView { DataContext = chat };
+        var window = new Window { Width = 420, Height = 420, Content = view };
+        window.Show();
+        var ring = view.FindControl<Button>("ContextUse")!;
+        ring.Flyout!.ShowAt(ring);
+        Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+        Directory.CreateDirectory("rendered");
+        using (var frame = window.CaptureRenderedFrame())
+        {
+            frame?.Save("rendered/chat-usage-conversation.png", new PngBitmapEncoderOptions());
+        }
+
+        Assert.StartsWith("This conversation: 10k tokens", chat.ConversationUsage, StringComparison.Ordinal);
+        Assert.StartsWith("Requests to the model: 1,", chat.UsageDetail.Replace('.', ','), StringComparison.Ordinal);
+        Assert.StartsWith("This session: 51k tokens", chat.UsageSummary, StringComparison.Ordinal);
+        Assert.Contains("limit US$5", chat.UsageSummary.Replace(',', '.'), StringComparison.Ordinal);
+        window.Close();
+    }
+
     [Theory]
     [InlineData(950, "950")]
     [InlineData(48_400, "48k")]

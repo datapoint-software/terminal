@@ -8,6 +8,42 @@ public sealed class UsageMeter
     private readonly Dictionary<string, UsageTotal> _terminals = new(StringComparer.Ordinal);
     private UsageTotal _session = UsageTotal.Empty;
 
+    // Product decision 142: the same since the conversation last started over with New Conversation, so one task's cost can
+    // be read on its own. The spending limit stays on the session, so starting over doesn't lift it.
+    private readonly Dictionary<string, UsageTotal> _conversationTerminals = new(StringComparer.Ordinal);
+    private UsageTotal _conversation = UsageTotal.Empty;
+
+    public UsageTotal Conversation
+    {
+        get
+        {
+            lock (_lock)
+            {
+                return _conversation;
+            }
+        }
+    }
+
+    public IReadOnlyDictionary<string, UsageTotal> ConversationTerminals
+    {
+        get
+        {
+            lock (_lock)
+            {
+                return new Dictionary<string, UsageTotal>(_conversationTerminals, StringComparer.Ordinal);
+            }
+        }
+    }
+
+    public void ForgetConversation()
+    {
+        lock (_lock)
+        {
+            _conversation = UsageTotal.Empty;
+            _conversationTerminals.Clear();
+        }
+    }
+
     public TokenPrice? Price { get; set; }
 
     // In US dollars for the session; only enforced while a price is known.
@@ -102,9 +138,11 @@ public sealed class UsageMeter
         lock (_lock)
         {
             _session = _session.Add(usage, parts);
+            _conversation = _conversation.Add(usage, parts);
             if (terminal is not null)
             {
                 _terminals[terminal] = _terminals.GetValueOrDefault(terminal, UsageTotal.Empty).Add(usage, parts);
+                _conversationTerminals[terminal] = _conversationTerminals.GetValueOrDefault(terminal, UsageTotal.Empty).Add(usage, parts);
             }
         }
     }

@@ -1941,6 +1941,8 @@ public static class Strings
 
     public static string ContextEstimatedUnknownWindow => Get(nameof(ContextEstimatedUnknownWindow));
 
+    public static string UsageConversation => Get(nameof(UsageConversation));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

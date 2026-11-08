@@ -174,6 +174,14 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
     [NotifyPropertyChangedFor(nameof(HasUsage))]
     public partial string UsageSummary { get; private set; } = string.Empty;
 
+    // Product decision 142: what this conversation has cost since New Conversation, with its breakdown; the session's total,
+    // which the spending limit applies to, follows it.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasConversationUsage))]
+    public partial string ConversationUsage { get; private set; } = string.Empty;
+
+    public bool HasConversationUsage => ConversationUsage.Length > 0;
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasUsageDetail))]
     public partial string UsageDetail { get; private set; } = string.Empty;
@@ -239,12 +247,14 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
         if (usage is null || usage.Session.Requests == 0)
         {
             UsageSummary = usage?.Budget is { } limit ? UsageText.Summary(UsageTotal.Empty, limit) : string.Empty;
+            ConversationUsage = string.Empty;
             UsageDetail = string.Empty;
             return;
         }
 
         UsageSummary = UsageText.Summary(usage.Session, usage.Budget);
-        UsageDetail = string.Join('\n', new[] { UsageText.Breakdown(usage.Session), UsageText.PerTerminal(usage.Terminals) }.Where(line => line.Length > 0));
+        ConversationUsage = UsageText.ConversationSummary(usage.Conversation);
+        UsageDetail = string.Join('\n', new[] { UsageText.Breakdown(usage.Conversation), UsageText.PerTerminal(usage.ConversationTerminals) }.Where(line => line.Length > 0));
     }
 
     // Explain and fix (product.md): part of a terminal that goes with the next message, said before it's sent like new output.
@@ -456,6 +466,7 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
         Items.Clear();
         ActivePlan = null;
         ActiveRollout = null;
+        RefreshUsage();
         Cleared?.Invoke();
     }
 

@@ -574,8 +574,9 @@
           <Flyout Placement="TopEdgeAlignedLeft">
             <StackPanel x:Name="UsageDetails" Spacing="6" MaxWidth="320" Margin="4">
               <TextBlock Text="{Binding ContextDetail}" TextWrapping="Wrap" />
-              <SelectableTextBlock Classes="secondary" Text="{Binding UsageSummary}" IsVisible="{Binding HasUsage}" TextWrapping="Wrap" />
+              <SelectableTextBlock Text="{Binding ConversationUsage}" IsVisible="{Binding HasConversationUsage}" TextWrapping="Wrap" />
               <SelectableTextBlock Classes="secondary" Text="{Binding UsageDetail}" IsVisible="{Binding HasUsageDetail}" TextWrapping="Wrap" />
+              <SelectableTextBlock Classes="secondary" Text="{Binding UsageSummary}" IsVisible="{Binding HasUsage}" TextWrapping="Wrap" />
             </StackPanel>
           </Flyout>
         </Button.Flyout>

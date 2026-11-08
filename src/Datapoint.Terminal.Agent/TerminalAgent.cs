@@ -161,6 +161,7 @@ public sealed partial class TerminalAgent : IDisposable
             ForgetScreens();
             _historyIds.Clear();
             EstimateContext();
+            Usage.ForgetConversation();
             ForgetCarried();
             ForgetWebGuard();
             EndIgnoringPermissions();
