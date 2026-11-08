@@ -5,16 +5,23 @@ using Datapoint.Terminal.Shell.Motion;
 
 namespace Datapoint.Terminal.Tests.Shell;
 
-public sealed class MotionTests
+public sealed class MotionTests : IDisposable
 {
-    // Headless frames stop after a few, so this relies on each animation being cut short once it should have ended. It waits
-    // for the outcome, up to two seconds, as a busy machine runs those deadlines late.
-    private static bool Until(Func<bool> done)
+    private readonly ManualTime _time = new();
+
+    public MotionTests() => Playback.Time = _time;
+
+    public void Dispose() => Playback.Time = TimeProvider.System;
+
+    // Headless frames stop after a few, so this relies on each animation being cut short once it should have ended. That
+    // deadline runs on a clock moved here, 10 ms a frame, so a slow machine can't end an animation before its first frame.
+    private bool Until(Func<bool> done)
     {
         var watch = System.Diagnostics.Stopwatch.StartNew();
         while (!done() && watch.ElapsedMilliseconds < 2000)
         {
             Thread.Sleep(5);
+            _time.Advance(TimeSpan.FromMilliseconds(10));
             Avalonia.Headless.AvaloniaHeadlessPlatform.ForceRenderTimerTick();
             Dispatcher.UIThread.RunJobs();
         }

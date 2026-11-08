@@ -11,13 +11,16 @@ internal static class Playback
     private static readonly TimeSpan s_grace = TimeSpan.FromMilliseconds(100);
     private static readonly ConditionalWeakTable<Visual, CancellationTokenSource> s_running = [];
 
+    // The clock the deadline runs on. Tests stop it, so only frames end an animation and a slow machine can't cut one short.
+    internal static TimeProvider Time { get; set; } = TimeProvider.System;
+
     // False when another animation took over before this one ended.
     public static async Task<bool> PlayAsync(Visual target, Animation animation)
     {
         Stop(target);
         var cancellation = new CancellationTokenSource();
         s_running.AddOrUpdate(target, cancellation);
-        var deadline = Task.Delay(animation.Duration + s_grace, CancellationToken.None);
+        var deadline = Task.Delay(animation.Duration + s_grace, Time, CancellationToken.None);
         await Task.WhenAny(animation.RunAsync(target, cancellation.Token), deadline).ConfigureAwait(true);
         return s_running.TryGetValue(target, out var current) && current == cancellation;
     }
