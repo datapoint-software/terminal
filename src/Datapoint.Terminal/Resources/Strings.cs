@@ -1911,6 +1911,10 @@ public static class Strings
 
     public static string NoticeWorkspaceReadOnlyNotEdited => Get(nameof(NoticeWorkspaceReadOnlyNotEdited));
 
+    public static string ContextUseHelp => Get(nameof(ContextUseHelp));
+
+    public static string ContextUsedUnknownWindow => Get(nameof(ContextUsedUnknownWindow));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

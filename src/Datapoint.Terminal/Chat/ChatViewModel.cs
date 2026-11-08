@@ -174,7 +174,10 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
     public partial string UsageSummary { get; private set; } = string.Empty;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasUsageDetail))]
     public partial string UsageDetail { get; private set; } = string.Empty;
+
+    public bool HasUsageDetail => UsageDetail.Length > 0;
 
     public bool HasUsage => UsageSummary.Length > 0;
 
@@ -193,13 +196,16 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
     [NotifyPropertyChangedFor(nameof(HasContext), nameof(ContextSweep), nameof(ContextText), nameof(ContextDetail))]
     public partial long ContextUsed { get; private set; }
 
-    public bool HasContext => ContextWindow > 0 && ContextUsed > 0;
+    // Shown once a request has used some, even when the window isn't known, since the session's usage opens from it.
+    public bool HasContext => ContextUsed > 0;
 
-    public double ContextSweep => HasContext ? 360.0 * Math.Min(1.0, (double)ContextUsed / ContextWindow!.Value) : 0;
+    public double ContextSweep => HasContext && ContextWindow > 0 ? 360.0 * Math.Min(1.0, (double)ContextUsed / ContextWindow!.Value) : 0;
 
     public string ContextText => ShortTokens(ContextUsed);
 
-    public string ContextDetail => HasContext ? Strings.Format(Strings.ContextUsedDetail, ContextUsed, ContextWindow!.Value) : string.Empty;
+    public string ContextDetail => !HasContext ? string.Empty
+        : ContextWindow > 0 ? Strings.Format(Strings.ContextUsedDetail, ContextUsed, ContextWindow!.Value)
+        : Strings.Format(Strings.ContextUsedUnknownWindow, ContextUsed);
 
     internal static string ShortTokens(long tokens) => tokens switch
     {

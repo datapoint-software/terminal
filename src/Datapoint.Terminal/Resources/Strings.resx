@@ -2868,4 +2868,10 @@ Fingerprint: {2}</value>
   <data name="NoticeWorkspaceReadOnlyNotEdited" xml:space="preserve">
     <value>{0} wasn't changed: this workspace's folder is read-only.</value>
   </data>
+  <data name="ContextUseHelp" xml:space="preserve">
+    <value>Context and usage for this session</value>
+  </data>
+  <data name="ContextUsedUnknownWindow" xml:space="preserve">
+    <value>{0:N0} tokens of context used</value>
+  </data>
 </root>

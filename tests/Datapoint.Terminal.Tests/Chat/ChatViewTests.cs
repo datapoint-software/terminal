@@ -462,9 +462,22 @@ public sealed class ChatViewTests
             frame?.Save("rendered/chat-context-ring.png", new PngBitmapEncoderOptions());
         }
 
-        Assert.True(view.FindControl<StackPanel>("ContextUse")!.IsEffectivelyVisible);
+        // Only the ring and its count show; what the session used and cost opens from it.
+        var ring = view.FindControl<Button>("ContextUse")!;
+        Assert.True(ring.IsEffectivelyVisible);
+        Assert.DoesNotContain(view.GetVisualDescendants().OfType<TextBlock>(), text => text.IsEffectivelyVisible && text.Text?.StartsWith("This session", StringComparison.Ordinal) == true);
         Assert.Equal("250k", chat.ContextText);
         Assert.Equal(90.0, chat.ContextSweep, 3);
+        ring.Flyout!.ShowAt(ring);
+        Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+        var details = ((Flyout)ring.Flyout).Content as StackPanel;
+        Assert.True(details!.IsEffectivelyVisible);
+        Assert.Matches(@"^250.000 of 1.000.000 tokens of context used$", chat.ContextDetail);
+        Assert.StartsWith("This session", chat.UsageSummary, StringComparison.Ordinal);
+        using (var frame = window.CaptureRenderedFrame())
+        {
+            frame?.Save("rendered/chat-context-details.png", new PngBitmapEncoderOptions());
+        }
 
         agent.ClearConversation();
         chat.RefreshUsage();

@@ -556,20 +556,29 @@
       </Border>
 
       <Grid ColumnDefinitions="*,Auto" Margin="0,6,-4,0">
-      <StackPanel Orientation="Horizontal" Spacing="10" Margin="4,0,8,0" VerticalAlignment="Center">
-        <TextBlock Classes="secondary" Text="{Binding UsageSummary}" IsVisible="{Binding HasUsage}" VerticalAlignment="Center"
-                   TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding UsageDetail}" Focusable="True"
-                   AutomationProperties.Name="{Binding UsageSummary}" AutomationProperties.HelpText="{Binding UsageDetail}" />
-        <!-- How much of the model's context the conversation fills, as a ring and in tokens (product decision 126). -->
-        <StackPanel x:Name="ContextUse" Orientation="Horizontal" Spacing="5" IsVisible="{Binding HasContext}" Background="Transparent"
-                    ToolTip.Tip="{Binding ContextDetail}" Focusable="True" AutomationProperties.Name="{Binding ContextDetail}">
+      <!-- How much of the model's context the conversation fills, as a ring and in tokens; what the session has used and cost
+           opens from it (product decisions 49 and 126). -->
+      <Button x:Name="ContextUse" Classes="plain" Margin="0,0,8,0" Padding="4,2"
+              VerticalAlignment="Center" HorizontalAlignment="Left" IsVisible="{Binding HasContext}"
+              ToolTip.Tip="{x:Static res:Strings.ContextUseHelp}" AutomationProperties.Name="{Binding ContextDetail}"
+              AutomationProperties.HelpText="{x:Static res:Strings.ContextUseHelp}">
+        <StackPanel Orientation="Horizontal" Spacing="5">
           <Panel Width="12" Height="12" VerticalAlignment="Center">
             <Ellipse Stroke="{DynamicResource SeparatorBrush}" StrokeThickness="1.5" />
             <Arc StartAngle="-90" SweepAngle="{Binding ContextSweep}" Stroke="{DynamicResource AccentBrush}" StrokeThickness="1.5" StrokeLineCap="Round" />
           </Panel>
           <TextBlock Classes="secondary" Text="{Binding ContextText}" VerticalAlignment="Center" />
         </StackPanel>
-      </StackPanel>
+        <Button.Flyout>
+          <Flyout Placement="TopEdgeAlignedLeft">
+            <StackPanel x:Name="UsageDetails" Spacing="6" MaxWidth="320" Margin="4">
+              <TextBlock Text="{Binding ContextDetail}" TextWrapping="Wrap" />
+              <SelectableTextBlock Classes="secondary" Text="{Binding UsageSummary}" IsVisible="{Binding HasUsage}" TextWrapping="Wrap" />
+              <SelectableTextBlock Classes="secondary" Text="{Binding UsageDetail}" IsVisible="{Binding HasUsageDetail}" TextWrapping="Wrap" />
+            </StackPanel>
+          </Flyout>
+        </Button.Flyout>
+      </Button>
       <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="2">
         <ComboBox Classes="menu" ItemsSource="{Binding Modes}" SelectedItem="{Binding SelectedMode}"
                   ToolTip.Tip="{Binding SelectedMode.Help}" AutomationProperties.Name="{x:Static res:Strings.ChatMode}">
