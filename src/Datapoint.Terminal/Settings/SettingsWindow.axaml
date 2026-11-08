@@ -181,43 +181,65 @@
               <TextBox Grid.Column="1" Text="{Binding Name}" AutomationProperties.Name="{x:Static res:Strings.ProviderName}" />
             </Grid>
             <Rectangle Classes="hairline" />
+            <!-- Product decision 126: a model the app knows brings its context window and prices; Other… takes them as typed. -->
             <Grid Classes="row" ColumnDefinitions="150,*">
               <TextBlock Text="{x:Static res:Strings.ProviderModel}" />
-              <AutoCompleteBox Grid.Column="1" Text="{Binding Model}" ItemsSource="{Binding ModelSuggestions}"
-                               MinimumPrefixLength="0" FilterMode="StartsWith"
-                               AutomationProperties.Name="{x:Static res:Strings.ProviderModel}" />
+              <ComboBox Grid.Column="1" ItemsSource="{Binding ModelChoices}" SelectedItem="{Binding SelectedModelChoice}" IsVisible="{Binding !IsCompatible}"
+                        HorizontalAlignment="Stretch" AutomationProperties.Name="{x:Static res:Strings.ProviderModel}">
+                <ComboBox.ItemTemplate>
+                  <DataTemplate x:DataType="settings:ModelOption">
+                    <TextBlock Text="{Binding Label}" />
+                  </DataTemplate>
+                </ComboBox.ItemTemplate>
+              </ComboBox>
+              <TextBox Grid.Column="1" Text="{Binding Model}" IsVisible="{Binding IsCompatible}" PlaceholderText="{x:Static res:Strings.ProviderModelNameHint}"
+                       AutomationProperties.Name="{x:Static res:Strings.ProviderModel}" />
             </Grid>
+            <StackPanel IsVisible="{Binding IsOtherModel}">
+              <Rectangle Classes="hairline" />
+              <Grid Classes="row" ColumnDefinitions="150,*">
+                <TextBlock Text="{x:Static res:Strings.ProviderModelName}" />
+                <TextBox x:Name="ModelNameBox" Grid.Column="1" Text="{Binding Model}" PlaceholderText="{x:Static res:Strings.ProviderModelNameHint}"
+                         AutomationProperties.Name="{x:Static res:Strings.ProviderModelName}" />
+              </Grid>
+            </StackPanel>
             <Rectangle Classes="hairline" />
             <Grid Classes="row" ColumnDefinitions="150,*">
               <TextBlock Text="{x:Static res:Strings.ProviderContextWindow}" />
-              <TextBox Grid.Column="1" Text="{Binding ContextWindow}" PlaceholderText="{x:Static res:Strings.ProviderContextWindowHint}"
+              <TextBox Grid.Column="1" Text="{Binding ContextWindow}" PlaceholderText="{x:Static res:Strings.ProviderContextWindowHint}" IsVisible="{Binding HasOwnValues}"
                        AutomationProperties.Name="{x:Static res:Strings.ProviderContextWindow}" />
-            </Grid>
-            <Rectangle Classes="hairline" />
-            <Grid Classes="row" ColumnDefinitions="150,*">
-              <TextBlock Text="{x:Static res:Strings.ProviderOutputLimit}" />
-              <TextBox Grid.Column="1" Text="{Binding OutputLimit}" PlaceholderText="{Binding OutputLimitHint}"
-                       AutomationProperties.Name="{x:Static res:Strings.ProviderOutputLimit}" />
+              <SelectableTextBlock Grid.Column="1" VerticalAlignment="Center" TextWrapping="Wrap" Text="{Binding KnownContextWindow}" IsVisible="{Binding IsKnownModel}"
+                                   AutomationProperties.Name="{x:Static res:Strings.ProviderContextWindow}" />
             </Grid>
             <Rectangle Classes="hairline" />
             <Grid Classes="row" ColumnDefinitions="150,*">
               <TextBlock Text="{x:Static res:Strings.ProviderInputPrice}" TextWrapping="Wrap" />
-              <TextBox Grid.Column="1" Text="{Binding InputPrice}" PlaceholderText="{x:Static res:Strings.ProviderPriceHint}"
+              <TextBox Grid.Column="1" Text="{Binding InputPrice}" PlaceholderText="{x:Static res:Strings.ProviderPriceHint}" IsVisible="{Binding HasOwnValues}"
                        AutomationProperties.Name="{x:Static res:Strings.ProviderInputPrice}" />
+              <SelectableTextBlock Grid.Column="1" VerticalAlignment="Center" TextWrapping="Wrap" Text="{Binding KnownInputPrice}" IsVisible="{Binding IsKnownModel}"
+                                   AutomationProperties.Name="{x:Static res:Strings.ProviderInputPrice}" />
             </Grid>
             <Rectangle Classes="hairline" />
             <Grid Classes="row" ColumnDefinitions="150,*">
               <TextBlock Text="{x:Static res:Strings.ProviderOutputPrice}" TextWrapping="Wrap" />
-              <TextBox Grid.Column="1" Text="{Binding OutputPrice}" PlaceholderText="{x:Static res:Strings.ProviderPriceHint}"
+              <TextBox Grid.Column="1" Text="{Binding OutputPrice}" PlaceholderText="{x:Static res:Strings.ProviderPriceHint}" IsVisible="{Binding HasOwnValues}"
                        AutomationProperties.Name="{x:Static res:Strings.ProviderOutputPrice}" />
+              <SelectableTextBlock Grid.Column="1" VerticalAlignment="Center" TextWrapping="Wrap" Text="{Binding KnownOutputPrice}" IsVisible="{Binding IsKnownModel}"
+                                   AutomationProperties.Name="{x:Static res:Strings.ProviderOutputPrice}" />
             </Grid>
             <Rectangle Classes="hairline" />
             <Grid Classes="row" ColumnDefinitions="150,*">
               <TextBlock Text="{x:Static res:Strings.ProviderCachedInputPrice}" TextWrapping="Wrap" />
-              <TextBox Grid.Column="1" Text="{Binding CachedInputPrice}" PlaceholderText="{x:Static res:Strings.ProviderCachedPriceHint}"
+              <TextBox Grid.Column="1" Text="{Binding CachedInputPrice}" PlaceholderText="{x:Static res:Strings.ProviderCachedPriceHint}" IsVisible="{Binding HasOwnValues}"
                        AutomationProperties.Name="{x:Static res:Strings.ProviderCachedInputPrice}"
                        AutomationProperties.HelpText="{x:Static res:Strings.ProviderCachedPriceHint}" />
+              <SelectableTextBlock Grid.Column="1" VerticalAlignment="Center" TextWrapping="Wrap" Text="{Binding KnownCachedInputPrice}" IsVisible="{Binding IsKnownModel}"
+                                   AutomationProperties.Name="{x:Static res:Strings.ProviderCachedInputPrice}" />
             </Grid>
+            <StackPanel IsVisible="{Binding IsKnownModel}">
+              <Rectangle Classes="hairline" />
+              <TextBlock Classes="secondary" Margin="14,10" Text="{Binding KnownSource}" TextWrapping="Wrap" />
+            </StackPanel>
             <StackPanel IsVisible="{Binding IsCompatible}">
               <Rectangle Classes="hairline" />
               <Grid Classes="row" ColumnDefinitions="150,*">
@@ -231,6 +253,15 @@
               </Grid>
             </StackPanel>
           </StackPanel>
+        </Border>
+
+        <!-- The app's own limit, not the model's: how much of a command's output goes to the model at once (decision 26). -->
+        <Border Classes="group">
+          <Grid Classes="row" ColumnDefinitions="150,*">
+            <TextBlock Text="{x:Static res:Strings.ProviderOutputLimit}" TextWrapping="Wrap" />
+            <TextBox Grid.Column="1" Text="{Binding OutputLimit}" PlaceholderText="{Binding OutputLimitHint}"
+                     AutomationProperties.Name="{x:Static res:Strings.ProviderOutputLimit}" AutomationProperties.HelpText="{Binding OutputLimitHint}" />
+          </Grid>
         </Border>
 
         <!-- The key: entered once, then only replaced or removed. -->

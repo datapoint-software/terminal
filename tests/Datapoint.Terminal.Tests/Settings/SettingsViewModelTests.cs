@@ -168,10 +168,11 @@ public sealed class SettingsViewModelTests : IDisposable
     }
 
     [Theory]
-    [InlineData("claude-opus-5-5", "Opus 5.5")]
-    [InlineData("claude-haiku-5", "Haiku 5")]
-    [InlineData("claude-sonnet-4-5-20250929", "Sonnet 4.5")]
+    [InlineData("claude-opus-5-5", "Claude Opus 5.5")]
+    [InlineData("claude-haiku-5", "Claude Haiku 5")]
+    [InlineData("claude-sonnet-4-5-20250929", "Claude Sonnet 4.5")]
+    [InlineData("gpt-6-astra", "GPT-6 Astra")]
     [InlineData("gpt-5", "gpt-5")]
-    public void Shortens_model_names(string model, string expected) =>
+    public void Names_models_as_their_providers_do(string model, string expected) =>
         Assert.Equal(expected, ProviderCatalog.DisplayName(model));
 }

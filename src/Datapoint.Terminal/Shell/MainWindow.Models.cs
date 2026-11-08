@@ -54,7 +54,7 @@ public sealed partial class MainWindow
             warnings.Add(Strings.Format(Strings.SwitchToCloud, ProviderPrivacy.Destination(target)));
         }
 
-        if (current.ContextWindow is { } from && target.ContextWindow is { } to && to < from)
+        if (current.EffectiveContextWindow is { } from && target.EffectiveContextWindow is { } to && to < from)
         {
             warnings.Add(Strings.Format(Strings.SwitchSmallerContext, to, from));
         }

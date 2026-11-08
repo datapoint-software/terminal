@@ -15,7 +15,7 @@ public sealed partial class MainWindow
             return;
         }
 
-        _agent.Usage.Price = provider.ToPrice();
+        _agent.Usage.Price = provider.Price;
         _agent.Usage.Budget = _settings.SpendingLimit;
         _chat.RefreshUsage();
     }

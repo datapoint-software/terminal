@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Datapoint.Terminal.Agent.Providers;
 
 namespace Datapoint.Terminal.Settings;
@@ -32,10 +33,20 @@ public sealed record ProviderAccount
     // For input read from the prompt cache; optional.
     public decimal? CachedInputPrice { get; init; }
 
+    // A model the app knows has its provider's own context window and prices, whatever was saved for it (product decision 126).
+    [JsonIgnore]
+    public KnownModel? Known => ProviderCatalog.Find(Kind, Model);
+
+    [JsonIgnore]
+    public int? EffectiveContextWindow => Known?.ContextWindow ?? ContextWindow;
+
+    [JsonIgnore]
+    public Agent.Usage.TokenPrice? Price => Known?.Price ?? ToPrice();
+
     // Without a cached price, Anthropic's published rates apply to it (a tenth of the input price to read the cache, 1.25 times
     // to write it for five minutes); other providers' cached input counts at the full input price, which may overstate the
     // cost but never understates it against a spending limit.
-    public Agent.Usage.TokenPrice? ToPrice() => InputPrice is { } input && OutputPrice is { } output
+    private Agent.Usage.TokenPrice? ToPrice() => InputPrice is { } input && OutputPrice is { } output
         ? new(input, output)
         {
             CachedInputPerMillion = CachedInputPrice ?? (Kind == ProviderKind.Anthropic ? input * 0.1m : null),

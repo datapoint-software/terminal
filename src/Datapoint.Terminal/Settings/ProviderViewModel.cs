@@ -50,7 +50,8 @@ public sealed partial class ProviderViewModel : ObservableObject
 
             OnPropertyChanged(nameof(IsCompatible));
             OnPropertyChanged(nameof(NeedsKey));
-            OnPropertyChanged(nameof(ModelSuggestions));
+            OnPropertyChanged(nameof(ModelChoices));
+            NotifyModelChanged();
             OnPropertyChanged(nameof(Privacy));
             if (old is null)
             {
@@ -74,9 +75,94 @@ public sealed partial class ProviderViewModel : ObservableObject
                 return;
             }
 
+            NotifyModelChanged();
             Changed();
         }
     } = string.Empty;
+
+    // Product decision 126: Anthropic and OpenAI models are chosen from the ones the app knows, whose context window and
+    // prices come with them; Other… takes a model by name, with its own values. A compatible server's model is always typed.
+    public IReadOnlyList<ModelOption> ModelChoices => IsCompatible
+        ? []
+        : [.. ProviderCatalog.Known.Where(model => model.Kind == Kind.Kind).Select(model => new ModelOption(model, model.Name)), s_other];
+
+    private static readonly ModelOption s_other = new(null, Strings.ProviderModelOther);
+
+    public ModelOption? SelectedModelChoice
+    {
+        get => IsCompatible ? null : Known is null ? ModelChoices[^1] : ModelChoices.First(option => option.Model == Known);
+        set
+        {
+            // The list sets null when its items change, e.g. with the provider's kind.
+            if (value is null || IsCompatible)
+            {
+                return;
+            }
+
+            // Other… starts from an empty name; a name the app knows, typed there, chooses that model.
+            if (value.Model is { } model)
+            {
+                Model = model.Id;
+            }
+            else if (Known is not null)
+            {
+                Model = string.Empty;
+            }
+
+            NotifyModelChanged();
+        }
+    }
+
+    public KnownModel? Known => ProviderCatalog.Find(Kind.Kind, Model);
+
+    public bool IsKnownModel => Known is not null;
+
+    public bool IsOtherModel => !IsCompatible && Known is null;
+
+    public bool HasOwnValues => Known is null;
+
+    public string KnownContextWindow => Known is { } known ? Strings.Format(Strings.ProviderTokens, known.ContextWindow) : string.Empty;
+
+    public string KnownInputPrice => KnownPrice(price => price.InputPerMillion);
+
+    public string KnownOutputPrice => KnownPrice(price => price.OutputPerMillion);
+
+    public string KnownCachedInputPrice => KnownPrice(price => price.CachedInputPerMillion);
+
+    public string KnownSource => Known is { } known
+        ? Strings.Format(Strings.ProviderKnownSource, ProviderCatalog.DefaultName(known.Kind), ProviderCatalog.PricesAsOf.ToString("d MMMM yyyy", System.Globalization.CultureInfo.InvariantCulture))
+        : string.Empty;
+
+    private string KnownPrice(Func<Agent.Usage.TokenPrice, decimal?> rate)
+    {
+        if (Known?.Price is not { } price)
+        {
+            return string.Empty;
+        }
+
+        var text = Money(rate(price));
+        return price.LongPrompt is { } longer && price.LongPromptAbove is { } above
+            ? Strings.Format(Strings.ProviderLongPromptPrice, text, Money(rate(longer)), above)
+            : text;
+    }
+
+    private static string Money(decimal? value) =>
+        value is { } amount ? amount.ToString("0.00##", System.Globalization.CultureInfo.CurrentCulture) : Strings.ProviderNoPrice;
+
+    private void NotifyModelChanged()
+    {
+        OnPropertyChanged(nameof(SelectedModelChoice));
+        OnPropertyChanged(nameof(Known));
+        OnPropertyChanged(nameof(IsKnownModel));
+        OnPropertyChanged(nameof(IsOtherModel));
+        OnPropertyChanged(nameof(HasOwnValues));
+        OnPropertyChanged(nameof(KnownContextWindow));
+        OnPropertyChanged(nameof(KnownInputPrice));
+        OnPropertyChanged(nameof(KnownOutputPrice));
+        OnPropertyChanged(nameof(KnownCachedInputPrice));
+        OnPropertyChanged(nameof(KnownSource));
+        OnPropertyChanged(nameof(OutputLimitHint));
+    }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(Privacy))]
@@ -112,7 +198,7 @@ public sealed partial class ProviderViewModel : ObservableObject
             ? value
             : null;
 
-    public string OutputLimitHint => Strings.Format(Strings.ProviderOutputLimitHint, OutputLimits.For(Number(ContextWindow), null));
+    public string OutputLimitHint => Strings.Format(Strings.ProviderOutputLimitHint, OutputLimits.For(Known?.ContextWindow ?? Number(ContextWindow), null));
 
     private static int? Number(string text) =>
         int.TryParse(text.Replace(",", string.Empty, StringComparison.Ordinal).Replace(".", string.Empty, StringComparison.Ordinal).Trim(), System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out var value) && value > 0
@@ -153,8 +239,6 @@ public sealed partial class ProviderViewModel : ObservableObject
     public bool CanSaveKeys => _owner.Keys.CanSave;
 
     public bool ShowKeyEntry => CanSaveKeys && (!HasSavedKey || IsReplacingKey);
-
-    public IReadOnlyList<string> ModelSuggestions => ProviderCatalog.Models(Kind.Kind);
 
     public string Privacy => ProviderPrivacy.Describe(ToAccount());
 

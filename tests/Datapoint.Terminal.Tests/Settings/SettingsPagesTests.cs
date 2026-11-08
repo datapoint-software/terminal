@@ -199,4 +199,41 @@ public sealed class SettingsPagesTests : IDisposable
         color14 #56b6c2
         color15 #ffffff
         """;
+    [AvaloniaFact]
+    public void Shows_a_known_models_values_and_takes_another_models_as_typed()
+    {
+        var settings = Create();
+        settings.AddCommand.Execute(null);
+        var provider = settings.Selected!;
+        var window = Show(settings, 0);
+        window.Height = 900;
+        Dispatcher.UIThread.RunJobs();
+        Directory.CreateDirectory("rendered");
+        using (var frame = window.CaptureRenderedFrame())
+        {
+            frame?.Save("rendered/settings-provider-known.png", new PngBitmapEncoderOptions());
+        }
+
+        Assert.Equal("Claude Opus 5.5", provider.SelectedModelChoice!.Label);
+        Assert.Matches(@"^1\D?000\D?000 tokens$", provider.KnownContextWindow);
+        Assert.False(provider.IsOtherModel);
+
+        provider.SelectedModelChoice = provider.ModelChoices[^1];
+        provider.Model = "claude-opus-5-5-20261201";
+        provider.ContextWindow = "500000";
+        Dispatcher.UIThread.RunJobs();
+        using (var frame = window.CaptureRenderedFrame())
+        {
+            frame?.Save("rendered/settings-provider-other.png", new PngBitmapEncoderOptions());
+        }
+
+        Assert.True(provider.IsOtherModel);
+        Assert.Equal(500_000, provider.ToAccount().EffectiveContextWindow);
+
+        // A name the app knows, typed under Other…, chooses that model.
+        provider.Model = "claude-haiku-5-5";
+        Assert.Equal("Claude Haiku 5.5", provider.SelectedModelChoice!.Label);
+        Assert.Matches(@"^0[.,]10, or 0[.,]50 for prompts over 100\D?000 tokens$", provider.KnownInputPrice);
+        window.Close();
+    }
 }

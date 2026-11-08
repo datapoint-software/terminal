@@ -154,7 +154,7 @@ public sealed partial class MainWindow : Window, ITerminalOpener
         ApplyWebSettings();
         if (provider is not null)
         {
-            _agent?.OutputLimit = OutputLimits.For(provider.ContextWindow, provider.OutputLimit);
+            _agent?.OutputLimit = OutputLimits.For(provider.EffectiveContextWindow, provider.OutputLimit);
         }
 
         var key = ReadKey(provider);
@@ -205,7 +205,7 @@ public sealed partial class MainWindow : Window, ITerminalOpener
                 _agent.Mode = _settings.ModeFor(Workspace.Folder);
                 _agent.ModeChanged += OnAgentModeChanged;
                 _agent.EventRaised += OnMemoryEvent;
-                _agent.OutputLimit = OutputLimits.For(provider.ContextWindow, provider.OutputLimit);
+                _agent.OutputLimit = OutputLimits.For(provider.EffectiveContextWindow, provider.OutputLimit);
                 _agent.EventRaised += OnAgentEvent;
                 _agent.EventRaised += OnHistoryEvent;
                 _agent.EventRaised += OnRecordingEvent;

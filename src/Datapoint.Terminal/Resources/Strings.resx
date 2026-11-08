@@ -742,10 +742,10 @@ Fingerprint: {2}</value>
     <value>Tokens, from the model's documentation (optional)</value>
   </data>
   <data name="ProviderOutputLimit" xml:space="preserve">
-    <value>Output limit</value>
+    <value>Terminal output sent at once</value>
   </data>
   <data name="ProviderOutputLimitHint" xml:space="preserve">
-    <value>Characters of output sent at once (default {0:N0})</value>
+    <value>Default {0:N0} characters</value>
   </data>
   <data name="SwitchTitle" xml:space="preserve">
     <value>Switch models?</value>
@@ -2804,5 +2804,26 @@ Fingerprint: {2}</value>
   </data>
   <data name="PlanStepAdded" xml:space="preserve">
     <value>Added</value>
+  </data>
+  <data name="ProviderModelOther" xml:space="preserve">
+    <value>Other…</value>
+  </data>
+  <data name="ProviderModelName" xml:space="preserve">
+    <value>Model name</value>
+  </data>
+  <data name="ProviderModelNameHint" xml:space="preserve">
+    <value>The model's ID, as your provider names it</value>
+  </data>
+  <data name="ProviderKnownSource" xml:space="preserve">
+    <value>From {0}'s published prices and model documentation, as of {1}. To use other values, choose Other…</value>
+  </data>
+  <data name="ProviderTokens" xml:space="preserve">
+    <value>{0:N0} tokens</value>
+  </data>
+  <data name="ProviderLongPromptPrice" xml:space="preserve">
+    <value>{0}, or {1} for prompts over {2:N0} tokens</value>
+  </data>
+  <data name="ProviderNoPrice" xml:space="preserve">
+    <value>Not published</value>
   </data>
 </root>
