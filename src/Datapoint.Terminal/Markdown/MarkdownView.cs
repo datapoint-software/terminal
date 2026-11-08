@@ -51,6 +51,23 @@ public sealed partial class MarkdownView : StackPanel
         remove => RemoveHandler(TextClickedEvent, value);
     }
 
+    // Offers to quote the selection in the user's message, for a chat reply; whoever shows the view handles QuoteRequested.
+    public static readonly StyledProperty<bool> CanQuoteProperty = AvaloniaProperty.Register<MarkdownView, bool>(nameof(CanQuote));
+
+    public bool CanQuote
+    {
+        get => GetValue(CanQuoteProperty);
+        set => SetValue(CanQuoteProperty, value);
+    }
+
+    public static readonly RoutedEvent<MarkdownQuoteEventArgs> QuoteRequestedEvent = RoutedEvent.Register<MarkdownView, MarkdownQuoteEventArgs>(nameof(QuoteRequested), RoutingStrategies.Bubble);
+
+    public event EventHandler<MarkdownQuoteEventArgs>? QuoteRequested
+    {
+        add => AddHandler(QuoteRequestedEvent, value);
+        remove => RemoveHandler(QuoteRequestedEvent, value);
+    }
+
     private static KeyModifiers CommandModifier => OperatingSystem.IsMacOS() ? KeyModifiers.Meta : KeyModifiers.Control;
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
@@ -129,7 +146,26 @@ public sealed partial class MarkdownView : StackPanel
         copy.Click += (_, _) => _ = CopyAsync();
         var all = new MenuItem { Header = Strings.MarkdownSelectAll, InputGesture = new KeyGesture(Key.A, CommandModifier) };
         all.Click += (_, _) => SelectAll();
-        return new MenuFlyout { Items = { copy, all } };
+        var quote = new MenuItem { Header = Strings.MarkdownQuote };
+        quote.Click += (_, _) => Quote();
+        var menu = new MenuFlyout { Items = { copy, all, quote } };
+        menu.Opening += (_, _) =>
+        {
+            quote.IsVisible = CanQuote;
+            quote.IsEnabled = SelectedText.Trim().Length > 0;
+        };
+        return menu;
+    }
+
+    public void Quote()
+    {
+        var text = SelectedText;
+        if (!CanQuote || text.Trim().Length == 0)
+        {
+            return;
+        }
+
+        RaiseEvent(new MarkdownQuoteEventArgs(text));
     }
 
     public string SelectedText =>

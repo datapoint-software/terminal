@@ -1943,6 +1943,8 @@ public static class Strings
 
     public static string UsageConversation => Get(nameof(UsageConversation));
 
+    public static string MarkdownQuote => Get(nameof(MarkdownQuote));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

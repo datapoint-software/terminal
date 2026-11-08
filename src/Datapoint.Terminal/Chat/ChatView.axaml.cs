@@ -25,6 +25,7 @@ public sealed partial class ChatView : UserControl
         };
 
         QuestionCard.AddHandler(KeyDownEvent, OnQuestionKeyDown);
+        AddHandler(Markdown.MarkdownView.QuoteRequestedEvent, OnQuoteRequested);
 
         // After "Something else…" the box is where the user types next; an open question doesn't take focus from the terminal.
         QuestionWriting.PropertyChanged += (_, e) =>
@@ -53,6 +54,21 @@ public sealed partial class ChatView : UserControl
             _ => 0,
         };
         e.Handled = question.ChooseNumber(number);
+    }
+
+    // The box keeps its caret while the user selects in a reply, so the quote goes where they were writing.
+    private void OnQuoteRequested(object? sender, Markdown.MarkdownQuoteEventArgs e)
+    {
+        e.Handled = true;
+        if (!DraftBox.IsEnabled)
+        {
+            return;
+        }
+
+        var (draft, caret) = MessageQuote.Insert(DraftBox.Text, DraftBox.CaretIndex, e.Text);
+        DraftBox.Text = draft;
+        DraftBox.Focus();
+        DraftBox.CaretIndex = caret;
     }
 
     // The caret goes to the end, after any text the menu put there for the user to finish.

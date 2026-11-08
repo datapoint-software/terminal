@@ -655,6 +655,36 @@ public sealed class ChatViewTests
         window.Close();
     }
 
+    // Product decision 144: part of a reply goes into the message as a quote, for the user to write about.
+    [AvaloniaFact]
+    public void Quotes_a_selected_reply_in_the_message()
+    {
+        using var chat = new ChatViewModel(new ImmediateUiThread());
+        using var agent = new TerminalAgent(new ListChatClient(new ChatResponse(new ChatMessage(ChatRole.Assistant, "Done."))), chat, new SecretRedactor());
+        chat.Attach(agent, "privacy notice");
+        chat.Items.Add(new ChatItemViewModel(ChatItemKind.Agent, "Nothing to free on a.\n\nThe **2.96 GB** are images stopped containers still use."));
+        chat.Draft = "Can we remove them?";
+        var view = new ChatView { DataContext = chat };
+        var window = new Window { Width = 420, Height = 500, Content = view };
+        window.Show();
+        Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+        var reply = view.GetVisualDescendants().OfType<Datapoint.Terminal.Markdown.MarkdownView>().Single(item => item.IsEffectivelyVisible && item.CanQuote);
+        var box = view.FindControl<TextBox>("DraftBox")!;
+        box.CaretIndex = 0;
+
+        reply.Quote();
+        Assert.Equal("Can we remove them?", chat.Draft);
+
+        reply.SelectAll();
+        reply.Quote();
+        Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+
+        Assert.Equal("> Nothing to free on a.\n> The 2.96 GB are images stopped containers still use.\n\nCan we remove them?", chat.Draft);
+        Assert.True(box.IsFocused);
+        Assert.Equal(chat.Draft!.IndexOf("Can we", StringComparison.Ordinal), box.CaretIndex);
+        window.Close();
+    }
+
     // Product decision 142: New Conversation starts the conversation's usage over; the session's, which the limit applies to, goes on.
     [AvaloniaFact]
     public async Task Shows_the_conversations_usage_apart_from_the_sessions()

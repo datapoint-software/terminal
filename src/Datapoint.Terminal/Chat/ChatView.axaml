@@ -623,7 +623,7 @@
               <Border Classes="bubble" IsVisible="{Binding IsUser}">
                 <SelectableTextBlock Text="{Binding Text}" TextWrapping="Wrap" />
               </Border>
-              <md:MarkdownView Text="{Binding Text}" IsVisible="{Binding IsAgent}" />
+              <md:MarkdownView Text="{Binding Text}" IsVisible="{Binding IsAgent}" CanQuote="True" />
               <Border Classes="code" Classes.highlight="{Binding IsHighlighted}" Margin="0" IsVisible="{Binding IsCommand}">
                 <StackPanel Spacing="4">
                   <SelectableTextBlock Classes="mono" Text="{Binding Text}" TextWrapping="Wrap" />

@@ -2916,4 +2916,7 @@ Fingerprint: {2}</value>
   <data name="UsageConversation" xml:space="preserve">
     <value>This conversation: {0} tokens</value>
   </data>
+  <data name="MarkdownQuote" xml:space="preserve">
+    <value>Quote in Message</value>
+  </data>
 </root>
