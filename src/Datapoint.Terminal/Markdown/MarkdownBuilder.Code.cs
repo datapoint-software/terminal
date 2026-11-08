@@ -16,7 +16,8 @@ internal sealed partial class MarkdownBuilder
 {
     private Border Code(CodeBlock code)
     {
-        var text = code.Lines.ToString().TrimEnd('\r', '\n');
+        // Markdig keeps the \r of CRLF lines, which would reach the highlighter and the copied text.
+        var text = code.Lines.ToString().ReplaceLineEndings("\n").TrimEnd('\n');
         var info = (code as FencedCodeBlock)?.Info;
         var body = new SelectableTextBlock { Inlines = Highlighted(text, info), TextWrapping = TextWrapping.NoWrap, ContextFlyout = null };
         body.Classes.Add("mono");

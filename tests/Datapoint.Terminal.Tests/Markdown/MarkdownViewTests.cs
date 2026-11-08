@@ -124,10 +124,12 @@ public sealed class MarkdownViewTests
         Assert.Equal(TextAlignment.Right, size.TextAlignment);
     }
 
-    [AvaloniaFact]
-    public void Colours_code_and_offers_to_copy_it()
+    [AvaloniaTheory]
+    [InlineData("\n")]
+    [InlineData("\r\n")]
+    public void Colours_code_and_offers_to_copy_it(string newline)
     {
-        var (_, view) = Show(Reply);
+        var (_, view) = Show(Reply.ReplaceLineEndings(newline));
 
         var code = Blocks(view).Single(block => InlineText.Of(block).StartsWith("# Count", StringComparison.Ordinal));
         var coloured = InlineText.Runs(code.Inlines!).Select(item => item.Run).Where(run => run.IsSet(TextElement.ForegroundProperty)).Select(run => run.Text).ToList();
@@ -135,6 +137,7 @@ public sealed class MarkdownViewTests
         Assert.Contains("# Count files", coloured, StringComparer.Ordinal);
         Assert.Contains("for", coloured, StringComparer.Ordinal);
         Assert.Contains("\"$HOME\"", coloured, StringComparer.Ordinal);
+        Assert.DoesNotContain('\r', InlineText.Of(code));
         Assert.Equal(TextWrapping.NoWrap, code.TextWrapping);
         Assert.Contains(view.GetVisualDescendants().OfType<Button>(), button => Equals(button.Content, "Copy"));
     }
