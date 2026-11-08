@@ -45,6 +45,40 @@ public sealed class ChatViewTests
         Assert.NotNull(frame);
     }
 
+    // Every block in the conversation, messages, commands, notices and cards, sits the same 12 px from the next, as the cards
+    // pinned above it do.
+    [AvaloniaFact]
+    public void Spaces_every_block_of_the_conversation_the_same()
+    {
+        using var chat = new ChatViewModel(new ImmediateUiThread());
+        chat.AddNotice("Your messages are sent to Anthropic (api.anthropic.com).");
+        chat.Items.Add(new ChatItemViewModel(ChatItemKind.User, "Free some space on the Swarm nodes"));
+        chat.Items.Add(new ChatItemViewModel(ChatItemKind.Agent, "Checking disk use first."));
+        chat.Items.Add(new ChatItemViewModel(ChatItemKind.Command, "docker system df") { Detail = "swarm-a · Exit code 0" });
+        chat.Items.Add(new ChatItemViewModel(ChatItemKind.Command, "df -h /") { Detail = "swarm-a · Exit code 0" });
+        chat.Items.Add(new ChatItemViewModel(ChatItemKind.Asked, "Remove unused images older than 7 days?"));
+        chat.Items.Add(new ChatItemViewModel(ChatItemKind.User, "Yes"));
+        chat.Items.Add(new ChatItemViewModel(ChatItemKind.Agent, "Reclaimed 4.2 GB on swarm-a."));
+        var view = new ChatView { DataContext = chat };
+        var window = new Window { Width = 420, Height = 700, Content = view };
+        window.Show();
+        Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+        Directory.CreateDirectory("rendered");
+        using (var frame = window.CaptureRenderedFrame())
+        {
+            frame?.Save("rendered/chat-spacing.png", new PngBitmapEncoderOptions());
+        }
+
+        var list = view.FindControl<ItemsControl>("ItemList")!;
+        var blocks = list.GetRealizedContainers()
+            .Select(container => container.GetVisualChildren().OfType<Panel>().Single().Children.First(control => control.IsVisible))
+            .Select(block => block.TranslatePoint(new Point(0, 0), list)!.Value.Y is var top ? (Top: top, Bottom: top + block.Bounds.Height) : default)
+            .ToList();
+        var gaps = blocks.Zip(blocks.Skip(1), (above, below) => Math.Round(below.Top - above.Bottom, 1)).ToList();
+        Assert.Equal(Enumerable.Repeat(12.0, blocks.Count - 1), gaps);
+        window.Close();
+    }
+
     [AvaloniaFact]
     public void Offers_to_treat_an_approved_command_as_read_only()
     {

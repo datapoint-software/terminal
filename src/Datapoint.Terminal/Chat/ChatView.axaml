@@ -217,7 +217,7 @@
       <Setter Property="Padding" Value="11,7" />
       <Setter Property="HorizontalAlignment" Value="Right" />
       <Setter Property="MaxWidth" Value="290" />
-      <Setter Property="Margin" Value="40,6,0,6" />
+      <Setter Property="Margin" Value="40,0,0,0" />
     </Style>
     <Style Selector="Border.bubble SelectableTextBlock">
       <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
@@ -608,25 +608,32 @@
     <!-- The conversation, a centred reading column however wide the window is; the scroll bar stays at the pane's edge. -->
     <ScrollViewer x:Name="Scroller" Padding="16,8">
       <StackPanel MaxWidth="{StaticResource ReadingWidth}">
+      <!-- One gap between every block, messages and cards alike, the same as between the cards pinned above; the blocks
+           themselves have no vertical margins, so it doesn't add up differently from one kind of block to another. -->
       <ItemsControl x:Name="ItemList" ItemsSource="{Binding Items}">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <StackPanel Spacing="12" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="chat:ChatItemViewModel">
             <Panel>
               <Border Classes="bubble" IsVisible="{Binding IsUser}">
                 <SelectableTextBlock Text="{Binding Text}" TextWrapping="Wrap" />
               </Border>
-              <md:MarkdownView Text="{Binding Text}" Margin="0,6" IsVisible="{Binding IsAgent}" />
-              <Border Classes="code" Classes.highlight="{Binding IsHighlighted}" IsVisible="{Binding IsCommand}">
+              <md:MarkdownView Text="{Binding Text}" IsVisible="{Binding IsAgent}" />
+              <Border Classes="code" Classes.highlight="{Binding IsHighlighted}" Margin="0" IsVisible="{Binding IsCommand}">
                 <StackPanel Spacing="4">
                   <SelectableTextBlock Classes="mono" Text="{Binding Text}" TextWrapping="Wrap" />
                   <TextBlock Classes="secondary" Text="{Binding Detail}" TextWrapping="Wrap" />
                 </StackPanel>
               </Border>
               <!-- An approved plan, once its task is over; while it runs, it's pinned above the conversation. -->
-              <ContentControl Content="{Binding Plan}" Margin="0,6" IsVisible="{Binding Plan.IsInConversation, FallbackValue=False}" />
-              <ContentControl Content="{Binding Rollout}" Margin="0,6" IsVisible="{Binding Rollout.IsInConversation, FallbackValue=False}" />
+              <ContentControl Content="{Binding Plan}" IsVisible="{Binding Plan.IsInConversation, FallbackValue=False}" />
+              <ContentControl Content="{Binding Rollout}" IsVisible="{Binding Rollout.IsInConversation, FallbackValue=False}" />
               <!-- What the agent ran on each host while looking, a line per command, marked as each finishes. -->
-              <Border Classes="card" Margin="0,6" IsVisible="{Binding IsLook}">
+              <Border Classes="card" Margin="0" IsVisible="{Binding IsLook}">
                 <StackPanel Spacing="8" DataContext="{Binding Look}" x:DataType="chat:LookProgressViewModel">
                   <TextBlock Classes="title" Text="{Binding Title}" TextWrapping="Wrap" />
                   <ItemsControl ItemsSource="{Binding Hosts}">
@@ -666,16 +673,16 @@
                 </StackPanel>
               </Border>
               <!-- A question the agent asked, kept quiet once answered; the answer follows as the user's message. -->
-              <SelectableTextBlock Classes="secondary" Text="{Binding Text}" TextWrapping="Wrap" Margin="0,8,0,0" IsVisible="{Binding IsAsked}" />
+              <SelectableTextBlock Classes="secondary" Text="{Binding Text}" TextWrapping="Wrap" IsVisible="{Binding IsAsked}" />
               <!-- A web search or page read: what it was, then the pages, which ask before opening. -->
-              <StackPanel Margin="0,6" Spacing="2" IsVisible="{Binding IsWeb}">
+              <StackPanel Spacing="2" IsVisible="{Binding IsWeb}">
                 <SelectableTextBlock Classes="secondary" FontWeight="SemiBold" Text="{Binding Text}" TextWrapping="Wrap" />
                 <Border Classes="warning" IsVisible="{Binding HasWarning}">
                   <TextBlock Text="{Binding Warning, StringFormat=⚠ {0}}" TextWrapping="Wrap" />
                 </Border>
                 <md:MarkdownView Text="{Binding Detail}" />
               </StackPanel>
-              <StackPanel Margin="12,6" Spacing="4" IsVisible="{Binding IsNotice}">
+              <StackPanel Margin="12,0" Spacing="4" IsVisible="{Binding IsNotice}">
                 <SelectableTextBlock Classes="secondary" Text="{Binding Text}" TextWrapping="Wrap" TextAlignment="Center" />
                 <Button Content="{Binding ActionLabel}" Command="{Binding ActionCommand}" IsVisible="{Binding HasAction}"
                         HorizontalAlignment="Center" />
