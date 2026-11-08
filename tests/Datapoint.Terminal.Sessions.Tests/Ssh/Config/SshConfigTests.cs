@@ -65,7 +65,7 @@ public sealed class SshConfigTests : IDisposable
 
         var host = config.Resolve("web", "joao");
 
-        Assert.Equal([Path.Combine(_home, ".ssh", "web_key").Replace('\\', '/'), _home + "/.ssh/id_ed25519"], host.IdentityFiles.Select(file => file.Replace('\\', '/')), StringComparer.Ordinal);
+        Assert.Equal([Path.Combine(_home, ".ssh", "web_key").Replace('\\', '/'), (_home + "/.ssh/id_ed25519").Replace('\\', '/')], host.IdentityFiles.Select(file => file.Replace('\\', '/')), StringComparer.Ordinal);
     }
 
     [Fact]

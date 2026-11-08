@@ -43,7 +43,7 @@ public sealed class HistoryStoreTests : IDisposable
             store.Add(new HistoryEntry(conversation, s_start, HistoryEntryKind.Command, "export DB_PASSWORD=hunter2hunter2", Detail: "token=abcdefghijkl"));
         }
 
-        var bytes = File.ReadAllBytes(DatabasePath);
+        var bytes = DatabaseBytes();
         Assert.Equal(-1, bytes.AsSpan().IndexOf("hunter2"u8));
         Assert.Equal(-1, bytes.AsSpan().IndexOf("abcdefghijkl"u8));
     }
@@ -57,7 +57,7 @@ public sealed class HistoryStoreTests : IDisposable
         }
 
         Assert.False(File.Exists(DatabasePath + "-wal"));
-        var header = File.ReadAllBytes(DatabasePath)[18..20];
+        var header = DatabaseBytes()[18..20];
         Assert.Equal(new byte[] { 1, 1 }, header);
         if (OperatingSystem.IsWindows())
         {
@@ -169,7 +169,16 @@ public sealed class HistoryStoreTests : IDisposable
         Assert.Equal(["Check both", "uptime"], store.Conversation(conversation).Select(entry => entry.Text), StringComparer.Ordinal);
         Assert.Empty(store.Search("quokka", 10));
         Assert.Equal(["db"], store.Connections(), StringComparer.Ordinal);
-        Assert.Equal(-1, File.ReadAllBytes(DatabasePath).AsSpan().IndexOf("quokka"u8));
+        Assert.Equal(-1, DatabaseBytes().AsSpan().IndexOf("quokka"u8));
+    }
+
+    // Read while the store still has the file open: Windows refuses File.ReadAllBytes then, as it doesn't share writing.
+    private byte[] DatabaseBytes()
+    {
+        using var stream = new FileStream(DatabasePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
+        using var copy = new MemoryStream();
+        stream.CopyTo(copy);
+        return copy.ToArray();
     }
 
     [Fact]
@@ -183,7 +192,7 @@ public sealed class HistoryStoreTests : IDisposable
             Assert.Empty(store.Conversations(10));
         }
 
-        Assert.Equal(-1, File.ReadAllBytes(DatabasePath).AsSpan().IndexOf("zanzibar"u8));
+        Assert.Equal(-1, DatabaseBytes().AsSpan().IndexOf("zanzibar"u8));
     }
 
     [Fact]

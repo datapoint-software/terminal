@@ -30,7 +30,8 @@ public sealed class MainWindowLanguageTests : IDisposable
         var store = new SettingsStore(Path.Combine(_folder, "settings.json"));
         var settings = new SettingsViewModel(store, store.Load(), new ProviderKeys(new MemoryCredentialStore(), _ => null), (_, _) => new ListChatClient(new ChatResponse(new ChatMessage(ChatRole.Assistant, "OK"))));
         using var lifetime = new ClassicDesktopStyleApplicationLifetime();
-        var workspace = Workspace.Open(Path.Combine(_folder, "workspace"), _folder, create: true, Path.Combine(_folder, "personal"));
+        // The window releases the workspace when it closes; this one is never shown, so the test releases it, or Windows keeps its lock file.
+        using var workspace = Workspace.Open(Path.Combine(_folder, "workspace"), _folder, create: true, Path.Combine(_folder, "personal"));
         var window = new MainWindow(workspace, new WorkspaceWindows(lifetime, settings));
 
         Localizer.Instance.Use(AppLanguage.PortuguesePortugal);

@@ -28,7 +28,8 @@ public sealed class KnownHostsFileTests : IDisposable
 
     private KnownHostsFile Write(params string[] lines)
     {
-        File.WriteAllLines(FilePath, lines);
+        // As OpenSSH writes it, with LF on every system; WriteAllLines would use CRLF on Windows.
+        File.WriteAllText(FilePath, string.Concat(lines.Select(line => line + "\n")));
         return new KnownHostsFile([FilePath]);
     }
 
