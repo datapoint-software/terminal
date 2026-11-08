@@ -55,7 +55,7 @@ public sealed record AppSettings
     // In US dollars per window session; null for no limit.
     public decimal? SpendingLimit { get; init; }
 
-    public Shell.TerminalTheme TerminalTheme { get; set; } = Shell.TerminalTheme.Dark;
+    public Shell.TerminalTheme TerminalTheme { get; set; } = Shell.TerminalTheme.System;
 
     // Null uses the default list of monospace fonts.
     public string? TerminalFont { get; init; }

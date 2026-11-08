@@ -174,6 +174,15 @@ public sealed class SetupTests : IDisposable
         Assert.Equal("Terminal: light", setup.TerminalSummary);
     }
 
+    [Fact]
+    public void Starts_with_the_window_and_the_terminal_matching_the_system()
+    {
+        var settings = Settings();
+
+        Assert.Equal((WindowTheme.System, Datapoint.Terminal.Shell.TerminalTheme.System), (settings.WindowTheme, settings.TerminalTheme));
+        Assert.Equal(("Window: matches your system", "Terminal: matches your system"), (Setup(settings).WindowSummary, Setup(settings).TerminalSummary));
+    }
+
     [AvaloniaFact]
     public void Shows_each_step_and_closes_with_escape_keeping_what_was_chosen()
     {
