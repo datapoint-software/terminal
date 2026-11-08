@@ -44,6 +44,8 @@ Following [Conventional Branch 1.1.0](https://conventionalbranch.org/v1.1.0/).
   ^(?:main|master|develop|(?:feat|fix|hotfix|release|chore)/[a-z0-9]+(?:\.[a-z0-9]+)*(?:-[a-z0-9]+(?:\.[a-z0-9]+)*)*)$
   ```
 
+- Exception: Dependabot names its own branches (e.g. `dependabot/github_actions/actions-1a2b3c`) and has no setting to change them. They're accepted for its pull requests only, and are deleted once merged.
+
 ### Commit messages
 
 Following [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/).
@@ -63,6 +65,7 @@ Commit often, one commit per self-contained change: each commit does one thing, 
 - `description`: a short summary, directly after the colon and space. Write it in the imperative mood, in lowercase, with no trailing period (`fix(home): correct the supported docker version`, not `fix(home): Corrected the Docker version.`).
 - First line: 72 characters at most, including type and scope.
 - Body: one blank line after the description, wrapped at 72 characters. Required when the reason for the change isn't obvious from the first line: explain why, and any side effects. Trivial commits may be a single line.
+- Exception: Dependabot's commits follow this convention in their first line (`ci(deps): bump …`, set in `.github/dependabot.yml`), but it writes their bodies itself, with links and update details on lines longer than 72 characters. Accept them as written; when squash-merging, the body may be trimmed.
 - Footers: one blank line after the body, one per line, as `Token: value` or `Token #value`. Tokens use `-` instead of spaces (e.g. `Refs: #42`, `Reviewed-by: ...`), except `BREAKING CHANGE`.
 - Breaking changes: mark with `!` before the colon (e.g. `feat(config)!: ...`), a `BREAKING CHANGE: <description>` footer, or both. For this application, breaking means anything that stops an existing installation from working as before after an upgrade: settings, saved connections or other stored data that are no longer read without a migration, removed or changed command-line options, or dropped support for an operating system version or AI provider.
 - Case: nothing is case-sensitive except `BREAKING CHANGE`, which must be uppercase. `BREAKING-CHANGE` is a synonym.
