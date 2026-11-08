@@ -367,6 +367,21 @@ public sealed class OpenSshInteropTests(OpenSshServer server) : IClassFixture<Op
         Assert.Equal("third", Encoding.UTF8.GetString(copy.ToArray()));
     }
 
+    // The server refuses before reading anything, so a large upload is still being sent when the channel closes.
+    [Fact]
+    public async Task Asks_before_replacing_a_file_while_a_large_one_is_still_being_sent()
+    {
+        server.SkipIfUnavailable();
+        await using var client = await OpenSshServer.ConnectWithPasswordAsync(server.Options());
+        await client.UploadAsync(new MemoryStream("first"u8.ToArray()), "~/replace-large.bin", overwrite: true, progress: null, Token);
+
+        await Assert.ThrowsAsync<RemoteFileExistsException>(() => client.UploadAsync(new MemoryStream(new byte[4 * 1024 * 1024]), "~/replace-large.bin", overwrite: false, progress: null, Token));
+
+        using var copy = new MemoryStream();
+        await client.DownloadAsync("~/replace-large.bin", copy, progress: null, Token);
+        Assert.Equal("first", Encoding.UTF8.GetString(copy.ToArray()));
+    }
+
     [Fact]
     public async Task Reports_a_file_that_isnt_there()
     {

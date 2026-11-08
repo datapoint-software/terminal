@@ -57,14 +57,27 @@ public sealed partial class SshClient
             await channel.ExecuteAsync(script, cancellationToken).ConfigureAwait(false);
             var errors = new StringBuilder();
             var reading = ReadErrorsAsync(channel, errors, cancellationToken);
-            var total = await SendAsync(source, channel, progress, cancellationToken).ConfigureAwait(false);
-            await channel.SendEofAsync(cancellationToken).ConfigureAwait(false);
+            long total = 0;
+            SshChannelException? closed = null;
+            try
+            {
+                total = await SendAsync(source, channel, progress, cancellationToken).ConfigureAwait(false);
+                await channel.SendEofAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (SshChannelException exception)
+            {
+                // The script can end before reading anything, e.g. when the file exists, and close the channel while the file
+                // is still being sent. Its exit code then says why.
+                closed = exception;
+            }
+
             await reading.ConfigureAwait(false);
             await channel.Completion.WaitAsync(cancellationToken).ConfigureAwait(false);
             return channel.ExitCode switch
             {
-                0 => total,
                 ExitExists => throw new RemoteFileExistsException(),
+                null or 0 when closed is not null => throw closed,
+                0 => total,
                 _ => throw new IOException(TransferProblem(channel, errors)),
             };
         }
