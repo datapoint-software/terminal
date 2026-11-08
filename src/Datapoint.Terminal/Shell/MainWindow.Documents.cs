@@ -310,7 +310,7 @@ public sealed partial class MainWindow
     private string OpenTextFor(string connection)
     {
         var count = _tabs.Count(tab => string.Equals(tab.ConnectionName, connection, StringComparison.OrdinalIgnoreCase));
-        return count == 0 ? string.Empty : Strings.Format(Strings.SidebarOpenTerminals, count);
+        return count == 0 ? string.Empty : count == 1 ? Strings.CountOneOpen : Strings.Format(Strings.SidebarOpenTerminals, count);
     }
 
     private static string? AddressOf(WorkspaceConnection connection)

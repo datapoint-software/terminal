@@ -73,12 +73,13 @@ public sealed class SidebarTests : IDisposable
                 new WorkspaceConnection { Name = "stage", SshHost = "stage", Environment = "staging" },
             ],
             ["bastion", "nas"]);
-        sidebar.SetOpenTerminals(new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase) { ["WEB1"] = 2 });
+        sidebar.SetOpenTerminals(new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase) { ["WEB1"] = 2, ["stage"] = 1 });
         sidebar.ShowHost("db1");
         sidebar.ChooseHostCommand.Execute(sidebar.Hosts[0]);
         sidebar.OtherHosts[1].AddCommand.Execute(null);
 
         Assert.Equal("2 open", sidebar.Hosts[0].OpenText);
+        Assert.Equal("1 open", sidebar.Hosts[2].OpenText);
         Assert.Equal("web1, production", sidebar.Hosts[0].AccessibleName);
         Assert.Equal((true, false, false), (sidebar.Hosts[0].IsProduction, sidebar.Hosts[0].IsStaging, sidebar.Hosts[0].HasNoEnvironment));
         Assert.True(sidebar.Hosts[1].HasNoEnvironment);

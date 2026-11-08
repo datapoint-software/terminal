@@ -30,5 +30,5 @@ public sealed partial class HostItemViewModel(WorkspaceConnection connection) : 
 
     public bool IsOpen => OpenTerminals > 0;
 
-    public string OpenText => IsOpen ? Strings.Format(Strings.SidebarOpenTerminals, OpenTerminals) : string.Empty;
+    public string OpenText => IsOpen ? OpenTerminals == 1 ? Strings.CountOneOpen : Strings.Format(Strings.SidebarOpenTerminals, OpenTerminals) : string.Empty;
 }
