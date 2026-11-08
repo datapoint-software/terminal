@@ -23,10 +23,13 @@ public sealed class AboutWindowTests
             frame?.Save("rendered/about.png", new PngBitmapEncoderOptions());
         }
 
-        var attribution = window.FindControl<HyperlinkButton>("Attribution")!;
+        var attribution = window.FindControl<WrapPanel>("Attribution")!;
         Assert.StartsWith("Version 0.", window.FindControl<SelectableTextBlock>("VersionText")!.Text, StringComparison.Ordinal);
-        Assert.Equal("Based on Datapoint Terminal by Datapoint - Sistemas de Informação, Lda.", ((TextBlock)attribution.Content!).Text);
-        Assert.Equal(new Uri("https://datapoint.software/"), attribution.NavigateUri);
+        var words = attribution.Children.Select(child => child is HyperlinkButton link ? (string)link.Content! : ((TextBlock)child).Text);
+        Assert.Equal("Based on Datapoint Terminal by Datapoint - Sistemas de Informação, Lda.", string.Join(' ', words));
+        Assert.Equal("Based on Datapoint Terminal by Datapoint - Sistemas de Informação, Lda.", Avalonia.Automation.AutomationProperties.GetName(attribution));
+        Assert.Equal(new Uri("https://datapoint.software/"), window.FindControl<HyperlinkButton>("CompanyLink")!.NavigateUri);
+        Assert.Equal(new Uri("https://datapoint.software/terminal/"), window.FindControl<HyperlinkButton>("ProductLink")!.NavigateUri);
         Assert.True(window.FindControl<DatapointLogo>("Logo")!.IsEffectivelyVisible);
         Assert.Equal(18, window.GetVisualDescendants().OfType<Avalonia.Controls.Shapes.Path>().Count());
         window.Close();

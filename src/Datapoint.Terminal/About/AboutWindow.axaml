@@ -6,18 +6,34 @@
         Title="{x:Static res:Strings.MenuAbout}"
         Width="480" SizeToContent="Height" CanResize="False" WindowStartupLocation="CenterOwner"
         Background="{DynamicResource GroupedBackgroundBrush}">
+  <Window.Styles>
+    <!-- Links in the attribution keep the text's color in every state, so it reads as one sentence. -->
+    <Style Selector="HyperlinkButton.text">
+      <Setter Property="Padding" Value="0" />
+    </Style>
+    <Style Selector="HyperlinkButton.text /template/ ContentPresenter#PART_ContentPresenter, HyperlinkButton.text:pointerover /template/ ContentPresenter#PART_ContentPresenter, HyperlinkButton.text:visited /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Foreground" Value="{DynamicResource LabelBrush}" />
+    </Style>
+    <Style Selector="HyperlinkButton.text:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Foreground" Value="{DynamicResource SecondaryLabelBrush}" />
+    </Style>
+  </Window.Styles>
   <StackPanel Margin="24" Spacing="14">
     <StackPanel Spacing="2" HorizontalAlignment="Center">
       <TextBlock Classes="dialogTitle" Text="Datapoint Terminal" HorizontalAlignment="Center" />
       <SelectableTextBlock x:Name="VersionText" Classes="secondary" HorizontalAlignment="Center" />
     </StackPanel>
-    <!-- NOTICE, term 1: the attribution, with the logo beside it and a link to Datapoint's site, in every build. -->
-    <Border Background="{DynamicResource CardBrush}" CornerRadius="8" Padding="14">
-      <StackPanel Spacing="10" HorizontalAlignment="Center">
-        <about:DatapointLogo x:Name="Logo" Height="30" HorizontalAlignment="Center" Foreground="{DynamicResource LabelBrush}" />
-        <HyperlinkButton x:Name="Attribution" HorizontalAlignment="Center" Padding="0" />
-      </StackPanel>
-    </Border>
+    <!-- NOTICE, term 1: the attribution, with the logo beside it and a link to Datapoint's site, in every build. The product's
+         name links to its own site. The links are in the text's color, underlined, so the attribution reads as one sentence. -->
+    <StackPanel Spacing="10" HorizontalAlignment="Center" Margin="0,4">
+      <about:DatapointLogo x:Name="Logo" Height="30" HorizontalAlignment="Center" Foreground="{DynamicResource LabelBrush}" />
+      <WrapPanel x:Name="Attribution" HorizontalAlignment="Center" ItemsAlignment="Center" ItemSpacing="4">
+        <TextBlock Text="Based on" VerticalAlignment="Center" />
+        <HyperlinkButton x:Name="ProductLink" Classes="text" Content="Datapoint Terminal" />
+        <TextBlock Text="by" VerticalAlignment="Center" />
+        <HyperlinkButton x:Name="CompanyLink" Classes="text" Content="Datapoint - Sistemas de Informação, Lda." />
+      </WrapPanel>
+    </StackPanel>
     <SelectableTextBlock Classes="secondary" Text="{x:Static res:Strings.AboutNotice}" TextWrapping="Wrap" />
     <WrapPanel HorizontalAlignment="Center" ItemSpacing="8" LineSpacing="8">
       <Button x:Name="LicenseButton" Content="{x:Static res:Strings.AboutLicense}" />

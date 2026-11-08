@@ -14,10 +14,13 @@ public sealed partial class AboutWindow : Window
         InitializeComponent();
         var (version, commit) = AboutInfo.Version();
         VersionText.Text = commit is null ? Strings.Format(Strings.AboutVersion, version) : Strings.Format(Strings.AboutVersionWithCommit, version, commit);
-        Attribution.Content = new TextBlock { Text = AboutInfo.Attribution, TextWrapping = Avalonia.Media.TextWrapping.Wrap, TextAlignment = Avalonia.Media.TextAlignment.Center };
-        Attribution.NavigateUri = AboutInfo.DatapointSite;
-        AutomationProperties.SetHelpText(Attribution, Strings.AboutAttributionLink);
-        ToolTip.SetTip(Attribution, AboutInfo.DatapointSite.AbsoluteUri);
+        AutomationProperties.SetName(Attribution, AboutInfo.Attribution);
+        CompanyLink.NavigateUri = AboutInfo.DatapointSite;
+        AutomationProperties.SetHelpText(CompanyLink, Strings.AboutAttributionLink);
+        ToolTip.SetTip(CompanyLink, AboutInfo.DatapointSite.AbsoluteUri);
+        ProductLink.NavigateUri = AboutInfo.ProductSite;
+        AutomationProperties.SetHelpText(ProductLink, Strings.AboutWebsite);
+        ToolTip.SetTip(ProductLink, AboutInfo.ProductSite.AbsoluteUri);
         ToolTip.SetTip(SourceButton, AboutInfo.SourceCode.AbsoluteUri);
         ToolTip.SetTip(WebsiteButton, AboutInfo.ProductSite.AbsoluteUri);
         LicenseButton.Click += (_, _) => ShowText(Strings.AboutLicense, AboutInfo.License());
