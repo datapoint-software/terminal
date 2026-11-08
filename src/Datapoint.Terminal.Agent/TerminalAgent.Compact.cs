@@ -25,8 +25,7 @@ public sealed partial class TerminalAgent
 
     private volatile bool _isSummarizing;
 
-    // From asking for a summary until the first reply after it says how large the new conversation is, so the context size
-    // shown doesn't go blank in between.
+    // While the summary is asked for; the conversation it starts is then estimated until a reply reports its size.
     public bool IsSummarizing => _isSummarizing;
 
     private void SetSummarizing(bool value)
@@ -70,7 +69,7 @@ public sealed partial class TerminalAgent
         }
 
         var response = updates.ToChatResponse();
-        RecordUsage(response, [], endsSummary: false);
+        RecordUsage(response, []);
         var summary = response.Text.Trim();
         if (summary.Length == 0)
         {
@@ -88,6 +87,7 @@ public sealed partial class TerminalAgent
             + "<conversation_summary>\n" + summary.Replace("</conversation_summary>", "</conversation_summary_>", StringComparison.OrdinalIgnoreCase)
             + "\n</conversation_summary>\n\n[Carry on with the task from where the summary leaves off. The user may have used the "
             + "terminals since: check their state before relying on what the summary says they showed.]\n");
+        SetSummarizing(false);
         Raise(new AgentEventArgs(
             AgentEventKind.Notice,
             $"The conversation reached {tokens.ToString("N0", CultureInfo.CurrentCulture)} tokens, so I summarized it and carried on from the summary, to keep each reply cheaper. The chat and the history still have everything.")

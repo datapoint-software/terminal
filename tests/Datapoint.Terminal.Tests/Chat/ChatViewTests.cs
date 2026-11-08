@@ -614,10 +614,14 @@ public sealed class ChatViewTests
             frame?.Save("rendered/chat-context-details.png", new PngBitmapEncoderOptions());
         }
 
+        // Starting over keeps the ring, with an estimate until the next reply reports the size (product decision 140).
         agent.ClearConversation();
         chat.RefreshUsage();
 
-        Assert.False(chat.HasContext);
+        Assert.True(chat.HasContext);
+        Assert.True(chat.IsContextEstimated);
+        Assert.InRange(chat.ContextUsed, 1_000, 20_000);
+        Assert.StartsWith("About ", chat.ContextDetail, StringComparison.Ordinal);
     }
 
     [Theory]

@@ -87,7 +87,7 @@ public sealed partial class TerminalAgent
             _history.Add(new ChatMessage(ChatRole.User, DescribeTerminals() + message));
         }
 
-        Usage.ForgetContext();
+        EstimateContext();
         Raise(new AgentEventArgs(AgentEventKind.UsageChanged, string.Empty));
     }
 
@@ -139,5 +139,19 @@ public sealed partial class TerminalAgent
         }
 
         return text.ToString();
+    }
+
+    // Product decision 140: about four characters a token, over what each request sends: the conversation and the tools'
+    // definitions. Shown until the next reply reports the real size, so the context size never goes blank.
+    private void EstimateContext()
+    {
+        long characters;
+        lock (_sync)
+        {
+            characters = _history.Sum(message => (long)message.Text.Length + message.Contents.OfType<FunctionResultContent>().Sum(result => (long)(result.Result?.ToString()?.Length ?? 0)));
+        }
+
+        characters += _chatOptions.Tools?.OfType<AIFunction>().Sum(tool => (long)tool.Name.Length + tool.Description.Length + tool.JsonSchema.GetRawText().Length) ?? 0;
+        Usage.EstimateContext(characters / 4);
     }
 }

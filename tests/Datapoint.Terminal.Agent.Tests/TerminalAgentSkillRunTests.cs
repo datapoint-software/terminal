@@ -142,6 +142,10 @@ public sealed class TerminalAgentSkillRunTests : IDisposable
         Assert.Contains("Next: web2 (batch 2 of 2).", carried, StringComparison.Ordinal);
         Assert.DoesNotContain("ran df -h /", carried, StringComparison.Ordinal);
         Assert.Contains(_events, e => e.Kind == AgentEventKind.CommandFinished && string.Equals(e.Output, "ran df -h /", StringComparison.Ordinal));
+
+        // The context size never goes blank: the fresh conversation is estimated until a reply reports it (decision 140).
+        Assert.True(agent.Usage.IsContextEstimated);
+        Assert.True(agent.Usage.ContextTokens > carried.Length / 4);
     }
 
     [Fact]

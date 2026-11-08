@@ -52,24 +52,25 @@ public sealed class TerminalAgentCompactTests
         Assert.Equal(3, agent.Usage.Session.Requests);
     }
 
-    // The context size isn't known from the summary request until the first reply after it, so summarizing lasts until then.
+    // Summarizing lasts while the summary is asked for; the new conversation's size is then estimated until a reply reports it.
     [Fact]
-    public async Task Is_summarizing_from_the_request_until_the_next_reply_reports_its_size()
+    public async Task Is_summarizing_during_the_request_then_estimates_until_the_next_reply()
     {
         var seen = new List<bool>();
         TerminalAgent? agent = null;
         var client = new ScriptedChatClient(
             ReadScreen(60_000),
             _ => { seen.Add(agent!.IsSummarizing); return WithUsage(Text("Checked web1."), 60_000); },
-            _ => { seen.Add(agent!.IsSummarizing); return WithUsage(Text("Done."), 2_000); });
+            _ => { seen.Add(agent!.IsSummarizing); seen.Add(agent.Usage.IsContextEstimated); return WithUsage(Text("Done."), 2_000); });
         var events = new List<AgentEventArgs>();
         using var created = NewAgent(client, events);
         agent = created;
 
         await agent.SendAsync("Check web1", Token);
 
-        Assert.Equal([true, true], seen);
+        Assert.Equal([true, false, true], seen);
         Assert.False(agent.IsSummarizing);
+        Assert.False(agent.Usage.IsContextEstimated);
         Assert.Equal(2_100, agent.Usage.ContextTokens);
     }
 

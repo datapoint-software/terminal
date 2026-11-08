@@ -132,6 +132,7 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
         Items.Add(new ChatItemViewModel(ChatItemKind.Notice, privacyNotice));
         OnPropertyChanged(nameof(HasAgent));
         NotifyCommands();
+        RefreshUsage();
     }
 
     public void AddNotice(string text) => Items.Add(new ChatItemViewModel(ChatItemKind.Notice, text));
@@ -196,8 +197,8 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
     [NotifyPropertyChangedFor(nameof(HasContext), nameof(ContextSweep), nameof(ContextText), nameof(ContextDetail))]
     public partial long ContextUsed { get; private set; }
 
-    // Shown once a request has used some, even when the window isn't known, since the session's usage opens from it; and while
-    // the conversation is summarized, when the size isn't known again until the next reply (product decision 133).
+    // Always shown once there's an agent, even when the window isn't known, since the session's usage opens from it: the size is
+    // estimated until a reply reports it, and a spinner stands in while the conversation is summarized (decisions 133, 140).
     public bool HasContext => ContextUsed > 0 || IsSummarizing;
 
     [ObservableProperty]
@@ -206,12 +207,16 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
 
     public bool IsContextKnown => !IsSummarizing;
 
+    // Shown as about so many tokens in the details, until a reply reports the real size (product decision 140).
+    public bool IsContextEstimated { get; private set; }
+
     public double ContextSweep => ContextUsed > 0 && ContextWindow > 0 ? 360.0 * Math.Min(1.0, (double)ContextUsed / ContextWindow!.Value) : 0;
 
     public string ContextText => IsSummarizing ? Strings.ContextSummarizing : ShortTokens(ContextUsed);
 
     public string ContextDetail => IsSummarizing ? Strings.ContextSummarizingDetail
         : !HasContext ? string.Empty
+        : IsContextEstimated ? (ContextWindow > 0 ? Strings.Format(Strings.ContextEstimatedDetail, ContextUsed, ContextWindow!.Value) : Strings.Format(Strings.ContextEstimatedUnknownWindow, ContextUsed))
         : ContextWindow > 0 ? Strings.Format(Strings.ContextUsedDetail, ContextUsed, ContextWindow!.Value)
         : Strings.Format(Strings.ContextUsedUnknownWindow, ContextUsed);
 
@@ -227,6 +232,7 @@ public sealed partial class ChatViewModel : ObservableObject, IAgentUser, IDispo
         var usage = _agent?.Usage;
         ContextUsed = usage?.ContextTokens ?? 0;
         IsSummarizing = _agent?.IsSummarizing == true;
+        IsContextEstimated = usage?.IsContextEstimated == true;
         OnPropertyChanged(nameof(HasContext));
         OnPropertyChanged(nameof(ContextSweep));
         OnPropertyChanged(nameof(ContextDetail));

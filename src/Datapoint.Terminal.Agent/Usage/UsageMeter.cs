@@ -36,7 +36,8 @@ public sealed class UsageMeter
     }
 
     // How much of the model's context the conversation fills: the latest request's input and its reply, which the next request
-    // carries. Null until a request reports its counts, and again when the conversation starts over (product decision 126).
+    // carries. Estimated from the conversation's text when it starts, or starts over, until a reply reports it (product
+    // decisions 126 and 140).
     public long? ContextTokens
     {
         get
@@ -60,14 +61,31 @@ public sealed class UsageMeter
         lock (_lock)
         {
             _contextTokens = usage.Input + usage.Output;
+            _isContextEstimated = false;
         }
     }
 
-    public void ForgetContext()
+    // A conversation that started over has no reported size until its first reply, so it's estimated until then.
+    public void EstimateContext(long tokens)
     {
         lock (_lock)
         {
-            _contextTokens = null;
+            _contextTokens = tokens;
+            _isContextEstimated = true;
+        }
+    }
+
+    private bool _isContextEstimated;
+
+    // Whether ContextTokens is an estimate rather than what a reply reported.
+    public bool IsContextEstimated
+    {
+        get
+        {
+            lock (_lock)
+            {
+                return _isContextEstimated;
+            }
         }
     }
 

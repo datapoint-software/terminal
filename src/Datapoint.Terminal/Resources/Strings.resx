@@ -2907,4 +2907,10 @@ Fingerprint: {2}</value>
   <data name="ContextSummarizingDetail" xml:space="preserve">
     <value>Summarizing the conversation to keep it short. The context size shows again after the next reply.</value>
   </data>
+  <data name="ContextEstimatedDetail" xml:space="preserve">
+    <value>About {0:N0} of {1:N0} tokens of context used, estimated until the next reply reports it</value>
+  </data>
+  <data name="ContextEstimatedUnknownWindow" xml:space="preserve">
+    <value>About {0:N0} tokens of context used, estimated until the next reply reports it</value>
+  </data>
 </root>

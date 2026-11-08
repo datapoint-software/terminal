@@ -1937,6 +1937,10 @@ public static class Strings
 
     public static string ContextSummarizingDetail => Get(nameof(ContextSummarizingDetail));
 
+    public static string ContextEstimatedDetail => Get(nameof(ContextEstimatedDetail));
+
+    public static string ContextEstimatedUnknownWindow => Get(nameof(ContextEstimatedUnknownWindow));
+
     public static string Format(string format, params object?[] arguments) => string.Format(CultureInfo.CurrentCulture, format, arguments);
 
     private static string Get(string name) => s_resources.GetString(name, CultureInfo.CurrentUICulture) ?? name;

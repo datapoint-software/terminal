@@ -44,6 +44,7 @@ public sealed partial class TerminalAgent : IDisposable
         _options = options ?? new AgentOptions();
         OutputLimit = _options.MaxOutputCharacters;
         _chatOptions = new ChatOptions { Tools = CreateTools(), MaxOutputTokens = _options.MaxOutputTokens };
+        EstimateContext();
     }
 
     public void UseClient(IChatClient client)
@@ -159,7 +160,7 @@ public sealed partial class TerminalAgent : IDisposable
             _history.RemoveRange(1, _history.Count - 1);
             ForgetScreens();
             _historyIds.Clear();
-            Usage.ForgetContext();
+            EstimateContext();
             ForgetCarried();
             ForgetWebGuard();
             EndIgnoringPermissions();
@@ -292,7 +293,7 @@ public sealed partial class TerminalAgent : IDisposable
         return updates.ToChatResponse();
     }
 
-    private void RecordUsage(ChatResponse response, List<FunctionCallContent> calls, bool endsSummary = true)
+    private void RecordUsage(ChatResponse response, List<FunctionCallContent> calls)
     {
         _usageTerminal = calls.Select(call => call.Arguments?.TryGetValue("terminal", out var name) == true ? name?.ToString() : null)
             .FirstOrDefault(name => name is not null && Terminals.Any(terminal => string.Equals(terminal.Name, name, StringComparison.Ordinal)))
@@ -300,7 +301,6 @@ public sealed partial class TerminalAgent : IDisposable
         var usage = Agent.Usage.TokenUsage.From(response.Usage);
         Usage.Record(_usageTerminal, usage);
         Usage.NoteContext(usage);
-        _isSummarizing &= !endsSummary;
         Raise(new AgentEventArgs(AgentEventKind.UsageChanged, string.Empty));
     }
 
