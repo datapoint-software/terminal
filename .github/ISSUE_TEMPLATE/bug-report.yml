@@ -1,0 +1,75 @@
+name: Bug report
+description: Something in Datapoint Terminal doesn't work as it should.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Found a vulnerability? Don't report it here: use the private form in [SECURITY.md](https://github.com/datapoint-software/terminal/blob/main/SECURITY.md).
+        Terminal output and the agent's conversation often hold host names, user names, addresses, paths and secrets. Replace them with made-up ones, such as `web-1.example.com` or `192.0.2.10`, in everything you paste.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Connect to `deploy@web-1.example.com` over SSH.
+        2. Ask the agent to "check the disk space".
+        3. …
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: From About Datapoint Terminal, such as `0.1.0 (e30cd88)`.
+    validations:
+      required: true
+  - type: dropdown
+    id: system
+    attributes:
+      label: Operating system
+      options:
+        - macOS
+        - Windows
+        - Linux
+    validations:
+      required: true
+  - type: input
+    id: system-version
+    attributes:
+      label: Operating system version
+      placeholder: macOS 26.1, Windows 11 24H2, Ubuntu 24.04 (Wayland)
+  - type: dropdown
+    id: connection
+    attributes:
+      label: Where the terminal was
+      options:
+        - A local shell
+        - A remote host over SSH
+        - Both, or it doesn't matter
+    validations:
+      required: true
+  - type: input
+    id: shell
+    attributes:
+      label: Shell
+      placeholder: zsh 5.9, bash 5.2, PowerShell 7.5
+  - type: input
+    id: provider
+    attributes:
+      label: AI provider and model
+      description: If the agent was involved.
+      placeholder: Anthropic, Claude Opus 5.5
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      description: With real names, addresses and secrets replaced.
+      render: text
