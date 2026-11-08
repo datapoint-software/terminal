@@ -85,4 +85,21 @@ public sealed class AreaViewTests
         Assert.Equal(359, _areas[AreaKind.Agent].Bounds.Width);
         window.Close();
     }
+
+    [AvaloniaFact]
+    public void Moves_only_the_divider_when_only_sizes_change()
+    {
+        var (window, view) = Show(AreaLayout.Default(), _ => true);
+        var parent = _areas[AreaKind.Terminals].Parent;
+        var narrower = AreaLayout.Default();
+        ((AreaSplit)narrower).Size = 500;
+
+        view.Show(narrower, _ => true);
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.Same(parent, _areas[AreaKind.Terminals].Parent);
+        Assert.Equal(500, _areas[AreaKind.Terminals].Bounds.Width);
+        Assert.Equal(500, ((AreaSplit)view.Shown!).Size);
+        window.Close();
+    }
 }

@@ -33,6 +33,9 @@ public sealed class AreaView
     // Whether the collapsed area sits beside the one it meets, rather than above or below it, so it's a column, not a row.
     public bool IsCollapsedBeside { get; private set; }
 
+    // The layout last built, whose splits take the sizes the user drags the dividers to.
+    public AreaNode? Shown { get; private set; }
+
     public void Show(AreaNode root, Func<AreaKind, bool> isShown, AreaKind? collapsed = null)
     {
         ArgumentNullException.ThrowIfNull(isShown);
@@ -43,10 +46,16 @@ public sealed class AreaView
             return;
         }
 
+        if (TryResize(root, key.ToString()))
+        {
+            return;
+        }
+
         // Moving a control between grids takes the keyboard focus from it, so it's given back after.
         var focused = TopLevel.GetTopLevel(_host)?.FocusManager?.GetFocusedElement() as Control;
         _shown = key.ToString();
         _collapsed = collapsed;
+        Shown = root;
         foreach (var area in _areas.Values)
         {
             (area.Parent as Panel)?.Children.Remove(area);
@@ -66,6 +75,54 @@ public sealed class AreaView
         }
 
         focused.Focus();
+    }
+
+    // Only sizes changed, e.g. as the window is resized: the dividers move, and nothing moves between grids.
+    private bool TryResize(AreaNode root, string key)
+    {
+        if (Shown is null || !string.Equals(Structure(key), Structure(_shown), StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        _shown = key;
+        CopySizes(root, Shown);
+        Resize(_content);
+        return true;
+    }
+
+    private static string Structure(string? key) => System.Text.RegularExpressions.Regex.Replace(key ?? string.Empty, @"\([^;(]*;", "(", System.Text.RegularExpressions.RegexOptions.None, TimeSpan.FromSeconds(1));
+
+    private static void CopySizes(AreaNode from, AreaNode to)
+    {
+        if (from is not AreaSplit source || to is not AreaSplit target)
+        {
+            return;
+        }
+
+        target.Size = source.Size;
+        CopySizes(source.First, target.First);
+        CopySizes(source.Second, target.Second);
+    }
+
+    // A collapsed area's grid has no fixed length to change: its cell is as wide as the area asks.
+    private static void Resize(Panel panel)
+    {
+        foreach (var grid in panel.Children.OfType<Grid>().Where(grid => grid.Tag is AreaSplit))
+        {
+            var split = (AreaSplit)grid.Tag!;
+            var index = split.FixesFirst ? 0 : 2;
+            if (split.IsRow && grid.ColumnDefinitions.Count == 3 && grid.ColumnDefinitions[index].Width.IsAbsolute)
+            {
+                grid.ColumnDefinitions[index].Width = new GridLength(split.Size);
+            }
+            else if (!split.IsRow && grid.RowDefinitions.Count == 3 && grid.RowDefinitions[index].Height.IsAbsolute)
+            {
+                grid.RowDefinitions[index].Height = new GridLength(split.Size);
+            }
+
+            Resize(grid);
+        }
     }
 
     // Forgets what's shown, for when the same layout has to be built again with new sizes.

@@ -39,7 +39,8 @@ public sealed partial class MainWindow
     {
         _layout = AreaLayout.Parse(_settings.AreaLayout) ?? AreaLayout.FromSide(_settings.TerminalSide);
         _areaView = new AreaView(Body, Enum.GetValues<AreaKind>().ToDictionary(kind => kind, AreaControl));
-        _areaView.Resized += (_, _) => SaveLayout();
+        _areaView.Resized += (_, _) => OnAreaResized();
+        Body.SizeChanged += (_, _) => LayOutPanes();
         _settings.AreaLayoutChanged += OnAreaLayoutChanged;
         SetUpAreaDragging();
     }
@@ -53,6 +54,30 @@ public sealed partial class MainWindow
 
         _layout = layout;
         LayOutPanes();
+    }
+
+    // What's shown is a copy brought within the window, so a size saved in a larger window doesn't push an area's edge, and
+    // its buttons, out of sight; the saved sizes come back when there's room again. A dragged divider is a choice, so the
+    // copy it changed becomes the layout.
+    private AreaNode FittedLayout()
+    {
+        var copy = AreaLayout.Parse(AreaLayout.Format(_layout)) ?? _layout;
+        if (Body.Bounds.Width > 0 && Body.Bounds.Height > 0)
+        {
+            AreaLayout.Fit(copy, Body.Bounds.Width, Body.Bounds.Height, IsShown);
+        }
+
+        return copy;
+    }
+
+    private void OnAreaResized()
+    {
+        if (_areaView?.Shown is { } shown)
+        {
+            _layout = shown;
+        }
+
+        SaveLayout();
     }
 
     private void SaveLayout() => _settings.SetAreaLayout(AreaLayout.Format(_layout));
@@ -121,7 +146,7 @@ public sealed partial class MainWindow
     {
         TerminalArea.IsVisible = !_areTerminalsCollapsed;
         TerminalRail.IsVisible = _areTerminalsCollapsed;
-        _areaView?.Show(_layout, IsShown, _areTerminalsCollapsed ? AreaKind.Terminals : null);
+        _areaView?.Show(FittedLayout(), IsShown, _areTerminalsCollapsed ? AreaKind.Terminals : null);
         TerminalRail.Classes.Set("across", _areaView is { IsCollapsedBeside: false });
         UpdateLayoutMenu();
     }
