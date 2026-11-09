@@ -100,12 +100,14 @@ public sealed class ChatViewModelTests
 
         var first = chat.AskAsync(new AgentQuestion("Which?", [new AgentOption("a"), new AgentOption("b", "The second.")]), Token);
         chat.Question!.ChooseCommand.Execute(chat.Question.Rows[1]);
+        Assert.Equal("b", await first);
+
+        // Asked once the first is cleared away, as the agent does; here both would otherwise race on two threads.
         var second = chat.AskAsync(new AgentQuestion("Why?", []), Token);
         Assert.True(chat.Question!.IsWriting);
         chat.Question.Draft = " because ";
         chat.Question.SubmitCommand.Execute(null);
 
-        Assert.Equal("b", await first);
         Assert.Equal("because", await second);
         Assert.Null(chat.Question);
     }
