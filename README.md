@@ -12,7 +12,7 @@ Test builds are on the [releases page](https://github.com/datapoint-software/ter
 
 - **macOS:** open `DatapointTerminal-osx-arm64-Setup.pkg` (or `osx-x64` on an Intel Mac). When macOS says it can't check it for malicious software, open System Settings › Privacy & Security, scroll to Security, choose Open Anyway and confirm. Do the same the first time you open Datapoint Terminal if macOS stops it again. `DatapointTerminal-osx-…-Portable.zip` holds the application to copy to Applications yourself instead.
 - **Windows:** run `DatapointTerminal-win-x64-Setup.exe` (or `win-arm64`). When SmartScreen says it protected your PC, choose More info, then Run anyway. `DatapointTerminal-win-…-Portable.zip` runs without installing.
-- **Linux:** download the `.AppImage` for your processor, make it executable (`chmod +x DatapointTerminal*.AppImage`) and run it. If it doesn't start, install FUSE 2 (`libfuse2` on most distributions, `libfuse2t64` on Ubuntu 24.04 and later).
+- **Linux:** download the `.AppImage` for your processor, make it executable (`chmod +x DatapointTerminal*.AppImage`) and run it. It doesn't need the FUSE 2 library; if it still won't start, e.g. where FUSE isn't available, run it with `--appimage-extract-and-run`.
 
 The application doesn't update itself yet: to update, install the newer build over the old one. Settings and saved connections live in your user folder, not with the application, so they stay.
 
