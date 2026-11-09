@@ -117,12 +117,13 @@ public sealed class RealShellTests : IDisposable
         await using var connection = await StartBashAsync();
         var results = new List<string>();
         var client = new ScriptedChatClient(
-            _ => Call("run_command", new Dictionary<string, object?>(StringComparer.Ordinal) { ["command"] = "sleep 1; echo finished", ["purpose"] = "test" }),
+            _ => Call("run_command", new Dictionary<string, object?>(StringComparer.Ordinal) { ["command"] = "sleep 3; echo finished", ["purpose"] = "test" }),
             messages => { results.Add(LastToolResult(messages)); return Call("wait_for_command", new Dictionary<string, object?>(StringComparer.Ordinal), "call-2"); },
             messages => { results.Add(LastToolResult(messages)); return Text("Done."); });
-        using var agent = new TerminalAgent(client, new FakeUser(), new SecretRedactor(), new AgentOptions { CommandTimeout = TimeSpan.FromMilliseconds(700) });
+        using var agent = new TerminalAgent(client, new FakeUser(), new SecretRedactor(), new AgentOptions { CommandTimeout = TimeSpan.FromSeconds(2) });
         agent.AddTerminal(new AgentTerminal("Local", new ConnectionTerminal(connection)));
 
+        // Seconds apart, so a runner that stalls for a moment still checks before the command ends.
         await agent.SendAsync("Try it", Token);
 
         Assert.StartsWith("Still running", results[0], StringComparison.Ordinal);
