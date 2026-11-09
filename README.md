@@ -54,13 +54,14 @@ docker build -t datapoint-terminal-sshd:test tests/ssh-server
 - [Code of conduct](CODE_OF_CONDUCT.md): how we treat each other, and where to report problems.
 - [How we work](CLAUDE.md): the full rules for branch names, commit messages, pull requests and versions, followed by people and AI coding assistants alike.
 - [Security policy](SECURITY.md): how to report a vulnerability privately.
+- [Privacy](PRIVACY.md): what the application sends, to whom and when, and what it keeps on your computer.
 
 ## Using it safely
 
 The agent works on real machines with your accounts, and what it reads goes to your AI provider. These habits keep you in control. The [known risks](#known-risks) below say where the application's own safeguards stop.
 
 - **Start with a test build on machines you can rebuild.** Until version 1.0, try it on development or test machines before anything that matters.
-- **Choose your provider knowingly.** While the agent works on a task, what it reads goes to the provider: terminal output, the files it opens, the workspace's instructions and host documentation. Check that the provider's terms allow that data. If it mustn't leave your network, use an open-weight model you run yourself. Each step in the chat shows exactly what was sent.
+- **Choose your provider knowingly.** While the agent works on a task, what it reads goes to the provider: terminal output, the files it opens, the workspace's instructions and host documentation. Check that the provider's terms allow that data; the [privacy notice](PRIVACY.md) lists what's sent and what's kept. If it mustn't leave your network, use an open-weight model you run yourself. Each step in the chat shows exactly what was sent.
 - **Start in Ask mode.** In Ask, every command waits for your approval. Move to Ask if risky or Plan once you know how the agent works. Use Ignore permissions only on machines you could lose, never alongside production terminals: in that mode every command runs without asking, in every terminal.
 - **Label production hosts.** Mark each host as production, staging or development when you add it. Production tabs are colored, and every approval names the terminal and its environment, so you can see where a command will run before you approve it.
 - **Read before you approve.** Check the command, the terminal it runs in and, for a plan, each step and how to roll it back. You can edit a command before approving it. If anything surprises you, say so in the message box: nothing the card proposed runs.
