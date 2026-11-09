@@ -9,7 +9,7 @@ public static class Packages
     // engineering.md, Dependencies: only these are accepted until someone reviews another.
     public static readonly IReadOnlySet<string> Reviewed = new HashSet<string>(StringComparer.Ordinal)
     {
-        "MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "Unicode-3.0", "OFL-1.1",
+        "MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "Unicode-3.0", "OFL-1.1", "ISC", "Zlib", "CDLA-Permissive-2.0", "LGPL-2.1",
     };
 
     // Material a package carries under a license of its own, which its stated license doesn't cover: the package's

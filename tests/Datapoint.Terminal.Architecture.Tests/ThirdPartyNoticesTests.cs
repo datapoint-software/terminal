@@ -29,6 +29,40 @@ public sealed class ThirdPartyNoticesTests : IDisposable
         Assert.Contains("SIL OPEN FONT LICENSE Version 1.1", notices, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void Lists_what_the_installers_bundle_with_where_to_get_libfuse()
+    {
+        var notices = NoticesFile.Generate(RepositoryRoot.Path);
+
+        Assert.Contains("In the installers:", notices, StringComparison.Ordinal);
+        Assert.Contains("  velopack 1.2.161 (MIT)", notices, StringComparison.Ordinal);
+        Assert.Contains("  libfuse 3.15.0, with the AppImage runtime's patch to lib/mount.c (LGPL-2.1)", notices, StringComparison.Ordinal);
+        Assert.Contains("https://github.com/libfuse/libfuse/releases/tag/fuse-3.15.0", notices, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Asks_to_regenerate_what_the_installers_bundle_after_a_vpk_upgrade()
+    {
+        File.WriteAllText(Path.Combine(_folder, "dotnet-tools.json"), """{ "tools": { "vpk": { "version": "9.9.9" } } }""");
+
+        var exception = Assert.Throws<NoticeException>(() => Bundled.Read(_folder));
+
+        Assert.Contains("vpk-9.9.9-rust-crates.json", exception.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Refuses_bundled_software_under_a_license_that_has_not_been_reviewed()
+    {
+        File.WriteAllText(Path.Combine(_folder, "dotnet-tools.json"), """{ "tools": { "vpk": { "version": "1.0.0" } } }""");
+        var bundled = Directory.CreateDirectory(Path.Combine(_folder, "tools", "ThirdPartyNotices", "Bundled")).FullName;
+        File.WriteAllText(Path.Combine(bundled, "vpk-1.0.0-rust-crates.json"), """{ "licenses": [ { "id": "GPL-3.0-only", "text": "...", "crates": [ { "name": "example", "version": "1.0.0", "repository": null } ] } ] }""");
+        File.WriteAllText(Path.Combine(bundled, "vpk-1.0.0-appimage-runtime.json"), """{ "licenses": [] }""");
+
+        var exception = Assert.Throws<NoticeException>(() => Bundled.Read(_folder));
+
+        Assert.Contains("GPL-3.0-only", exception.Message, StringComparison.Ordinal);
+    }
+
     [Theory]
     [InlineData("GPL-3.0-only")]
     [InlineData("MIT OR GPL-2.0-only")]
