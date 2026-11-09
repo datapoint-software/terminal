@@ -14,6 +14,11 @@ public static class TestApplication
     [ModuleInitializer]
     internal static void UseEnglish() => Localizer.Instance.Use(AppLanguage.English);
 
+    // Tests save what they render to rendered/ beside the tests, for a person to look at. Created once, so none depends on another
+    // having run first; the working folder isn't the tests' folder yet when this runs.
+    [ModuleInitializer]
+    internal static void CreateRenderedFolder() => Directory.CreateDirectory(Path.Combine(AppContext.BaseDirectory, "rendered"));
+
     public static AppBuilder BuildAvaloniaApp() => AppBuilder.Configure<App>()
         .UseSkia()
         .UseHarfBuzz()
