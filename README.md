@@ -4,7 +4,7 @@ An AI-powered terminal: a desktop application for macOS, Linux and Windows where
 
 ## Status
 
-Datapoint Terminal is in early development and hasn't been released yet; the first release will be 1.0.0-alpha.1, a test build. Continuous integration is set up to build and test it on macOS, Linux and Windows, and tagging a version builds installers for each (see [Packaging, signing and updates](docs/engineering.md#packaging-signing-and-updates)); they aren't signed yet, so macOS and Windows warn before opening them, and the application doesn't update itself yet. It's been used on macOS so far; Linux and Windows are supported by design but haven't been tried, and some features may not work there yet. Expect anything to change before version 1.0.
+Datapoint Terminal is in early development. The first test build, [1.0.0-alpha.1](https://github.com/datapoint-software/terminal/releases/tag/1.0.0-alpha.1), was released on 9 November 2026, with installers for macOS, Linux and Windows (see [Installing a test build](#installing-a-test-build)). They aren't signed yet, so macOS and Windows warn before opening them, and the application doesn't update itself yet. It's been used on macOS so far; Linux and Windows are supported by design but haven't been tried, and some features may not work there yet. Expect anything to change before version 1.0.
 
 ## Installing a test build
 

@@ -4,7 +4,7 @@ Datapoint Terminal runs shells on people's machines and servers, with their cred
 
 ## Supported versions
 
-Datapoint Terminal hasn't been released yet. Until it is, security fixes go into the `main` branch only. Once there are releases, this section will say which versions receive fixes.
+Datapoint Terminal is in test builds (1.0.0-alpha.1 and later). Security fixes go into the `main` branch and ship in the next test build; earlier test builds aren't patched, so update to the latest one.
 
 ## Reporting a vulnerability
 
